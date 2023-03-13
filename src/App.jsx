@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { RiMenuUnfoldFill } from "react-icons/ri";
 import {
   BsFillArrowRightCircleFill,
@@ -22,23 +23,31 @@ const App = () => {
 
   return (
     <>
-      <header className="flex justify-between p-5 mb-5 shadow-md">
+      <motion.header
+        initial={{ y: -200 }}
+        animate={{ y: 0 }}
+        className="flex justify-between p-5 mb-5 shadow-md"
+      >
         <RiMenuUnfoldFill />
         <div className="flex justify-center items-center">
           <BsFillArrowLeftCircleFill
             onClick={() => setNav((prev) => prev - 1)}
             className="text-xl"
           />
-          <p className="mx-5">{`${dt.toLocaleString("default", {
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="mx-5"
+          >{`${dt.toLocaleString("default", {
             month: "long",
-          })} ${dt.getFullYear()}`}</p>
+          })} ${dt.getFullYear()}`}</motion.p>
           <BsFillArrowRightCircleFill
             onClick={() => setNav((prev) => prev + 1)}
             className="text-xl"
           />
         </div>
         <BsThreeDotsVertical />
-      </header>
+      </motion.header>
       {!loading && <Calendar date={dt} />}
     </>
   );
