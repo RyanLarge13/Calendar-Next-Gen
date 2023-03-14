@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { v4 as uuidv4 } from "uuid";
 
 const Modal = ({ selectedDate, setModal, events, setEvents }) => {
-  const [modalColor, setModalColor] = useState(false);
   const [eventText, setEventText] = useState("");
   const [dayEvents, setDayEvents] = useState([]);
   const [color, setColor] = useState("blue");
@@ -12,18 +12,18 @@ const Modal = ({ selectedDate, setModal, events, setEvents }) => {
   const [addNewEvent, setAddNewEvent] = useState(false);
 
   useEffect(() => {
-    const arrayOfEvents = JSON.parse(events);
-    const eventsForDay = arrayOfEvents.filter(
-      (event) => event.date === selectedDate
-    );
-    eventsForDay[0]
-      ? setModalColor(eventsForDay[0].color)
-      : setModalColor(false);
-    setDayEvents(eventsForDay);
+    if (events.length > 0) {
+      const arrayOfEvents = JSON.parse(events);
+      const eventsForDay = arrayOfEvents.filter(
+        (event) => event.date === selectedDate
+      );
+      setDayEvents(eventsForDay);
+    }
   }, []);
 
   const addEvent = () => {
     const newEvent = {
+      id: uuidv4(),
       event: eventText,
       date: selectedDate,
       color,
@@ -58,9 +58,7 @@ const Modal = ({ selectedDate, setModal, events, setEvents }) => {
       <motion.div
         initial={{ x: 1000 }}
         animate={{ x: 0 }}
-        className={`${
-          modalColor ? `bg-${modalColor}` : "bg-white"
-        } bg-white rounded-md shadow-md p-2 fixed top-0 bottom-0 right-0 h-full flex flex-col items-center justify-center w-[65%]`}
+        className={`bg-white rounded-md shadow-md p-2 fixed top-0 bottom-0 right-0 h-full flex flex-col items-center justify-center w-[65%]`}
       >
         {addNewEvent ? (
           <>
@@ -68,39 +66,39 @@ const Modal = ({ selectedDate, setModal, events, setEvents }) => {
             <div className="flex flex-wrap justify-center items-center my-20 mx-auto w-[80%]">
               <div
                 onClick={() => setColor("blue")}
-                className={`bg-blue-400 w-9 h-9 rounded-full shadow-sm m-2 ${
-                  color === "blue" && "shadow-lg"
+                className={`bg-blue-400 w-[20px] h-[20px] rounded-full shadow-sm m-2 ${
+                  color === "blue" && "outline outline-gray-400"
                 }`}
               ></div>
               <div
                 onClick={() => setColor("red")}
-                className={`bg-red-400 w-9 h-9 rounded-full shadow-sm m-2 ${
-                  color === "red" && "shadow-lg"
+                className={`bg-red-400 w-[20px] h-[20px] rounded-full shadow-sm m-2 ${
+                  color === "red" && "outline outline-gray-400"
                 }`}
               ></div>
               <div
                 onClick={() => setColor("green")}
-                className={`bg-green-400 w-9 h-9 rounded-full shadow-sm m-2 ${
-                  color === "green" && "shadow-lg"
+                className={`bg-green-400 w-[20px] h-[20px] rounded-full shadow-sm m-2 ${
+                  color === "green" && "outline outline-gray-400"
                 }`}
               ></div>
               <div
                 onClick={() => setColor("pink")}
-                className={`bg-pink-400 w-9 h-9 rounded-full shadow-sm m-2 ${
-                  color === "pink" && "shadow-lg"
+                className={`bg-pink-400 w-[20px] h-[20px] rounded-full shadow-sm m-2 ${
+                  color === "pink" && "outline outline-gray-400"
                 }`}
               ></div>
               <div
                 onClick={() => setColor("orange")}
-                className={`bg-orange-400 w-9 h-9 rounded-full shadow-sm m-2 ${
-                  color === "orange" && "shadow-lg"
+                className={`bg-orange-400 w-[20px] h-[20px] rounded-full shadow-sm m-2 ${
+                  color === "orange" && "outline outline-gray-400"
                 }`}
               ></div>
             </div>
             <input
               placeholder="New Event"
               onChange={(e) => setEventText(e.target.value)}
-              className={`p-2 rounded-md m-2 mt-10 text-center shadow-${color}-400 shadow-md outline-none`}
+              className={`p-2 rounded-md m-2 mt-10 text-center shadow-md outline-none`}
             />
             <div className="flex justify-around p-2 mt-10 w-full">
               <button

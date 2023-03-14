@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Dna } from "react-loader-spinner";
 import { motion } from "framer-motion";
+import { calendar, calendarBlocks } from "../motion";
 import Modal from "./Modal";
 
 const weekDays = [
@@ -85,31 +86,37 @@ const Calendar = ({ date }) => {
       </div>
       <section>
         {!loading ? (
-          <div className="grid grid-cols-7 gap-1 h-[80vh]">
+          <motion.div
+            variants={calendar}
+            initial="hidden"
+            animate="show"
+            className="grid grid-cols-7 gap-1 h-[80vh]"
+          >
             {[...Array(paddingDays + daysInMonth)].map((abs, index) => (
-              <div
+              <motion.div
+                variants={calendarBlocks}
                 onClick={() =>
                   index >= paddingDays &&
                   addEvent(`${month + 1}/${index - paddingDays + 1}/${year}`)
                 }
                 key={index}
-                className={`w-full h-full rounded-sm shadow-sm hover:shadow-blue-300 duration-200 flex flex-col items-center justify-start overflow-hidden ${
+                className={`w-full h-full rounded-sm shadow-sm hover:shadow-blue-300 duration-200 flex flex-col items-center justify-start overflow-hidden cursor-pointer ${
                   index - paddingDays + 1 === day &&
                   month === new Date().getMonth() &&
                   year === new Date().getFullYear() &&
                   "shadow-green-400 shadow-md"
                 }`}
               >
-                <p
-                  className={`text-center text-sm mb-[2px] ${
+                <div
+                  className={`text-center text-sm my-1 ${
                     index - paddingDays + 1 === day &&
                     month === new Date().getMonth() &&
                     year === new Date().getFullYear() &&
-                    ""
+                    "w-[25px] h-[25px] rounded-full bg-green-100 shadow-sm"
                   }`}
                 >
-                  {index >= paddingDays && index - paddingDays + 1}
-                </p>
+                  <p>{index >= paddingDays && index - paddingDays + 1}</p>
+                </div>
                 {events.length > 0 &&
                   JSON.parse(events).map((event) => (
                     <>
@@ -117,9 +124,13 @@ const Calendar = ({ date }) => {
                         `${month + 1}/${index - paddingDays + 1}/${year}` && (
                         <motion.div
                           initial={{ opacity: 0, y: -50 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          key={event.event}
-                          className={`w-full rounded-lg bg-${event.color}-400 overflow-x-hidden shadow-md p-1`}
+                          animate={{
+                            opacity: 1,
+                            y: 0,
+                            transition: { delay: 0.25 },
+                          }}
+                          key={event.id}
+                          className={`w-full rounded-lg bg-${event.color}-400 overflow-x-hidden shadow-md p-1 my-1`}
                         >
                           <p className="whitespace-nowrap text-xs">
                             {event.event}
@@ -128,17 +139,16 @@ const Calendar = ({ date }) => {
                       )}
                     </>
                   ))}
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         ) : (
-          <div className="w-full h-full flex justify-center items-center">
+          <div className="w-full h-screen flex justify-center items-center">
             <Dna
               visible={loading}
               height="80"
               width="80"
               ariaLabel="dna-loading"
-              wrapperStyle={{}}
               wrapperClass="dna-wrapper"
             />
           </div>
