@@ -100,7 +100,7 @@ const Calendar = ({ date }) => {
                   addEvent(`${month + 1}/${index - paddingDays + 1}/${year}`)
                 }
                 key={index}
-                className={`w-full h-full rounded-sm shadow-sm hover:shadow-blue-300 duration-200 flex flex-col items-center justify-start overflow-hidden cursor-pointer ${
+                className={`w-full rounded-sm shadow-sm hover:shadow-blue-300 duration-200 flex flex-col items-center justify-start overflow-hidden cursor-pointer ${
                   index - paddingDays + 1 === day &&
                   month === new Date().getMonth() &&
                   year === new Date().getFullYear() &&
@@ -130,7 +130,7 @@ const Calendar = ({ date }) => {
                             transition: { delay: 0.25 },
                           }}
                           key={event.id}
-                          className={`w-full rounded-lg bg-${event.color}-400 overflow-x-hidden shadow-md p-1 my-1`}
+                          className={`w-full rounded-lg bg-${event.color}-400 overflow-x-hidden shadow-md p-1 m-1`}
                         >
                           <p className="whitespace-nowrap text-xs">
                             {event.event}

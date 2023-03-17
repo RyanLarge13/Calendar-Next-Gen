@@ -3,12 +3,13 @@ export const calendar = {
   show: {
     opacity: 1,
     transition: {
-      duration: 0.5,
+      duration: 0.1,
+      staggerChildren: 0.05,
     },
   },
 };
 
 export const calendarBlocks = {
-  hidden: { x: -300, opacity: 0 },
-  show: { x: 0, opacity: 1 },
+  hidden: { y: -10, opacity: 0 },
+  show: { y: 0, opacity: 1 },
 };
