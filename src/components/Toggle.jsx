@@ -1,8 +1,8 @@
 const Toggle = ({ condition, setCondition }) => {
   return (
     <div
-      onClick={() => setCondition ? setCondition((prev) => !prev) : null}
-      className="ml-3 flex justify-center items-center relative w-[50px] h-[25px] shadow-md rounded-full"
+      onClick={() => (setCondition ? setCondition((prev) => !prev) : null)}
+      className="ml-3 flex justify-center items-center relative w-[50px] h-[25px] shadow-md rounded-full cursor-pointer"
     >
       <div
         className={`absolute top-[1px] bottom-[1px] duration-200 ${
