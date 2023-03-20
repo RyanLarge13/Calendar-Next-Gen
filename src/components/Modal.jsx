@@ -89,7 +89,21 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
         color,
         repeat: {
           active: repeat,
-          next: `${monthInterval}/${dayInterval + howOften}/${yearInterval}`,
+          next: `${
+            dayInterval + howOften > daysInMonth
+              ? monthInterval > 11
+                ? 1
+                : monthInterval + 1
+              : monthInterval
+          }/${
+            dayInterval + howOften > daysInMonth
+              ? dayInterval + howOften - daysInMonth
+              : dayInterval + howOften
+          }/${
+            monthInterval > 11 && dayInterval + howOften > daysInMonth
+              ? yearInterval + 1
+              : yearInterval
+          }`,
           occurance: repeat
             ? howOften === 1
               ? "Daily"
@@ -105,6 +119,8 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
       localStorage.setItem("events", JSON.stringify(arrayOfEvents));
       dayInterval += howOften;
     }
+    setModal(false);
+    setEvents(localStorage.getItem("events"));
   };
 
   const setMonthlyDates = () => {
@@ -125,7 +141,7 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
         repeat: {
           active: repeat,
           next: `${
-            monthInterval > 12 ? 1 : monthInterval + 1
+            monthInterval >= 12 ? 1 : monthInterval + 1
           }/${dayInterval}/${yearInterval}`,
           occurance: "Monthly",
         },
@@ -136,6 +152,8 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
       localStorage.setItem("events", JSON.stringify(arrayOfEvents));
       monthInterval += 1;
     }
+    setModal(false);
+    setEvents(localStorage.getItem("events"));
   };
 
   const setYearlyDates = () => {
@@ -161,6 +179,8 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
       localStorage.setItem("events", JSON.stringify(arrayOfEvents));
       yearInterval += 1;
     }
+    setModal(false);
+    setEvents(localStorage.getItem("events"));
   };
 
   return (

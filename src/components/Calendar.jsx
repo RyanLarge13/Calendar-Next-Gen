@@ -3,6 +3,7 @@ import { Dna } from "react-loader-spinner";
 import { motion } from "framer-motion";
 import { calendar, calendarBlocks } from "../motion";
 import Modal from "./Modal";
+import TimeSetter from "./TimeSetter";
 
 const weekDays = [
   "Sunday",
@@ -47,7 +48,7 @@ const Calendar = ({ date }) => {
   }, [date]);
 
   useEffect(() => {
-    //localStorage.removeItem("events");
+    localStorage.removeItem("events");
     setFirstDayOfMonth(new Date(year, month, 1));
     setDaysInMonth(new Date(year, month + 1, 0).getDate());
   }, [year, month]);
@@ -163,6 +164,7 @@ const Calendar = ({ date }) => {
           setEvents={setEvents}
         />
       )}
+      <TimeSetter />
     </main>
   );
 };
