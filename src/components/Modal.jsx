@@ -13,10 +13,6 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
   const [repeat, setRepeat] = useState(false);
   const [howOften, setHowOften] = useState(null);
   const [time, setTime] = useState(false);
-  const [hours, setHours] = useState(12);
-  const [amPm, setAmPm] = useState(false);
-  const [minutes, setMinutes] = useState(0);
-  const [displayTime, setDisplayTime] = useState(null);
   const [reminder, setReminder] = useState(false);
   const [addNewEvent, setAddNewEvent] = useState(false);
 
@@ -51,10 +47,7 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
       date: selectedDate,
       color: color ? color : "bg-white",
       repeat,
-      time: {
-        time,
-        displayTime,
-      },
+      time,
       reminder,
     };
     if (events.length > 0) {
@@ -120,10 +113,7 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
               : "Bi-weekly"
             : null,
         },
-        time: {
-          time,
-          displayTime,
-        },
+        time,
         reminder,
       };
       arrayOfEvents.push(newEvent);
@@ -156,10 +146,7 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
           }/${dayInterval}/${yearInterval}`,
           occurance: "Monthly",
         },
-        time: {
-          time,
-          displayTime,
-        },
+        time,
         reminder,
       };
       arrayOfEvents.push(newEvent);
@@ -186,10 +173,7 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
           next: `${monthInterval}/${dayInterval}/${yearInterval + 1}`,
           occurance: "Yearly",
         },
-        time: {
-          time,
-          displayTime,
-        },
+        time,
         reminder,
       };
       arrayOfEvents.push(newEvent);
@@ -198,13 +182,6 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
     }
     setModal(false);
     setEvents(localStorage.getItem("events"));
-  };
-
-  const setEventTime = () => {
-    const formattedTime = `${hours}:${minutes === 0 ? "00" : minutes} ${
-      amPm ? "PM" : "AM"
-    }`;
-    setDisplayTime(formattedTime);
   };
 
   return (
@@ -321,34 +298,7 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
                 <div className="flex justify-between items-center">
                   <p>Time:</p>
                   <Toggle condition={time} setCondition={setTime} />
-                  {time && (
-                    <TimeSetter
-                      setTime={setTime}
-                      setHours={setHours}
-                      setMinutes={setMinutes}
-                      setATime={setEventTime}
-                      amPm={amPm}
-                      setAmPm={setAmPm}
-                      displayTime={displayTime}
-                    />
-                  )}
                 </div>
-                {displayTime && time && (
-                  <div className="flex w-full justify-between items-center py-2">
-                    <button onClick={() => setDisplayTime(null)}>
-                      <p>{displayTime}</p>
-                    </button>
-                    <button
-                      onClick={() => {
-                        setTime(false);
-                        setDisplayTime(false);
-                      }}
-                      className="px-3 py-1 rounded-md shadow-md bg-gradient-to-tr from-red-200 to-red-300 text-xs"
-                    >
-                      Clear
-                    </button>
-                  </div>
-                )}
               </div>
             </div>
             <div className="flex justify-around p-2 mt-10 w-full">
@@ -408,7 +358,6 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
                       <p>Time:</p>
                       <Toggle condition={event.time.time} setCondition={null} />
                     </div>
-                    {event.time.displayTime && <p>{event.time.displayTime}</p>}
                   </motion.div>
                 ))
               ) : (
