@@ -3,7 +3,6 @@ import { Dna } from "react-loader-spinner";
 import { motion } from "framer-motion";
 import { calendar, calendarBlocks } from "../motion";
 import Modal from "./Modal";
-import TimeSetter from "./TimeSetter";
 
 const weekDays = [
   "Sunday",
@@ -101,7 +100,7 @@ const Calendar = ({ date }) => {
                   addEvent(`${month + 1}/${index - paddingDays + 1}/${year}`)
                 }
                 key={index}
-                className={`w-full max-h-[16vh] min-h-[16vh] rounded-sm shadow-sm hover:shadow-blue-300 duration-200 flex flex-col items-center justify-start overflow-hidden cursor-pointer ${
+                className={`w-full max-h-[16vh] min-h-[16vh] rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start overflow-hidden cursor-pointer ${
                   index - paddingDays + 1 === day &&
                   month === new Date().getMonth() &&
                   year === new Date().getFullYear() &&
@@ -164,7 +163,6 @@ const Calendar = ({ date }) => {
           setEvents={setEvents}
         />
       )}
-      <TimeSetter />
     </main>
   );
 };
