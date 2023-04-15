@@ -4,7 +4,6 @@ import { v4 as uuidv4 } from "uuid";
 import { colors } from "../constants";
 import Toggle from "./Toggle";
 import Color from "./Color";
-import TimeSetter from "../components/TimeSetter";
 
 const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
   const [eventText, setEventText] = useState("");
@@ -356,7 +355,7 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
                     </div>
                     <div className="flex justify-between items-center my-2">
                       <p>Time:</p>
-                      <Toggle condition={event.time.time} setCondition={null} />
+                      <Toggle condition={event.time} setCondition={null} />
                     </div>
                   </motion.div>
                 ))
