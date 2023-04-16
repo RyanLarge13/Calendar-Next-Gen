@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { v4 as uuidv4 } from "uuid";
 import { colors } from "../constants";
+import { TimePicker } from '@mui/x-date-pickers/TimePicker'
 import Toggle from "./Toggle";
 import Color from "./Color";
 
@@ -298,6 +299,7 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
                   <p>Time:</p>
                   <Toggle condition={time} setCondition={setTime} />
                 </div>
+                <TimePicker />
               </div>
             </div>
             <div className="flex justify-around p-2 mt-10 w-full">

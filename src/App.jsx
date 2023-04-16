@@ -7,6 +7,8 @@ import {
   BsThreeDotsVertical,
 } from "react-icons/bs";
 import Calendar from "./components/Calendar";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 const App = () => {
   const [nav, setNav] = useState(0);
@@ -22,7 +24,7 @@ const App = () => {
   }, [nav]);
 
   return (
-    <>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
       <motion.header
         initial={{ y: -200 }}
         animate={{ y: 0 }}
@@ -49,7 +51,7 @@ const App = () => {
         <BsThreeDotsVertical />
       </motion.header>
       {!loading && <Calendar date={dt} />}
-    </>
+    </LocalizationProvider>
   );
 };
 
