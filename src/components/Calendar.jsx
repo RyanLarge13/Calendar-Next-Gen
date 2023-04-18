@@ -14,10 +14,9 @@ const weekDays = [
   "Saturday",
 ];
 
-const Calendar = ({ date }) => {
-  const [loading, setLoading] = useState(true);
+const Calendar = ({ date, loading, setLoading }) => {
   const [events, setEvents] = useState(
-    localStorage.getItem("events") ? localStorage.getItem("events") : []
+    JSON.parse(localStorage.getItem("events")) || []
   );
   const [day, setDay] = useState(new Date().getDate());
   const [month, setMonth] = useState(date.getMonth());
@@ -28,18 +27,10 @@ const Calendar = ({ date }) => {
   const [daysInMonth, setDaysInMonth] = useState(
     new Date(year, month + 1, 0).getDate()
   );
-  const [dateString, setDateString] = useState(
-    firstDayOfMonth.toLocaleDateString("en-us", {
-      weekday: "long",
-      year: "numeric",
-      month: "numeric",
-      day: "numeric",
-    })
-  );
-  const [paddingDays, setPaddingDays] = useState(
-    weekDays.indexOf(dateString.split(", ")[0])
-  );
+  const [dateString, setDateString] = useState(``);
+  const [paddingDays, setPaddingDays] = useState(null);
   const [openModal, setOpenModal] = useState(false);
+  const [string, setString] = useState("");
 
   useEffect(() => {
     setMonth(date.getMonth());
@@ -68,8 +59,6 @@ const Calendar = ({ date }) => {
     setLoading(false);
   }, [dateString]);
 
-  const [string, setString] = useState("");
-
   const addEvent = (date) => {
     setOpenModal(true);
     setString(date);
@@ -90,7 +79,7 @@ const Calendar = ({ date }) => {
             variants={calendar}
             initial="hidden"
             animate="show"
-            className="grid grid-cols-7 gap-1 h-[80vh]"
+            className="grid grid-cols-5 gap-1 h-[78vh]"
           >
             {[...Array(paddingDays + daysInMonth)].map((abs, index) => (
               <motion.div
@@ -100,7 +89,7 @@ const Calendar = ({ date }) => {
                   addEvent(`${month + 1}/${index - paddingDays + 1}/${year}`)
                 }
                 key={index}
-                className={`w-full max-h-[16vh] min-h-[16vh] rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start overflow-hidden cursor-pointer ${
+                className={`w-full min-h-[9vh] max-h-[9vh] rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start overflow-hidden cursor-pointer ${
                   index - paddingDays + 1 === day &&
                   month === new Date().getMonth() &&
                   year === new Date().getFullYear() &&
@@ -118,7 +107,7 @@ const Calendar = ({ date }) => {
                   <p>{index >= paddingDays && index - paddingDays + 1}</p>
                 </div>
                 {events.length > 0 &&
-                  JSON.parse(events).map((event) => (
+                  events.map((event) => (
                     <div key={event.id} className="w-full">
                       {event.date ===
                         `${month + 1}/${index - paddingDays + 1}/${year}` && (
@@ -129,7 +118,6 @@ const Calendar = ({ date }) => {
                             y: 0,
                             transition: { delay: 0.25 },
                           }}
-                          key={event.id}
                           className={`rounded-lg ${event.color} overflow-x-hidden shadow-md p-1 m-1`}
                         >
                           <p className="whitespace-nowrap text-xs">

@@ -16,11 +16,21 @@ const App = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    navigator.serviceWorker.register("sw.js");
+    Notification.requestPermission(function (result) {
+      if (result === "granted") {
+        navigator.serviceWorker.ready.then(function (registration) {
+          registration.showNotification("Notification with ServiceWorker");
+        });
+      }
+    });
+  }, []);
+
+  useEffect(() => {
     setLoading(true);
     const updatedDate = new Date();
     updatedDate.setMonth(new Date().getMonth() + nav);
     setDt(updatedDate);
-    setLoading(false);
   }, [nav]);
 
   return (
@@ -50,7 +60,7 @@ const App = () => {
         </div>
         <BsThreeDotsVertical />
       </motion.header>
-      {!loading && <Calendar date={dt} />}
+      {<Calendar date={dt} loading={loading} setLoading={setLoading} />}
     </LocalizationProvider>
   );
 };

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { v4 as uuidv4 } from "uuid";
 import { colors } from "../constants";
-import { TimePicker } from '@mui/x-date-pickers/TimePicker'
+import TimeSetter from "./TimeSetter";
 import Toggle from "./Toggle";
 import Color from "./Color";
 
@@ -18,13 +18,12 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
 
   useEffect(() => {
     if (events.length > 0) {
-      const arrayOfEvents = JSON.parse(events);
-      const eventsForDay = arrayOfEvents.filter(
+      const eventsForDay = events?.filter(
         (event) => event.date === selectedDate
       );
       setDayEvents(eventsForDay);
     }
-  }, [selectedDate]);
+  }, [selectedDate, events]);
 
   useEffect(() => {
     if (!repeat) setHowOften(null);
@@ -51,17 +50,16 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
       reminder,
     };
     if (events.length > 0) {
-      const arrayOfEvents = JSON.parse(events);
-      arrayOfEvents.push(newEvent);
-      localStorage.setItem("events", JSON.stringify(arrayOfEvents));
+      events.push(newEvent);
+      localStorage.setItem("events", JSON.stringify(events));
       setEventText("");
-      setEvents(localStorage.getItem("events"));
+      setEvents(JSON.parse(localStorage.getItem("events")));
       setModal(false);
     } else {
       events.push(newEvent);
       localStorage.setItem("events", JSON.stringify(events));
       setEventText("");
-      setEvents(localStorage.getItem("events"));
+      setEvents(JSON.parse(localStorage.getItem("events")));
       setModal(false);
     }
   };
@@ -69,7 +67,6 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
   const createRepeats = () => {
     if (howOften > 27 && howOften < 32) return setMonthlyDates();
     if (howOften === 365) return setYearlyDates();
-    const arrayOfEvents = events.length > 0 ? JSON.parse(events) : [];
     let dayInterval = Number(selectedDate.split("/")[1]);
     let monthInterval = Number(selectedDate.split("/")[0]);
     let yearInterval = Number(selectedDate.split("/")[2]);
@@ -116,16 +113,15 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
         time,
         reminder,
       };
-      arrayOfEvents.push(newEvent);
-      localStorage.setItem("events", JSON.stringify(arrayOfEvents));
+      events.push(newEvent);
+      localStorage.setItem("events", JSON.stringify(events));
       dayInterval += howOften;
     }
     setModal(false);
-    setEvents(localStorage.getItem("events"));
+    setEvents(JSON.parse(localStorage.getItem("events")));
   };
 
   const setMonthlyDates = () => {
-    const arrayOfEvents = events.length > 0 ? JSON.parse(events) : [];
     let dayInterval = Number(selectedDate.split("/")[1]);
     let monthInterval = Number(selectedDate.split("/")[0]);
     let yearInterval = Number(selectedDate.split("/")[2]);
@@ -149,16 +145,15 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
         time,
         reminder,
       };
-      arrayOfEvents.push(newEvent);
-      localStorage.setItem("events", JSON.stringify(arrayOfEvents));
+      events.push(newEvent);
+      localStorage.setItem("events", JSON.stringify(events));
       monthInterval += 1;
     }
     setModal(false);
-    setEvents(localStorage.getItem("events"));
+    setEvents(JSON.parse(localStorage.getItem("events")));
   };
 
   const setYearlyDates = () => {
-    const arrayOfEvents = events.length > 0 ? JSON.parse(events) : [];
     let dayInterval = Number(selectedDate.split("/")[1]);
     let monthInterval = Number(selectedDate.split("/")[0]);
     let yearInterval = Number(selectedDate.split("/")[2]);
@@ -176,12 +171,12 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
         time,
         reminder,
       };
-      arrayOfEvents.push(newEvent);
-      localStorage.setItem("events", JSON.stringify(arrayOfEvents));
+      events.push(newEvent);
+      localStorage.setItem("events", JSON.stringify(events));
       yearInterval += 1;
     }
     setModal(false);
-    setEvents(localStorage.getItem("events"));
+    setEvents(JSON.parse(localStorage.getItem("events")));
   };
 
   return (
@@ -195,7 +190,7 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
       <motion.div
         initial={{ x: 1000 }}
         animate={{ x: 0 }}
-        className={`bg-white rounded-md shadow-md px-2 py-5 fixed top-0 bottom-0 right-0 h-full flex flex-col items-center justify-between w-[65%]`}
+        className={`bg-white rounded-md shadow-md px-2 py-5 fixed top-0 bottom-0 right-0 h-full flex flex-col items-center justify-between w-[65%] overflow-y-auto`}
       >
         {addNewEvent ? (
           <>
@@ -295,16 +290,23 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
                 {reminder && <div>Hi</div>}
               </div>
               <div className="my-3 rounded-md shadow-sm p-2">
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center mb-3">
                   <p>Time:</p>
                   <Toggle condition={time} setCondition={setTime} />
                 </div>
-                <TimePicker />
+                {time && (
+                  <motion.div
+                    initial={{ y: 25, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                  >
+                    <TimeSetter selectedDate={selectedDate} />
+                  </motion.div>
+                )}
               </div>
             </div>
             <div className="flex justify-around p-2 mt-10 w-full">
               <button
-                onClick={() => setModal(false)}
+                onClick={() => setAddNewEvent(false)}
                 className="px-5 py-2 rounded-md shadow-md bg-gradient-to-r from-red-300 to-red-200 w-[100px]"
               >
                 Cancel
