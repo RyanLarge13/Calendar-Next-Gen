@@ -79,7 +79,7 @@ const Calendar = ({ date, loading, setLoading }) => {
             variants={calendar}
             initial="hidden"
             animate="show"
-            className="grid grid-cols-5 gap-1 h-[78vh]"
+            className="grid grid-cols-7 gap-1 h-[78vh]"
           >
             {[...Array(paddingDays + daysInMonth)].map((abs, index) => (
               <motion.div
@@ -89,7 +89,7 @@ const Calendar = ({ date, loading, setLoading }) => {
                   addEvent(`${month + 1}/${index - paddingDays + 1}/${year}`)
                 }
                 key={index}
-                className={`w-full min-h-[9vh] max-h-[9vh] rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start overflow-hidden cursor-pointer ${
+                className={`w-full min-h-[12vh] max-h-[12vh] rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start overflow-hidden cursor-pointer ${
                   index - paddingDays + 1 === day &&
                   month === new Date().getMonth() &&
                   year === new Date().getFullYear() &&
