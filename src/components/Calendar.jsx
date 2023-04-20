@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Dna } from "react-loader-spinner";
 import { motion } from "framer-motion";
 import { calendar, calendarBlocks } from "../motion";
 import Modal from "./Modal";
+import EventsContext from "../context/events.js";
 
 const weekDays = [
   "Sunday",
@@ -14,10 +15,8 @@ const weekDays = [
   "Saturday",
 ];
 
-const Calendar = ({ date, loading, setLoading }) => {
-  const [events, setEvents] = useState(
-    JSON.parse(localStorage.getItem("events")) || []
-  );
+const Calendar = ({ diff, date, loading, setLoading }) => {
+  const { events, setEvents } = useContext(EventsContext);
   const [day, setDay] = useState(new Date().getDate());
   const [month, setMonth] = useState(date.getMonth());
   const [year, setYear] = useState(date.getFullYear());
@@ -38,7 +37,7 @@ const Calendar = ({ date, loading, setLoading }) => {
   }, [date]);
 
   useEffect(() => {
-    localStorage.removeItem("events");
+    // localStorage.removeItem("events");
     setFirstDayOfMonth(new Date(year, month, 1));
     setDaysInMonth(new Date(year, month + 1, 0).getDate());
   }, [year, month]);
@@ -75,61 +74,70 @@ const Calendar = ({ date, loading, setLoading }) => {
       </div>
       <section>
         {!loading ? (
-          <motion.div
-            variants={calendar}
-            initial="hidden"
-            animate="show"
-            className="grid grid-cols-7 gap-1 h-[78vh]"
+          <div
+            style={{ transform: `translateX(${diff}px)` }}
+            className="duration-200"
           >
-            {[...Array(paddingDays + daysInMonth)].map((abs, index) => (
-              <motion.div
-                variants={calendarBlocks}
-                onClick={() =>
-                  index >= paddingDays &&
-                  addEvent(`${month + 1}/${index - paddingDays + 1}/${year}`)
-                }
-                key={index}
-                className={`w-full min-h-[12vh] max-h-[12vh] rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start overflow-hidden cursor-pointer ${
-                  index - paddingDays + 1 === day &&
-                  month === new Date().getMonth() &&
-                  year === new Date().getFullYear() &&
-                  "shadow-green-400 shadow-md"
-                }`}
-              >
-                <div
-                  className={`text-center text-sm my-1 ${
+            <motion.div
+              variants={calendar}
+              initial="hidden"
+              animate="show"
+              className="grid grid-cols-7 gap-1 h-[78vh]"
+            >
+              {[...Array(paddingDays + daysInMonth)].map((abs, index) => (
+                <motion.div
+                  variants={calendarBlocks}
+                  onClick={() =>
+                    index >= paddingDays &&
+                    addEvent(`${month + 1}/${index - paddingDays + 1}/${year}`)
+                  }
+                  key={index}
+                  className={`w-full min-h-[12vh] max-h-[12vh] rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start overflow-hidden cursor-pointer ${
                     index - paddingDays + 1 === day &&
                     month === new Date().getMonth() &&
                     year === new Date().getFullYear() &&
-                    "w-[25px] h-[25px] rounded-full bg-green-100 shadow-sm"
+                    "shadow-green-400 shadow-md"
                   }`}
                 >
-                  <p>{index >= paddingDays && index - paddingDays + 1}</p>
-                </div>
-                {events.length > 0 &&
-                  events.map((event) => (
-                    <div key={event.id} className="w-full">
-                      {event.date ===
-                        `${month + 1}/${index - paddingDays + 1}/${year}` && (
-                        <motion.div
-                          initial={{ opacity: 0, y: -50 }}
-                          animate={{
-                            opacity: 1,
-                            y: 0,
-                            transition: { delay: 0.25 },
-                          }}
-                          className={`rounded-lg ${event.color} overflow-x-hidden shadow-md p-1 m-1`}
-                        >
-                          <p className="whitespace-nowrap text-xs">
-                            {event.event}
-                          </p>
-                        </motion.div>
-                      )}
-                    </div>
-                  ))}
-              </motion.div>
-            ))}
-          </motion.div>
+                  <div
+                    className={`text-center text-sm my-1 ${
+                      index - paddingDays + 1 === day &&
+                      month === new Date().getMonth() &&
+                      year === new Date().getFullYear() &&
+                      "w-[25px] h-[25px] rounded-full bg-green-100 shadow-sm"
+                    }`}
+                  >
+                    <p>{index >= paddingDays && index - paddingDays + 1}</p>
+                  </div>
+                  {events.length > 0 &&
+                    events.map((event) => (
+                      <>
+                        {event.date ===
+                          `${month + 1}/${index - paddingDays + 1}/${year}` && (
+                          <motion.div
+                            initial={{ opacity: 0, y: -50 }}
+                            animate={{
+                              opacity: 1,
+                              y: 0,
+                              transition: {
+                                delay: 0.8,
+                                type: "spring",
+                                stiffness: 200,
+                              },
+                            }}
+                            className={`rounded-lg ${event.color} shadow-md px-2 py-1 mx-2 my-1 w-full`}
+                          >
+                            <p className="whitespace-nowrap text-xs">
+                              {event.event}
+                            </p>
+                          </motion.div>
+                        )}
+                      </>
+                    ))}
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
         ) : (
           <div className="w-full h-screen flex justify-center items-center">
             <Dna

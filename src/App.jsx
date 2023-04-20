@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext, useMemo } from "react";
 import { motion } from "framer-motion";
 import { RiMenuUnfoldFill } from "react-icons/ri";
 import {
@@ -9,11 +9,19 @@ import {
 import Calendar from "./components/Calendar";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import EventsContext from "./context/events.js";
 
 const App = () => {
   const [nav, setNav] = useState(0);
   const [dt, setDt] = useState(new Date());
   const [loading, setLoading] = useState(false);
+  const [events, setEvents] = useState(
+    JSON.parse(localStorage.getItem("events")) || []
+  );
+  const [start, setStart] = useState(null);
+  const [diff, setDiff] = useState(0);
+  let end;
+  let difference;
 
   useEffect(() => {
     navigator.serviceWorker.register("sw.js");
@@ -27,11 +35,41 @@ const App = () => {
   }, []);
 
   useEffect(() => {
+    (async () => {
+      await fetch("http://localhost:8080/", { method: "GET" })
+        .then((res) => res.json())
+        .then((json) => {
+          console.log(json);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    })();
     setLoading(true);
     const updatedDate = new Date();
     updatedDate.setMonth(new Date().getMonth() + nav);
     setDt(updatedDate);
   }, [nav]);
+
+  const moveCalendar = (e) => {
+    end = e.touches[0].clientX;
+    difference = end - start;
+    setDiff(() => difference);
+  };
+
+  const finish = () => {
+    if (start > end && start - end > 200) {
+      setNav((prev) => prev + 1);
+    }
+    if (start < end && end - start > 200) {
+      setNav((prev) => prev - 1);
+    }
+    setTimeout(function () {
+      setStart(() => null);
+      setDiff(() => 0);
+      end = 0;
+    }, 100);
+  };
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -60,7 +98,24 @@ const App = () => {
         </div>
         <BsThreeDotsVertical />
       </motion.header>
-      {<Calendar date={dt} loading={loading} setLoading={setLoading} />}
+      <div className="overflow-x-hidden w-full h-full">
+        <section
+          onTouchStart={(e) => setStart(e.touches[0].clientX)}
+          onTouchMove={(e) => moveCalendar(e)}
+          onTouchEnd={(e) => finish()}
+        >
+          <EventsContext.Provider value={{ events, setEvents }}>
+            {
+              <Calendar
+                diff={diff}
+                date={dt}
+                loading={loading}
+                setLoading={setLoading}
+              />
+            }
+          </EventsContext.Provider>
+        </section>
+      </div>
     </LocalizationProvider>
   );
 };

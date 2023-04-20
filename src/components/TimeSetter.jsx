@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 
-const TimeSetter = ({ selectedDate }) => {
+const TimeSetter = ({ selectedDate, setTime, setNotif }) => {
   const [value, setValue] = useState(null);
   const [dateString, setDateString] = useState(null);
   const [reminderTime, setReminderTime] = useState(null);
@@ -15,7 +15,7 @@ const TimeSetter = ({ selectedDate }) => {
         minutes <= 9 ? "0" + minutes : minutes
       } ${hours >= 12 ? "PM" : "AM"}`;
     };
-    setDateString(formattedDateString);
+    setTime(formattedDateString);
     const dateTime = () => {
       const currentDate = new Date(selectedDate);
       const month = currentDate.getMonth();
@@ -23,7 +23,7 @@ const TimeSetter = ({ selectedDate }) => {
       const year = currentDate.getFullYear();
       return new Date(year, month, day, hours, minutes).toString();
     };
-    setReminderTime(dateTime);
+    setNotif(dateTime);
   };
 
   return (

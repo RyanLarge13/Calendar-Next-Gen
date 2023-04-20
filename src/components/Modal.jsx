@@ -13,7 +13,10 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
   const [repeat, setRepeat] = useState(false);
   const [howOften, setHowOften] = useState(null);
   const [time, setTime] = useState(false);
+  const [timeDateString, setTimeDateString] = useState(null);
+  const [timeNotifDate, setTimeNotifDate] = useState(null);
   const [reminder, setReminder] = useState(false);
+  const [reminderTime, setReminderTime] = useState(null);
   const [addNewEvent, setAddNewEvent] = useState(false);
 
   useEffect(() => {
@@ -46,8 +49,15 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
       date: selectedDate,
       color: color ? color : "bg-white",
       repeat,
-      time,
-      reminder,
+      time: {
+        time,
+        timeDateString,
+        timeNotifDate,
+      },
+      reminder: {
+        reminder,
+        when: reminderTime,
+      },
     };
     if (events.length > 0) {
       events.push(newEvent);
@@ -110,8 +120,15 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
               : "Bi-weekly"
             : null,
         },
-        time,
-        reminder,
+        time: {
+          time,
+          timeDateString,
+          timeNotifDate,
+        },
+        reminder: {
+          reminder,
+          when: reminderTime,
+        },
       };
       events.push(newEvent);
       localStorage.setItem("events", JSON.stringify(events));
@@ -142,8 +159,15 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
           }/${dayInterval}/${yearInterval}`,
           occurance: "Monthly",
         },
-        time,
-        reminder,
+        time: {
+          time,
+          timeDateString,
+          timeNotifDate,
+        },
+        reminder: {
+          reminder,
+          when: reminderTime,
+        },
       };
       events.push(newEvent);
       localStorage.setItem("events", JSON.stringify(events));
@@ -168,8 +192,15 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
           next: `${monthInterval}/${dayInterval}/${yearInterval + 1}`,
           occurance: "Yearly",
         },
-        time,
-        reminder,
+        time: {
+          time,
+          timeDateString,
+          timeNotifDate,
+        },
+        reminder: {
+          reminder,
+          when: reminderTime,
+        },
       };
       events.push(newEvent);
       localStorage.setItem("events", JSON.stringify(events));
@@ -185,12 +216,12 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         onClick={() => setModal(false)}
-        className="fixed inset-0 bg-[rgba(0,0,0,0.4)] flex justify-end"
+        className="fixed inset-0 bg-[rgba(0,0,0,0.4)] flex"
       ></motion.div>
       <motion.div
         initial={{ x: 1000 }}
         animate={{ x: 0 }}
-        className={`bg-white rounded-md shadow-md px-2 py-5 fixed top-0 bottom-0 right-0 h-full flex flex-col items-center justify-between w-[65%] overflow-y-auto`}
+        className={`bg-white rounded-md shadow-md px-2 py-5 fixed top-0 bottom-0 right-0 w-[65%] overflow-y-auto`}
       >
         {addNewEvent ? (
           <>
@@ -223,59 +254,60 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
                   >
                     <p
                       onClick={() =>
-                        setHowOften((prev) => (prev === null ? 1 : null))
+                        setHowOften((prev) => (prev === 1 ? null : 1))
                       }
                       className={`${
                         howOften === 1 &&
-                        "bg-green-300 rounded-md p-1 my-1 font-bold"
-                      } text-sm my-1 duration-200`}
+                        "bg-green-300 rounded-md shadow-md p-2"
+                      } my-2 duration-200`}
                     >
                       Daily
                     </p>
                     <p
                       onClick={() =>
-                        setHowOften((prev) => (prev === null ? 7 : null))
+                        setHowOften((prev) => (prev === 7 ? null : 7))
                       }
                       className={`${
                         howOften === 7 &&
-                        "bg-green-300 rounded-md p-1 my-1 font-bold"
-                      } text-sm my-1 duration-200`}
+                        "bg-green-300 rounded-md shadow-md p-2"
+                      } my-2 duration-200`}
                     >
                       Weekly
                     </p>
                     <p
                       onClick={() =>
-                        setHowOften((prev) => (prev === null ? 14 : null))
+                        setHowOften((prev) => (prev === 14 ? null : 14))
                       }
                       className={`${
                         howOften === 14 &&
-                        "bg-green-300 rounded-md p-1 my-1 font-bold"
-                      } text-sm my-1 duration-200`}
+                        "bg-green-300 rounded-md shadow-md p-2"
+                      } my-2 duration-200`}
                     >
                       Bi-Weekly
                     </p>
                     <p
                       onClick={() =>
-                        setHowOften((prev) => (prev === null ? 35 : null))
+                        setHowOften((prev) => (prev === 35 ? null : 35))
                       }
                       className={`${
                         howOften === 30 ||
                         howOften === 29 ||
                         howOften === 28 ||
-                        (howOften === 31 &&
-                          "bg-green-300 rounded-md p-1 my-1 font-bold")
-                      } text-sm my-1 duration-200`}
+                        howOften === 31
+                          ? "bg-green-300 rounded-md shadow-md p-2"
+                          : ""
+                      } my-2 duration-200`}
                     >
                       Monthly
                     </p>
                     <p
                       onClick={() =>
-                        setHowOften((prev) => (prev === null ? 365 : null))
+                        setHowOften((prev) => (prev === 365 ? null : 365))
                       }
                       className={`${
                         howOften === 365 &&
-                        "bg-green-300 rounded-md p-1 my-1 font-bold"
-                      } text-sm my-1 duration-200`}
+                        "bg-green-300 rounded-md shadow-md p-2"
+                      } my-2 duration-200`}
                     >
                       Yearly
                     </p>
@@ -287,7 +319,46 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
                   <p>Reminders:</p>
                   <Toggle condition={reminder} setCondition={setReminder} />
                 </div>
-                {reminder && <div>Hi</div>}
+                {reminder && (
+                  <div className="mt-2">
+                    <p
+                      onClick={() =>
+                        setReminderTime((prev) => (prev === 15 ? null : 15))
+                      }
+                      className={`${
+                        reminderTime === 15
+                          ? "bg-green-300 p-2 rounded-md shadow-md"
+                          : "my-2"
+                      } duration-200`}
+                    >
+                      15min
+                    </p>
+                    <p
+                      onClick={() =>
+                        setReminderTime((prev) => (prev === 30 ? null : 30))
+                      }
+                      className={`${
+                        reminderTime === 30
+                          ? "bg-green-300 p-2 rounded-md shadow-md"
+                          : "my-2"
+                      } duration-200`}
+                    >
+                      30min
+                    </p>
+                    <p
+                      onClick={() =>
+                        setReminderTime((prev) => (prev === 60 ? null : 60))
+                      }
+                      className={`${
+                        reminderTime === 60
+                          ? "bg-green-300 p-2 rounded-md shadow-md"
+                          : "my-2"
+                      } duration-200`}
+                    >
+                      1hour
+                    </p>
+                  </div>
+                )}
               </div>
               <div className="my-3 rounded-md shadow-sm p-2">
                 <div className="flex justify-between items-center mb-3">
@@ -299,7 +370,11 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
                     initial={{ y: 25, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                   >
-                    <TimeSetter selectedDate={selectedDate} />
+                    <TimeSetter
+                      selectedDate={selectedDate}
+                      setTime={setTimeDateString}
+                      setNotif={setTimeNotifDate}
+                    />
                   </motion.div>
                 )}
               </div>
@@ -321,8 +396,8 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
           </>
         ) : (
           <>
-            <h2 className="font-extrabold">{selectedDate}</h2>
-            <div className="w-full h-full flex flex-col justify-center items-center">
+            <h2 className="font-extrabold text-center">{selectedDate}</h2>
+            <div className="flex flex-col items-center justify-center">
               {dayEvents.length > 0 ? (
                 dayEvents.map((event) => (
                   <motion.div
@@ -353,13 +428,25 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
                         </>
                       )}
                     </div>
-                    <div className="flex justify-between items-center my-2">
-                      <p>Reminders:</p>
-                      <Toggle condition={event.reminder} setCondition={null} />
+                    <div>
+                      <div className="flex justify-between items-center my-2">
+                        <p>Reminders:</p>
+                        <Toggle
+                          condition={event.reminder.reminder}
+                          setCondition={null}
+                        />
+                      </div>
+                      <p>{event.reminder.when}</p>
                     </div>
-                    <div className="flex justify-between items-center my-2">
-                      <p>Time:</p>
-                      <Toggle condition={event.time} setCondition={null} />
+                    <div>
+                      <div className="flex justify-between items-center my-2">
+                        <p>Time:</p>
+                        <Toggle
+                          condition={event.time.time}
+                          setCondition={null}
+                        />
+                      </div>
+                      <p>{event.time.timeDateString}</p>
                     </div>
                   </motion.div>
                 ))
@@ -367,12 +454,14 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
                 <h2>No Events To Show For Today</h2>
               )}
             </div>
+            <div className="flex flex-col items-center" >
             <button
               onClick={() => setAddNewEvent(true)}
-              className="px-5 py-2 rounded-md shadow-md bg-gradient-to-r from-green-300 to-green-200"
+              className="px-5 py-2 mt-5 rounded-md shadow-md bg-gradient-to-r from-green-300 to-green-200"
             >
               Add
             </button>
+            </div>
           </>
         )}
       </motion.div>
