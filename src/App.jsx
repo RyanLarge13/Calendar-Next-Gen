@@ -58,10 +58,10 @@ const App = () => {
   };
 
   const finish = () => {
-    if (start > end && start - end > 200) {
+    if (start > end && start - end > 100) {
       setNav((prev) => prev + 1);
     }
-    if (start < end && end - start > 200) {
+    if (start < end && end - start > 100) {
       setNav((prev) => prev - 1);
     }
     setTimeout(function () {
