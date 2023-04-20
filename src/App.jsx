@@ -24,27 +24,27 @@ const App = () => {
   let difference;
 
   useEffect(() => {
-    navigator.serviceWorker.register("sw.js");
-    Notification.requestPermission(function (result) {
-      if (result === "granted") {
-        navigator.serviceWorker.ready.then(function (registration) {
-          registration.showNotification("Notification with ServiceWorker");
-        });
-      }
-    });
+    // navigator.serviceWorker.register("sw.js");
+    // Notification.requestPermission(function (result) {
+    //   if (result === "granted") {
+    //     navigator.serviceWorker.ready.then(function (registration) {
+    //       registration.showNotification("Notification with ServiceWorker");
+    //     });
+    //   }
+    // });
   }, []);
 
   useEffect(() => {
-    (async () => {
-      await fetch("http://localhost:8080/", { method: "GET" })
-        .then((res) => res.json())
-        .then((json) => {
-          console.log(json);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    })();
+    // (async () => {
+    //   await fetch("http://localhost:8080/", { method: "GET" })
+    //     .then((res) => res.json())
+    //     .then((json) => {
+    //       console.log(json);
+    //     })
+    //     .catch((err) => {
+    //       console.log(err);
+    //     });
+    // })();
     setLoading(true);
     const updatedDate = new Date();
     updatedDate.setMonth(new Date().getMonth() + nav);
