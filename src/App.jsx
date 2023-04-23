@@ -19,9 +19,8 @@ const App = () => {
     JSON.parse(localStorage.getItem("events")) || []
   );
   const [start, setStart] = useState(null);
+  const [end, setEnd] = useState(null);
   const [diff, setDiff] = useState(0);
-  let end;
-  let difference;
 
   useEffect(() => {
     // navigator.serviceWorker.register("sw.js");
@@ -51,23 +50,26 @@ const App = () => {
     setDt(updatedDate);
   }, [nav]);
 
+  useEffect(() => {
+    const difference = end - start;
+    setDiff(difference);
+  }, [end]);
+
   const moveCalendar = (e) => {
-    end = e.touches[0].clientX;
-    difference = end - start;
-    setDiff(() => difference);
+    setEnd(e.touches[0].clientX);
   };
 
   const finish = () => {
-    if (start > end && start - end > 100) {
+    if (diff < -150) {
       setNav((prev) => prev + 1);
     }
-    if (start < end && end - start > 100) {
+    if (diff > 150) {
       setNav((prev) => prev - 1);
     }
-    setTimeout(function () {
-      setStart(() => null);
-      setDiff(() => 0);
-      end = 0;
+    setTimeout(() => {
+      setStart(null);
+      setEnd(null);
+      setDiff(0);
     }, 100);
   };
 
@@ -82,7 +84,7 @@ const App = () => {
         <div className="flex justify-center items-center">
           <BsFillArrowLeftCircleFill
             onClick={() => setNav((prev) => prev - 1)}
-            className="text-xl"
+            className="text-xl cursor-pointer"
           />
           <motion.p
             initial={{ opacity: 0 }}
@@ -93,7 +95,7 @@ const App = () => {
           })} ${dt.getFullYear()}`}</motion.p>
           <BsFillArrowRightCircleFill
             onClick={() => setNav((prev) => prev + 1)}
-            className="text-xl"
+            className="text-xl cursor-pointer"
           />
         </div>
         <BsThreeDotsVertical />

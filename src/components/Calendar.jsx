@@ -139,7 +139,7 @@ const Calendar = ({ diff, date, loading, setLoading }) => {
             </motion.div>
           </div>
         ) : (
-          <div className="w-full h-screen flex justify-center items-center">
+          <div className="flex justify-center items-center">
             <Dna
               visible={loading}
               height="80"
