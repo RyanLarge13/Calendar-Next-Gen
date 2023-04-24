@@ -21,6 +21,7 @@ const App = () => {
   const [start, setStart] = useState(null);
   const [end, setEnd] = useState(null);
   const [diff, setDiff] = useState(0);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     // navigator.serviceWorker.register("sw.js");
@@ -103,7 +104,9 @@ const App = () => {
       <div className="overflow-x-hidden w-full h-full">
         <section
           onTouchStart={(e) => setStart(e.touches[0].clientX)}
-          onTouchMove={(e) => moveCalendar(e)}
+          onTouchMove={(e) => {
+          open ? null : moveCalendar(e)
+          }}
           onTouchEnd={(e) => finish()}
         >
           <EventsContext.Provider value={{ events, setEvents }}>
@@ -113,6 +116,7 @@ const App = () => {
                 date={dt}
                 loading={loading}
                 setLoading={setLoading}
+                open={(bool) => setOpen(bool)}
               />
             }
           </EventsContext.Provider>

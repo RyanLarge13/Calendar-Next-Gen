@@ -15,7 +15,7 @@ const weekDays = [
   "Saturday",
 ];
 
-const Calendar = ({ diff, date, loading, setLoading }) => {
+const Calendar = ({ diff, date, loading, setLoading, open }) => {
   const { events, setEvents } = useContext(EventsContext);
   const [day, setDay] = useState(new Date().getDate());
   const [month, setMonth] = useState(date.getMonth());
@@ -57,6 +57,10 @@ const Calendar = ({ diff, date, loading, setLoading }) => {
     setPaddingDays(weekDays.indexOf(dateString.split(", ")[0]));
     setLoading(false);
   }, [dateString]);
+  
+  useEffect(() => {
+  	open(openModal)
+  }, [openModal])
 
   const addEvent = (date) => {
     setOpenModal(true);
