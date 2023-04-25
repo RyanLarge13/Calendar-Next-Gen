@@ -7,6 +7,7 @@ import Toggle from "./Toggle";
 import Color from "./Color";
 import Event from "./Event";
 import { FaCalendarPlus } from "react-icons/fa";
+import { holidays } from "../constants";
 
 const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
   const [eventText, setEventText] = useState("");
@@ -423,6 +424,24 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
         ) : (
           <>
             <div className="flex flex-col items-center justify-center">
+              {holidays.map(
+                (event) =>
+                  event.date === selectedDate && (
+                    <motion.div
+                      key={event.id}
+                      initial={{ y: 50, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      className={`p-3 my-2 mx-5 rounded-md shadow-md w-full`}
+                    >
+                      <h3
+                        onClick={() => setEvent(event)}
+                        className={`${event.color} px-3 py-1 rounded-md font-extrabold mb-5 shadow-sm`}
+                      >
+                        {event.event}
+                      </h3>
+                    </motion.div>
+                  )
+              )}
               {dayEvents.length > 0 ? (
                 dayEvents.map((event) => (
                   <motion.div

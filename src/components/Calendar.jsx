@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { calendar, calendarBlocks } from "../motion";
 import Modal from "./Modal";
 import EventsContext from "../context/events.js";
+import { holidays } from "../constants";
 
 const weekDays = [
   "Sunday",
@@ -57,10 +58,10 @@ const Calendar = ({ diff, date, loading, setLoading, open }) => {
     setPaddingDays(weekDays.indexOf(dateString.split(", ")[0]));
     setLoading(false);
   }, [dateString]);
-  
+
   useEffect(() => {
-  	open(openModal)
-  }, [openModal])
+    open(openModal);
+  }, [openModal]);
 
   const addEvent = (date) => {
     setOpenModal(true);
@@ -138,6 +139,30 @@ const Calendar = ({ diff, date, loading, setLoading, open }) => {
                         )}
                       </>
                     ))}
+                  {holidays.map((event) => (
+                    <>
+                      {event.date ===
+                        `${month + 1}/${index - paddingDays + 1}/${year}` && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -50 }}
+                          animate={{
+                            opacity: 1,
+                            y: 0,
+                            transition: {
+                              delay: 0.8,
+                              type: "spring",
+                              stiffness: 200,
+                            },
+                          }}
+                          className={`rounded-lg ${event.color} shadow-md px-2 py-1 mx-2 my-1 w-full`}
+                        >
+                          <p className="whitespace-nowrap text-xs">
+                            {event.event}
+                          </p>
+                        </motion.div>
+                      )}
+                    </>
+                  ))}
                 </motion.div>
               ))}
             </motion.div>
