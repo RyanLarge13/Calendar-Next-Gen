@@ -5,6 +5,8 @@ import { colors } from "../constants";
 import TimeSetter from "./TimeSetter";
 import Toggle from "./Toggle";
 import Color from "./Color";
+import Event from "./Event";
+import { FaCalendarPlus } from "react-icons/fa";
 
 const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
   const [eventText, setEventText] = useState("");
@@ -18,6 +20,7 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
   const [reminder, setReminder] = useState(false);
   const [reminderTime, setReminderTime] = useState(null);
   const [addNewEvent, setAddNewEvent] = useState(false);
+  const [event, setEvent] = useState(false);
 
   useEffect(() => {
     if (events.length > 0) {
@@ -30,7 +33,14 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
 
   useEffect(() => {
     if (!repeat) setHowOften(null);
-  }, [repeat]);
+    if (!time) {
+      setTimeDateString(null);
+      setTimeNotifDate(null);
+    }
+    if (!reminder) {
+      setReminderTime(null);
+    }
+  }, [repeat, time, reminder]);
 
   useEffect(() => {
     if (howOften === 35) {
@@ -56,7 +66,11 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
       },
       reminder: {
         reminder,
-        when: reminderTime,
+        when: reminder
+          ? reminderTime < 60
+            ? `${reminderTime}min prior`
+            : `1hour prior`
+          : "",
       },
     };
     if (events.length > 0) {
@@ -127,7 +141,11 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
         },
         reminder: {
           reminder,
-          when: reminderTime,
+          when: reminder
+            ? reminderTime < 60
+              ? `${reminderTime}min prior`
+              : `1hour prior`
+            : "",
         },
       };
       events.push(newEvent);
@@ -166,7 +184,11 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
         },
         reminder: {
           reminder,
-          when: reminderTime,
+          when: reminder
+            ? reminderTime < 60
+              ? `${reminderTime}min prior`
+              : `1hour prior`
+            : "",
         },
       };
       events.push(newEvent);
@@ -199,7 +221,11 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
         },
         reminder: {
           reminder,
-          when: reminderTime,
+          when: reminder
+            ? reminderTime < 60
+              ? `${reminderTime}min prior`
+              : `1hour prior`
+            : "",
         },
       };
       events.push(newEvent);
@@ -221,11 +247,11 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
       <motion.div
         initial={{ x: 1000 }}
         animate={{ x: 0 }}
-        className={`bg-white rounded-md shadow-md px-2 py-5 fixed top-0 bottom-0 right-0 w-[65%] overflow-y-auto`}
+        className={`bg-white rounded-md shadow-md px-2 py-5 fixed top-0 bottom-0 right-0 w-[65%] overflow-y-auto flex flex-col justify-between items-center`}
       >
+        <h2 className="font-bold text-xl text-center">{selectedDate}</h2>
         {addNewEvent ? (
           <>
-            <h2 className="bold text-xl">{selectedDate}</h2>
             <div className="flex flex-wrap justify-center items-center my-10 mx-auto w-[80%]">
               {colors.map((item, index) => (
                 <Color
@@ -396,7 +422,6 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
           </>
         ) : (
           <>
-            <h2 className="font-extrabold text-center">{selectedDate}</h2>
             <div className="flex flex-col items-center justify-center">
               {dayEvents.length > 0 ? (
                 dayEvents.map((event) => (
@@ -404,9 +429,10 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
                     key={event.id}
                     initial={{ y: 50, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    className={`p-3 m-2 rounded-md shadow-md w-full`}
+                    className={`p-3 my-2 mx-5 rounded-md shadow-md w-full`}
                   >
                     <h3
+                      onClick={() => setEvent(event)}
                       className={`${event.color} px-3 py-1 rounded-md font-extrabold mb-5 shadow-sm`}
                     >
                       {event.event}
@@ -420,50 +446,54 @@ const Modal = ({ setDate, selectedDate, setModal, events, setEvents }) => {
                         />
                       </div>
                       {event.repeat.active && (
-                        <>
-                          <p>{event.repeat.occurance},</p>
+                        <div className="text-xs">
+                          <p className="text-purple-400">
+                            {event.repeat.occurance},
+                          </p>
                           <p onClick={() => setDate(event.repeat.next)}>
                             Next Event: {event.repeat.next}
                           </p>
-                        </>
+                        </div>
                       )}
                     </div>
                     <div>
-                      <div className="flex justify-between items-center my-2">
+                      <div className="flex justify-between items-center mt-2">
                         <p>Reminders:</p>
                         <Toggle
                           condition={event.reminder.reminder}
                           setCondition={null}
                         />
                       </div>
-                      <p>{event.reminder.when}</p>
+                      <p className="text-xs">{event.reminder.when}</p>
                     </div>
                     <div>
-                      <div className="flex justify-between items-center my-2">
+                      <div className="flex justify-between items-center mt-2">
                         <p>Time:</p>
                         <Toggle
                           condition={event.time.time}
                           setCondition={null}
                         />
                       </div>
-                      <p>{event.time.timeDateString}</p>
+                      <p className="text-xs">{event.time.timeDateString}</p>
                     </div>
                   </motion.div>
                 ))
               ) : (
-                <h2>No Events To Show For Today</h2>
+                <h2>
+                  No Events{" "}
+                  {selectedDate === new Date().toLocaleDateString() && "Today"}
+                </h2>
               )}
             </div>
-            <div className="flex flex-col items-center" >
             <button
               onClick={() => setAddNewEvent(true)}
-              className="px-5 py-2 mt-5 rounded-md shadow-md bg-gradient-to-r from-green-300 to-green-200"
+              className="px-5 py-2 mt-5 w-full rounded-md shadow-md bg-gradient-to-r from-green-300 to-green-200 text-center"
             >
-              Add
+              <FaCalendarPlus />
             </button>
-            </div>
           </>
         )}
+        {event && <Event event={event} />}
       </motion.div>
     </>
   );

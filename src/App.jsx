@@ -57,6 +57,7 @@ const App = () => {
   }, [end]);
 
   const moveCalendar = (e) => {
+    if (open) return;
     setEnd(e.touches[0].clientX);
   };
 
@@ -104,9 +105,7 @@ const App = () => {
       <div className="overflow-x-hidden w-full h-full">
         <section
           onTouchStart={(e) => setStart(e.touches[0].clientX)}
-          onTouchMove={(e) => {
-          open ? null : moveCalendar(e)
-          }}
+          onTouchMove={(e) => moveCalendar(e)}
           onTouchEnd={(e) => finish()}
         >
           <EventsContext.Provider value={{ events, setEvents }}>

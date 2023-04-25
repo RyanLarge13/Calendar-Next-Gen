@@ -9,3 +9,5 @@ export const colors = [
   { color: "bg-teal-300" },
   { color: "bg-yellow-300" },
 ];
+
+export const holidays = [{}];
