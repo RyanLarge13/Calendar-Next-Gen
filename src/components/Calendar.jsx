@@ -114,36 +114,12 @@ const Calendar = ({ diff, date, loading, setLoading, open }) => {
                   >
                     <p>{index >= paddingDays && index - paddingDays + 1}</p>
                   </div>
-                  {events.length > 0 &&
-                    events.map((event) => (
-                      <>
-                        {event.date ===
-                          `${month + 1}/${index - paddingDays + 1}/${year}` && (
-                          <motion.div
-                            initial={{ opacity: 0, y: -50 }}
-                            animate={{
-                              opacity: 1,
-                              y: 0,
-                              transition: {
-                                delay: 0.8,
-                                type: "spring",
-                                stiffness: 200,
-                              },
-                            }}
-                            className={`rounded-lg ${event.color} shadow-md px-2 py-1 mx-2 my-1 w-full`}
-                          >
-                            <p className="whitespace-nowrap text-xs">
-                              {event.event}
-                            </p>
-                          </motion.div>
-                        )}
-                      </>
-                    ))}
-                  {holidays.map((event) => (
-                    <>
-                      {event.date ===
+                  {[...events, ...holidays].map(
+                    (event) =>
+                      event.date ===
                         `${month + 1}/${index - paddingDays + 1}/${year}` && (
                         <motion.div
+                          key={event.id}
                           initial={{ opacity: 0, y: -50 }}
                           animate={{
                             opacity: 1,
@@ -160,9 +136,8 @@ const Calendar = ({ diff, date, loading, setLoading, open }) => {
                             {event.event}
                           </p>
                         </motion.div>
-                      )}
-                    </>
-                  ))}
+                      )
+                  )}
                 </motion.div>
               ))}
             </motion.div>
