@@ -10,6 +10,16 @@ export const colors = [
   { color: "bg-yellow-300" },
 ];
 
+export const weekDays = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+
 export const holidays = [
   {
     color: "bg-purple-300",

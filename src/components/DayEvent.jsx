@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import Toggle from "./Toggle";
 
 const DayEvent = ({ event, setEvent }) => {
   return (
@@ -15,34 +14,6 @@ const DayEvent = ({ event, setEvent }) => {
       >
         {event.event}
       </h3>
-      <div className="my-2">
-        <div className="flex justify-between items-center">
-          <p>Repeats:</p>
-          <Toggle condition={event.repeat.active} setCondition={null} />
-        </div>
-        {event.repeat.active && (
-          <div className="text-xs">
-            <p className="text-purple-400">{event.repeat.occurance},</p>
-            <p onClick={() => setDate(event.repeat.next)}>
-              Next Event: {event.repeat.next}
-            </p>
-          </div>
-        )}
-      </div>
-      <div>
-        <div className="flex justify-between items-center mt-2">
-          <p>Reminders:</p>
-          <Toggle condition={event.reminder.reminder} setCondition={null} />
-        </div>
-        <p className="text-xs">{event.reminder.when}</p>
-      </div>
-      <div>
-        <div className="flex justify-between items-center mt-2">
-          <p>Time:</p>
-          <Toggle condition={event.time.time} setCondition={null} />
-        </div>
-        <p className="text-xs">{event.time.timeDateString}</p>
-      </div>
     </motion.div>
   );
 };

@@ -1,24 +1,25 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { motion } from "framer-motion";
-import Event from "./Event";
 import { FaCalendarPlus } from "react-icons/fa";
 import { holidays } from "../constants";
+import DatesContext from "../context/DatesContext";
 import DayEvent from "./DayEvent";
 import AddEvent from "./AddEvent";
+import Event from "./Event";
 
 const Modal = ({ setDate, selectedDate, setModal, events }) => {
+  const { string } = useContext(DatesContext);
+
   const [dayEvents, setDayEvents] = useState([]);
   const [addNewEvent, setAddNewEvent] = useState(false);
   const [event, setEvent] = useState(false);
 
   useEffect(() => {
     if (events.length > 0) {
-      const eventsForDay = events?.filter(
-        (event) => event.date === selectedDate
-      );
+      const eventsForDay = events?.filter((event) => event.date === string);
       setDayEvents(eventsForDay);
     }
-  }, [selectedDate, events]);
+  }, [string, events]);
 
   return (
     <>
@@ -33,7 +34,7 @@ const Modal = ({ setDate, selectedDate, setModal, events }) => {
         animate={{ x: 0 }}
         className={`bg-white rounded-md shadow-md px-2 py-5 fixed top-0 bottom-0 right-0 w-[65%] overflow-y-auto flex flex-col justify-between items-center`}
       >
-        <h2 className="font-bold text-xl text-center">{selectedDate}</h2>
+        <h2 className="font-bold text-xl text-center">{string}</h2>
         {addNewEvent ? (
           <AddEvent
             setAddNewEvent={setAddNewEvent}
@@ -41,22 +42,11 @@ const Modal = ({ setDate, selectedDate, setModal, events }) => {
             setModal={setModal}
           />
         ) : (
-          <>
+          <div>
             <div className="flex flex-col items-center justify-center w-full mx-2">
-              {holidays.map(
-                (event) =>
-                  event.date === selectedDate && (
-                    <DayEvent
-                      key={event.id}
-                      event={event}
-                      setEvent={setEvent}
-                    />
-                  )
-              )}
-              {dayEvents.length > 0 &&
-                dayEvents.map((event) => (
-                  <DayEvent key={event.id} event={event} setEvent={setEvent} />
-                ))}
+              {[...dayEvents].map((event) => (
+                <DayEvent key={event.id} event={event} setEvent={setEvent} />
+              ))}
             </div>
             <button
               onClick={() => setAddNewEvent(true)}
@@ -64,7 +54,7 @@ const Modal = ({ setDate, selectedDate, setModal, events }) => {
             >
               <FaCalendarPlus />
             </button>
-          </>
+          </div>
         )}
         {event && <Event event={event} />}
       </motion.div>
