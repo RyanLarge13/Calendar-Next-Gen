@@ -13,14 +13,13 @@
     "@emotion/styled": "^11.10.6",
     "@mui/material": "^5.12.0",
     "@mui/x-date-pickers": "^6.2.0",
-    "@prisma/client": "^4.13.0",
+    "axios": "^1.4.0",
     "dayjs": "^1.11.7",
     "framer-motion": "^10.2.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.8.0",
     "react-loader-spinner": "^5.3.4",
-    "sequelize": "^6.31.0",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
@@ -29,7 +28,6 @@
     "@vitejs/plugin-react": "^3.1.0",
     "autoprefixer": "^10.4.14",
     "postcss": "^8.4.21",
-    "prisma": "^4.13.0",
     "tailwindcss": "^3.2.7",
     "vite": "^4.1.0"
   }

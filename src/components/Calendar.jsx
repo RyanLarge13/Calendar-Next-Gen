@@ -21,8 +21,6 @@ const Calendar = () => {
     day,
     holidays,
     events,
-    setEvents,
-    string,
     openModal,
     diff,
   } = useContext(DatesContext);
@@ -125,15 +123,7 @@ const Calendar = () => {
             </div>
           )}
         </section>
-        {openModal && (
-          <Modal
-            setDate={setString}
-            selectedDate={string}
-            setModal={(bool) => setOpenModal(bool)}
-            events={[...events, ...holidays]}
-            setEvents={setEvents}
-          />
-        )}
+        {openModal && <Modal />}
       </section>
     </main>
   );

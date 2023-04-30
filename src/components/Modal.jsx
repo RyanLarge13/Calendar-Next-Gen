@@ -1,24 +1,23 @@
 import { useState, useEffect, useContext } from "react";
 import { motion } from "framer-motion";
 import { FaCalendarPlus } from "react-icons/fa";
-import { holidays } from "../constants";
 import DatesContext from "../context/DatesContext";
 import DayEvent from "./DayEvent";
 import AddEvent from "./AddEvent";
 import Event from "./Event";
 
-const Modal = ({ setDate, selectedDate, setModal, events }) => {
-  const { string } = useContext(DatesContext);
+const Modal = () => {
+  const { string, events, holidays, setOpenModal } = useContext(DatesContext);
 
   const [dayEvents, setDayEvents] = useState([]);
   const [addNewEvent, setAddNewEvent] = useState(false);
   const [event, setEvent] = useState(false);
 
   useEffect(() => {
-    if (events.length > 0) {
-      const eventsForDay = events?.filter((event) => event.date === string);
-      setDayEvents(eventsForDay);
-    }
+    const eventsForDay = [...events, ...holidays].filter(
+      (event) => event.date === string
+    );
+    setDayEvents(eventsForDay);
   }, [string, events]);
 
   return (
@@ -26,7 +25,7 @@ const Modal = ({ setDate, selectedDate, setModal, events }) => {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        onClick={() => setModal(false)}
+        onClick={() => setOpenModal(false)}
         className="fixed inset-0 bg-[rgba(0,0,0,0.4)] flex"
       ></motion.div>
       <motion.div
@@ -36,15 +35,11 @@ const Modal = ({ setDate, selectedDate, setModal, events }) => {
       >
         <h2 className="font-bold text-xl text-center">{string}</h2>
         {addNewEvent ? (
-          <AddEvent
-            setAddNewEvent={setAddNewEvent}
-            selectedDate={selectedDate}
-            setModal={setModal}
-          />
+          <AddEvent setAddNewEvent={setAddNewEvent} />
         ) : (
           <div>
             <div className="flex flex-col items-center justify-center w-full mx-2">
-              {[...dayEvents].map((event) => (
+              {dayEvents.map((event) => (
                 <DayEvent key={event.id} event={event} setEvent={setEvent} />
               ))}
             </div>

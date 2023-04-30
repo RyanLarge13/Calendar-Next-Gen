@@ -15,15 +15,15 @@ model Event {
   repeat   Json?    @db.Json
   time     Json?    @db.Json
   reminder Json?    @db.Json
-  userId Int
-  User User @relation(fields: [userId], references: [id])
+  userId   Int
+  User     User     @relation(fields: [userId], references: [id])
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
+  id       Int      @id @default(autoincrement())
   username String
   email    String
   password String
   birthday DateTime
-  events Event[]
+  Event    Event[]
 }

@@ -3,15 +3,16 @@ import { colors } from "../constants";
 import DatesContext from "../context/DatesContext";
 import Color from "./Color";
 
-const AddEvent = ({ setAddNewEvent, selectedDate, setModal }) => {
-  const { events, setEvents } = useContext(DatesContext);
+const AddEvent = ({ setAddNewEvent }) => {
+  const { events, setEvents, string, setModal } = useContext(DatesContext);
 
   const [eventText, setEventText] = useState("");
   const [color, setColor] = useState(null);
 
   const addEvent = () => {};
+
   return (
-    <div>
+    <div className="flex flex-col justify-center items-center">
       <div className="flex flex-wrap justify-center items-center my-10 mx-auto w-[80%]">
         {colors.map((item, index) => (
           <Color
