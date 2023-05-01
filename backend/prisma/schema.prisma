@@ -25,5 +25,5 @@ model User {
   email    String
   password String
   birthday DateTime
-  Event    Event[]
+  Event   Event[]
 }

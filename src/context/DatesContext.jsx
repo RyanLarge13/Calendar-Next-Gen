@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect } from "react";
-import { holidays, weekDays } from "../constants";
+import { weekDays } from "../constants";
 
 const DatesContext = createContext({});
 
@@ -7,9 +7,6 @@ export const DatesProvider = ({ children }) => {
   const [nav, setNav] = useState(0);
   const [dt, setDt] = useState(new Date());
   const [loading, setLoading] = useState(false);
-  const [events, setEvents] = useState(
-    JSON.parse(localStorage.getItem("events")) || []
-  );
   const [start, setStart] = useState(null);
   const [end, setEnd] = useState(null);
   const [diff, setDiff] = useState(0);
@@ -89,25 +86,21 @@ export const DatesProvider = ({ children }) => {
     <DatesContext.Provider
       value={{
         dt,
-        setNav,
-        weekDays,
-        setOpenModal,
-        setString,
-        setStart,
-        moveCalendar,
-        finish,
         loading,
         paddingDays,
         daysInMonth,
         month,
         year,
         day,
-        holidays,
-        events,
-        setEvents,
         string,
         openModal,
         diff,
+        setNav,
+        setOpenModal,
+        setString,
+        setStart,
+        moveCalendar,
+        finish,
         setOpen,
         setDay,
       }}

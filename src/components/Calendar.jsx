@@ -4,10 +4,11 @@ import { motion } from "framer-motion";
 import { calendar, calendarBlocks } from "../motion";
 import Modal from "./Modal";
 import DatesContext from "../context/DatesContext";
+import UserContext from "../context/UserContext";
 
 const Calendar = () => {
+  const { events, holidays, weekDays } = useContext(UserContext);
   const {
-    weekDays,
     setOpenModal,
     setString,
     setStart,
@@ -19,8 +20,6 @@ const Calendar = () => {
     month,
     year,
     day,
-    holidays,
-    events,
     openModal,
     diff,
   } = useContext(DatesContext);

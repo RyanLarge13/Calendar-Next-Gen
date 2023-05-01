@@ -2,9 +2,11 @@ import { useState, useContext } from "react";
 import { colors } from "../constants";
 import DatesContext from "../context/DatesContext";
 import Color from "./Color";
+import UserContext from "../context/UserContext";
 
 const AddEvent = ({ setAddNewEvent }) => {
-  const { events, setEvents, string, setModal } = useContext(DatesContext);
+  const { events, setEvents } = useContext(UserContext);
+  const { string, setModal } = useContext(DatesContext);
 
   const [eventText, setEventText] = useState("");
   const [color, setColor] = useState(null);

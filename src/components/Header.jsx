@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { motion } from "framer-motion";
 import { RiMenuUnfoldFill } from "react-icons/ri";
 import {
@@ -6,10 +6,13 @@ import {
   BsFillArrowLeftCircleFill,
   BsThreeDotsVertical,
 } from "react-icons/bs";
+import LoginLogout from "./LoginLogout";
 import DatesContext from "../context/DatesContext";
 
 const Header = () => {
   const { dt, setNav } = useContext(DatesContext);
+
+  const [showLogin, setShowLogin] = useState(false);
 
   return (
     <motion.header
@@ -35,7 +38,11 @@ const Header = () => {
           className="text-xl cursor-pointer"
         />
       </div>
-      <BsThreeDotsVertical />
+      <BsThreeDotsVertical
+        onClick={() => setShowLogin((prev) => !prev)}
+        className="cursor-pointer"
+      />
+      {showLogin && <LoginLogout />}
     </motion.header>
   );
 };

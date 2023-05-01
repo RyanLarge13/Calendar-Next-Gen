@@ -5,9 +5,11 @@ import DatesContext from "../context/DatesContext";
 import DayEvent from "./DayEvent";
 import AddEvent from "./AddEvent";
 import Event from "./Event";
+import UserContext from "../context/UserContext";
 
 const Modal = () => {
-  const { string, events, holidays, setOpenModal } = useContext(DatesContext);
+  const { events, holidays } = useContext(UserContext);
+  const { string, setOpenModal } = useContext(DatesContext);
 
   const [dayEvents, setDayEvents] = useState([]);
   const [addNewEvent, setAddNewEvent] = useState(false);

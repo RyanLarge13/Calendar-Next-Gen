@@ -2,6 +2,19 @@ import Axios from "axios";
 
 const baseUrl = "http://localhost:8080";
 
+export const loginWithGoogle = async (token) => {
+  const res = await Axios.get(
+    `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${token}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
+    }
+  );
+  return res;
+};
+
 export const login = () => {
   Axios.post(`${baseUrl}/login`)
     .then((res) => {
