@@ -5,5 +5,31 @@
 
 * {
   font-family: "Lora", serif;
-  /* font-weight: 600; */
+}
+
+.google {
+  background-image: linear-gradient(
+    45deg,
+    #4285f4 33%,
+    #db4437 33% 66%,
+    #f4b400 66%
+  );
+}
+
+.facebook {
+  background-image: linear-gradient(
+    45deg,
+    #adb9d3 33%,
+    #3b5998 33% 66%,
+    #edf0f5 66%
+  );
+}
+
+.github {
+  background-image: linear-gradient(
+    45deg,
+    #21262d 33%,
+    #89929b 33% 66%,
+    #0d1117 66%
+  );
 }
