@@ -17,7 +17,7 @@ const Modal = () => {
 
   useEffect(() => {
     const eventsForDay = [...events, ...holidays].filter(
-      (event) => event.date === string
+      (event) => new Date(event.date).toLocaleDateString() === string
     );
     setDayEvents(eventsForDay);
   }, [string, events]);
@@ -42,7 +42,11 @@ const Modal = () => {
           <div>
             <div className="flex flex-col items-center justify-center w-full mx-2">
               {dayEvents.map((event) => (
-                <DayEvent key={event.id} event={event} setEvent={setEvent} />
+                <DayEvent
+                  key={event.userId}
+                  event={event}
+                  setEvent={setEvent}
+                />
               ))}
             </div>
             <button

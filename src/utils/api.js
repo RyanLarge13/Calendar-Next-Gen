@@ -2,7 +2,7 @@ import Axios from "axios";
 
 const baseUrl = "http://localhost:8080";
 
-export const loginWithGoogle = async (token) => {
+export const getGoogleData = async (token) => {
   const res = await Axios.get(
     `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${token}`,
     {
@@ -15,15 +15,27 @@ export const loginWithGoogle = async (token) => {
   return res;
 };
 
-export const login = () => {
-  Axios.post(`${baseUrl}/login`)
-    .then((res) => {
-      console.log(res);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+export const loginWithGoogle = async (user) => {
+  const res = await Axios.post(
+    `${baseUrl}/login`,
+    {
+      user: user,
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  return res;
 };
+
+// export const getGoogleCalendarEvents = async (email) => {
+//   const res = await Axios.get(
+//     `https://apidata.googleusercontent.com/caldav/v2/${email}/user`
+//   );
+//   return res
+// }
 
 export const getEvents = (username, token) => {
   Axios.get(`${baseUrl}/${username}/events`)
