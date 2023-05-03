@@ -8,22 +8,26 @@ datasource db {
 }
 
 model Event {
-  id       Int      @id @default(autoincrement())
   event    String
   date     DateTime @db.Date
   color    String
-  repeat   Json?    @db.Json
-  time     Json?    @db.Json
-  reminder Json?    @db.Json
-  userId   Int
+  updateaAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+  userId   String
   User     User     @relation(fields: [userId], references: [id])
+
+  @@id([event, userId])
 }
 
 model User {
-  id       Int      @id @default(autoincrement())
+  id       String      @id @default(uuid())
+  avatarUrl String? 
   username String
-  email    String
-  password String
-  birthday DateTime
+  email    String 
+  password String?
+  birthday DateTime?
+  createAt DateTime @default(now())
   Event   Event[]
+
+  @@unique([email])
 }

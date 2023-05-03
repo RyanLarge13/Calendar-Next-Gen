@@ -84,10 +84,10 @@ const Calendar = () => {
                     </div>
                     {[...events, ...holidays].map(
                       (event) =>
-                        event.date ===
+                        new Date(event.date).toLocaleDateString() ===
                           `${month + 1}/${index - paddingDays + 1}/${year}` && (
                           <motion.div
-                            key={event.id}
+                            key={event.userId}
                             initial={{ opacity: 0, y: -50 }}
                             animate={{
                               opacity: 1,
