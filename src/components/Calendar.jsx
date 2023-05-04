@@ -87,7 +87,7 @@ const Calendar = () => {
                         new Date(event.date).toLocaleDateString() ===
                           `${month + 1}/${index - paddingDays + 1}/${year}` && (
                           <motion.div
-                            key={event.userId}
+                            key={event.event}
                             initial={{ opacity: 0, y: -50 }}
                             animate={{
                               opacity: 1,

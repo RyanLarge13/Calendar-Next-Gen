@@ -1,6 +1,7 @@
 import Axios from "axios";
 
 const baseUrl = "http://localhost:8080";
+const productionUrl = "https://calendar-next-gen-production.up.railway.app";
 
 export const getGoogleData = async (token) => {
   const res = await Axios.get(
@@ -17,7 +18,7 @@ export const getGoogleData = async (token) => {
 
 export const loginWithGoogle = async (user) => {
   const res = await Axios.post(
-    `${baseUrl}/login`,
+    `${productionUrl}/login`,
     {
       user: user,
     },
