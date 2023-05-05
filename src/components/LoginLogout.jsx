@@ -10,7 +10,6 @@ const LoginLogout = () => {
   const loginGoogle = useGoogleLogin({
     onSuccess: (res) => {
       setGoogleToken(res.access_token);
-      localStorage.setItem("googleToken", res.access_token);
     },
     onError: () => {
       setUser(false);
