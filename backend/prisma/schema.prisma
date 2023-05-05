@@ -8,15 +8,23 @@ datasource db {
 }
 
 model Event {
-  event    String
+  kind String?
+  summary    String
+  description String?
+  location String?
   date     DateTime @db.Date
+  reminders Json?
+  repeats Json?
+  attatchments Json?
   color    String
-  updateaAt DateTime @updatedAt
-  createdAt DateTime @default(now())
+  start Json
+  end Json
+  updated DateTime @updatedAt
+  created DateTime @default(now())
   userId   String
   User     User     @relation(fields: [userId], references: [id])
 
-  @@id([event, userId])
+  @@id([userId])
 }
 
 model User {
@@ -24,7 +32,7 @@ model User {
   avatarUrl String? 
   username String
   email    String 
-  password String?
+  password String
   birthday DateTime?
   createAt DateTime @default(now())
   Event   Event[]

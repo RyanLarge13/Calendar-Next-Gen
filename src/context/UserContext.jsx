@@ -13,9 +13,7 @@ export const UserProvider = ({ children }) => {
   const [events, setEvents] = useState(
     JSON.parse(localStorage.getItem("events")) || []
   );
-  const [googleToken, setGoogleToken] = useState(
-    localStorage.getItem("googleToken") || false
-  );
+  const [googleToken, setGoogleToken] = useState(false);
   const [loginLoading, setLoginLoading] = useState(false);
 
   useEffect(() => {
@@ -24,28 +22,18 @@ export const UserProvider = ({ children }) => {
       getGoogleData(googleToken)
         .then((res) => {
           loginWithGoogle(res.data)
-            .then((res) => {
-              setUser(res.data.user);
-              setEvents((prev) => [...prev, res.data.events]);
-              localStorage.setItem("events", JSON.stringify(res.data.events));
-              // getGoogleCalendarEvents(res.data.user.email)
-              // .then((res) => {
-              //   console.log(res);
-              // })
-              // .catch((err) => console.log(err));
+            .then((response) => {
+              console.log(response);
             })
             .catch((err) => {
               console.log(err);
             });
         })
         .catch((err) => {
-          localStorage.removeItem("googleToken");
+          console.log(err);
           setUser(false);
           setEvents(localStorage.getItem("events") || []);
         });
-    }
-    if (!googleToken) {
-      setEvents(JSON.parse(localStorage.getItem("events")) || []);
     }
   }, [googleToken]);
 

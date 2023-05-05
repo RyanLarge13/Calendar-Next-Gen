@@ -41,12 +41,8 @@ const Modal = () => {
         ) : (
           <div>
             <div className="flex flex-col items-center justify-center w-full mx-2">
-              {dayEvents.map((event) => (
-                <DayEvent
-                  key={event.userId}
-                  event={event}
-                  setEvent={setEvent}
-                />
+              {dayEvents.map((event, index) => (
+                <DayEvent key={index} event={event} setEvent={setEvent} />
               ))}
             </div>
             <button
