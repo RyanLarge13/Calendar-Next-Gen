@@ -30,12 +30,12 @@ model Event {
 model User {
   id       String      @id @default(uuid())
   avatarUrl String? 
-  username String
-  email    String 
+  username String @unique
+  email    String @unique
   password String
   birthday DateTime?
   createAt DateTime @default(now())
   Event   Event[]
 
-  @@unique([email])
+  @@unique([username, email])
 }

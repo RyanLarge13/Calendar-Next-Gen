@@ -9,11 +9,14 @@ const hashPassword = async (password) => {
   return hashedPassword;
 };
 
-export const login = async (req, res) => {
-  const { id, username, email, avatarUrl } = req.user;
+export const loginWithGoogle = async (req, res) => {
+  const { id, username, email, avatarUrl } = req.body.user;
   const exsistingUser = await prisma.user.findUnique({
     where: {
-      username: username,
+      username_email: {
+        username: username,
+        email: email,
+      },
     },
   });
   if (exsistingUser) {
@@ -22,20 +25,41 @@ export const login = async (req, res) => {
         return res.status(401).json({ message: "Incorrect password" });
       }
       const newSignture = signToken(exsistingUser);
-      res.status(201).json({token: newSignture});
+      res.status(201).json({
+        token: newSignture,
+        user: {
+          username: exsistingUser.username,
+          email: exsistingUser.email,
+          avatarUrl: exsistingUser.avatarUrl,
+          birthday: exsistingUser.birthday,
+          id: exsistingUser.id,
+          createdAt: exsistingUser.createAt,
+        },
+      });
     });
   }
   if (!exsistingUser) {
+    const hashedPassword = await hashPassword(id);
     const newUser = {
       username,
       email,
-      password: hashPassword(id),
+      password: hashedPassword,
       avatarUrl,
     };
     const createdUser = await prisma.user.create({
       data: newUser,
     });
     const newSignture = signToken(createdUser);
-    res.status(201).json({token, newSignture})
+    res.status(201).json({
+      token: newSignture,
+      user: {
+        username: createdUser.username,
+        email: createdUser.email,
+        avatarUrl: createdUser.avatarUrl,
+        birthday: createdUser.birthday,
+        id: createdUser.id,
+        createdAt: createdUser.createAt,
+      },
+    });
   }
 };

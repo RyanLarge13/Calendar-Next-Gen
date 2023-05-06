@@ -1,7 +1,7 @@
 import Axios from "axios";
 
-const baseUrl = "http://localhost:8080";
-const productionUrl = "https://calendar-next-gen-production.up.railway.app";
+const devUrl = "http://localhost:8080";
+// const productionUrl = "https://calendar-next-gen-production.up.railway.app";
 
 export const getGoogleData = async (token) => {
   const res = await Axios.get(
@@ -18,9 +18,14 @@ export const getGoogleData = async (token) => {
 
 export const loginWithGoogle = async (user) => {
   const res = await Axios.post(
-    `${productionUrl}/login`,
+    `${devUrl}/login/google`,
     {
-      user: user,
+      user: {
+        id: user.id,
+        username: user.name,
+        email: user.email,
+        avatarUrl: user.picture,
+      },
     },
     {
       headers: {
@@ -38,18 +43,19 @@ export const loginWithGoogle = async (user) => {
 //   return res
 // }
 
-export const getEvents = (username, token) => {
-  Axios.get(`${baseUrl}/${username}/events`)
-    .then((res) => {
-      console.log(res);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+export const getEvents = async (username, token) => {
+  const res = await Axios.get(`${devUrl}/${username}/events`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+      Accept: "appliction/json",
+    },
+  });
+  return res;
 };
 
 export const postEvent = (event, token) => {
-  Axios.get(`${baseUrl}/${username}/events`)
+  Axios.get(`${devUrl}/${username}/events`)
     .then((res) => {
       console.log(res);
     })
@@ -59,7 +65,7 @@ export const postEvent = (event, token) => {
 };
 
 export const deleteEvent = (event, token) => {
-  Axios.get(`${baseUrl}/${username}/events`)
+  Axios.get(`${devUrl}/${username}/events`)
     .then((res) => {
       console.log(res);
     })
@@ -69,7 +75,7 @@ export const deleteEvent = (event, token) => {
 };
 
 export const updateEvent = (event, token) => {
-  Axios.get(`${baseUrl}/${username}/events`)
+  Axios.get(`${devUrl}/${username}/events`)
     .then((res) => {
       console.log(res);
     })

@@ -3,6 +3,7 @@ import { holidays, weekDays } from "../constants";
 import {
   getGoogleData,
   loginWithGoogle,
+  getEvents,
   // getGoogleCalendarEvents,
 } from "../utils/api";
 
@@ -10,6 +11,9 @@ const UserContext = createContext({});
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(false);
+  const [authToken, setAuthToken] = useState(
+    localStorage.getItem("authToken") || false
+  );
   const [events, setEvents] = useState(
     JSON.parse(localStorage.getItem("events")) || []
   );
@@ -17,13 +21,15 @@ export const UserProvider = ({ children }) => {
   const [loginLoading, setLoginLoading] = useState(false);
 
   useEffect(() => {
-    if (googleToken) {
+    if (googleToken && !authToken) {
       setLoginLoading(true);
       getGoogleData(googleToken)
         .then((res) => {
           loginWithGoogle(res.data)
             .then((response) => {
-              console.log(response);
+              setUser(response.data.user);
+              setAuthToken(response.data.token);
+              localStorage.setItem("authToken", res.data.token);
             })
             .catch((err) => {
               console.log(err);
@@ -36,6 +42,18 @@ export const UserProvider = ({ children }) => {
         });
     }
   }, [googleToken]);
+
+  useEffect(() => {
+    if (authToken && user) {
+      getEvents(user.username, authToken)
+        .then((res) => {
+          setEvents((prev) => [...prev, res.data.events]);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [authToken]);
 
   return (
     <UserContext.Provider

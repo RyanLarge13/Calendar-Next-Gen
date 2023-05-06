@@ -1,8 +1,8 @@
 import express from "express";
-import { login } from "../controllers/userControllers.js";
+import { loginWithGoogle } from "../controllers/userControllers.js";
 
 const userRouter = express.Router();
 
-userRouter.post("/login", login);
+userRouter.post("/login/google", loginWithGoogle);
 
 export default userRouter;

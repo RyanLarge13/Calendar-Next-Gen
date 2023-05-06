@@ -29,7 +29,11 @@ const LoginLogout = () => {
         className="p-3 fixed bottom-0 left-0 right-0 rounded-md shadow-md bg-white z-10"
       >
         {user ? (
-          <p>User</p>
+          <div>
+            <p>{user.username}</p>
+            <img src={user.avatarUrl} alt="user" />
+            <p>{user.email}</p>
+          </div>
         ) : (
           <div className="flex flex-col justify-center items-center">
             <button
