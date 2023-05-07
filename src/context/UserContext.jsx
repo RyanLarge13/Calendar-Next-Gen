@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect } from "react";
 import { holidays, weekDays } from "../constants";
 import {
+  getUserData,
   getGoogleData,
   loginWithGoogle,
   getEvents,
@@ -19,6 +20,14 @@ export const UserProvider = ({ children }) => {
   );
   const [googleToken, setGoogleToken] = useState(false);
   const [loginLoading, setLoginLoading] = useState(false);
+  const [isOnline, setIsOnline] = useState(true);
+
+  useEffect(() => {
+    window.navigator.onLine
+      ? setIsOnline(() => true)
+      : setIsOnline(() => false);
+    if (!isOnline) alert("You are offline");
+  }, [events]);
 
   useEffect(() => {
     if (googleToken && !authToken) {
@@ -29,7 +38,7 @@ export const UserProvider = ({ children }) => {
             .then((response) => {
               setUser(response.data.user);
               setAuthToken(response.data.token);
-              localStorage.setItem("authToken", res.data.token);
+              localStorage.setItem("authToken", response.data.token);
             })
             .catch((err) => {
               console.log(err);
@@ -44,6 +53,15 @@ export const UserProvider = ({ children }) => {
   }, [googleToken]);
 
   useEffect(() => {
+    if (authToken && !user) {
+      getUserData(authToken)
+        .then((res) => {
+          setUser(res.data.user);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
     if (authToken && user) {
       getEvents(user.username, authToken)
         .then((res) => {
@@ -68,6 +86,7 @@ export const UserProvider = ({ children }) => {
         setEvents,
         setGoogleToken,
         setLoginLoading,
+        isOnline,
       }}
     >
       {children}

@@ -23,7 +23,7 @@ model Event {
   created DateTime @default(now())
   userId   String
   User     User     @relation(fields: [userId], references: [id])
-
+  
   @@id([userId])
 }
 

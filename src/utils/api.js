@@ -3,6 +3,15 @@ import Axios from "axios";
 const devUrl = "http://localhost:8080";
 // const productionUrl = "https://calendar-next-gen-production.up.railway.app";
 
+export const getUserData = (token) => {
+  const res = Axios.get(`${devUrl}/user/data`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res;
+};
+
 export const getGoogleData = async (token) => {
   const res = await Axios.get(
     `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${token}`,
@@ -33,6 +42,17 @@ export const loginWithGoogle = async (user) => {
       },
     }
   );
+  return res;
+};
+
+export const loginWithPasswordAndUsername = async (credentials) => {
+  const { username, email, password, avatarUrl } = credentials;
+  const res = Axios.post(`${devUrl}/login/classic`, {
+    username,
+    email,
+    password,
+    avatarUrl,
+  });
   return res;
 };
 
