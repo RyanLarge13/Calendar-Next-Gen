@@ -39,15 +39,15 @@ const Modal = () => {
         {addNewEvent ? (
           <AddEvent setAddNewEvent={setAddNewEvent} />
         ) : (
-          <div>
-            <div className="flex flex-col items-center justify-center w-full mx-2">
+          <div className="w-full">
+            <div className="flex flex-col items-center justify-center w-full">
               {dayEvents.map((event, index) => (
                 <DayEvent key={index} event={event} setEvent={setEvent} />
               ))}
             </div>
             <button
               onClick={() => setAddNewEvent(true)}
-              className="px-5 py-2 mt-5 w-full rounded-md shadow-md bg-gradient-to-r from-green-300 to-green-200 text-center"
+              className="px-5 py-2 mt-5 w-full rounded-md shadow-md bg-gradient-to-r from-green-300 to-green-200"
             >
               <FaCalendarPlus />
             </button>

@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, memo } from "react";
 import { Dna } from "react-loader-spinner";
 import { motion } from "framer-motion";
 import { calendar, calendarBlocks } from "../motion";
@@ -128,4 +128,4 @@ const Calendar = () => {
   );
 };
 
-export default Calendar;
+export default memo(Calendar);

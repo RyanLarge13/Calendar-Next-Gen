@@ -7,10 +7,12 @@ import {
   BsThreeDotsVertical,
 } from "react-icons/bs";
 import LoginLogout from "./LoginLogout";
+import UserContext from "../context/UserContext";
 import DatesContext from "../context/DatesContext";
 
 const Header = () => {
   const { dt, setNav } = useContext(DatesContext);
+  const { user } = useContext(UserContext);
 
   const [showLogin, setShowLogin] = useState(false);
 
@@ -38,10 +40,19 @@ const Header = () => {
           className="text-xl cursor-pointer"
         />
       </div>
-      <BsThreeDotsVertical
-        onClick={() => setShowLogin((prev) => !prev)}
-        className="cursor-pointer"
-      />
+      {user ? (
+        <img
+          src={user.avatarUrl}
+          onClick={() => setShowLogin((prev) => !prev)}
+          alt="user"
+          className="w-[25px] h-[25px] rounded-full shadow-sm"
+        />
+      ) : (
+        <BsThreeDotsVertical
+          onClick={() => setShowLogin((prev) => !prev)}
+          className="cursor-pointer"
+        />
+      )}
       {showLogin && <LoginLogout />}
     </motion.header>
   );
