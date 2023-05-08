@@ -112,12 +112,20 @@ export const holidays = [
     time: false,
   },
   {
+    kind: "Event",
     color: "bg-purple-300",
     date: "5/14/2023",
     event: "Mothers Day!!",
     id: 11,
-    reminders: false,
-    repeat: false,
+    reminders: {
+      reminder: false,
+    },
+    repeats: {
+      repeat: false,
+      howOften: "yearly",
+      nextDate: "5/14/2024",
+    },
+    location: "",
     time: false,
   },
   {
