@@ -22,6 +22,8 @@ const Calendar = () => {
     day,
     openModal,
     diff,
+    dateString,
+    dayOfWeekDays,
   } = useContext(DatesContext);
 
   const addEvent = (date) => {
@@ -32,13 +34,22 @@ const Calendar = () => {
   return (
     <main className="px-2">
       <section
-        onTouchStart={(e) => setStart(e.touches[0].clientX)}
-        onTouchMove={(e) => moveCalendar(e)}
-        onTouchEnd={(e) => finish()}
+        onTouchStart={(e) => !openModal && setStart(e.touches[0].clientX)}
+        onTouchMove={(e) => !openModal && moveCalendar(e)}
+        onTouchEnd={(e) => !openModal && finish()}
       >
         <div className="grid grid-cols-7 gap-2 justify-center items-center my-5">
-          {weekDays.map((day) => (
-            <p key={day} className="mx-2 text-center">
+          {weekDays.map((day, index) => (
+            <p
+              key={day}
+              className={`${
+                index === new Date().getDay() &&
+                new Date(dateString).getMonth() === new Date().getMonth() &&
+                new Date(dateString).getYear() === new Date().getYear()
+                  ? "bg-gradient-to-r from-cyan-300 to-cyan-500 bg-clip-text text-transparent font-semibold shadow-sm shadow-purple-300"
+                  : ""
+              } mx-2 text-center`}
+            >
               {day.split("")[0]}
             </p>
           ))}
@@ -53,7 +64,7 @@ const Calendar = () => {
                 variants={calendar}
                 initial="hidden"
                 animate="show"
-                className="grid grid-cols-7 gap-1 h-[78vh]"
+                className="grid grid-cols-7 gap-1 h-[76vh]"
               >
                 {[...Array(paddingDays + daysInMonth)].map((abs, index) => (
                   <motion.div
@@ -77,7 +88,7 @@ const Calendar = () => {
                         index - paddingDays + 1 === day &&
                         month === new Date().getMonth() &&
                         year === new Date().getFullYear() &&
-                        "w-[25px] h-[25px] rounded-full bg-green-100 shadow-sm"
+                        "w-[25px] h-[25px] rounded-full bg-cyan-100 shadow-sm"
                       }`}
                     >
                       <p>{index >= paddingDays && index - paddingDays + 1}</p>

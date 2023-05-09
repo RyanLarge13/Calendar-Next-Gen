@@ -102,7 +102,7 @@ const AddEvent = ({ setAddNewEvent }) => {
         id="description"
         cols="30"
         rows="10"
-        className="p-3 w-[90%] focus:outline-none rounded-md shadow-md"
+        className="p-3 w-full focus:outline-none rounded-md shadow-md"
       ></textarea>
       <div className="mt-10 w-full">
         <div className="w-full p-3 rounded-md shadow-md">
@@ -129,7 +129,7 @@ const AddEvent = ({ setAddNewEvent }) => {
           </div>
         </div>
         <div className="w-full p-3 rounded-md shadow-md">
-          <div className="flex justify-between items-center mb-3">
+          <div className="flex justify-between items-center">
             <IoIosAlarm />
             <Toggle condition={reminder} setCondition={setReminder} />
           </div>
@@ -142,10 +142,10 @@ const AddEvent = ({ setAddNewEvent }) => {
         </div>
       </div>
       <div className="my-3 flex justify-center items-center w-full">
-        <div className="w-full mx-1 p-3 rounded-md shadow-md">
+        <div className="w-full mr-1 p-3 rounded-md shadow-md">
           <p>Start</p>
         </div>
-        <div className="w-full mx-1 p-3 rounded-md shadow-md">
+        <div className="w-full ml-1 p-3 rounded-md shadow-md">
           <p>End</p>
         </div>
       </div>

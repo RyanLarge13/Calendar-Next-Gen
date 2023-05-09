@@ -32,7 +32,7 @@ const TimeSetter = ({ setWhen, setReminderTimeString }) => {
     <motion.div
       initial={{ opacity: 0, y: 25 }}
       animate={{ opacity: 1, y: 0 }}
-      className="w-full"
+      className="w-full mt-3"
     >
       <TimePicker
         className="w-full"
