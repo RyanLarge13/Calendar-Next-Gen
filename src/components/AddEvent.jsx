@@ -1,12 +1,15 @@
 import { useState, useContext } from "react";
+import { motion } from "framer-motion";
 import { colors } from "../constants";
 import { MdLocationPin } from "react-icons/md";
 import { FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";
+import { RiGalleryUploadFill } from "react-icons/ri";
 import DatesContext from "../context/DatesContext";
 import Color from "./Color";
 import UserContext from "../context/UserContext";
 import Toggle from "./Toggle";
+import TimeSetter from "./TimeSetter";
 
 const AddEvent = ({ setAddNewEvent }) => {
   const { setEvents, user, isOnline } = useContext(UserContext);
@@ -21,6 +24,7 @@ const AddEvent = ({ setAddNewEvent }) => {
   const [locationString, setLocationString] = useState("");
   // reminders
   const [reminder, setReminder] = useState(false);
+  const [reminderTimeString, setReminderTimeString] = useState("");
   const [when, setWhen] = useState(null);
   // repeats
   const [repeat, setRepeat] = useState(false);
@@ -45,11 +49,13 @@ const AddEvent = ({ setAddNewEvent }) => {
     //   date: string,
     //   reminders: {
     //     reminder: true,
-    //     when: new Date(string) + Number,
+    //     reminderTimeString
+    //     when,
     //   },
     //   repeats: {
     //     repeat: true,
-    //     howOften: "Biweekly",
+    //     howOften: "biweekly",
+    //     nextDate: next date
     //   },
     //   attatchments: [
     //     {
@@ -99,17 +105,40 @@ const AddEvent = ({ setAddNewEvent }) => {
         className="p-3 w-[90%] focus:outline-none rounded-md shadow-md"
       ></textarea>
       <div className="mt-10 w-full">
-        <div className="w-full p-3 flex justify-between items-center rounded-md shadow-md">
-          <MdLocationPin />
-          <Toggle condition={location} setCondition={setLocation} />
+        <div className="w-full p-3 rounded-md shadow-md">
+          <div className="flex justify-between items-center">
+            <MdLocationPin />
+            <Toggle condition={location} setCondition={setLocation} />
+          </div>
+          {location && (
+            <motion.input
+              initial={{ opacity: 0, y: 25 }}
+              animate={{ opacity: 1, y: 0 }}
+              placeholder="Location"
+              value={locationString}
+              type="text"
+              onChange={(e) => setLocationString(e.target.value)}
+              className="mt-2 p-2 rounded-sm shadow-sm w-full focus:outline-gray-200"
+            />
+          )}
         </div>
-        <div className="w-full p-3 my-5 flex justify-between items-center rounded-md shadow-md">
-          <FiRepeat />
-          <Toggle condition={repeat} setCondition={setRepeat} />
+        <div className="w-full p-3 my-5 rounded-md shadow-md">
+          <div className="flex justify-between items-center">
+            <FiRepeat />
+            <Toggle condition={repeat} setCondition={setRepeat} />
+          </div>
         </div>
-        <div className="w-full p-3 flex justify-between items-center rounded-md shadow-md">
-          <IoIosAlarm />
-          <Toggle condition={reminder} setCondition={setReminder} />
+        <div className="w-full p-3 rounded-md shadow-md">
+          <div className="flex justify-between items-center mb-3">
+            <IoIosAlarm />
+            <Toggle condition={reminder} setCondition={setReminder} />
+          </div>
+          {reminder && (
+            <TimeSetter
+              setWhen={setWhen}
+              setReminderTimeString={setReminderTimeString}
+            />
+          )}
         </div>
       </div>
       <div className="my-3 flex justify-center items-center w-full">
@@ -119,6 +148,12 @@ const AddEvent = ({ setAddNewEvent }) => {
         <div className="w-full mx-1 p-3 rounded-md shadow-md">
           <p>End</p>
         </div>
+      </div>
+      <div className="mt-5">
+        <label>
+          <RiGalleryUploadFill className="text-xl" />
+          <input type="file" className="w-0 h-0" />
+        </label>
       </div>
       <div className="flex justify-around p-2 mt-10 w-full">
         <button

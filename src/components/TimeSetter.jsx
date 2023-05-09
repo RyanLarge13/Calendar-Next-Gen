@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { motion } from "framer-motion";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
+import DatesContext from "../context/DatesContext";
 
-const TimeSetter = ({ selectedDate, setTime, setNotif }) => {
+const TimeSetter = ({ setWhen, setReminderTimeString }) => {
+  const { string } = useContext(DatesContext);
+
   const [value, setValue] = useState(null);
-  const [dateString, setDateString] = useState(null);
-  const [reminderTime, setReminderTime] = useState(null);
 
   const calcValues = (ISODate) => {
     const formattedDate = new Date(ISODate);
@@ -15,21 +17,30 @@ const TimeSetter = ({ selectedDate, setTime, setNotif }) => {
         minutes <= 9 ? "0" + minutes : minutes
       } ${hours >= 12 ? "PM" : "AM"}`;
     };
-    setTime(formattedDateString);
     const dateTime = () => {
-      const currentDate = new Date(selectedDate);
+      const currentDate = new Date(string);
       const month = currentDate.getMonth();
       const day = currentDate.getDate();
       const year = currentDate.getFullYear();
       return new Date(year, month, day, hours, minutes).toString();
     };
-    setNotif(dateTime);
+    setReminderTimeString(formattedDateString);
+    setWhen(dateTime);
   };
 
   return (
-    <div>
-      <TimePicker value={value} onAccept={(ISODate) => calcValues(ISODate)} />
-    </div>
+    <motion.div
+      initial={{ opacity: 0, y: 25 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="w-full"
+    >
+      <TimePicker
+        className="w-full"
+        value={value}
+        onChange={(newValue) => setValue(newValue)}
+        onAccept={(ISODate) => calcValues(ISODate)}
+      />
+    </motion.div>
   );
 };
 
