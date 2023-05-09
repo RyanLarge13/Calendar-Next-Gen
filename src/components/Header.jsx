@@ -20,7 +20,7 @@ const Header = () => {
     <motion.header
       initial={{ y: -200 }}
       animate={{ y: 0 }}
-      className="flex justify-between p-5 mb-5 shadow-md"
+      className="flex justify-between p-5 mb-5 shadow-md shadow-purple-100"
     >
       <RiMenuUnfoldFill />
       <div className="flex justify-center items-center">

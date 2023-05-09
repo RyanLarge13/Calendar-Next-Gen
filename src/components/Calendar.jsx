@@ -24,6 +24,7 @@ const Calendar = () => {
     diff,
     dateString,
     dayOfWeekDays,
+    rowDays,
   } = useContext(DatesContext);
 
   const addEvent = (date) => {
@@ -46,7 +47,7 @@ const Calendar = () => {
                 index === new Date().getDay() &&
                 new Date(dateString).getMonth() === new Date().getMonth() &&
                 new Date(dateString).getYear() === new Date().getYear()
-                  ? "bg-gradient-to-r from-cyan-300 to-cyan-500 bg-clip-text text-transparent font-semibold shadow-sm shadow-purple-300"
+                  ? "bg-gradient-to-r from-cyan-300 to-cyan-500 bg-clip-text text-transparent font-semibold border-b-2"
                   : ""
               } mx-2 text-center`}
             >
@@ -64,7 +65,7 @@ const Calendar = () => {
                 variants={calendar}
                 initial="hidden"
                 animate="show"
-                className="grid grid-cols-7 gap-1 h-[76vh]"
+                className="grid grid-cols-7 gap-1 h-[76vh] overflow-hidden"
               >
                 {[...Array(paddingDays + daysInMonth)].map((abs, index) => (
                   <motion.div
@@ -76,7 +77,34 @@ const Calendar = () => {
                       )
                     }
                     key={index}
-                    className={`w-full min-h-[12vh] max-h-[12vh] rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start overflow-hidden cursor-pointer ${
+                    className={`${
+                      new Date(dateString).getMonth() ===
+                        new Date().getMonth() &&
+                      new Date(dateString).getYear() === new Date().getYear()
+                        ? index === dayOfWeekDays[0] ||
+                          index === dayOfWeekDays[1] ||
+                          index === dayOfWeekDays[2] ||
+                          index === dayOfWeekDays[3] ||
+                          index === dayOfWeekDays[4] ||
+                          index === dayOfWeekDays[5]
+                          ? "bg-purple-100"
+                          : "bg-white"
+                        : "bg-white"
+                    } ${
+                      new Date(dateString).getMonth() ===
+                        new Date().getMonth() &&
+                      new Date(dateString).getYear() === new Date().getYear()
+                        ? index === rowDays[0] ||
+                          index === rowDays[1] ||
+                          index === rowDays[2] ||
+                          index === rowDays[3] ||
+                          index === rowDays[4] ||
+                          index === rowDays[5] ||
+                          index === rowDays[6]
+                          ? "bg-purple-100"
+                          : "bg-white"
+                        : "bg-white"
+                    } w-full min-h-[12vh] max-h-[15vh] rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start overflow-hidden cursor-pointer ${
                       index - paddingDays + 1 === day &&
                       month === new Date().getMonth() &&
                       year === new Date().getFullYear() &&

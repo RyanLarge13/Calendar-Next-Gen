@@ -24,6 +24,7 @@ const AddEvent = ({ setAddNewEvent }) => {
   const [locationString, setLocationString] = useState("");
   // reminders
   const [reminder, setReminder] = useState(false);
+  const [reminderPicker, setReminderPicker] = useState(false);
   const [reminderTimeString, setReminderTimeString] = useState("");
   const [when, setWhen] = useState(null);
   // repeats
@@ -32,9 +33,15 @@ const AddEvent = ({ setAddNewEvent }) => {
   // attatchments
   const [attatchments, setAttachments] = useState([]);
   // start and end times with timezone
+  const [startTimePicker, setStartTimePicker] = useState(false);
   const [startTime, setStartTime] = useState(null);
+  const [startTimeString, setStartTimeString] = useState("");
+  const [endTimePicker, setEndTimePicker] = useState(false);
   const [endTime, setEndTime] = useState(null);
-  const [timeZone, setTimeZone] = useState(null);
+  const [endTimeString, setEndTimeString] = useState("");
+  const [timeZone, setTimeZone] = useState(
+    Intl.DateTimeFormat().resolvedOptions().timeZone
+  );
 
   const addEvent = () => {
     if (!isOnline) {
@@ -131,22 +138,46 @@ const AddEvent = ({ setAddNewEvent }) => {
         <div className="w-full p-3 rounded-md shadow-md">
           <div className="flex justify-between items-center">
             <IoIosAlarm />
-            <Toggle condition={reminder} setCondition={setReminder} />
+            <Toggle
+              condition={reminderPicker}
+              setCondition={setReminderPicker}
+            />
           </div>
-          {reminder && (
+          {reminderPicker && (
             <TimeSetter
-              setWhen={setWhen}
-              setReminderTimeString={setReminderTimeString}
+              setDateTime={setWhen}
+              setDateTimeString={setReminderTimeString}
+              closePicker={setReminderPicker}
             />
           )}
         </div>
       </div>
       <div className="my-3 flex justify-center items-center w-full">
-        <div className="w-full mr-1 p-3 rounded-md shadow-md">
+        <div
+          onClick={() => setStartTimePicker(true)}
+          className="w-full mr-1 p-3 rounded-md shadow-md"
+        >
           <p>Start</p>
+          {startTimePicker && (
+            <TimeSetter
+              setDateTime={setStartTime}
+              setDateTimeString={setStartTimeString}
+              closePicker={setStartTimePicker}
+            />
+          )}
         </div>
-        <div className="w-full ml-1 p-3 rounded-md shadow-md">
+        <div
+          onClick={() => setEndTimePicker(true)}
+          className="w-full ml-1 p-3 rounded-md shadow-md"
+        >
           <p>End</p>
+          {endTimePicker && (
+            <TimeSetter
+              setDateTime={setEndTime}
+              setDateTimeString={setEndTimeString}
+              closePicker={setEndTimePicker}
+            />
+          )}
         </div>
       </div>
       <div className="mt-5">
