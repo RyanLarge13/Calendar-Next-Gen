@@ -53,19 +53,18 @@ export const UserProvider = ({ children }) => {
   }, [googleToken]);
 
   useEffect(() => {
-    if (authToken && !user) {
+    if (authToken) {
       getUserData(authToken)
         .then((res) => {
           setUser(res.data.user);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
-    if (authToken && user) {
-      getEvents(user.username, authToken)
-        .then((res) => {
-          setEvents((prev) => [...prev, res.data.events]);
+          getEvents(res.data.user.username, authToken)
+            .then((response) => {
+              // setEvents((prev) => [...prev, response.data.events]);
+              setEvents(response.data.events);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
         })
         .catch((err) => {
           console.log(err);

@@ -7,26 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Event {
-  kind String?
-  summary    String
-  description String?
-  location String?
-  date     DateTime @db.Date
-  reminders Json?
-  repeats Json?
-  attatchments Json?
-  color    String
-  start Json
-  end Json
-  updated DateTime @updatedAt
-  created DateTime @default(now())
-  userId   String
-  User     User     @relation(fields: [userId], references: [id])
-  
-  @@id([userId])
-}
-
 model User {
   id       String      @id @default(uuid())
   avatarUrl String? 
@@ -35,7 +15,26 @@ model User {
   password String
   birthday DateTime?
   createAt DateTime @default(now())
-  Event   Event[]
+  events   Event[]
 
   @@unique([username, email])
+}
+
+model Event {
+  id       String      @id @default(uuid())
+  kind String?
+  summary    String
+  description String?
+  location String?
+  date     String
+  reminders Json?
+  repeats Json?
+  attatchments Json?
+  color    String
+  start Json
+  end Json
+  updated DateTime @updatedAt
+  created DateTime @default(now())
+  User     User     @relation(fields: [userId], references: [id])
+  userId   String
 }

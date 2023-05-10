@@ -15,7 +15,7 @@ const DayEvent = ({ event, setEvent }) => {
       <div
         className={`${event.color} px-3 py-1 rounded-md font-extrabold mb-5 shadow-sm justify-between flex items-center`}
       >
-        <h3 onClick={() => setEvent(event)}>{event.event}</h3>
+        <h3 onClick={() => setEvent(event)}>{event.summary}</h3>
         <div className="flex">
           <p>
             {(event.kind === "Event" && <MdEventNote />) ||

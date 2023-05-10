@@ -14,7 +14,7 @@ import TimeSetter from "./TimeSetter";
 
 const AddEvent = ({ setAddNewEvent }) => {
   const { setEvents, user, isOnline } = useContext(UserContext);
-  const { string, setModal } = useContext(DatesContext);
+  const { string, setOpenModal } = useContext(DatesContext);
 
   // Basic event data
   const [summary, setSummary] = useState("");
@@ -53,35 +53,38 @@ const AddEvent = ({ setAddNewEvent }) => {
         kind: "Event",
         summary,
         description,
-        location: location ? locationString : false,
-        date: new Date(string),
+        location: location ? locationString : null,
+        date: string,
         reminders: {
           reminder,
-          reminderTimeString: reminder ? reminderTimeString : false,
-          when: reminder ? when : false,
+          reminderTimeString: reminder ? reminderTimeString : null,
+          when: reminder ? when : null,
         },
         repeats: {
           repeat,
-          howOften: repeat ? howOften : false,
-          nextDate: repeat ? null : false,
+          howOften: repeat ? howOften : null,
+          nextDate: repeat && null,
         },
         attatchments: [],
-        color,
+        color: color ? color : "bg-white",
         start: {
-          startTime: start ? startTime : false,
+          startTime: startTime ? startTime : null,
           timeZone,
         },
         end: {
-          endTime: end ? endTime : false,
+          endTime: endTime ? endTime : null,
           timeZone,
         },
         userId: user.id,
       };
-      postEvent(newEvent, localStorage.getItem("authToken")).then((res) => {
-      	setEvents((prev) => [...prev, res.data.event])
-      }).catch((err) => {
-      	console.log(err)
-      })
+      postEvent(newEvent, localStorage.getItem("authToken"))
+        .then((res) => {
+          setEvents((prev) => [...prev, res.data.event]);
+          setOpenModal(false);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
   };
 
@@ -143,7 +146,10 @@ const AddEvent = ({ setAddNewEvent }) => {
               className=""
             >
               {repeatOptions.map((intervalString) => (
-                <div className="flex justify-between items-center px-2 py-3 my-3 rounded-md shadow-md">
+                <div
+                  key={intervalString}
+                  className="flex justify-between items-center px-2 py-3 my-3 rounded-md shadow-md"
+                >
                   <p>{intervalString}</p>
                   <Toggle
                     condition={howOften}

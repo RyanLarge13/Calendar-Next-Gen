@@ -75,7 +75,7 @@ export const getEvents = async (username, token) => {
 };
 
 export const postEvent = (event, token) => {
-  const res = Axios.get(
+  const res = Axios.post(
     `${devUrl}/new/event`,
     { event: event },
     {

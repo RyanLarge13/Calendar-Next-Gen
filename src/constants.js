@@ -24,7 +24,7 @@ export const holidays = [
   {
     color: "bg-purple-300",
     date: "1/1/2023",
-    event: "New Years Day!!",
+    summary: "New Years Day!!",
     id: 1,
     reminders: false,
     repeat: false,
@@ -33,7 +33,7 @@ export const holidays = [
   {
     color: "bg-purple-300",
     date: "1/16/2023",
-    event: "Martin Luther King Jr Day!!",
+    summary: "Martin Luther King Jr Day!!",
     id: 2,
     reminders: false,
     repeat: false,
@@ -42,7 +42,7 @@ export const holidays = [
   {
     color: "bg-purple-300",
     date: "2/1/2023",
-    event: "Black History Month!!",
+    summary: "Black History Month!!",
     id: 3,
     reminders: false,
     repeat: false,
@@ -51,7 +51,7 @@ export const holidays = [
   {
     color: "bg-green-300",
     date: "2/2/2023",
-    event: "Groundhog Day!!",
+    summary: "Groundhog Day!!",
     id: 4,
     reminders: false,
     repeat: false,
@@ -60,7 +60,7 @@ export const holidays = [
   {
     color: "bg-red-300",
     date: "2/14/2023",
-    event: "Valentines Day!!",
+    summary: "Valentines Day!!",
     id: 5,
     reminders: false,
     repeat: false,
@@ -69,7 +69,7 @@ export const holidays = [
   {
     color: "bg-orange-300",
     date: "2/20/2023",
-    event: "Presedents Day!!",
+    summary: "Presedents Day!!",
     id: 6,
     reminders: false,
     repeat: false,
@@ -78,7 +78,7 @@ export const holidays = [
   {
     color: "bg-yellow-300",
     date: "3/12/2023",
-    event: "Daylight Savings Starts",
+    summary: "Daylight Savings Starts",
     id: 7,
     reminders: false,
     repeat: false,
@@ -87,7 +87,7 @@ export const holidays = [
   {
     color: "bg-green-300",
     date: "3/17/2023",
-    event: "St. Patricks Day!!",
+    summary: "St. Patricks Day!!",
     id: 8,
     reminders: false,
     repeat: false,
@@ -96,7 +96,7 @@ export const holidays = [
   {
     color: "bg-yellow-300",
     date: "4/7/2023",
-    event: "Good Friday!!",
+    summary: "Good Friday!!",
     id: 9,
     reminders: false,
     repeat: false,
@@ -105,17 +105,18 @@ export const holidays = [
   {
     color: "bg-yellow-300",
     date: "4/9/2023",
-    event: "Easter Sunday!!",
+    summary: "Easter Sunday!!",
     id: 10,
     reminders: false,
     repeat: false,
     time: false,
   },
   {
-    kind: "Event",
+    kind: "summary",
     color: "bg-purple-300",
     date: "5/14/2023",
-    event: "Mothers Day!!",
+    summary: "Mothers Day!!",
+    description: "Happy Mothers Day!",
     id: 11,
     reminders: {
       reminder: false,
@@ -131,7 +132,7 @@ export const holidays = [
   {
     color: "bg-pink-300",
     date: "5/29/2023",
-    event: "Memorial Day!!",
+    summary: "Memorial Day!!",
     id: 12,
     reminders: false,
     repeat: false,
@@ -140,7 +141,7 @@ export const holidays = [
   {
     color: "bg-orange-300",
     date: "6/18/2023",
-    event: "Fathers Day!!",
+    summary: "Fathers Day!!",
     id: 13,
     reminders: false,
     repeat: false,
@@ -149,7 +150,7 @@ export const holidays = [
   {
     color: "bg-blue-300",
     date: "7/4/2023",
-    event: "Independance Day!!",
+    summary: "Independance Day!!",
     id: 14,
     reminders: false,
     repeat: false,
@@ -158,7 +159,7 @@ export const holidays = [
   {
     color: "bg-blue-300",
     date: "9/4/2023",
-    event: "Labor Day!!",
+    summary: "Labor Day!!",
     id: 15,
     reminders: false,
     repeat: false,
@@ -167,7 +168,7 @@ export const holidays = [
   {
     color: "bg-orange-300",
     date: "10/31/2023",
-    event: "Halloween",
+    summary: "Halloween",
     id: 16,
     reminders: false,
     repeat: false,
@@ -176,7 +177,7 @@ export const holidays = [
   {
     color: "bg-orange-300",
     date: "11/23/2023",
-    event: "Thanksgiving!!",
+    summary: "Thanksgiving!!",
     id: 17,
     reminders: false,
     repeat: false,
@@ -185,7 +186,7 @@ export const holidays = [
   {
     color: "bg-green-300",
     date: "12/25/2023",
-    event: "Christmas!!",
+    summary: "Christmas!!",
     id: 18,
     reminders: false,
     repeat: false,

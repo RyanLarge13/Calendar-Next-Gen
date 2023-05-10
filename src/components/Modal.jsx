@@ -43,8 +43,8 @@ const Modal = () => {
         ) : (
           <div className="w-full">
             <div className="flex flex-col items-center justify-center w-full">
-              {dayEvents.map((event, index) => (
-                <DayEvent key={index} event={event} setEvent={setEvent} />
+              {dayEvents.map((event) => (
+                <DayEvent key={event.id} event={event} setEvent={setEvent} />
               ))}
             </div>
             <button

@@ -87,7 +87,7 @@ const Calendar = () => {
                           index === dayOfWeekDays[3] ||
                           index === dayOfWeekDays[4] ||
                           index === dayOfWeekDays[5]
-                          ? "bg-purple-100"
+                          ? "bg-purple-200"
                           : "bg-white"
                         : "bg-white"
                     } ${
@@ -101,7 +101,7 @@ const Calendar = () => {
                           index === rowDays[4] ||
                           index === rowDays[5] ||
                           index === rowDays[6]
-                          ? "bg-purple-100"
+                          ? "bg-purple-200"
                           : "bg-white"
                         : "bg-white"
                     } w-full min-h-[12vh] max-h-[15vh] rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start overflow-hidden cursor-pointer ${
@@ -126,7 +126,7 @@ const Calendar = () => {
                         new Date(event.date).toLocaleDateString() ===
                           `${month + 1}/${index - paddingDays + 1}/${year}` && (
                           <motion.div
-                            key={event.event}
+                            key={event.id}
                             initial={{ opacity: 0, y: -50 }}
                             animate={{
                               opacity: 1,
@@ -140,7 +140,7 @@ const Calendar = () => {
                             className={`rounded-lg ${event.color} shadow-md px-2 py-1 mx-2 my-1 w-full`}
                           >
                             <p className="whitespace-nowrap text-xs">
-                              {event.event}
+                              {event.summary}
                             </p>
                           </motion.div>
                         )
