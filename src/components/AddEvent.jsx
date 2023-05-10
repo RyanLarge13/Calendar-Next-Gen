@@ -5,6 +5,7 @@ import { MdLocationPin } from "react-icons/md";
 import { FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";
 import { RiGalleryUploadFill } from "react-icons/ri";
+import { postEvent } from "../utils/api.js";
 import DatesContext from "../context/DatesContext";
 import Color from "./Color";
 import UserContext from "../context/UserContext";
@@ -24,63 +25,64 @@ const AddEvent = ({ setAddNewEvent }) => {
   const [locationString, setLocationString] = useState("");
   // reminders
   const [reminder, setReminder] = useState(false);
-  const [reminderPicker, setReminderPicker] = useState(false);
   const [reminderTimeString, setReminderTimeString] = useState("");
   const [when, setWhen] = useState(null);
   // repeats
   const [repeat, setRepeat] = useState(false);
-  const [howOften, setHowOften] = useState(0);
+  const [howOften, setHowOften] = useState(false);
   // attatchments
   const [attatchments, setAttachments] = useState([]);
   // start and end times with timezone
-  const [startTimePicker, setStartTimePicker] = useState(false);
-  const [startTime, setStartTime] = useState(null);
+  const [startTime, setStartTime] = useState(false);
+  const [startWhen, setStartWhen] = useState(null);
   const [startTimeString, setStartTimeString] = useState("");
-  const [endTimePicker, setEndTimePicker] = useState(false);
-  const [endTime, setEndTime] = useState(null);
+  const [endTime, setEndTime] = useState(false);
   const [endTimeString, setEndTimeString] = useState("");
+  const [endWhen, setEndWhen] = useState(null);
   const [timeZone, setTimeZone] = useState(
     Intl.DateTimeFormat().resolvedOptions().timeZone
   );
+
+  const repeatOptions = ["Daily", "Weekly", "Bi Weekly", "Monthly", "Yearly"];
 
   const addEvent = () => {
     if (!isOnline) {
     }
     if (isOnline) {
+      const newEvent = {
+        kind: "Event",
+        summary,
+        description,
+        location: location ? locationString : false,
+        date: new Date(string),
+        reminders: {
+          reminder,
+          reminderTimeString: reminder ? reminderTimeString : false,
+          when: reminder ? when : false,
+        },
+        repeats: {
+          repeat,
+          howOften: repeat ? howOften : false,
+          nextDate: repeat ? null : false,
+        },
+        attatchments: [],
+        color,
+        start: {
+          startTime: start ? startTime : false,
+          timeZone,
+        },
+        end: {
+          endTime: end ? endTime : false,
+          timeZone,
+        },
+        userId: user.id,
+      };
+      postEvent(newEvent, localStorage.getItem("authToken")).then((res) => {
+      	setEvents((prev) => [...prev, res.data.event])
+      }).catch((err) => {
+      	console.log(err)
+      })
     }
-    // const newEvent = {
-    //   kind: "Event",
-    //   summary,
-    //   description,
-    //   location,
-    //   date: string,
-    //   reminders: {
-    //     reminder: true,
-    //     reminderTimeString
-    //     when,
-    //   },
-    //   repeats: {
-    //     repeat: true,
-    //     howOften: "biweekly",
-    //     nextDate: next date
-    //   },
-    //   attatchments: [
-    //     {
-    //       type: "file",
-    //       file: "file",
-    //     },
-    //   ],
-    //   color,
-    //   start: {
-    //     startTime: new Date() + Number,
-    //     timeZone,
-    //   },
-    //   end: {
-    //     endTime: new Date() + Number,
-    //     timeZone,
-    //   },
-    //   userId: user.id,
-    // };
   };
 
   return (
@@ -134,51 +136,84 @@ const AddEvent = ({ setAddNewEvent }) => {
             <FiRepeat />
             <Toggle condition={repeat} setCondition={setRepeat} />
           </div>
+          {repeat && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className=""
+            >
+              {repeatOptions.map((intervalString) => (
+                <div className="flex justify-between items-center px-2 py-3 my-3 rounded-md shadow-md">
+                  <p>{intervalString}</p>
+                  <Toggle
+                    condition={howOften}
+                    setCondition={setHowOften}
+                    howOften={intervalString}
+                  />
+                </div>
+              ))}
+            </motion.div>
+          )}
         </div>
         <div className="w-full p-3 rounded-md shadow-md">
           <div className="flex justify-between items-center">
             <IoIosAlarm />
-            <Toggle
-              condition={reminderPicker}
-              setCondition={setReminderPicker}
-            />
+            <Toggle condition={reminder} setCondition={setReminder} />
           </div>
-          {reminderPicker && (
-            <TimeSetter
-              setDateTime={setWhen}
-              setDateTimeString={setReminderTimeString}
-              closePicker={setReminderPicker}
-            />
+          {reminder && (
+            <div>
+              {!when ? (
+                <TimeSetter
+                  setDateTime={setWhen}
+                  setDateTimeString={setReminderTimeString}
+                  openTimeSetter={setReminder}
+                />
+              ) : (
+                <p>{reminderTimeString}</p>
+              )}
+            </div>
           )}
         </div>
       </div>
       <div className="my-3 flex justify-center items-center w-full">
         <div
-          onClick={() => setStartTimePicker(true)}
+          onClick={() => setStartTime(true)}
           className="w-full mr-1 p-3 rounded-md shadow-md"
         >
           <p>Start</p>
-          {startTimePicker && (
-            <TimeSetter
-              setDateTime={setStartTime}
-              setDateTimeString={setStartTimeString}
-              closePicker={setStartTimePicker}
-            />
+          {startTime && (
+            <div>
+              {!startWhen ? (
+                <TimeSetter
+                  setDateTime={setStartWhen}
+                  setDateTimeString={setStartTimeString}
+                  openTimeSetter={setStartTime}
+                />
+              ) : (
+                <p>{startTimeString}</p>
+              )}
+            </div>
           )}
         </div>
-        <div
-          onClick={() => setEndTimePicker(true)}
-          className="w-full ml-1 p-3 rounded-md shadow-md"
-        >
-          <p>End</p>
-          {endTimePicker && (
-            <TimeSetter
-              setDateTime={setEndTime}
-              setDateTimeString={setEndTimeString}
-              closePicker={setEndTimePicker}
-            />
-          )}
-        </div>
+      </div>
+      <div
+        onClick={() => setEndTime(true)}
+        className="w-full mr-1 p-3 rounded-md shadow-md"
+      >
+        <p>End</p>
+        {endTime && (
+          <div>
+            {!endWhen ? (
+              <TimeSetter
+                setDateTime={setEndWhen}
+                setDateTimeString={setEndTimeString}
+                openTimeSetter={setEndTime}
+              />
+            ) : (
+              <p>{endTimeString}</p>
+            )}
+          </div>
+        )}
       </div>
       <div className="mt-5">
         <label>

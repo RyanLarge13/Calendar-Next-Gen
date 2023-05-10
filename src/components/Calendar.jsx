@@ -47,7 +47,7 @@ const Calendar = () => {
                 index === new Date().getDay() &&
                 new Date(dateString).getMonth() === new Date().getMonth() &&
                 new Date(dateString).getYear() === new Date().getYear()
-                  ? "bg-gradient-to-r from-cyan-300 to-cyan-500 bg-clip-text text-transparent font-semibold border-b-2"
+                  ? "bg-gradient-to-r from-cyan-300 to-cyan-500 bg-clip-text text-transparent font-semibold border-b-2 rounded-md"
                   : ""
               } mx-2 text-center`}
             >
@@ -108,7 +108,7 @@ const Calendar = () => {
                       index - paddingDays + 1 === day &&
                       month === new Date().getMonth() &&
                       year === new Date().getFullYear() &&
-                      "shadow-green-400 shadow-md"
+                      "shadow-cyan-400 shadow-md"
                     }`}
                   >
                     <div

@@ -75,13 +75,16 @@ export const getEvents = async (username, token) => {
 };
 
 export const postEvent = (event, token) => {
-  Axios.get(`${devUrl}/${username}/events`)
-    .then((res) => {
-      console.log(res);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+  const res = Axios.get(
+    `${devUrl}/new/event`,
+    { event: event },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return res;
 };
 
 export const deleteEvent = (event, token) => {
