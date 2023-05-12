@@ -10,6 +10,15 @@ export const colors = [
   { color: "bg-yellow-300" },
 ];
 
+export const repeatOptions = [
+  "Daily",
+  "Weekly",
+  "Bi Weekly",
+  "Monthly",
+  "Yearly",
+  "Custom",
+];
+
 export const weekDays = [
   "Sunday",
   "Monday",

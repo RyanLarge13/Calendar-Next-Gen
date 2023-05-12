@@ -1,8 +1,8 @@
 import { useContext, useState } from "react";
 import { motion } from "framer-motion";
 import { useGoogleLogin } from "@react-oauth/google";
-import { BiLogInCircle } from "react-icons/bi";
-import { getEvents, loginWithPasswordAndUsername } from "../utils/api";
+import { BiLogInCircle, BiLogOutCircle } from "react-icons/bi";
+import { loginWithPasswordAndUsername } from "../utils/api";
 import UserContext from "../context/UserContext";
 
 const LoginLogout = () => {
@@ -14,6 +14,7 @@ const LoginLogout = () => {
     setLoginLoading,
     setAuthToken,
     setEvents,
+    events,
   } = useContext(UserContext);
 
   const [regularLogin, setRegularLogin] = useState(false);
@@ -53,6 +54,13 @@ const LoginLogout = () => {
       });
   };
 
+  const logout = () => {
+    localStorage.removeItem("authToken");
+    localStorage.setItem("events", JSON.stringify(events));
+    setAuthToken(false);
+    setUser(false);
+  };
+
   return (
     <>
       <motion.div
@@ -62,6 +70,7 @@ const LoginLogout = () => {
       >
         {user ? (
           <div>
+            <BiLogOutCircle onClick={() => logout()} className="text-xl my-2" />
             <img
               src={user.avatarUrl}
               alt="user"

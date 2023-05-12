@@ -6,12 +6,14 @@ import { FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";
 import { RiGalleryUploadFill } from "react-icons/ri";
 import { postEvent } from "../utils/api.js";
+import { repeatOptions } from "../constants";
 import { v4 as uuidv4 } from "uuid";
 import DatesContext from "../context/DatesContext";
 import Color from "./Color";
 import UserContext from "../context/UserContext";
 import Toggle from "./Toggle";
 import TimeSetter from "./TimeSetter";
+import { useStaticPicker } from "@mui/x-date-pickers/internals";
 
 const AddEvent = ({ setAddNewEvent }) => {
   const { setEvents, user, isOnline } = useContext(UserContext);
@@ -31,6 +33,8 @@ const AddEvent = ({ setAddNewEvent }) => {
   // repeats
   const [repeat, setRepeat] = useState(false);
   const [howOften, setHowOften] = useState(false);
+  const [interval, setInterval] = useState(7);
+  const [invalid, setInvalid] = useState(false);
   // attatchments
   const [attatchments, setAttachments] = useState([]);
   // start and end times with timezone
@@ -43,8 +47,6 @@ const AddEvent = ({ setAddNewEvent }) => {
   const [timeZone, setTimeZone] = useState(
     Intl.DateTimeFormat().resolvedOptions().timeZone
   );
-
-  const repeatOptions = ["Daily", "Weekly", "Bi Weekly", "Monthly", "Yearly"];
 
   const addEvent = () => {
     if (!isOnline) {
@@ -65,6 +67,7 @@ const AddEvent = ({ setAddNewEvent }) => {
           repeat,
           howOften: repeat ? howOften : null,
           nextDate: repeat && null,
+          interval,
           repeatId: uuidv4(),
         },
         attatchments: [],
@@ -160,6 +163,30 @@ const AddEvent = ({ setAddNewEvent }) => {
                   />
                 </div>
               ))}
+              {howOften && (
+                <input
+                  placeholder={`How many ${
+                    howOften === "Daily"
+                      ? "days"
+                      : howOften === "Weekly"
+                      ? "weeks"
+                      : howOften === "Bi Weekly"
+                      ? "times"
+                      : howOften === "Monthly"
+                      ? "months"
+                      : "years"
+                  }?`}
+                  onChange={(e) => setInterval(Number(e.target.value) || "")}
+                  onKeyUp={() => {
+                    typeof interval === "number"
+                      ? setInvalid(false)
+                      : setInvalid(true);
+                  }}
+                  className={`${
+                    invalid ? "border-red-200" : "border-green-200"
+                  } my-2 outline-none border-b py-1 px-2 rounded-sm`}
+                />
+              )}
             </motion.div>
           )}
         </div>

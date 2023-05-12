@@ -85,11 +85,12 @@ export const UserProvider = ({ children }) => {
         events,
         googleToken,
         loginLoading,
+        isOnline,
         setUser,
         setEvents,
         setGoogleToken,
         setLoginLoading,
-        isOnline,
+        setAuthToken,
       }}
     >
       {children}
