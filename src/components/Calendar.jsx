@@ -87,7 +87,7 @@ const Calendar = () => {
                           index === dayOfWeekDays[3] ||
                           index === dayOfWeekDays[4] ||
                           index === dayOfWeekDays[5]
-                          ? "bg-purple-200"
+                          ? "bg-slate-100"
                           : "bg-white"
                         : "bg-white"
                     } ${
@@ -101,7 +101,7 @@ const Calendar = () => {
                           index === rowDays[4] ||
                           index === rowDays[5] ||
                           index === rowDays[6]
-                          ? "bg-purple-200"
+                          ? "bg-slate-100"
                           : "bg-white"
                         : "bg-white"
                     } w-full min-h-[12vh] max-h-[15vh] rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start overflow-hidden cursor-pointer ${

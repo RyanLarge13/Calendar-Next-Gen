@@ -70,6 +70,10 @@ export const UserProvider = ({ children }) => {
           console.log(err);
         });
     }
+    if (!authToken && user) {
+      localStorage.removeItem("authToken");
+      setUser(false);
+    }
   }, [authToken]);
 
   return (

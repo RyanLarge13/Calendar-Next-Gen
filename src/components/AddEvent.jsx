@@ -6,6 +6,7 @@ import { FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";
 import { RiGalleryUploadFill } from "react-icons/ri";
 import { postEvent } from "../utils/api.js";
+import { v4 as uuidv4 } from "uuid";
 import DatesContext from "../context/DatesContext";
 import Color from "./Color";
 import UserContext from "../context/UserContext";
@@ -64,6 +65,7 @@ const AddEvent = ({ setAddNewEvent }) => {
           repeat,
           howOften: repeat ? howOften : null,
           nextDate: repeat && null,
+          repeatId: uuidv4(),
         },
         attatchments: [],
         color: color ? color : "bg-white",
@@ -79,7 +81,7 @@ const AddEvent = ({ setAddNewEvent }) => {
       };
       postEvent(newEvent, localStorage.getItem("authToken"))
         .then((res) => {
-          setEvents((prev) => [...prev, res.data.event]);
+          setEvents((prev) => [...prev, ...res.data.event]);
           setOpenModal(false);
         })
         .catch((err) => {

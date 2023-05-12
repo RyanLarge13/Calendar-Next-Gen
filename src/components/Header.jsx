@@ -45,7 +45,7 @@ const Header = () => {
           src={user.avatarUrl}
           onClick={() => setShowLogin((prev) => !prev)}
           alt="user"
-          className="w-[25px] h-[25px] rounded-full shadow-sm"
+          className="w-[25px] h-[25px] rounded-full shadow-md"
         />
       ) : (
         <BsThreeDotsVertical
