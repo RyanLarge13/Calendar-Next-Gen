@@ -24,6 +24,8 @@ export const DatesProvider = ({ children }) => {
   const [paddingDays, setPaddingDays] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [string, setString] = useState("");
+  const [dayOfWeekDays, setDayOfWeekDays] = useState([]);
+  const [rowDays, setRowDays] = useState([]);
 
   useEffect(() => {
     setLoading(true);
@@ -80,6 +82,30 @@ export const DatesProvider = ({ children }) => {
   useEffect(() => {
     setPaddingDays(weekDays.indexOf(dateString.split(", ")[0]));
     setLoading(false);
+    const day = new Date().getDate();
+    const dayOfWeek = new Date().getDay() + 1;
+    let rowDays = [];
+    for (let i = day - dayOfWeek; i < 32; i++) {
+      if (i < day - dayOfWeek + 8 && i > day - dayOfWeek) {
+        rowDays.push(i);
+      }
+    }
+    let column = new Date().getDay();
+    let columnDays = [];
+    for (let i = column; i < 32; i++) {
+      if (
+        i === column ||
+        i === column + 7 ||
+        i === column + 14 ||
+        i === column + 21 ||
+        i === column + 28 ||
+        i === column + 35
+      ) {
+        columnDays.push(i);
+      }
+    }
+    setDayOfWeekDays(columnDays);
+    setRowDays(rowDays);
   }, [dateString]);
 
   return (
@@ -103,6 +129,9 @@ export const DatesProvider = ({ children }) => {
         finish,
         setOpen,
         setDay,
+        dateString,
+        dayOfWeekDays,
+        rowDays,
       }}
     >
       {children}

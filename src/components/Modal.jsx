@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { motion } from "framer-motion";
 import { FaCalendarPlus } from "react-icons/fa";
+import { staticTimes } from "../constants";
 import DatesContext from "../context/DatesContext";
 import DayEvent from "./DayEvent";
 import AddEvent from "./AddEvent";
@@ -33,23 +34,37 @@ const Modal = () => {
       <motion.div
         initial={{ x: 1000 }}
         animate={{ x: 0 }}
-        className={`bg-white rounded-md shadow-md px-2 py-5 fixed top-0 bottom-0 right-0 w-[65%] overflow-y-auto flex flex-col justify-between items-center`}
+        className={`bg-white rounded-md shadow-lg shadow-purple-200 px-2 fixed top-0 bottom-0 right-0 w-[65%] overflow-y-auto`}
       >
-        <h2 className="font-bold text-2xl text-center bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent">
-          {string}
-        </h2>
+        <div className="bg-white rounded-sm z-[999] p-2 fixed top-0 right-0 font-bold shadow-sm">
+          <h2 className="bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent">
+            {string}
+          </h2>
+        </div>
         {addNewEvent ? (
           <AddEvent setAddNewEvent={setAddNewEvent} />
         ) : (
-          <div className="w-full">
-            <div className="flex flex-col items-center justify-center w-full">
-              {dayEvents.map((event, index) => (
-                <DayEvent key={index} event={event} setEvent={setEvent} />
+          <div className="w-full pl-20">
+            <div className="absolute left-0 top-0 bottom-0 w-20 pl-2">
+              {staticTimes.map((timeObj, index) => (
+                <p
+                  key={index}
+                  className={`${index === 0 ? "mt-0" : "my-[100px]"} ${
+                    index % 2 === 0 ? "text-md" : "text-xs"
+                  } relative after:left-0 after:bottom-0 after:w-full after:h-[1px] after:absolute after:bg-slate-200`}
+                >
+                  {timeObj.string}
+                </p>
+              ))}
+            </div>
+            <div className="w-full">
+              {dayEvents.map((event) => (
+                <DayEvent key={event.id} event={event} setEvent={setEvent} />
               ))}
             </div>
             <button
               onClick={() => setAddNewEvent(true)}
-              className="px-5 py-2 mt-5 w-full rounded-md shadow-md bg-gradient-to-r from-green-300 to-green-200"
+              className="px-5 py-2 mt-5 fixed bottom-5 right-5 rounded-md shadow-md bg-gradient-to-r from-green-300 to-green-200 z-[999]"
             >
               <FaCalendarPlus />
             </button>

@@ -5,15 +5,19 @@ import { MdLocationPin } from "react-icons/md";
 import { FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";
 import { RiGalleryUploadFill } from "react-icons/ri";
+import { postEvent } from "../utils/api.js";
+import { repeatOptions } from "../constants";
+import { v4 as uuidv4 } from "uuid";
 import DatesContext from "../context/DatesContext";
 import Color from "./Color";
 import UserContext from "../context/UserContext";
 import Toggle from "./Toggle";
 import TimeSetter from "./TimeSetter";
+import { useStaticPicker } from "@mui/x-date-pickers/internals";
 
 const AddEvent = ({ setAddNewEvent }) => {
   const { setEvents, user, isOnline } = useContext(UserContext);
-  const { string, setModal } = useContext(DatesContext);
+  const { string, setOpenModal } = useContext(DatesContext);
 
   // Basic event data
   const [summary, setSummary] = useState("");
@@ -28,52 +32,67 @@ const AddEvent = ({ setAddNewEvent }) => {
   const [when, setWhen] = useState(null);
   // repeats
   const [repeat, setRepeat] = useState(false);
-  const [howOften, setHowOften] = useState(0);
+  const [howOften, setHowOften] = useState(false);
+  const [interval, setInterval] = useState(7);
+  const [invalid, setInvalid] = useState(false);
   // attatchments
   const [attatchments, setAttachments] = useState([]);
-  // start and end times with timezone
-  const [startTime, setStartTime] = useState(null);
-  const [endTime, setEndTime] = useState(null);
-  const [timeZone, setTimeZone] = useState(null);
+  // start times
+  const [startTime, setStartTime] = useState(false);
+  const [startWhen, setStartWhen] = useState(null);
+  const [startTimeString, setStartTimeString] = useState("");
+  // end times
+  const [endTime, setEndTime] = useState(false);
+  const [endTimeString, setEndTimeString] = useState("");
+  const [endWhen, setEndWhen] = useState(null);
+  //time zone
+  const [timeZone, setTimeZone] = useState(
+    Intl.DateTimeFormat().resolvedOptions().timeZone
+  );
 
   const addEvent = () => {
     if (!isOnline) {
     }
     if (isOnline) {
+      const newEvent = {
+        kind: "Event",
+        summary,
+        description,
+        location: location ? locationString : null,
+        date: string,
+        reminders: {
+          reminder,
+          reminderTimeString: reminder ? reminderTimeString : null,
+          when: reminder ? when : null,
+        },
+        repeats: {
+          repeat,
+          howOften: repeat ? howOften : null,
+          nextDate: repeat && null,
+          interval: interval ? interval : 7,
+          repeatId: uuidv4(),
+        },
+        attatchments: [],
+        color: color ? color : "bg-white",
+        start: {
+          startTime: startTime ? startWhen : null,
+          timeZone,
+        },
+        end: {
+          endTime: endTime ? endWhen : null,
+          timeZone,
+        },
+        userId: user.id,
+      };
+      postEvent(newEvent, localStorage.getItem("authToken"))
+        .then((res) => {
+          setEvents((prev) => [...prev, ...res.data.event]);
+          setOpenModal(false);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
-    // const newEvent = {
-    //   kind: "Event",
-    //   summary,
-    //   description,
-    //   location,
-    //   date: string,
-    //   reminders: {
-    //     reminder: true,
-    //     reminderTimeString
-    //     when,
-    //   },
-    //   repeats: {
-    //     repeat: true,
-    //     howOften: "biweekly",
-    //     nextDate: next date
-    //   },
-    //   attatchments: [
-    //     {
-    //       type: "file",
-    //       file: "file",
-    //     },
-    //   ],
-    //   color,
-    //   start: {
-    //     startTime: new Date() + Number,
-    //     timeZone,
-    //   },
-    //   end: {
-    //     endTime: new Date() + Number,
-    //     timeZone,
-    //   },
-    //   userId: user.id,
-    // };
   };
 
   return (
@@ -102,7 +121,7 @@ const AddEvent = ({ setAddNewEvent }) => {
         id="description"
         cols="30"
         rows="10"
-        className="p-3 w-[90%] focus:outline-none rounded-md shadow-md"
+        className="p-3 w-full focus:outline-none rounded-md shadow-md"
       ></textarea>
       <div className="mt-10 w-full">
         <div className="w-full p-3 rounded-md shadow-md">
@@ -127,27 +146,111 @@ const AddEvent = ({ setAddNewEvent }) => {
             <FiRepeat />
             <Toggle condition={repeat} setCondition={setRepeat} />
           </div>
+          {repeat && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className=""
+            >
+              {repeatOptions.map((intervalString) => (
+                <div
+                  key={intervalString}
+                  className="flex justify-between items-center px-2 py-3 my-3 rounded-md shadow-md"
+                >
+                  <p>{intervalString}</p>
+                  <Toggle
+                    condition={howOften}
+                    setCondition={setHowOften}
+                    howOften={intervalString}
+                  />
+                </div>
+              ))}
+              {howOften && (
+                <input
+                  placeholder={`How many ${
+                    howOften === "Daily"
+                      ? "days"
+                      : howOften === "Weekly"
+                      ? "weeks"
+                      : howOften === "Bi Weekly"
+                      ? "times"
+                      : howOften === "Monthly"
+                      ? "months"
+                      : "years"
+                  }?`}
+                  onChange={(e) => setInterval(Number(e.target.value) || "")}
+                  onKeyUp={() => {
+                    typeof interval === "number"
+                      ? setInvalid(false)
+                      : setInvalid(true);
+                  }}
+                  className={`${
+                    invalid ? "border-red-200" : "border-green-200"
+                  } my-2 outline-none border-b py-1 px-2 rounded-sm`}
+                />
+              )}
+            </motion.div>
+          )}
         </div>
         <div className="w-full p-3 rounded-md shadow-md">
-          <div className="flex justify-between items-center mb-3">
+          <div className="flex justify-between items-center">
             <IoIosAlarm />
             <Toggle condition={reminder} setCondition={setReminder} />
           </div>
           {reminder && (
-            <TimeSetter
-              setWhen={setWhen}
-              setReminderTimeString={setReminderTimeString}
-            />
+            <div>
+              {!when ? (
+                <TimeSetter
+                  setDateTime={setWhen}
+                  setDateTimeString={setReminderTimeString}
+                  openTimeSetter={setReminder}
+                />
+              ) : (
+                <p>{reminderTimeString}</p>
+              )}
+            </div>
           )}
         </div>
       </div>
       <div className="my-3 flex justify-center items-center w-full">
-        <div className="w-full mx-1 p-3 rounded-md shadow-md">
+        <div
+          onClick={() => setStartTime(true)}
+          className="w-full mr-1 p-3 rounded-md shadow-md"
+        >
           <p>Start</p>
+          {startTime && (
+            <div>
+              {!startWhen ? (
+                <TimeSetter
+                  setDateTime={setStartWhen}
+                  setDateTimeString={setStartTimeString}
+                  openTimeSetter={setStartTime}
+                />
+              ) : (
+                <p>{startTimeString}</p>
+              )}
+            </div>
+          )}
         </div>
-        <div className="w-full mx-1 p-3 rounded-md shadow-md">
-          <p>End</p>
-        </div>
+      </div>
+      <div
+        onClick={() => setEndTime(true)}
+        className="w-full mr-1 p-3 rounded-md shadow-md"
+      >
+        <p>End</p>
+        {endTime && (
+          <div>
+            {!endWhen ? (
+              <TimeSetter
+                setDateTime={setEndWhen}
+                setDateTimeString={setEndTimeString}
+                openTimeSetter={setEndTime}
+              />
+            ) : (
+              <p>{endTimeString}</p>
+            )}
+          </div>
+        )}
       </div>
       <div className="mt-5">
         <label>

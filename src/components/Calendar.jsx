@@ -22,6 +22,9 @@ const Calendar = () => {
     day,
     openModal,
     diff,
+    dateString,
+    dayOfWeekDays,
+    rowDays,
   } = useContext(DatesContext);
 
   const addEvent = (date) => {
@@ -32,13 +35,22 @@ const Calendar = () => {
   return (
     <main className="px-2">
       <section
-        onTouchStart={(e) => setStart(e.touches[0].clientX)}
-        onTouchMove={(e) => moveCalendar(e)}
-        onTouchEnd={(e) => finish()}
+        onTouchStart={(e) => !openModal && setStart(e.touches[0].clientX)}
+        onTouchMove={(e) => !openModal && moveCalendar(e)}
+        onTouchEnd={(e) => !openModal && finish()}
       >
         <div className="grid grid-cols-7 gap-2 justify-center items-center my-5">
-          {weekDays.map((day) => (
-            <p key={day} className="mx-2 text-center">
+          {weekDays.map((day, index) => (
+            <p
+              key={day}
+              className={`${
+                index === new Date().getDay() &&
+                new Date(dateString).getMonth() === new Date().getMonth() &&
+                new Date(dateString).getYear() === new Date().getYear()
+                  ? "bg-gradient-to-r from-cyan-300 to-cyan-500 bg-clip-text text-transparent font-semibold border-b-2 rounded-md"
+                  : ""
+              } mx-2 text-center`}
+            >
               {day.split("")[0]}
             </p>
           ))}
@@ -53,7 +65,7 @@ const Calendar = () => {
                 variants={calendar}
                 initial="hidden"
                 animate="show"
-                className="grid grid-cols-7 gap-1 h-[78vh]"
+                className="grid grid-cols-7 gap-1 h-[76vh] overflow-hidden"
               >
                 {[...Array(paddingDays + daysInMonth)].map((abs, index) => (
                   <motion.div
@@ -65,11 +77,38 @@ const Calendar = () => {
                       )
                     }
                     key={index}
-                    className={`w-full min-h-[12vh] max-h-[12vh] rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start overflow-hidden cursor-pointer ${
+                    className={`${
+                      new Date(dateString).getMonth() ===
+                        new Date().getMonth() &&
+                      new Date(dateString).getYear() === new Date().getYear()
+                        ? index === dayOfWeekDays[0] ||
+                          index === dayOfWeekDays[1] ||
+                          index === dayOfWeekDays[2] ||
+                          index === dayOfWeekDays[3] ||
+                          index === dayOfWeekDays[4] ||
+                          index === dayOfWeekDays[5]
+                          ? "bg-slate-100"
+                          : "bg-white"
+                        : "bg-white"
+                    } ${
+                      new Date(dateString).getMonth() ===
+                        new Date().getMonth() &&
+                      new Date(dateString).getYear() === new Date().getYear()
+                        ? index === rowDays[0] ||
+                          index === rowDays[1] ||
+                          index === rowDays[2] ||
+                          index === rowDays[3] ||
+                          index === rowDays[4] ||
+                          index === rowDays[5] ||
+                          index === rowDays[6]
+                          ? "bg-slate-100"
+                          : "bg-white"
+                        : "bg-white"
+                    } w-full min-h-[12vh] max-h-[15vh] rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start overflow-hidden cursor-pointer ${
                       index - paddingDays + 1 === day &&
                       month === new Date().getMonth() &&
                       year === new Date().getFullYear() &&
-                      "shadow-green-400 shadow-md"
+                      "shadow-cyan-400 shadow-md"
                     }`}
                   >
                     <div
@@ -77,7 +116,7 @@ const Calendar = () => {
                         index - paddingDays + 1 === day &&
                         month === new Date().getMonth() &&
                         year === new Date().getFullYear() &&
-                        "w-[25px] h-[25px] rounded-full bg-green-100 shadow-sm"
+                        "w-[25px] h-[25px] rounded-full bg-cyan-100 shadow-sm"
                       }`}
                     >
                       <p>{index >= paddingDays && index - paddingDays + 1}</p>
@@ -87,7 +126,7 @@ const Calendar = () => {
                         new Date(event.date).toLocaleDateString() ===
                           `${month + 1}/${index - paddingDays + 1}/${year}` && (
                           <motion.div
-                            key={event.event}
+                            key={event.id}
                             initial={{ opacity: 0, y: -50 }}
                             animate={{
                               opacity: 1,
@@ -101,7 +140,7 @@ const Calendar = () => {
                             className={`rounded-lg ${event.color} shadow-md px-2 py-1 mx-2 my-1 w-full`}
                           >
                             <p className="whitespace-nowrap text-xs">
-                              {event.event}
+                              {event.summary}
                             </p>
                           </motion.div>
                         )
