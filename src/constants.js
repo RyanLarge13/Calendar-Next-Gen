@@ -29,6 +29,201 @@ export const weekDays = [
   "Saturday",
 ];
 
+export const staticTimes = [
+  {
+    string: "12:00am",
+    time: "00:00:00",
+  },
+  {
+    string: "12:30am",
+    time: "00:30:00",
+  },
+  {
+    string: "1:00am",
+    time: "01:00:00",
+  },
+  {
+    string: "1:30am",
+    time: "01:30:00",
+  },
+  {
+    string: "2:00am",
+    time: "02:00:00",
+  },
+  {
+    string: "2:30am",
+    time: "02:30:00",
+  },
+  {
+    string: "3:00am",
+    time: "03:00:00",
+  },
+  {
+    string: "3:30am",
+    time: "03:30:00",
+  },
+  {
+    string: "4:00am",
+    time: "04:00:00",
+  },
+  {
+    string: "4:30am",
+    time: "04:30:00",
+  },
+  {
+    string: "5:00am",
+    time: "05:00:00",
+  },
+  {
+    string: "5:30am",
+    time: "05:30:00",
+  },
+  {
+    string: "6:00am",
+    time: "06:00:00",
+  },
+  {
+    string: "6:30am",
+    time: "06:30:00",
+  },
+  {
+    string: "7:00am",
+    time: "07:00:00",
+  },
+  {
+    string: "7:30am",
+    time: "07:30:00",
+  },
+  {
+    string: "8:00am",
+    time: "08:00:00",
+  },
+  {
+    string: "8:30am",
+    time: "08:30:00",
+  },
+  {
+    string: "9:00am",
+    time: "09:00:00",
+  },
+  {
+    string: "9:30am",
+    time: "09:30:00",
+  },
+  {
+    string: "10:00am",
+    time: "10:00:00",
+  },
+  {
+    string: "10:30am",
+    time: "10:30:00",
+  },
+  {
+    string: "11:00am",
+    time: "11:00:00",
+  },
+  {
+    string: "11:30am",
+    time: "11:30:00",
+  },
+  {
+    string: "12:00pm",
+    time: "12:00:00",
+  },
+  {
+    string: "12:30pm",
+    time: "12:30:00",
+  },
+  {
+    string: "1:00pm",
+    time: "13:00:00",
+  },
+  {
+    string: "1:30pm",
+    time: "13:30:00",
+  },
+  {
+    string: "2:00pm",
+    time: "14:00:00",
+  },
+  {
+    string: "2:30pm",
+    time: "14:30:00",
+  },
+  {
+    string: "3:00pm",
+    time: "15:00:00",
+  },
+  {
+    string: "3:30pm",
+    time: "15:30:00",
+  },
+  {
+    string: "4:00pm",
+    time: "16:00:00",
+  },
+  {
+    string: "4:30pm",
+    time: "16:30:00",
+  },
+  {
+    string: "5:00pm",
+    time: "17:00:00",
+  },
+  {
+    string: "5:30pm",
+    time: "17:30:00",
+  },
+  {
+    string: "6:00pm",
+    time: "18:00:00",
+  },
+  {
+    string: "6:30pm",
+    time: "18:30:00",
+  },
+  {
+    string: "7:00pm",
+    time: "19:00:00",
+  },
+  {
+    string: "7:30pm",
+    time: "19:30:00",
+  },
+  {
+    string: "8:00pm",
+    time: "20:00:00",
+  },
+  {
+    string: "8:30pm",
+    time: "20:30:00",
+  },
+  {
+    string: "9:00pm",
+    time: "21:00:00",
+  },
+  {
+    string: "9:30pm",
+    time: "21:30:00",
+  },
+  {
+    string: "10:00pm",
+    time: "22:00:00",
+  },
+  {
+    string: "10:30pm",
+    time: "22:30:00",
+  },
+  {
+    string: "11:00pm",
+    time: "23:00:00",
+  },
+  {
+    string: "11:30pm",
+    time: "23:30:00",
+  },
+];
+
 export const holidays = [
   {
     color: "bg-purple-300",

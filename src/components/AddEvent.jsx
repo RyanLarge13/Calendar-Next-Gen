@@ -37,13 +37,15 @@ const AddEvent = ({ setAddNewEvent }) => {
   const [invalid, setInvalid] = useState(false);
   // attatchments
   const [attatchments, setAttachments] = useState([]);
-  // start and end times with timezone
+  // start times
   const [startTime, setStartTime] = useState(false);
   const [startWhen, setStartWhen] = useState(null);
   const [startTimeString, setStartTimeString] = useState("");
+  // end times
   const [endTime, setEndTime] = useState(false);
   const [endTimeString, setEndTimeString] = useState("");
   const [endWhen, setEndWhen] = useState(null);
+  //time zone
   const [timeZone, setTimeZone] = useState(
     Intl.DateTimeFormat().resolvedOptions().timeZone
   );
@@ -67,17 +69,17 @@ const AddEvent = ({ setAddNewEvent }) => {
           repeat,
           howOften: repeat ? howOften : null,
           nextDate: repeat && null,
-          interval,
+          interval: interval ? interval : 7,
           repeatId: uuidv4(),
         },
         attatchments: [],
         color: color ? color : "bg-white",
         start: {
-          startTime: startTime ? startTime : null,
+          startTime: startTime ? startWhen : null,
           timeZone,
         },
         end: {
-          endTime: endTime ? endTime : null,
+          endTime: endTime ? endWhen : null,
           timeZone,
         },
         userId: user.id,

@@ -3,14 +3,39 @@ import { MdEventAvailable, MdEventNote, MdEventRepeat } from "react-icons/md";
 import { MdLocationPin } from "react-icons/md";
 import { FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";
+import { useState, useEffect } from "react";
 
 const DayEvent = ({ event, setEvent }) => {
+  const [margin, setMargin] = useState(0);
+  const [height, setHeight] = useState(0);
+  const [z, setZ] = useState(0);
+
+  useEffect(() => {
+    const hour = new Date(event.start.startTime).getHours();
+    setZ(hour);
+    if (event.start.startTime) {
+      const startHours = new Date(event.start.startTime).getHours() * 241.5;
+      const startMinutes = new Date(event.start.startTime).getMinutes();
+      setMargin(() => startHours + (startMinutes === 30 ? 100 : 0));
+    }
+    if (event.end.endTime) {
+      const startHours = new Date(event.start.startTime).getHours() * 241.5;
+      const startMinutes = new Date(event.start.startTime).getMinutes();
+      const endHours = new Date(event.end.endTime).getHours() * 241.5;
+      const endMinutes = new Date(event.end.endTime).getMinutes();
+      const startHeight = startHours + (startMinutes === 30 ? 100 : 0);
+      const endHeight = endHours + (endMinutes === 30 ? 100 : 0);
+      setHeight(endHeight - startHeight);
+    }
+  }, []);
+
   return (
     <motion.div
       key={event.id}
       initial={{ y: 50, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className={`p-3 my-2 rounded-md shadow-md w-full`}
+      style={{ top: `${margin}px`, height: height, minHeight: 50, zIndex: z }}
+      className={`p-3 rounded-md shadow-md w-[70%] absolute ${event.color} bg-opacity-10 hover:z-[900] hover:bg-opacity-50 duration-200`}
     >
       <div
         className={`${event.color} px-3 py-1 rounded-md font-extrabold mb-5 shadow-sm justify-between flex items-start`}

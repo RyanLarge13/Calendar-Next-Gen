@@ -3,13 +3,14 @@ const prisma = new PrismaClient();
 
 const addMultipleEvents = async (newEvent, howOften) => {
   if (!howOften) return [];
+  let interval = newEvent.repeats.interval;
   let day = new Date(newEvent.date).getDate();
   let month = new Date(newEvent.date).getMonth() + 1;
   let year = new Date(newEvent.date).getFullYear();
-  const daysInMonth = new Date(year, month, 0).getDate();
-  const repeats = [];
+  let daysInMonth = new Date(year, month, 0).getDate();
+  let repeats = [];
   if (howOften === "Daily") {
-    for (let i = 1; i < 7; i++) {
+    for (let i = 1; i < interval; i++) {
       day === daysInMonth && (month += 1);
       month === 13 && (year += 1);
       month === 13 && (month = 1);
@@ -28,7 +29,7 @@ const addMultipleEvents = async (newEvent, howOften) => {
   }
   if (howOften === "Weekly") {
     let diff = daysInMonth - 7;
-    for (let i = 1; i < 7; i++) {
+    for (let i = 1; i < interval; i++) {
       day > diff && (month += 1);
       month === 13 && (year += 1);
       month === 13 && (month = 1);
@@ -48,7 +49,7 @@ const addMultipleEvents = async (newEvent, howOften) => {
   }
   if (howOften === "Bi Weekly") {
     let diff = daysInMonth - 7;
-    for (let i = 1; i < 7; i++) {
+    for (let i = 1; i < interval; i++) {
       day > diff && (month += 1);
       month === 13 && (year += 1);
       month === 13 && (month = 1);
@@ -67,7 +68,7 @@ const addMultipleEvents = async (newEvent, howOften) => {
     // });
   }
   if (howOften === "Monthly") {
-    for (let i = 1; i < 7; i++) {
+    for (let i = 1; i < interval; i++) {
       month += 1;
       month === 13 && (year += 1);
       month === 13 && (month = 1);
@@ -84,7 +85,7 @@ const addMultipleEvents = async (newEvent, howOften) => {
     // });
   }
   if (howOften === "Yearly") {
-    for (let i = 1; i < 7; i++) {
+    for (let i = 1; i < interval; i++) {
       year += 1;
       const nextEvent = {
         ...newEvent,
