@@ -22,6 +22,7 @@ const TimeSetter = ({ setDateTime, setDateTimeString, openTimeSetter }) => {
       const month = currentDate.getMonth();
       const day = currentDate.getDate();
       const year = currentDate.getFullYear();
+      // console.log(new Date(year, month, day, hours, minutes).toString());
       return new Date(year, month, day, hours, minutes).toString();
     };
     setDateTimeString(formattedDateString);
@@ -29,13 +30,16 @@ const TimeSetter = ({ setDateTime, setDateTimeString, openTimeSetter }) => {
   };
 
   return (
-  	<motion.div initial={{opacity: 0, bottom: "-100%"}} animate={{opacity: 1, bottom: 0}}>
-    <StaticTimePicker
-      className="w-full fixed bottom-0 right-0 left-0"
-      value={value}
-      onChange={(newValue) => setValue(newValue)}
-      onAccept={(ISODate) => calcValues(ISODate)}
-    />
+    <motion.div
+      initial={{ opacity: 0, bottom: "-100%" }}
+      animate={{ opacity: 1, bottom: 0 }}
+    >
+      <StaticTimePicker
+        className="w-full fixed bottom-0 right-0 left-0"
+        value={value}
+        onChange={(newValue) => setValue(newValue)}
+        onAccept={(ISODate) => calcValues(ISODate)}
+      />
     </motion.div>
   );
 };

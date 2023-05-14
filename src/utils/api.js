@@ -1,10 +1,10 @@
 import Axios from "axios";
 
 const devUrl = "http://localhost:8080";
-// const productionUrl = "https://calendar-next-gen-production.up.railway.app";
+const productionUrl = "https://calendar-next-gen-production.up.railway.app";
 
 export const getUserData = (token) => {
-  const res = Axios.get(`${devUrl}/user/data`, {
+  const res = Axios.get(`${productionUrl}/user/data`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -27,7 +27,7 @@ export const getGoogleData = async (token) => {
 
 export const loginWithGoogle = async (user) => {
   const res = await Axios.post(
-    `${devUrl}/login/google`,
+    `${productionUrl}/login/google`,
     {
       user: {
         id: user.id,
@@ -47,7 +47,7 @@ export const loginWithGoogle = async (user) => {
 
 export const loginWithPasswordAndUsername = async (credentials) => {
   const { username, email, password, avatarUrl } = credentials;
-  const res = Axios.post(`${devUrl}/login/classic`, {
+  const res = Axios.post(`${productionUrl}/login/classic`, {
     username,
     email,
     password,
@@ -64,7 +64,7 @@ export const loginWithPasswordAndUsername = async (credentials) => {
 // }
 
 export const getEvents = async (username, token) => {
-  const res = await Axios.get(`${devUrl}/${username}/events`, {
+  const res = await Axios.get(`${productionUrl}/${username}/events`, {
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
@@ -76,7 +76,7 @@ export const getEvents = async (username, token) => {
 
 export const postEvent = (event, token) => {
   const res = Axios.post(
-    `${devUrl}/new/event`,
+    `${productionUrl}/new/event`,
     { event: event },
     {
       headers: {

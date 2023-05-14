@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import { motion } from "framer-motion";
 import { colors } from "../constants";
 import { MdLocationPin } from "react-icons/md";
@@ -13,9 +13,8 @@ import Color from "./Color";
 import UserContext from "../context/UserContext";
 import Toggle from "./Toggle";
 import TimeSetter from "./TimeSetter";
-import { useStaticPicker } from "@mui/x-date-pickers/internals";
 
-const AddEvent = ({ setAddNewEvent }) => {
+const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
   const { setEvents, user, isOnline } = useContext(UserContext);
   const { string, setOpenModal } = useContext(DatesContext);
 
@@ -50,7 +49,36 @@ const AddEvent = ({ setAddNewEvent }) => {
     Intl.DateTimeFormat().resolvedOptions().timeZone
   );
 
-  const addEvent = () => {
+  useEffect(() => {
+    if (passedStartTime != null) {
+      const splitStartTime = passedStartTime.split(":");
+      const today = new Date(string);
+      const month = today.getMonth();
+      const year = today.getFullYear();
+      const day = today.getDate();
+      const newStartTime = new Date(
+        year,
+        month,
+        day,
+        splitStartTime[0],
+        splitStartTime[1]
+      );
+      const formattedDateString = () => {
+        return `${
+          splitStartTime[0] > 12
+            ? splitStartTime[0] % 12
+            : splitStartTime[0] == 0
+            ? "12"
+            : splitStartTime[0]
+        }:${splitStartTime[1]} ${splitStartTime[0] >= 12 ? "PM" : "AM"}`;
+      };
+      setStartWhen(() => newStartTime);
+      setStartTimeString(formattedDateString);
+      setStartTime(true);
+    }
+  }, [passedStartTime]);
+
+  const addEvent = ({ startTime }) => {
     if (!isOnline) {
     }
     if (isOnline) {
