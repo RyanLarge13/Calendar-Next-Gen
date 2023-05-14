@@ -78,7 +78,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
     }
   }, [passedStartTime]);
 
-  const addEvent = ({ startTime }) => {
+  const addEvent = () => {
     if (!isOnline) {
     }
     if (isOnline) {
