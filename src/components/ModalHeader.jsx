@@ -1,5 +1,6 @@
 import { useState, useContext, useEffect } from "react";
 import { motion } from "framer-motion";
+import { deleteEvent } from "../utils/api.js";
 import {
   BsFillArrowDownCircleFill,
   BsFillArrowUpCircleFill,
@@ -8,9 +9,11 @@ import {
   BsFillShareFill,
 } from "react-icons/bs";
 import DatesContext from "../context/DatesContext";
+import UserContext from "../context/UserContext";
 
-const ModalHeader = ({ allDayEvents, event }) => {
+const ModalHeader = ({ addEvent, allDayEvents, event, setEvent}) => {
   const { string } = useContext(DatesContext);
+  const { user, events, setEvents } = useContext(UserContext);
 
   const [showAllDayEvents, setShowAllDayEvents] = useState(true);
   const [x, setX] = useState("100%");
@@ -21,9 +24,22 @@ const ModalHeader = ({ allDayEvents, event }) => {
     }, 750);
   }, []);
 
+  const deleteAnEvent = () => {
+    const authToken = localStorage.getItem("authToken");
+    deleteEvent(user.username, event.id, authToken)
+      .then((res) => {
+        const filteredEvents = events.filter(
+          (event) => event.id !== res.data.event.id
+        );
+        setEvent(null)
+        setEvents(filteredEvents);
+      })
+      .catch((err) => console.log(err));
+  };
+
   return (
     <motion.div
-      animate={event ? { left: 5 } : { left: "36%", x: x }}
+      animate={event && !addEvent ? { left: 5 } : { left: "36%", x: x }}
       className="bg-white z-[999] p-2 font-bold shadow-md fixed top-1 right-1 rounded-md"
     >
       <div className="flex justify-between items-center">
@@ -48,7 +64,7 @@ const ModalHeader = ({ allDayEvents, event }) => {
             <>
               <BsFillShareFill />
               <BsFillPenFill />
-              <BsFillTrashFill />
+              <BsFillTrashFill onClick={() => deleteAnEvent()} />
             </>
           )}
         </div>

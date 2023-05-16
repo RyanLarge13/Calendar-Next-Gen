@@ -66,7 +66,7 @@ const Modal = () => {
         className={`bg-white rounded-md shadow-lg shadow-purple-200 px-2 fixed top-0 bottom-0 right-0 w-[65%] overflow-y-auto scroll-smooth scrollbar-hide`}
         ref={modalRef}
       >
-        <ModalHeader allDayEvents={allDayEvents} event={event} />
+        <ModalHeader addEvent={addNewEvent} allDayEvents={allDayEvents} event={event} setEvent={setEvent} />
         {addNewEvent ? (
           <AddEvent
             setAddNewEvent={setAddNewEvent}

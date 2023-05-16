@@ -136,3 +136,19 @@ export const addEvent = async (req, res) => {
     });
   }
 };
+
+export const deleteEvent = async (req, res) => {
+  const user = req.user;
+  const id = req.params.eventId;
+  const deletedEvent = prisma.event.delete({
+    where: {
+      id: id,
+    },
+  });
+  if (deletedEvent) {
+    return res.json({
+      message: "Successfully deleted event",
+      event: deletedEvent,
+    });
+  }
+};
