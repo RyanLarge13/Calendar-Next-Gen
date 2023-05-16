@@ -24,6 +24,7 @@ const Calendar = () => {
     diff,
     dateString,
     rowDays,
+    columnDays,
   } = useContext(DatesContext);
 
   const addEvent = (date) => {
@@ -86,7 +87,14 @@ const Calendar = () => {
                           index === rowDays[3] ||
                           index === rowDays[4] ||
                           index === rowDays[5] ||
-                          index === rowDays[6]
+                          index === rowDays[6] ||
+                          index === columnDays[0] ||
+                          index === columnDays[1] ||
+                          index === columnDays[2] ||
+                          index === columnDays[3] ||
+                          index === columnDays[4] ||
+                          index === columnDays[5] ||
+                          index === columnDays[6]
                           ? { backgroundColor: "#eee" }
                           : { backgroundColor: "#fff" }
                         : { backgroundColor: "#fff" }

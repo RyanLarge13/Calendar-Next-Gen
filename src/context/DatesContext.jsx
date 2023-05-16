@@ -25,6 +25,7 @@ export const DatesProvider = ({ children }) => {
   const [openModal, setOpenModal] = useState(false);
   const [string, setString] = useState("");
   const [rowDays, setRowDays] = useState([]);
+  const [columnDays, setColumnDays] = useState([]);
 
   useEffect(() => {
     setLoading(true);
@@ -89,6 +90,21 @@ export const DatesProvider = ({ children }) => {
         rowDays.push(i);
       }
     }
+    let column = new Date().getDay();
+    let columnDays = [];
+    for (let i = column; i < 32; i++) {
+      if (
+        i === column ||
+        i === column + 7 ||
+        i === column + 14 ||
+        i === column + 21 ||
+        i === column + 28 ||
+        i === column + 35
+      ) {
+        columnDays.push(i);
+      }
+    }
+    setColumnDays(columnDays);
     setRowDays(rowDays);
   }, [dateString]);
 
@@ -113,8 +129,9 @@ export const DatesProvider = ({ children }) => {
         finish,
         setOpen,
         setDay,
-        dateString, 
+        dateString,
         rowDays,
+        columnDays,
       }}
     >
       {children}

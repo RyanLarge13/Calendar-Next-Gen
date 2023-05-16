@@ -63,10 +63,10 @@ const Modal = () => {
       <motion.div
         initial={{ x: 1000 }}
         animate={{ x: 0 }}
-        className={`bg-white rounded-md shadow-lg shadow-purple-200 px-2 fixed top-0 bottom-0 right-0 w-[65%] overflow-y-auto scroll-smooth`}
+        className={`bg-white rounded-md shadow-lg shadow-purple-200 px-2 fixed top-0 bottom-0 right-0 w-[65%] overflow-y-auto scroll-smooth scrollbar-hide`}
         ref={modalRef}
       >
-          <ModalHeader allDayEvents={allDayEvents} event={event} />
+        <ModalHeader allDayEvents={allDayEvents} event={event} />
         {addNewEvent ? (
           <AddEvent
             setAddNewEvent={setAddNewEvent}
