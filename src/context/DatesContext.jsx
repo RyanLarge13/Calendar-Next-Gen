@@ -24,8 +24,8 @@ export const DatesProvider = ({ children }) => {
   const [paddingDays, setPaddingDays] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [string, setString] = useState("");
-  const [dayOfWeekDays, setDayOfWeekDays] = useState([]);
   const [rowDays, setRowDays] = useState([]);
+  const [columnDays, setColumnDays] = useState([]);
 
   useEffect(() => {
     setLoading(true);
@@ -104,7 +104,7 @@ export const DatesProvider = ({ children }) => {
         columnDays.push(i);
       }
     }
-    setDayOfWeekDays(columnDays);
+    setColumnDays(columnDays);
     setRowDays(rowDays);
   }, [dateString]);
 
@@ -130,8 +130,8 @@ export const DatesProvider = ({ children }) => {
         setOpen,
         setDay,
         dateString,
-        dayOfWeekDays,
         rowDays,
+        columnDays,
       }}
     >
       {children}

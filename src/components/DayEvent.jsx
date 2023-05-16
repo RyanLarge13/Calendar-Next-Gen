@@ -16,15 +16,15 @@ const DayEvent = ({ event, setEvent }) => {
     if (event.start.startTime) {
       const startHours = new Date(event.start.startTime).getHours() * 241.5;
       const startMinutes = new Date(event.start.startTime).getMinutes();
-      setMargin(() => startHours + (startMinutes === 30 ? 100 : 0));
+      setMargin(() => startHours + 100 + (startMinutes === 30 ? 100 : 0));
     }
     if (event.end.endTime) {
       const startHours = new Date(event.start.startTime).getHours() * 241.5;
       const startMinutes = new Date(event.start.startTime).getMinutes();
       const endHours = new Date(event.end.endTime).getHours() * 241.5;
       const endMinutes = new Date(event.end.endTime).getMinutes();
-      const startHeight = startHours + (startMinutes === 30 ? 100 : 0);
-      const endHeight = endHours + (endMinutes === 30 ? 100 : 0);
+      const startHeight = startHours + 100 + (startMinutes === 30 ? 100 : 0);
+      const endHeight = endHours + 100 + (endMinutes === 30 ? 100 : 0);
       setHeight(endHeight - startHeight);
     }
   }, []);
@@ -33,9 +33,9 @@ const DayEvent = ({ event, setEvent }) => {
     <motion.div
       key={event.id}
       initial={{ y: 50, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
+      whileInView={{ y: 0, opacity: 1, transition: { duration: 0.2 } }}
       style={{ top: `${margin}px`, height: height, minHeight: 50, zIndex: z }}
-      className={`p-3 rounded-md shadow-md w-[70%] absolute ${event.color} bg-opacity-10 hover:z-[900] hover:bg-opacity-50 duration-200`}
+      className={`p-3 rounded-md shadow-md w-[70%] absolute ${event.color} bg-opacity-10 hover:z-[998] hover:bg-opacity-50 duration-200 right-0`}
     >
       <div
         className={`${event.color} px-3 py-1 rounded-md font-extrabold mb-5 shadow-sm justify-between flex items-start`}

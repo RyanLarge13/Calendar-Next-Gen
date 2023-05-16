@@ -81,10 +81,16 @@ const LoginLogout = () => {
           </div>
         ) : (
           <div className="pt-10 flex flex-col justify-center items-center">
-            <BiLogInCircle
-              onClick={() => setRegularLogin((prev) => !prev)}
-              className="absolute top-5 right-5"
-            />
+            {!regularLogin ? (
+              <BiLogInCircle
+                onClick={() => setRegularLogin(true)}
+                className="absolute top-5 right-5"
+              />
+            ) : (
+              <BiLogOutCircle onClick={() => setRegularLogin(false)} 
+                className="absolute top-5 right-5"
+              />
+            )}
             {regularLogin ? (
               <motion.form
                 initial={{ opacity: 0, y: "100%" }}
