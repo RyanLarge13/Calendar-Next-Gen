@@ -6,23 +6,32 @@ import {
 } from "react-icons/bs";
 import DatesContext from "../context/DatesContext";
 
-const ModalHeader = ({ allDayEvents }) => {
+const ModalHeader = ({ allDayEvents, event }) => {
   const { string } = useContext(DatesContext);
 
   const [showAllDayEvents, setShowAllDayEvents] = useState(true);
 
   return (
-    <div className="bg-white rounded-b-sm z-[999] p-2 sticky top-1 font-bold shadow-sm">
+    <motion.div
+      animate={event ? { position: "fixed", left: "36%"} : {}}
+      className="bg-white z-[999] p-2 font-bold shadow-sm sticky top-1 left-1 right-1 rounded-md"
+    >
       <div className="flex justify-between items-center">
         <h2 className="bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent">
           {string}
         </h2>
-        {showAllDayEvents ? (
-          <BsFillArrowUpCircleFill onClick={() => setShowAllDayEvents(false)} />
-        ) : (
-          <BsFillArrowDownCircleFill
-            onClick={() => setShowAllDayEvents(true)}
-          />
+        {allDayEvents.length > 0 && (
+          <div>
+            {showAllDayEvents ? (
+              <BsFillArrowUpCircleFill
+                onClick={() => setShowAllDayEvents(false)}
+              />
+            ) : (
+              <BsFillArrowDownCircleFill
+                onClick={() => setShowAllDayEvents(true)}
+              />
+            )}
+          </div>
         )}
       </div>
       {showAllDayEvents && (
@@ -40,7 +49,7 @@ const ModalHeader = ({ allDayEvents }) => {
           ))}
         </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 };
 

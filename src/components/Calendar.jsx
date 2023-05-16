@@ -23,7 +23,6 @@ const Calendar = () => {
     openModal,
     diff,
     dateString,
-    dayOfWeekDays,
     rowDays,
   } = useContext(DatesContext);
 
@@ -65,7 +64,7 @@ const Calendar = () => {
                 variants={calendar}
                 initial="hidden"
                 animate="show"
-                className="grid grid-cols-7 gap-1 h-[76vh] overflow-hidden"
+                className="grid grid-cols-7 gap-1 min-h-[76vh] overflow-hidden"
               >
                 {[...Array(paddingDays + daysInMonth)].map((abs, index) => (
                   <motion.div
@@ -77,20 +76,7 @@ const Calendar = () => {
                       )
                     }
                     key={index}
-                    className={`${
-                      new Date(dateString).getMonth() ===
-                        new Date().getMonth() &&
-                      new Date(dateString).getYear() === new Date().getYear()
-                        ? index === dayOfWeekDays[0] ||
-                          index === dayOfWeekDays[1] ||
-                          index === dayOfWeekDays[2] ||
-                          index === dayOfWeekDays[3] ||
-                          index === dayOfWeekDays[4] ||
-                          index === dayOfWeekDays[5]
-                          ? "bg-slate-100"
-                          : "bg-white"
-                        : "bg-white"
-                    } ${
+                    style={
                       new Date(dateString).getMonth() ===
                         new Date().getMonth() &&
                       new Date(dateString).getYear() === new Date().getYear()
@@ -101,10 +87,11 @@ const Calendar = () => {
                           index === rowDays[4] ||
                           index === rowDays[5] ||
                           index === rowDays[6]
-                          ? "bg-slate-100"
-                          : "bg-white"
-                        : "bg-white"
-                    } w-full min-h-[12vh] max-h-[15vh] rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start overflow-hidden cursor-pointer ${
+                          ? { backgroundColor: "#eee" }
+                          : { backgroundColor: "#fff" }
+                        : { backgroundColor: "#fff" }
+                    }
+                    className={`relative w-full min-h-[12vh] max-h-[15vh] rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start gap-y-1 overflow-hidden cursor-pointer ${
                       index - paddingDays + 1 === day &&
                       month === new Date().getMonth() &&
                       year === new Date().getFullYear() &&
@@ -121,30 +108,34 @@ const Calendar = () => {
                     >
                       <p>{index >= paddingDays && index - paddingDays + 1}</p>
                     </div>
-                    {[...events, ...holidays].map(
-                      (event) =>
-                        new Date(event.date).toLocaleDateString() ===
-                          `${month + 1}/${index - paddingDays + 1}/${year}` && (
-                          <motion.div
-                            key={event.id}
-                            initial={{ opacity: 0, y: -50 }}
-                            animate={{
-                              opacity: 1,
-                              y: 0,
-                              transition: {
-                                delay: 0.8,
-                                type: "spring",
-                                stiffness: 200,
-                              },
-                            }}
-                            className={`rounded-lg ${event.color} shadow-md px-2 py-1 mx-2 my-1 w-full`}
-                          >
-                            <p className="whitespace-nowrap text-xs">
-                              {event.summary}
-                            </p>
-                          </motion.div>
-                        )
-                    )}
+                    <div className="w-full overflow-y-hidden absolute inset-0 pt-8">
+                      {[...events, ...holidays].map(
+                        (event) =>
+                          new Date(event.date).toLocaleDateString() ===
+                            `${month + 1}/${
+                              index - paddingDays + 1
+                            }/${year}` && (
+                            <motion.div
+                              key={event.id}
+                              initial={{ opacity: 0, y: -50 }}
+                              animate={{
+                                opacity: 1,
+                                y: 0,
+                                transition: {
+                                  delay: 0.8,
+                                  type: "spring",
+                                  stiffness: 200,
+                                },
+                              }}
+                              className={`rounded-lg ${event.color} shadow-md p-1 w-[95%] my-1`}
+                            >
+                              <p className="whitespace-nowrap text-xs overflow-hidden">
+                                {event.summary}
+                              </p>
+                            </motion.div>
+                          )
+                      )}
+                    </div>
                   </motion.div>
                 ))}
               </motion.div>

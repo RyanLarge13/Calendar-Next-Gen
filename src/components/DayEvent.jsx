@@ -33,9 +33,9 @@ const DayEvent = ({ event, setEvent }) => {
     <motion.div
       key={event.id}
       initial={{ y: 50, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
+      whileInView={{ y: 0, opacity: 1 }}
       style={{ top: `${margin}px`, height: height, minHeight: 50, zIndex: z }}
-      className={`p-3 rounded-md shadow-md w-[70%] absolute ${event.color} bg-opacity-10 hover:z-[998] hover:bg-opacity-50 duration-200`}
+      className={`p-3 rounded-md shadow-md w-[70%] absolute ${event.color} bg-opacity-10 hover:z-[998] hover:bg-opacity-50 right-0`}
     >
       <div
         className={`${event.color} px-3 py-1 rounded-md font-extrabold mb-5 shadow-sm justify-between flex items-start`}

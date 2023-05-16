@@ -16,7 +16,7 @@ const Modal = () => {
 
   const [dayEvents, setDayEvents] = useState([]);
   const [addNewEvent, setAddNewEvent] = useState(false);
-  const [event, setEvent] = useState(false);
+  const [event, setEvent] = useState(null);
   const [type, setType] = useState("event");
   const [allDayEvents, setAllDayEvents] = useState([]);
   const [addEventWithStartTime, setAddEventWithStartTime] = useState(null);
@@ -66,7 +66,7 @@ const Modal = () => {
         className={`bg-white rounded-md shadow-lg shadow-purple-200 px-2 fixed top-0 bottom-0 right-0 w-[65%] overflow-y-auto scroll-smooth`}
         ref={modalRef}
       >
-        {!addNewEvent && <ModalHeader allDayEvents={allDayEvents} />}
+          <ModalHeader allDayEvents={allDayEvents} event={event} />
         {addNewEvent ? (
           <AddEvent
             setAddNewEvent={setAddNewEvent}
@@ -83,7 +83,9 @@ const Modal = () => {
                     setAddNewEvent(true);
                   }}
                   className={`${index === 0 ? "mt-0" : "my-[100px]"} ${
-                    index % 2 === 0 ? "text-md" : "text-xs"
+                    index % 2 === 0
+                      ? "text-md after:w-[90%]"
+                      : "text-xs after:w-[70%]"
                   } relative after:left-0 after:bottom-0 after:w-full after:h-[1px] after:absolute after:bg-slate-200`}
                 >
                   {timeObj.string}
@@ -95,15 +97,17 @@ const Modal = () => {
                 <DayEvent key={event.id} event={event} setEvent={setEvent} />
               ))}
             </div>
-            <button
+            <motion.button
+              initial={{ x: 100 }}
+              animate={{ x: 0, transition: { delay: 1 } }}
               onClick={() => setAddNewEvent(true)}
               className="px-5 py-2 mt-5 fixed bottom-5 right-5 rounded-md shadow-md bg-gradient-to-r from-green-300 to-green-200 z-[999]"
             >
               <FaCalendarPlus />
-            </button>
+            </motion.button>
           </div>
         )}
-        {event && <Event event={event} />}
+        {event && !addNewEvent && <Event event={event} setEvent={setEvent} />}
       </motion.div>
     </>
   );
