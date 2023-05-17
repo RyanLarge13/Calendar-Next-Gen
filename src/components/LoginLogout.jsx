@@ -69,15 +69,22 @@ const LoginLogout = () => {
         className="p-3 fixed bottom-0 left-0 right-0 rounded-md shadow-md bg-white z-10"
       >
         {user ? (
-          <div>
-            <BiLogOutCircle onClick={() => logout()} className="text-xl my-2" />
-            <img
-              src={user.avatarUrl}
-              alt="user"
-              className="w-[50px] h-[50px] rounded-full shadow-sm"
-            />
-            <p>{user.username}</p>
-            <p>{user.email}</p>
+          <div className="">
+            <div className="flex justify-between items-center">
+              <BiLogOutCircle
+                onClick={() => logout()}
+                className="text-xl my-2 abolute left-2 top-2"
+              />
+              <img
+                src={user.avatarUrl}
+                alt="user"
+                className="w-[50px] h-[50px] rounded-full shadow-sm"
+              />
+            </div>
+            <div className="text-right">
+              <p>{user.username}</p>
+              <p>{user.email}</p>
+            </div>
           </div>
         ) : (
           <div className="pt-10 flex flex-col justify-center items-center">
@@ -87,7 +94,8 @@ const LoginLogout = () => {
                 className="absolute top-5 right-5"
               />
             ) : (
-              <BiLogOutCircle onClick={() => setRegularLogin(false)} 
+              <BiLogOutCircle
+                onClick={() => setRegularLogin(false)}
                 className="absolute top-5 right-5"
               />
             )}

@@ -21,7 +21,7 @@ model User {
 }
 
 model Event {
-  id       String      @id @default(uuid())
+  id       String     @unique @id @default(uuid())
   kind String?
   summary    String
   description String?
