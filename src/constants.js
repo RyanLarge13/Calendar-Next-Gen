@@ -340,30 +340,6 @@ export const holidays = [
     time: false,
   },
   {
-    kind: "Event",
-    color: "bg-amber-300",
-    date: "5/14/2023",
-    summary: "Billy Joe",
-    description: "Fuck around and find out",
-    id: 1111,
-    reminders: {
-      reminder: false,
-    },
-    repeats: {
-      repeat: false,
-      howOften: "yearly",
-      nextDate: "5/14/2024",
-    },
-    start: {
-      startTime: "Sun May 14 2023 00:00:00 GMT-0700 (Pacific Daylight Time)",
-    },
-    end: {
-      endTime: "Tue May 16 2023 23:59:00 GMT-0700 (Pacific Daylight Time)",
-    },
-    location: "",
-    time: false,
-  },
-  {
     color: "bg-pink-300",
     date: "5/29/2023",
     summary: "Memorial Day!!",

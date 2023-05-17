@@ -1,13 +1,16 @@
-import { useContext, memo } from "react";
+import { useState, useContext, memo } from "react";
 import { Dna } from "react-loader-spinner";
 import { motion } from "framer-motion";
 import { calendar, calendarBlocks } from "../motion";
 import Modal from "./Modal";
+import Menu from "./Menu";
 import DatesContext from "../context/DatesContext";
+import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext";
 
 const Calendar = () => {
   const { events, holidays, weekDays } = useContext(UserContext);
+  const { menu } = useContext(InteractiveContext);
   const {
     setOpenModal,
     setString,
@@ -35,9 +38,15 @@ const Calendar = () => {
   return (
     <main className="px-2">
       <section
-        onTouchStart={(e) => !openModal && setStart(e.touches[0].clientX)}
-        onTouchMove={(e) => !openModal && moveCalendar(e)}
-        onTouchEnd={(e) => !openModal && finish()}
+        onTouchStart={(e) => {
+          if (!openModal && !menu) return setStart(e.touches[0].clientX);
+        }}
+        onTouchMove={(e) => {
+          if (!openModal && !menu) return moveCalendar(e);
+        }}
+        onTouchEnd={() => {
+          if (!openModal && !menu) return finish();
+        }}
       >
         <div className="grid grid-cols-7 gap-2 justify-center items-center my-5">
           {weekDays.map((day, index) => (
@@ -135,7 +144,7 @@ const Calendar = () => {
                                   stiffness: 200,
                                 },
                               }}
-                              className={`rounded-lg ${event.color} shadow-md p-1 w-[95%] my-1`}
+                              className={`rounded-lg ${event.color} shadow-md p-1 w-[95%] my-1 mx-auto`}
                             >
                               <p className="whitespace-nowrap text-xs overflow-hidden">
                                 {event.summary}
@@ -161,6 +170,7 @@ const Calendar = () => {
           )}
         </section>
         {openModal && <Modal />}
+        <Menu />
       </section>
     </main>
   );
