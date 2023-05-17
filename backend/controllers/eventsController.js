@@ -138,9 +138,8 @@ export const addEvent = async (req, res) => {
 };
 
 export const deleteEvent = async (req, res) => {
-  const user = req.user;
   const id = req.params.eventId;
-  const deletedEvent = prisma.event.delete({
+  const deletedEvent = await prisma.event.delete({
     where: {
       id: id,
     },
@@ -148,7 +147,7 @@ export const deleteEvent = async (req, res) => {
   if (deletedEvent) {
     return res.json({
       message: "Successfully deleted event",
-      event: deletedEvent,
+      eventId: deletedEvent.id,
     });
   }
 };

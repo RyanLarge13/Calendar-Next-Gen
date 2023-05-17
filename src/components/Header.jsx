@@ -8,11 +8,13 @@ import {
 } from "react-icons/bs";
 import LoginLogout from "./LoginLogout";
 import UserContext from "../context/UserContext";
+import InteractiveContext from "../context/InteractiveContext";
 import DatesContext from "../context/DatesContext";
 
 const Header = () => {
   const { dt, setNav } = useContext(DatesContext);
   const { user } = useContext(UserContext);
+  const {setMenu} = useContext(InteractiveContext)
 
   const [showLogin, setShowLogin] = useState(false);
 
@@ -20,9 +22,9 @@ const Header = () => {
     <motion.header
       initial={{ y: -200 }}
       animate={{ y: 0 }}
-      className="flex justify-between p-5 mb-5 shadow-md shadow-purple-100"
+      className="flex justify-between p-5 mb-5 shadow-md"
     >
-      <RiMenuUnfoldFill />
+      <RiMenuUnfoldFill onClick={() => setMenu((prev) => !prev)} />
       <div className="flex justify-center items-center">
         <BsFillArrowLeftCircleFill
           onClick={() => setNav((prev) => prev - 1)}

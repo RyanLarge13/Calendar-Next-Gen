@@ -26,7 +26,7 @@ const Modal = () => {
     if (string === new Date().toLocaleDateString()) {
       const todaysHours = new Date().getHours();
       !addNewEvent
-        ? modalRef.current.scroll(0, todaysHours * 240)
+        ? modalRef.current.scrollTo(0, todaysHours * 240)
         : modalRef.current.scrollTo(0, 0);
     }
     addNewEvent && modalRef.current.scrollTo(0, 0);
@@ -35,15 +35,28 @@ const Modal = () => {
     );
     const fullDayEvents = eventsForDay.filter(
       (event) =>
-        new Date(event.start.startTime).getHours() === 0 ||
-        (new Date(event.end.endTime).getHours() === 23 &&
-          new Date(event.end.endTime).getMinutes() >= 30) ||
+        new Date(event.end.endTime).getHours() -
+          new Date(event.start.startTime).getHours() >=
+          24 ||
         event.end.endTime === null ||
         event.start.startTime === null
     );
     const timedEvents = eventsForDay.filter(
-      (event) => event.start.startTime !== null || event.end.endTime !== null
+      (event) =>
+        event.start.startTime !== null &&
+        event.end.endTime !== null &&
+        new Date(event.end.endTime).getHours() -
+          new Date(event.start.startTime).getHours() <=
+          23
     );
+    if (string !== new Date().toLocaleDateString() && timedEvents.length > 0) {
+      const firstEventHour = new Date(
+        timedEvents[0]?.start?.startTime
+      ).getHours();
+      !addNewEvent
+        ? modalRef.current.scrollTo(0, firstEventHour * 240)
+        : modalRef.current.scrollTo(0, 0);
+    }
     // setDayEvents(eventsForDay);
     setDayEvents(timedEvents);
     setAllDayEvents(fullDayEvents);
@@ -66,7 +79,12 @@ const Modal = () => {
         className={`bg-white rounded-md shadow-lg shadow-purple-200 px-2 fixed top-0 bottom-0 right-0 w-[65%] overflow-y-auto scroll-smooth scrollbar-hide`}
         ref={modalRef}
       >
-        <ModalHeader addEvent={addNewEvent} allDayEvents={allDayEvents} event={event} setEvent={setEvent} />
+        <ModalHeader
+          addEvent={addNewEvent}
+          allDayEvents={allDayEvents}
+          event={event}
+          setEvent={setEvent}
+        />
         {addNewEvent ? (
           <AddEvent
             setAddNewEvent={setAddNewEvent}
@@ -84,9 +102,9 @@ const Modal = () => {
                   }}
                   className={`${index === 0 ? "mt-0" : "my-[100px]"} ${
                     index % 2 === 0
-                      ? "text-md after:w-[90%]"
+                      ? "text-md after:w-[100%]"
                       : "text-xs after:w-[70%]"
-                  } relative after:left-0 after:bottom-0 after:w-full after:h-[1px] after:absolute after:bg-slate-200`}
+                  } relative after:left-0 after:bottom-0 after:h-[1px] after:absolute after:bg-slate-200`}
                 >
                   {timeObj.string}
                 </p>

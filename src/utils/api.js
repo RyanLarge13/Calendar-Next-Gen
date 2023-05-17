@@ -88,11 +88,14 @@ export const postEvent = (event, token) => {
 };
 
 export const deleteEvent = (username, eventId, token) => {
-  const res = Axios.delete(`${productionUrl}/${username}/delete/event/${eventId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const res = Axios.delete(
+    `${productionUrl}/${username}/delete/event/${eventId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
   return res;
 };
 

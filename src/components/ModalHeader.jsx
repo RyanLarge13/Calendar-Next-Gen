@@ -11,9 +11,9 @@ import {
 import DatesContext from "../context/DatesContext";
 import UserContext from "../context/UserContext";
 
-const ModalHeader = ({ addEvent, allDayEvents, event, setEvent}) => {
+const ModalHeader = ({ addEvent, allDayEvents, event, setEvent }) => {
   const { string } = useContext(DatesContext);
-  const { user, events, setEvents } = useContext(UserContext);
+  const { user, events, setEvents, holidays } = useContext(UserContext);
 
   const [showAllDayEvents, setShowAllDayEvents] = useState(true);
   const [x, setX] = useState("100%");
@@ -28,11 +28,15 @@ const ModalHeader = ({ addEvent, allDayEvents, event, setEvent}) => {
     const authToken = localStorage.getItem("authToken");
     deleteEvent(user.username, event.id, authToken)
       .then((res) => {
-        const filteredEvents = events.filter(
-          (event) => event.id !== res.data.event.id
-        );
-        setEvent(null)
+        const storedEvents = JSON.parse(localStorage.getItem("events")) || [];
+        const newStore = storedEvents.filter((e) => e.id !== res.data.eventId);
+        localStorage.setItem("events", JSON.stringify(newStore));
+        const filteredEvents = events.filter((e) => e.id !== res.data.eventId);
+        setEvent(null);
         setEvents(filteredEvents);
+        if (allDayEvents.length > 0) {
+          setShowAllDayEvents(true);
+        }
       })
       .catch((err) => console.log(err));
   };
@@ -64,7 +68,9 @@ const ModalHeader = ({ addEvent, allDayEvents, event, setEvent}) => {
             <>
               <BsFillShareFill />
               <BsFillPenFill />
-              <BsFillTrashFill onClick={() => deleteAnEvent()} />
+              {!holidays.includes(event) && (
+                <BsFillTrashFill onClick={() => deleteAnEvent()} />
+              )}
             </>
           )}
         </div>
@@ -84,7 +90,14 @@ const ModalHeader = ({ addEvent, allDayEvents, event, setEvent}) => {
               event.color
             } ${index === 0 && !showAllDayEvents ? "mt-0" : "mt-2"}`}
           >
-            <p>{event.summary}</p>
+            <p
+              onClick={() => {
+                setEvent(event);
+                setShowAllDayEvents(false);
+              }}
+            >
+              {event.summary}
+            </p>
           </motion.div>
         ))}
       </motion.div>

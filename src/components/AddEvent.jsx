@@ -37,6 +37,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
   // attatchments
   const [attatchments, setAttachments] = useState([]);
   // start times
+  const [allDay, setAllDay] = useState(false);
   const [startTime, setStartTime] = useState(false);
   const [startWhen, setStartWhen] = useState(null);
   const [startTimeString, setStartTimeString] = useState("");
@@ -103,11 +104,11 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
         attatchments: [],
         color: color ? color : "bg-white",
         start: {
-          startTime: startTime ? startWhen : null,
+          startTime: startTime ? allDay ? null : startWhen : null,
           timeZone,
         },
         end: {
-          endTime: endTime ? endWhen : null,
+          endTime: endTime ? allDay ? null : endWhen : null,
           timeZone,
         },
         userId: user.id,
@@ -240,46 +241,56 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
           )}
         </div>
       </div>
-      <div className="my-3 flex justify-center items-center w-full">
-        <div
-          onClick={() => setStartTime(true)}
-          className="w-full mr-1 p-3 rounded-md shadow-md"
-        >
-          <p>Start</p>
-          {startTime && (
-            <div>
-              {!startWhen ? (
-                <TimeSetter
-                  setDateTime={setStartWhen}
-                  setDateTimeString={setStartTimeString}
-                  openTimeSetter={setStartTime}
-                />
-              ) : (
-                <p>{startTimeString}</p>
-              )}
-            </div>
-          )}
+      <div className="w-full p-3 mt-5 rounded-md shadow-md">
+        <div className="flex justify-between items-center">
+          <p>All Day Event</p>
+          <Toggle condition={allDay} setCondition={setAllDay} />
         </div>
       </div>
-      <div
-        onClick={() => setEndTime(true)}
-        className="w-full mr-1 p-3 rounded-md shadow-md"
-      >
-        <p>End</p>
-        {endTime && (
-          <div>
-            {!endWhen ? (
-              <TimeSetter
-                setDateTime={setEndWhen}
-                setDateTimeString={setEndTimeString}
-                openTimeSetter={setEndTime}
-              />
-            ) : (
-              <p>{endTimeString}</p>
+      {!allDay && (
+        <>
+          <div className="my-3 flex justify-center items-center w-full">
+            <div
+              onClick={() => setStartTime(true)}
+              className="w-full mr-1 p-3 rounded-md shadow-md"
+            >
+              <p>Start</p>
+              {startTime && (
+                <div>
+                  {!startWhen ? (
+                    <TimeSetter
+                      setDateTime={setStartWhen}
+                      setDateTimeString={setStartTimeString}
+                      openTimeSetter={setStartTime}
+                    />
+                  ) : (
+                    <p>{startTimeString}</p>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+          <div
+            onClick={() => setEndTime(true)}
+            className="w-full mr-1 p-3 rounded-md shadow-md"
+          >
+            <p>End</p>
+            {endTime && (
+              <div>
+                {!endWhen ? (
+                  <TimeSetter
+                    setDateTime={setEndWhen}
+                    setDateTimeString={setEndTimeString}
+                    openTimeSetter={setEndTime}
+                  />
+                ) : (
+                  <p>{endTimeString}</p>
+                )}
+              </div>
             )}
           </div>
-        )}
-      </div>
+        </>
+      )}
       <div className="mt-5">
         <label>
           <RiGalleryUploadFill className="text-xl" />
