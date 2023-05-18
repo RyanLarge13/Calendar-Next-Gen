@@ -24,6 +24,10 @@ const ModalHeader = ({ addEvent, allDayEvents, event, setEvent }) => {
     }, 750);
   }, []);
 
+  useEffect(() => {
+    event || addEvent ? setShowAllDayEvents(false) : setShowAllDayEvents(true);
+  }, [event, addEvent]);
+
   const deleteAnEvent = () => {
     const authToken = localStorage.getItem("authToken");
     deleteEvent(user.username, event.id, authToken)
@@ -66,10 +70,12 @@ const ModalHeader = ({ addEvent, allDayEvents, event, setEvent }) => {
           )}
           {event && (
             <>
-              <BsFillShareFill />
-              <BsFillPenFill />
               {!holidays.includes(event) && (
-                <BsFillTrashFill onClick={() => deleteAnEvent()} />
+                <>
+                  <BsFillShareFill />
+                  <BsFillPenFill />
+                  <BsFillTrashFill onClick={() => deleteAnEvent()} />
+                </>
               )}
             </>
           )}
@@ -90,14 +96,7 @@ const ModalHeader = ({ addEvent, allDayEvents, event, setEvent }) => {
               event.color
             } ${index === 0 && !showAllDayEvents ? "mt-0" : "mt-2"}`}
           >
-            <p
-              onClick={() => {
-                setEvent(event);
-                setShowAllDayEvents(false);
-              }}
-            >
-              {event.summary}
-            </p>
+            <p onClick={() => setEvent(event)}>{event.summary}</p>
           </motion.div>
         ))}
       </motion.div>
