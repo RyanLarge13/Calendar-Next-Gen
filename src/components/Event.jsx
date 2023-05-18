@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
-const Event = ({ event, setEvent }) => {
+const Event = ({ event, setEvent, dayEvents }) => {
   const [start, setStart] = useState(0);
   const [open, setOpen] = useState(true);
   const [width, setWidth] = useState(0);
   const [timeLeft, setTimeLeft] = useState(null);
+  const [index, setIndex] = useState(dayEvents.indexOf(event));
 
   useEffect(() => {
     let interval;
@@ -39,7 +40,7 @@ const Event = ({ event, setEvent }) => {
       const timeString = `${hoursLeft - 1}:${
         minutesLeft < 11 ? `0${minutesLeft - 1}` : minutesLeft - 1
       }:${secondsLeft < 11 ? `0${secondsLeft - 1}` : secondsLeft - 1}`;
-      setTimeLeft(hours < 0 ? null : timeString);
+      setTimeLeft(hoursLeft < 0 ? null : timeString);
     };
 
     const calcTime = (start) => {
@@ -57,8 +58,37 @@ const Event = ({ event, setEvent }) => {
         return setWidth(final - 2);
       }
     };
-    if (!event) return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      clearInterval(timeLeftInterval);
+    };
   }, [event]);
+
+  const getPreviousEvent = () => {
+    if (index > 0) {
+      setTimeLeft(null);
+      setEvent(dayEvents[index - 1]);
+      setIndex((prev) => prev - 1);
+    } else {
+      setOpen(false);
+      setTimeout(() => {
+        setEvent(null);
+      }, 100);
+    }
+  };
+
+  const getNextEvent = () => {
+    if (index < dayEvents.length - 1) {
+      setTimeLeft(null);
+      setEvent(dayEvents[index + 1]);
+      setIndex((prev) => prev + 1);
+    } else {
+      setOpen(false);
+      setTimeout(() => {
+        setEvent(null);
+      }, 100);
+    }
+  };
 
   const checkToClose = (e) => {
     const end = e.clientY;
@@ -112,6 +142,10 @@ const Event = ({ event, setEvent }) => {
           </p>
         </div>
         <p></p>
+        <div className="flex justify-between items-center">
+          <p onClick={() => getPreviousEvent()}>Left</p>
+          <p onClick={() => getNextEvent()}>Right</p>
+        </div>
       </div>
     </motion.div>
   );

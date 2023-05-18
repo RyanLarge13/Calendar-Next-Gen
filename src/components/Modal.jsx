@@ -57,7 +57,6 @@ const Modal = () => {
         ? modalRef.current.scrollTo(0, firstEventHour * 240)
         : modalRef.current.scrollTo(0, 0);
     }
-    // setDayEvents(eventsForDay);
     setDayEvents(timedEvents);
     setAllDayEvents(fullDayEvents);
   }, [string, events, addNewEvent]);
@@ -125,7 +124,9 @@ const Modal = () => {
             </motion.button>
           </div>
         )}
-        {event && !addNewEvent && <Event event={event} setEvent={setEvent} />}
+        {event && !addNewEvent && (
+          <Event event={event} setEvent={setEvent} dayEvents={dayEvents} />
+        )}
       </motion.div>
     </>
   );
