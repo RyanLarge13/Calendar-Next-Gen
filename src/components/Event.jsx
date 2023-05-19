@@ -44,7 +44,11 @@ const Event = ({ event, setEvent, dayEvents }) => {
       const timeString = `${hoursLeft - 1}:${
         minutesLeft < 11 ? `0${minutesLeft - 1}` : minutesLeft - 1
       }:${secondsLeft < 11 ? `0${secondsLeft - 1}` : secondsLeft - 1}`;
-      setTimeLeft(hoursLeft < 0 ? null : timeString);
+      setTimeLeft(
+        hoursLeft <= 0 
+          ? null
+          : timeString
+      );
     };
 
     const calcTime = (start) => {

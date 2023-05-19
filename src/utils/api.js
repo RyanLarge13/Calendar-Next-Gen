@@ -111,7 +111,7 @@ export const updateEvent = (event, token) => {
 
 //Reminder api's
 export const getReminders = (username, token) => {
-  const res = Axios.get(`${devUrl}/${username}/reminders`, {
+  const res = Axios.get(`${productionUrl}/${username}/reminders`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -121,7 +121,8 @@ export const getReminders = (username, token) => {
 
 export const addReminder = (reminder, token) => {
   const res = Axios.post(
-    `${devUrl}/new/reminder`,
+    `${productionUrl
+    }/new/reminder`,
     { reminder },
     {
       headers: {
