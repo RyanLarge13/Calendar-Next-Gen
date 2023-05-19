@@ -1,7 +1,70 @@
-import React from "react";
+import { useState } from "react";
+import { addReminder } from "../utils/api";
+import Toggle from "./Toggle";
+import TimeSetter from "./TimeSetter";
 
 const AddReminder = () => {
-  return <div>AddReminder</div>;
+  const [time, setTime] = useState(null);
+  const [title, setTitle] = useState("");
+  const [notes, setNotes] = useState("");
+  const [timeString, setTimeString] = useState("");
+  const [addTime, setAddTime] = useState(false);
+
+  const addAReminder = () => {
+    const token = localStorage.getItem("authToken");
+    const newReminder = {
+      title,
+      notes,
+      time,
+    };
+    addReminder(newReminder, token)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  return (
+    <div className="p-2 pt-10">
+      <h2 className="text-center">Create A New Reminder</h2>
+      <div className="mt-10 w-full">
+        <input
+          placeholder="New Reminder"
+          className="p-2 rounded-md shadow-md w-full"
+          onChange={(e) => setTitle(e.target.value)}
+        />
+        <textarea
+          onChange={(e) => setNotes(e.target.value)}
+          cols="30"
+          rows="10"
+          placeholder="Notes..."
+          className="my-2 p-2 rounded-md shadow-md w-full"
+        ></textarea>
+        <div className="my-2 flex justify-between items-center p-3 rounded-md shadow-md">
+          <p>Time</p>
+          <Toggle condition={addTime} setCondition={setAddTime} />
+        </div>
+        {time && timeString && addTime && <p>{timeString}</p>}
+      </div>
+      <div className="flex justify-around p-2 mt-10 w-full">
+        <button
+          // onClick={() => setAddNewEvent(false)}
+          className="px-5 py-2 rounded-md shadow-md bg-gradient-to-r from-red-300 to-red-200 w-[100px]"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={() => addAReminder()}
+          className="px-5 py-2 rounded-md shadow-md bg-gradient-to-r from-green-300 to-green-200 w-[100px]"
+        >
+          Save
+        </button>
+      </div>
+      {addTime && !time && !timeString && (
+        <TimeSetter setDateTime={setTime} setDateTimeString={setTimeString} />
+      )}
+    </div>
+  );
 };
 
 export default AddReminder;

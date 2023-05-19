@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Reminder" ALTER COLUMN "time" SET DATA TYPE TEXT;

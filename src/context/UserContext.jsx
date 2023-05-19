@@ -5,6 +5,7 @@ import {
   getGoogleData,
   loginWithGoogle,
   getEvents,
+  getReminders,
   // getGoogleCalendarEvents,
 } from "../utils/api";
 
@@ -17,6 +18,9 @@ export const UserProvider = ({ children }) => {
   );
   const [events, setEvents] = useState(
     JSON.parse(localStorage.getItem("events")) || []
+  );
+  const [reminders, setReminders] = useState(
+    JSON.parse(localStorage.getItem("reminders")) || []
   );
   const [googleToken, setGoogleToken] = useState(false);
   const [loginLoading, setLoginLoading] = useState(false);
@@ -65,6 +69,17 @@ export const UserProvider = ({ children }) => {
             .catch((err) => {
               console.log(err);
             });
+          getReminders(res.data.user.username, authToken)
+            .then((response) => {
+              localStorage.setItem(
+                "reminders",
+                JSON.stringify(response.data.reminders)
+              );
+              setReminders(response.data.reminders);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
         })
         .catch((err) => {
           console.log(err);
@@ -83,6 +98,7 @@ export const UserProvider = ({ children }) => {
         weekDays,
         user,
         events,
+        reminders,
         googleToken,
         loginLoading,
         isOnline,

@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, useDragControls } from "framer-motion";
 import { MdEventAvailable, MdEventNote, MdEventRepeat } from "react-icons/md";
 import { MdLocationPin } from "react-icons/md";
 import { FiRepeat } from "react-icons/fi";
@@ -9,6 +9,9 @@ const DayEvent = ({ event, setEvent }) => {
   const [margin, setMargin] = useState(0);
   const [height, setHeight] = useState(0);
   const [z, setZ] = useState(0);
+  const [start, setStart] = useState(0);
+
+  const dragControls = useDragControls();
 
   useEffect(() => {
     const hour = new Date(event.start.startTime).getHours();
@@ -29,15 +32,39 @@ const DayEvent = ({ event, setEvent }) => {
     }
   }, []);
 
+  const startDrag = (e) => {
+    setStart(e.clientY);
+    dragControls.start(e);
+  };
+
+  const checkTime = (e) => {
+    const end = e.clientY;
+    const diff = end - start;
+    const rounded = Math.round(diff / 100);
+    const marginFrac = margin / 24;
+    // console.log(rounded * marginFrac);
+    // setMargin((prev) => prev + rounded * marginFrac);
+  };
+
   return (
     <motion.div
       key={event.id}
+      drag="y"
+      dragSnapToOrigin={false}
+      dragMomentum={false}
+      dragControls={dragControls}
+      dragListener={false}
+      onDragEnd={(e) => checkTime(e)}
       initial={{ y: 50, opacity: 0 }}
       whileInView={{ y: 0, opacity: 1, transition: { duration: 0.2 } }}
       style={{ top: `${margin}px`, height: height, minHeight: 50, zIndex: z }}
       className={`p-3 rounded-md shadow-md w-[70%] absolute ${event.color} bg-opacity-10 hover:z-[998] hover:bg-opacity-50 duration-200 right-0`}
     >
       <div
+        onPointerDown={(e) => startDrag(e)}
+        style={{
+          touchAction: "none",
+        }}
         className={`${event.color} px-3 py-1 rounded-md font-extrabold mb-5 shadow-sm justify-between flex items-start`}
       >
         <h3 onClick={() => setEvent(event)} className="text-sm">
