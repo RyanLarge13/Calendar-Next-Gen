@@ -1,6 +1,16 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
+export const getReminders = async (req, res) => {
+  const { id } = req.user;
+  const reminders = await prisma.reminder.findMany({
+    where: {
+      userId: id,
+    },
+  });
+  res.status(201).json({ reminders: reminders });
+};
+
 export const addNewReminder = async (req, res) => {
   const { title, notes, time } = req.body.reminder;
   const { id } = req.user;
