@@ -1,4 +1,8 @@
 import { useState, useEffect } from "react";
+import {
+  BsFillArrowLeftCircleFill,
+  BsFillArrowRightCircleFill,
+} from "react-icons/bs";
 import { motion } from "framer-motion";
 
 const Event = ({ event, setEvent, dayEvents }) => {
@@ -142,9 +146,17 @@ const Event = ({ event, setEvent, dayEvents }) => {
           </p>
         </div>
         <p></p>
-        <div className="flex justify-between items-center">
-          <p onClick={() => getPreviousEvent()}>Left</p>
-          <p onClick={() => getNextEvent()}>Right</p>
+        <div className="sticky top-[50%] right-2 left-2 py-2 flex justify-between items-center text-xl">
+          {index > 0 ? (
+            <BsFillArrowLeftCircleFill onClick={() => getPreviousEvent()} />
+          ) : (
+            <p></p>
+          )}
+          {index < dayEvents.length - 1 ? (
+            <BsFillArrowRightCircleFill onClick={() => getNextEvent()} />
+          ) : (
+            <p></p>
+          )}
         </div>
       </div>
     </motion.div>

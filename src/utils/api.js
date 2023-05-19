@@ -108,3 +108,17 @@ export const updateEvent = (event, token) => {
       console.log(err);
     });
 };
+
+//Reminder api's
+export const addReminder = (reminder, token) => {
+  const res = Axios.post(
+    `${devUrl}/new/reminder`,
+    { reminder },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return res;
+};

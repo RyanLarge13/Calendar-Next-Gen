@@ -16,6 +16,7 @@ model User {
   birthday DateTime?
   createAt DateTime @default(now())
   events   Event[]
+  reminders Reminder[]
 
   @@unique([username, email])
 }
@@ -37,4 +38,13 @@ model Event {
   created DateTime @default(now())
   User     User     @relation(fields: [userId], references: [id])
   userId   String
+}
+
+model Reminder {
+  id String @unique @id @default(uuid())
+  title String
+  notes String
+  time String
+  User User @relation(fields: [userId], references: [id])
+  userId String
 }
