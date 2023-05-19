@@ -125,7 +125,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center mt-10">
+    <div className="flex flex-col justify-center itemAddKanban">
       <div className="flex flex-wrap justify-center items-center my-10 mx-auto w-[80%]">
         {colors.map((item, index) => (
           <Color

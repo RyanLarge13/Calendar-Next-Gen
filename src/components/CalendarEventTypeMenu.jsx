@@ -9,8 +9,9 @@ import {
   BsArrowDownSquareFill,
   BsFillArrowUpSquareFill,
 } from "react-icons/bs";
+import {MdViewAgenda} from "react-icons/md"
 
-const CalendarEventTypeMenu = ({ type }) => {
+const CalendarEventTypeMenu = ({ type, setType}) => {
   const [closed, setClosed] = useState(true);
 
   return (
@@ -20,6 +21,7 @@ const CalendarEventTypeMenu = ({ type }) => {
     >
       <div>
         <div
+        onClick={() => setType("event")}
           className={`${
             type === "event" ? "text-green-200" : "text-slate-200"
           } my-7 p-1 rounded-sm shadow-md`}
@@ -27,6 +29,7 @@ const CalendarEventTypeMenu = ({ type }) => {
           <BsFillCalendar2EventFill />
         </div>
         <div
+        onClick={() => setType("reminder")}
           className={`${
             type === "reminder" ? "text-green-200" : "text-slate-200"
           } my-7 p-1 rounded-sm shadow-md`}
@@ -34,6 +37,7 @@ const CalendarEventTypeMenu = ({ type }) => {
           <BsAlarmFill />
         </div>
         <div
+        onClick={() => setType("kanban")} 
           className={`${
             type === "kanban" ? "text-green-200" : "text-slate-200"
           } my-7 p-1 rounded-sm shadow-md`}
@@ -41,6 +45,7 @@ const CalendarEventTypeMenu = ({ type }) => {
           <BsFillClipboardDataFill />
         </div>
         <div
+        onClick={() => setType("todo-list")} 
           className={`${
             type === "todo-list" ? "text-green-200" : "text-slate-200"
           } my-7 p-1 rounded-sm shadow-md`}
@@ -48,11 +53,20 @@ const CalendarEventTypeMenu = ({ type }) => {
           <BsListCheck />
         </div>
         <div
+        onClick={() => setType("task")} 
           className={`${
             type === "task" ? "text-green-200" : "text-slate-200"
           } my-7 p-1 rounded-sm shadow-md`}
         >
           <BsListTask />
+        </div>
+        <div
+        onClick={() => setType("appointment")} 
+          className={`${
+            type === "appointment" ? "text-green-200" : "text-slate-200"
+          } my-7 p-1 rounded-sm shadow-md`}
+        >
+          <MdViewAgenda />
         </div>
       </div>
       <div

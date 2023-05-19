@@ -9,6 +9,10 @@ import CalendarEventTypeMenu from "./CalendarEventTypeMenu";
 import Event from "./Event";
 import UserContext from "../context/UserContext";
 import ModalHeader from "./ModalHeader";
+import AddReminder from "./AddReminder";
+import AddList from "./AddList";
+import AddKanban from "./AddKanban";
+import AddTask from "./AddTask";
 
 const Modal = () => {
   const { events, holidays } = useContext(UserContext);
@@ -69,9 +73,7 @@ const Modal = () => {
         onClick={() => setOpenModal(false)}
         className="fixed inset-0 bg-[rgba(0,0,0,0.4)] flex"
       ></motion.div>
-      {addNewEvent && (
-        <CalendarEventTypeMenu type={type} allDayEvents={allDayEvents} />
-      )}
+      {addNewEvent && <CalendarEventTypeMenu type={type} setType={setType} />}
       <motion.div
         initial={{ x: 1000 }}
         animate={{ x: 0 }}
@@ -85,10 +87,18 @@ const Modal = () => {
           setEvent={setEvent}
         />
         {addNewEvent ? (
-          <AddEvent
-            setAddNewEvent={setAddNewEvent}
-            passedStartTime={addEventWithStartTime}
-          />
+          <div className="mt-10">
+            {type === "event" && (
+              <AddEvent
+                setAddNewEvent={setAddNewEvent}
+                passedStartTime={addEventWithStartTime}
+              />
+            )}
+            {type === "reminder" && <AddReminder />}
+            {type === "todo-list" && <AddList />}
+            {type === "kanban" && <AddKanban />}
+            {type === "task" && <AddTask />}
+          </div>
         ) : (
           <div className="w-full pl-20">
             <div className="absolute left-0 top-0 bottom-0 w-20 pl-2 pt-[100px]">
