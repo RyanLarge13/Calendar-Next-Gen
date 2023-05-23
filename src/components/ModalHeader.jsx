@@ -16,7 +16,7 @@ import Confirm from "./Confirm";
 const ModalHeader = ({ addEvent, allDayEvents, event, setEvent }) => {
   const { string } = useContext(DatesContext);
   const { user, events, setEvents, holidays } = useContext(UserContext);
-  const { confirm, setConfirm } = useState(false);
+  const { confirm, setConfirm } = useContext(InteractiveContext);
 
   const [showAllDayEvents, setShowAllDayEvents] = useState(true);
   const [x, setX] = useState("100%");

@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { addReminder } from "../utils/api";
 import Toggle from "./Toggle";
 import TimeSetter from "./TimeSetter";
+import InteractiveContext from "../context/InteractiveContext";
 
 const AddReminder = () => {
+  const { send } = useContext(InteractiveContext);
+
   const [time, setTime] = useState(null);
   const [title, setTitle] = useState("");
   const [notes, setNotes] = useState("");
@@ -17,9 +20,10 @@ const AddReminder = () => {
       notes,
       time,
     };
+    send(newReminder);
     addReminder(newReminder, token)
       .then((res) => {
-        console.log(res);
+        // console.log(res);
       })
       .catch((err) => console.log(err));
   };
