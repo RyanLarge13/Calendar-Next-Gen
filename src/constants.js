@@ -4,10 +4,20 @@ export const colors = [
   { color: "bg-emerald-300" },
   { color: "bg-blue-300" },
   { color: "bg-red-300" },
+  { color: "bg-green-300" },
   { color: "bg-pink-300" },
   { color: "bg-orange-300" },
   { color: "bg-teal-300" },
   { color: "bg-yellow-300" },
+  { color: "bg-rose-300" },
+  { color: "bg-lime-300" },
+  { color: "bg-amber-300" },
+  { color: "bg-fuchsia-300" },
+  { color: "bg-slate-300" },
+  { color: "bg-black" },
+  { color: "bg-cyan-300" },
+  { color: "bg-sky-300" },
+  { color: "bg-purple-300" },
 ];
 
 export const repeatOptions = [
@@ -340,11 +350,11 @@ export const holidays = [
     time: false,
   },
   {
-  	kind: "Event", 
+    kind: "Event",
     color: "bg-pink-300",
     date: "5/29/2023",
     summary: "Memorial Day!!",
-    description: "Happy Father's day!", 
+    description: "Happy Father's day!",
     id: 12,
     reminders: {
       reminder: false,

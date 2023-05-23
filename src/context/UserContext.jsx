@@ -107,6 +107,7 @@ export const UserProvider = ({ children }) => {
         setGoogleToken,
         setLoginLoading,
         setAuthToken,
+        setReminders
       }}
     >
       {children}

@@ -10,10 +10,13 @@ import {
 } from "react-icons/bs";
 import DatesContext from "../context/DatesContext";
 import UserContext from "../context/UserContext";
+import InteractiveContext from "../context/InteractiveContext";
+import Confirm from "./Confirm";
 
 const ModalHeader = ({ addEvent, allDayEvents, event, setEvent }) => {
   const { string } = useContext(DatesContext);
   const { user, events, setEvents, holidays } = useContext(UserContext);
+  const { confirm, setConfirm } = useState(false);
 
   const [showAllDayEvents, setShowAllDayEvents] = useState(true);
   const [x, setX] = useState("100%");
@@ -29,6 +32,7 @@ const ModalHeader = ({ addEvent, allDayEvents, event, setEvent }) => {
   }, [event, addEvent]);
 
   const deleteAnEvent = () => {
+    setConfirm(false);
     const authToken = localStorage.getItem("authToken");
     deleteEvent(user.username, event.id, authToken)
       .then((res) => {
@@ -74,7 +78,7 @@ const ModalHeader = ({ addEvent, allDayEvents, event, setEvent }) => {
                 <>
                   <BsFillShareFill />
                   <BsFillPenFill />
-                  <BsFillTrashFill onClick={() => deleteAnEvent()} />
+                  <BsFillTrashFill onClick={() => setConfirm(true)} />
                 </>
               )}
             </>
@@ -100,6 +104,7 @@ const ModalHeader = ({ addEvent, allDayEvents, event, setEvent }) => {
           </motion.div>
         ))}
       </motion.div>
+      {confirm && <Confirm func={deleteAnEvent} />}
     </motion.div>
   );
 };
