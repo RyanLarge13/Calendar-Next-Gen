@@ -35,24 +35,25 @@ const Menu = () => {
   };
 
   const startTime = (id) => {
+    if (selected.length > 1 && selected.includes(id)) {
+      return removeSelected(id);
+    }
+    if (selected.length === 1 && selected.includes(id)) {
+      setSelectable(false);
+      return removeSelected(id);
+    }
+    if (selectable === true) {
+      return addSelected(id);
+    }
     timeout = setTimeout(() => {
       setSelectable(true);
-      if (selected.includes(id)) {
-        return;
-      }
-      if (!selected.includes(id)) {
-        addSelected(id);
-      }
-    }, 2000);
+      addSelected(id);
+    }, 750);
   };
 
-  const stopTime = () => {
-    if (selectable === true) {
-      return;
-    }
+  const stopTime = (id) => {
     if (selectable === false) {
       clearTimeout(timeout);
-      setSelectable(false);
     }
   };
 
@@ -62,14 +63,17 @@ const Menu = () => {
 
   const removeSelected = (id) => {
     const newList = selected.filter((item) => item !== id);
-    if (newList.length < 1) {
-      setSelectable(false);
-    }
     setSelected(newList);
   };
 
   const deleteAReminder = (id) => {
     const token = localStorage.getItem("authToken");
+    //test
+    const newReminders = reminders.filter(
+      (reminder) => reminder.id !== res.data.reminderId
+    );
+    return setReminders(newReminders);
+
     if (token) {
       deleteReminder(user.username, id, token)
         .then((res) => {
@@ -123,35 +127,41 @@ const Menu = () => {
         }
         className="p-3 overflow-hidden shadow-sm"
       >
-        <Reorder.Group axis="y" values={reminders} onReorder={setReminders}>
+        <div>
           {reminders.map((reminder, index) => (
-            <Reorder.Item
-              key={reminder.id}
-              value={reminder}
-              className={`${
+            <motion.div
+              animate={
                 selected.includes(reminder.id)
-                  ? "shadow-red-300 duration-200"
-                  : "shadow-slate-200"
-              } p-2 relative rounded-md shadow-md my-5`}
+                  ? {
+                      scaleX: 1.025,
+                      scaleY: 1.1,
+                      opacity: 0.75,
+                      boxShadow: "0 0.1em 0.5em 0 #f00",
+                    }
+                  : { scale: 1, opacity: 1, boxShadow: "0 0.1em 0.5em 0 #eee" }
+              }
+              key={reminder.id}
+              className={"p-2 relative rounded-md my-5"}
               style={{ fontSize: 11 }}
-              onClick={() => {
-                if (selectable === false) {
-                  return;
-                }
-                if (selectable === true) {
-                  selected.includes(reminder.id)
-                    ? removeSelected(reminder.id)
-                    : addSelected(reminder.id);
-                }
-              }}
               onPointerDown={() => startTime(reminder.id)}
-              onPointerUp={() => stopTime()}
+              onPointerUp={() => stopTime(reminder.id)}
+              onPointerCancel={() => clearTimeout(timeout)}
             >
               <div className="z-50 pointer-events-none">
                 <p>{new Date(reminder.time).toLocaleDateString()}</p>
                 <p>{new Date(reminder.time).toLocaleTimeString()}</p>
                 <p>{reminder.title}</p>
               </div>
+              {selected.includes(reminder.id) && (
+                <motion.button
+                  initial={{ x: 50, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  className="px-4 py-1 rounded-md shadow-md bg-rose-300 absolute right-3 top-3"
+                  onClick={(e) => deleteAReminder(reminder.id)}
+                >
+                  Delete
+                </motion.button>
+              )}
               <div
                 className={`absolute inset-0 rounded-md bg-gradient-to-tr pointer-events-none ${
                   calcWidth(reminder.time) < 100
@@ -160,9 +170,9 @@ const Menu = () => {
                 } z-[-1]`}
                 style={{ width: `${calcWidth(reminder.time)}%` }}
               ></div>
-            </Reorder.Item>
+            </motion.div>
           ))}
-        </Reorder.Group>
+        </div>
       </motion.div>
       <div
         onClick={() => {}}

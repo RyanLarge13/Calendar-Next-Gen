@@ -30,15 +30,15 @@ export const InteractiveProvider = ({ children }) => {
   }
 
   const send = async (reminder) => {
-    const reg = await navigator.serviceWorker.register("/sw.js", {
-      scope: "/",
-    });
-    const sub = await reg.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(
-        import.meta.env.VITE_VAPID_PUBLIC_KEY
-      ),
-    });
+      const reg = await navigator.serviceWorker.register("/sw.js", {
+        scope: "/",
+      });
+      const sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(
+          import.meta.env.VITE_VAPID_PUBLIC_KEY
+        ),
+      });
     if (reminder) {
       Axios.post(
         "http://localhost:8080/subscribe/reminders",
