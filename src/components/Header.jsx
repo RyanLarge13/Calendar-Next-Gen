@@ -14,9 +14,8 @@ import DatesContext from "../context/DatesContext";
 const Header = () => {
   const { dt, setNav } = useContext(DatesContext);
   const { user } = useContext(UserContext);
-  const {setMenu} = useContext(InteractiveContext)
-
-  const [showLogin, setShowLogin] = useState(false);
+  const { setMenu, showLogin, setShowLogin } =
+    useContext(InteractiveContext);
 
   return (
     <motion.header
@@ -24,7 +23,12 @@ const Header = () => {
       animate={{ y: 0 }}
       className="flex justify-between p-5 mb-5 shadow-md"
     >
-      <RiMenuUnfoldFill onClick={() => setMenu((prev) => !prev)} />
+      <RiMenuUnfoldFill
+        onClick={() => {
+          setShowLogin(false);
+          setMenu((prev) => !prev);
+        }}
+      />
       <div className="flex justify-center items-center">
         <BsFillArrowLeftCircleFill
           onClick={() => setNav((prev) => prev - 1)}
@@ -42,19 +46,27 @@ const Header = () => {
           className="text-xl cursor-pointer"
         />
       </div>
-      {user ? (
-        <img
-          src={user.avatarUrl}
-          onClick={() => setShowLogin((prev) => !prev)}
-          alt="user"
-          className="w-[25px] h-[25px] rounded-full shadow-md"
-        />
-      ) : (
-        <BsThreeDotsVertical
-          onClick={() => setShowLogin((prev) => !prev)}
-          className="cursor-pointer"
-        />
-      )}
+      <div className="w-[25px] h-[25px]">
+        {user ? (
+          <img
+            src={user.avatarUrl}
+            onClick={() => {
+              setMenu(false);
+              setShowLogin((prev) => !prev);
+            }}
+            alt="user"
+            className="w-[25px] h-[25px] rounded-full shadow-md"
+          />
+        ) : (
+          <BsThreeDotsVertical
+            onClick={() => {
+              setMenu(false);
+              setShowLogin((prev) => !prev);
+            }}
+            className="cursor-pointer"
+          />
+        )}
+      </div>
       {showLogin && <LoginLogout />}
     </motion.header>
   );

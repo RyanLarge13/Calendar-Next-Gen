@@ -10,7 +10,7 @@ import UserContext from "../context/UserContext";
 
 const Calendar = () => {
   const { events, holidays, weekDays } = useContext(UserContext);
-  const { menu } = useContext(InteractiveContext);
+  const { menu, setMenu, setShowLogin,} = useContext(InteractiveContext);
   const {
     setOpenModal,
     setString,
@@ -31,6 +31,8 @@ const Calendar = () => {
   } = useContext(DatesContext);
 
   const addEvent = (date) => {
+    setMenu(false);
+    setShowLogin(false);
     setOpenModal(true);
     setString(date);
   };
@@ -66,10 +68,7 @@ const Calendar = () => {
         </div>
         <section>
           {!loading ? (
-            <div
-              style={{ transform: `translateX(${diff}px)` }}
-              className="duration-200"
-            >
+            <div style={{ transform: `translateX(${diff}px)` }} className="duration-100">
               <motion.div
                 variants={calendar}
                 initial="hidden"

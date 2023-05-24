@@ -13,11 +13,11 @@ const App = () => {
       <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
         <UserProvider>
           <DatesProvider>
-          <InteractiveProvider>
-            <Header />
-            <div className="overflow-x-hidden w-full h-full">
-              <Calendar />
-            </div>
+            <InteractiveProvider>
+              <Header />
+              <div className="overflow-x-hidden w-full h-full">
+                <Calendar />
+              </div>
             </InteractiveProvider>
           </DatesProvider>
         </UserProvider>

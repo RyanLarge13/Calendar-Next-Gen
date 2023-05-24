@@ -21,7 +21,8 @@
     "react-dom": "^18.2.0",
     "react-icons": "^4.8.0",
     "react-loader-spinner": "^5.3.4",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "vite-plugin-pwa": "^0.15.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.27",

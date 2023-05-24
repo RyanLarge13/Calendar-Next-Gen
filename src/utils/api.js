@@ -121,8 +121,7 @@ export const getReminders = (username, token) => {
 
 export const addReminder = (reminder, token) => {
   const res = Axios.post(
-    `${productionUrl
-    }/new/reminder`,
+    `${productionUrl}/new/reminder`,
     { reminder },
     {
       headers: {

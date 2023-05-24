@@ -22,6 +22,9 @@ export const UserProvider = ({ children }) => {
   const [reminders, setReminders] = useState(
     JSON.parse(localStorage.getItem("reminders")) || []
   );
+  const [notifications, setNotifications] = useState(
+    JSON.parse(localStorage.getItem("notifications")) || []
+  );
   const [googleToken, setGoogleToken] = useState(false);
   const [loginLoading, setLoginLoading] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
@@ -102,11 +105,14 @@ export const UserProvider = ({ children }) => {
         googleToken,
         loginLoading,
         isOnline,
+        notifications,
+        setNotifications,
         setUser,
         setEvents,
         setGoogleToken,
         setLoginLoading,
         setAuthToken,
+        setReminders,
       }}
     >
       {children}

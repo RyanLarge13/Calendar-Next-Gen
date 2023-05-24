@@ -2,10 +2,14 @@ import { useContext, useState } from "react";
 import { motion } from "framer-motion";
 import { useGoogleLogin } from "@react-oauth/google";
 import { BiLogInCircle, BiLogOutCircle } from "react-icons/bi";
+import { BsFillBellFill } from "react-icons/bs";
 import { loginWithPasswordAndUsername } from "../utils/api";
 import UserContext from "../context/UserContext";
+import InteractiveContext from "../context/InteractiveContext";
+import Notification from "./Notification";
 
 const LoginLogout = () => {
+  const { showLogin, setShowLogin } = useContext(InteractiveContext);
   const {
     user,
     setUser,
@@ -21,6 +25,7 @@ const LoginLogout = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showNotifs, setShowNotifs] = useState(false);
 
   const loginGoogle = useGoogleLogin({
     onSuccess: (res) => {
@@ -56,13 +61,22 @@ const LoginLogout = () => {
 
   const logout = () => {
     localStorage.removeItem("authToken");
-    localStorage.setItem("events", JSON.stringify(events));
+    localStorage.removeItem("events");
+    localStorage.removeItem("reminders");
+    // localStorage.setItem("events", JSON.stringify(events));
     setAuthToken(false);
     setUser(false);
   };
 
   return (
     <>
+      {showNotifs && <Notification />}
+      {showLogin && (
+        <div
+          onClick={() => setShowLogin(false)}
+          className="fixed inset-0 bg-[rgba(0,0,0,0.4)] z-10"
+        ></div>
+      )}
       <motion.div
         initial={{ y: "100%", opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -70,18 +84,19 @@ const LoginLogout = () => {
       >
         {user ? (
           <div className="">
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center bg-purple-100 rounded-md shadow-md p-2 mb-5">
               <BiLogOutCircle
                 onClick={() => logout()}
-                className="text-xl my-2 abolute left-2 top-2"
+                className="text-xl abolute left-2 top-2"
               />
-              <img
-                src={user.avatarUrl}
-                alt="user"
-                className="w-[50px] h-[50px] rounded-full shadow-sm"
-              />
+              <BsFillBellFill onClick={() => setShowNotifs((prev) => !prev)} />
             </div>
-            <div className="text-right">
+            <img
+              src={user.avatarUrl}
+              alt="user"
+              className="w-[50px] h-[50px] rounded-full shadow-sm"
+            />
+            <div className="text-xs font-bold mt-2">
               <p>{user.username}</p>
               <p>{user.email}</p>
             </div>
