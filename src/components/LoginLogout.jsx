@@ -6,6 +6,7 @@ import { BsFillBellFill } from "react-icons/bs";
 import { loginWithPasswordAndUsername } from "../utils/api";
 import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
+import Notification from "./Notification";
 
 const LoginLogout = () => {
   const { showLogin, setShowLogin } = useContext(InteractiveContext);
@@ -24,6 +25,7 @@ const LoginLogout = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showNotifs, setShowNotifs] = useState(false);
 
   const loginGoogle = useGoogleLogin({
     onSuccess: (res) => {
@@ -68,8 +70,12 @@ const LoginLogout = () => {
 
   return (
     <>
+      {showNotifs && <Notification />}
       {showLogin && (
-        <div onClick={() => setShowLogin(false)} className="fixed inset-0 bg-[rgba(0,0,0,0.4)] z-10"></div>
+        <div
+          onClick={() => setShowLogin(false)}
+          className="fixed inset-0 bg-[rgba(0,0,0,0.4)] z-10"
+        ></div>
       )}
       <motion.div
         initial={{ y: "100%", opacity: 0 }}
@@ -83,7 +89,7 @@ const LoginLogout = () => {
                 onClick={() => logout()}
                 className="text-xl abolute left-2 top-2"
               />
-              <BsFillBellFill />
+              <BsFillBellFill onClick={() => setShowNotifs((prev) => !prev)} />
             </div>
             <img
               src={user.avatarUrl}

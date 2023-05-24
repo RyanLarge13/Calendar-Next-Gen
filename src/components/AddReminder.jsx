@@ -3,9 +3,13 @@ import { addReminder } from "../utils/api";
 import Toggle from "./Toggle";
 import TimeSetter from "./TimeSetter";
 import InteractiveContext from "../context/InteractiveContext";
+import UserContext from "../context/UserContext";
+import DatesContext from "../context/DatesContext";
 
 const AddReminder = () => {
-  const { send } = useContext(InteractiveContext);
+  const { send, setMenu } = useContext(InteractiveContext);
+  const { setReminders } = useContext(UserContext);
+  const { setOpenModal } = useContext(DatesContext);
 
   const [time, setTime] = useState(null);
   const [title, setTitle] = useState("");
@@ -23,7 +27,9 @@ const AddReminder = () => {
     send(newReminder);
     addReminder(newReminder, token)
       .then((res) => {
-        // console.log(res);
+        setOpenModal(false);
+        setReminders((prev) => [...prev, res.data.reminder]);
+        setMenu(true);
       })
       .catch((err) => console.log(err));
   };

@@ -16,11 +16,26 @@ const Menu = () => {
     e.clientX - start >= width ? setMenu(false) : null;
   };
 
+  const calcWidth = (time) => {
+    const nowMinutes = new Date().getMinutes();
+    const reminderMinutes = new Date(time).getMinutes();
+    const nowHours = new Date().getHours() * 60;
+    const reminderHours = new Date(time).getHours() * 60;
+    const reminderTime = reminderMinutes + reminderHours;
+    const now = nowMinutes + nowHours;
+    const percentage = (now / reminderTime) * 100;
+    if (percentage >= 100) {
+      return 100;
+    }
+    return Math.floor(percentage);
+  };
+
   return (
     <motion.div
       drag="x"
       dragSnapToOrigin={true}
       dragConstraints={{ right: 0, left: 0 }}
+      dragListener={false}
       onDragStart={(e) => setStart(e.clientX)}
       onDragEnd={(e) => checkEnd(e)}
       initial={{ x: "-110%", opacity: 0 }}
@@ -42,7 +57,7 @@ const Menu = () => {
       >
         <div className="flex">
           <RiArrowUpDownFill />
-          <AiOutlinePlus className="ml-3"/>
+          <AiOutlinePlus className="ml-3" />
         </div>
         <p>Reminders</p>
       </div>
@@ -61,12 +76,22 @@ const Menu = () => {
             <Reorder.Item
               key={reminder.id}
               value={reminder}
-              className="p-2 rounded-md shadow-sm bg-white my-5"
+              className="p-2 relative rounded-md shadow-md my-5"
               style={{ fontSize: 11 }}
             >
-              <p>{new Date(reminder.time).toLocaleDateString()}</p>
-              <p>{new Date(reminder.time).toLocaleTimeString()}</p>
-              <p>{reminder.title}</p>
+              <div className="z-50 pointer-events-none">
+                <p>{new Date(reminder.time).toLocaleDateString()}</p>
+                <p>{new Date(reminder.time).toLocaleTimeString()}</p>
+                <p>{reminder.title}</p>
+              </div>
+              <div
+                className={`absolute inset-0 rounded-md bg-gradient-to-tr pointer-events-none ${
+                  calcWidth(reminder.time) < 100
+                    ? "from-green-100 to-lime-100"
+                    : "from-red-100 to-rose-100"
+                } z-[-1]`}
+                style={{ width: `${calcWidth(reminder.time)}%` }}
+              ></div>
             </Reorder.Item>
           ))}
         </Reorder.Group>

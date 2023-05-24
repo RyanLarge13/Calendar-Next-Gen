@@ -44,11 +44,7 @@ const Event = ({ event, setEvent, dayEvents }) => {
       const timeString = `${hoursLeft - 1}:${
         minutesLeft < 11 ? `0${minutesLeft - 1}` : minutesLeft - 1
       }:${secondsLeft < 11 ? `0${secondsLeft - 1}` : secondsLeft - 1}`;
-      setTimeLeft(
-        hoursLeft <= 0 
-          ? null
-          : timeString
-      );
+      setTimeLeft(hoursLeft <= 0 ? null : timeString);
     };
 
     const calcTime = (start) => {
@@ -130,25 +126,27 @@ const Event = ({ event, setEvent, dayEvents }) => {
         >
           <p>{event.description}</p>
         </div>
-        <div className="relative mt-2 py-2 px-3 rounded-3xl shadow-sm flex w-full justify-between items-center bg-white">
-          <motion.div
-            animate={{
-              width: `${width}%`,
-              transition: { duration: 0.1, type: "spring", stiffness: 400 },
-            }}
-            className={`absolute left-1 top-1 bottom-1 ${event.color} bg-opacity-50 rounded-3xl`}
-          ></motion.div>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1, transition: { delay: 1.5 } }}
-            className="z-10 font-bold"
-          >
-            {timeLeft}
-          </motion.p>
-          <p className="z-10">
-            {new Date(event.start.startTime).toLocaleTimeString()}
-          </p>
-        </div>
+        {event.start.startTime && (
+          <div className="relative mt-2 py-2 px-3 rounded-3xl shadow-sm flex w-full justify-between items-center bg-white">
+            <motion.div
+              animate={{
+                width: `${width}%`,
+                transition: { duration: 0.1, type: "spring", stiffness: 400 },
+              }}
+              className={`absolute left-1 top-1 bottom-1 ${event.color} bg-opacity-50 rounded-3xl`}
+            ></motion.div>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1, transition: { delay: 1.5 } }}
+              className="z-10 font-bold"
+            >
+              {timeLeft}
+            </motion.p>
+            <p className="z-10">
+              {new Date(event.start.startTime).toLocaleTimeString()}
+            </p>
+          </div>
+        )}
         <p></p>
         <div className="sticky top-[50%] right-2 left-2 py-2 flex justify-between items-center text-xl">
           {index > 0 ? (

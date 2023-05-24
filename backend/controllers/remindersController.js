@@ -7,6 +7,7 @@ export const getReminders = async (req, res) => {
     where: {
       userId: id,
     },
+    orderBy: [{ time: "asc" }],
   });
   res.status(201).json({ reminders: reminders });
 };

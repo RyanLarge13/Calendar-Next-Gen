@@ -107,6 +107,7 @@ export const getEvents = async (req, res) => {
     where: {
       userId: id,
     },
+    orderBy: [{ date: "asc" }],
   });
   res.status(200).json({ events: usersEvents, message: "Success" });
 };
