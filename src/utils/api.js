@@ -131,3 +131,13 @@ export const addReminder = (reminder, token) => {
   );
   return res;
 };
+
+export const deleteReminder = (username, reminderId, token) => {
+  const res = Axios.delete(
+    `${productionUrl}/${username}/delete/reminder/${reminderId}`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+  return res;
+};

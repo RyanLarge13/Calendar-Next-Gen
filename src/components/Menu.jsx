@@ -2,14 +2,18 @@ import { useState, useContext } from "react";
 import { motion, Reorder } from "framer-motion";
 import { RiArrowUpDownFill } from "react-icons/ri";
 import { AiOutlinePlus } from "react-icons/ai";
+import { deleteReminder } from "../utils/api.js";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext";
 
 const Menu = () => {
   const { menu, setMenu } = useContext(InteractiveContext);
-  const { reminders, setReminders } = useContext(UserContext);
+  const { reminders, setReminders, user } = useContext(UserContext);
   const [showReminders, setShowReminders] = useState(true);
   const [start, setStart] = useState(null);
+  const [selected, setSelected] = useState([]);
+  const [selectable, setSelectable] = useState(false);
+  let timeout;
 
   const checkEnd = (e) => {
     const width = window.innerWidth / 2;
@@ -28,6 +32,54 @@ const Menu = () => {
       return 100;
     }
     return Math.floor(percentage);
+  };
+
+  const startTime = (id) => {
+    timeout = setTimeout(() => {
+      setSelectable(true);
+      if (selected.includes(id)) {
+        return;
+      }
+      if (!selected.includes(id)) {
+        addSelected(id);
+      }
+    }, 2000);
+  };
+
+  const stopTime = () => {
+    if (selectable === true) {
+      return;
+    }
+    if (selectable === false) {
+      clearTimeout(timeout);
+      setSelectable(false);
+    }
+  };
+
+  const addSelected = (id) => {
+    setSelected((prev) => [...prev, id]);
+  };
+
+  const removeSelected = (id) => {
+    const newList = selected.filter((item) => item !== id);
+    if (newList.length < 1) {
+      setSelectable(false);
+    }
+    setSelected(newList);
+  };
+
+  const deleteAReminder = (id) => {
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      deleteReminder(user.username, id, token)
+        .then((res) => {
+          const newReminders = reminders.filter(
+            (reminder) => reminder.id !== res.data.reminderId
+          );
+          setReminders(newReminders);
+        })
+        .catch((err) => console.log(err));
+    }
   };
 
   return (
@@ -76,8 +128,24 @@ const Menu = () => {
             <Reorder.Item
               key={reminder.id}
               value={reminder}
-              className="p-2 relative rounded-md shadow-md my-5"
+              className={`${
+                selected.includes(reminder.id)
+                  ? "shadow-red-300 duration-200"
+                  : "shadow-slate-200"
+              } p-2 relative rounded-md shadow-md my-5`}
               style={{ fontSize: 11 }}
+              onClick={() => {
+                if (selectable === false) {
+                  return;
+                }
+                if (selectable === true) {
+                  selected.includes(reminder.id)
+                    ? removeSelected(reminder.id)
+                    : addSelected(reminder.id);
+                }
+              }}
+              onPointerDown={() => startTime(reminder.id)}
+              onPointerUp={() => stopTime()}
             >
               <div className="z-50 pointer-events-none">
                 <p>{new Date(reminder.time).toLocaleDateString()}</p>
