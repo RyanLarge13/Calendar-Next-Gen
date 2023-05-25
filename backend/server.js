@@ -25,6 +25,11 @@ app.use("/", userRouter, eventsRouter, reminderRouter, notifRouter);
 
 //Notification Subscription Endpoint
 app.post("/subscribe/reminders", auth, (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
   const { sub, reminder } = req.body;
   const { id } = req.user;
   res.status(201).json({ message: "Reminder set" });

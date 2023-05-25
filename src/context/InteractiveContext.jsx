@@ -5,6 +5,9 @@ import Axios from "axios";
 const InteractiveContext = createContext({});
 
 export const InteractiveProvider = ({ children }) => {
+  const productionUrl = "https://calendar-next-gen.vercel.app";
+  const devUrl = "http://localhost:8080";
+
   const [menu, setMenu] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [confirm, setConfirm] = useState(false);
@@ -12,7 +15,6 @@ export const InteractiveProvider = ({ children }) => {
   useEffect(() => {
     if ("serviceWorker" in navigator) {
       send();
-      cachePage();
     }
   }, []);
 
@@ -35,7 +37,7 @@ export const InteractiveProvider = ({ children }) => {
             if (reminder) {
               const token = localStorage.getItem("authToken");
               Axios.post(
-                "https://calendar-next-gen.vercel.app/subscribe/reminders",
+                `${productionUrl}/subscribe/reminders`,
                 { sub: JSON.stringify(sub), reminder: reminder },
                 {
                   headers: {
@@ -43,23 +45,18 @@ export const InteractiveProvider = ({ children }) => {
                     "Content-Type": "application/json",
                   },
                 }
-              );
+              )
+                .then((res) => {
+                  console.log(res);
+                })
+                .catch((err) => {
+                  console.log(err);
+                });
             }
           })
           .catch((err) => {
             console.log(err);
           });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  const cachePage = () => {
-    navigator.serviceWorker
-      .register("/sw_cache.js")
-      .then((registration) => {
-        console.log(registration);
       })
       .catch((err) => {
         console.log(err);
