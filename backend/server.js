@@ -32,10 +32,10 @@ app.post("/subscribe/reminders", auth, (req, res) => {
   );
   const { sub, reminder } = req.body;
   const { id } = req.user;
-  res.status(201).json({ message: "Reminder set" });
   const reminderTime = new Date(reminder.time).getTime();
   const now = new Date().getTime();
   const delay = reminderTime - now;
+  res.status(201).json({ message: "Reminder set" });
   setTimeout(() => {
     sendNotification(JSON.parse(sub), reminder);
     createNotifcation(reminder, id);
