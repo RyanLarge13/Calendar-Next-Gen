@@ -27,24 +27,24 @@ export default defineConfig({
           },
         ],
       },
-      workbox: {
-        globPatterns: ["**/*.{js,css,html,png,jpg,jpeg,svg,gif,ico,json}"],
-        // Exclude the following files from caching
-        exclude: ["node_modules/**/*", "sw.js", "sw_cache.js"],
-        // Set the maximum cache size
-        maximumFileSizeToCacheInBytes: 5000000,
-        // Customize caching strategies
-        runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/api.example.com\//,
-            handler: "NetworkFirst",
-            options: {
-              cacheName: "api-cache",
-            },
-          },
-          // Add more runtime caching strategies as needed
-        ],
-      },
+      // workbox: {
+      //   globPatterns: ["**/*.{js,css,html,png,jpg,jpeg,svg,gif,ico,json}"],
+      //   // Exclude the following files from caching
+      //   mode: ["node_modules/**/*", "sw.js", "sw_cache.js"],
+      //   // Set the maximum cache size
+      //   maximumFileSizeToCacheInBytes: 5000000,
+      //   // Customize caching strategies
+      //   runtimeCaching: [
+      //     {
+      //       urlPattern: /^https:\/\/api.example.com\//,
+      //       handler: "NetworkFirst",
+      //       options: {
+      //         cacheName: "api-cache",
+      //       },
+      //     },
+      //     // Add more runtime caching strategies as needed
+      //   ],
+      // },
     }),
   ],
 });
