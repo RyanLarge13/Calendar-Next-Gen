@@ -5,7 +5,7 @@ import Axios from "axios";
 const InteractiveContext = createContext({});
 
 export const InteractiveProvider = ({ children }) => {
-  const productionUrl = "https://calendar-next-gen.vercel.app";
+  const productionUrl = "https://calendar-next-gen-production.up.railway.app";
   const devUrl = "http://localhost:8080";
 
   const [menu, setMenu] = useState(false);
