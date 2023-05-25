@@ -22,56 +22,29 @@ export const InteractiveProvider = ({ children }) => {
       })
       .then((registration) => {
         // console.log("Registered", registration);
-        registration.addEventListener("pushsubscriptionchange", (e) => {
-          e.waitUntil(
-            registration.pushManager
-              .subscribe({
-                userVisibleOnly: true,
-                applicationServerKey: urlBase64ToUint8Array(
-                  import.meta.env.VITE_VAPID_PUBLIC_KEY
-                ),
-              })
-              .then((sub) => {
-                // console.log("Subscription", sub);
-                if (reminder) {
-                  const token = localStorage.getItem("authToken");
-                  subscribe(token, sub, reminder)
-                    .then((res) => {
-                      console.log(res);
-                    })
-                    .catch((err) => {
-                      console.log(err);
-                    });
-                }
-              })
-              .catch((err) => {
-                console.log(err);
-              })
-          );
-        });
-        // registration.pushManager
-        //   .subscribe({
-        //     userVisibleOnly: true,
-        //     applicationServerKey: urlBase64ToUint8Array(
-        //       import.meta.env.VITE_VAPID_PUBLIC_KEY
-        //     ),
-        //   })
-        //   .then((sub) => {
-        //     // console.log("Subscription", sub);
-        //     if (reminder) {
-        //       const token = localStorage.getItem("authToken");
-        //       subscribe(token, sub, reminder)
-        //         .then((res) => {
-        //           console.log(res);
-        //         })
-        //         .catch((err) => {
-        //           console.log(err);
-        //         });
-        //     }
-        //   })
-        //   .catch((err) => {
-        //     console.log(err);
-        //   });
+        registration.pushManager
+          .subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(
+              import.meta.env.VITE_VAPID_PUBLIC_KEY
+            ),
+          })
+          .then((sub) => {
+            // console.log("Subscription", sub);
+            if (reminder) {
+              const token = localStorage.getItem("authToken");
+              subscribe(token, sub, reminder)
+                .then((res) => {
+                  console.log(res);
+                })
+                .catch((err) => {
+                  console.log(err);
+                });
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       })
       .catch((err) => {
         console.log(err);
