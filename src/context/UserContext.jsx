@@ -82,25 +82,13 @@ export const UserProvider = ({ children }) => {
             .catch((err) => {
               console.log(err);
             });
-          const recursiveNotifs = () => {
-            getNotifications(res.data.user.username, authToken)
-              .then((response) => {
-                setNotifications(response.data.notifs);
-                setTimeout(() => {
-                  recursiveNotifs();
-                }, 5000);
-              })
-              .catch((err) => {
-                console.log(err);
-                if (axios.isCancel(err)) {
-                  console.log("Request canceled:", err.message);
-                } else {
-                  console.error(err);
-                  recursiveNotifs();
-                }
-              });
-          };
-          recursiveNotifs();
+          getNotifications(res.data.user.username, authToken)
+            .then((response) => {
+              setNotifications(response.data.notifs);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
         })
         .catch((err) => {
           console.log(err);
