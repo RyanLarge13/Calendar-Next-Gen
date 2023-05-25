@@ -22,7 +22,8 @@
     "react-icons": "^4.8.0",
     "react-loader-spinner": "^5.3.4",
     "uuid": "^9.0.0",
-    "vite-plugin-pwa": "^0.15.0"
+    "vite-plugin-pwa": "^0.15.0",
+    "workbox-webpack-plugin": "^6.5.4"
   },
   "devDependencies": {
     "@types/react": "^18.0.27",

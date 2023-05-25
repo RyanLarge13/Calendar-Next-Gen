@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
+import auth from "./auth/authenticateToken.js";
 import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
@@ -23,15 +24,16 @@ app.use(express.json());
 app.use("/", userRouter, eventsRouter, reminderRouter, notifRouter);
 
 //Notification Subscription Endpoint
-app.post("/subscribe/reminders", (req, res) => {
+app.post("/subscribe/reminders", auth, (req, res) => {
   const { sub, reminder } = req.body;
+  const { id } = req.user;
   res.status(201).json({ message: "Reminder set" });
   const reminderTime = new Date(reminder.time).getTime();
   const now = new Date().getTime();
   const delay = reminderTime - now;
   setTimeout(() => {
     sendNotification(JSON.parse(sub), reminder);
-    createNotifcation(reminder);
+    createNotifcation(reminder, id);
   }, delay);
 });
 
@@ -44,13 +46,15 @@ const sendNotification = (sub, reminder) => {
 };
 
 //Creating a new Prisma Notification @ specified Date
-const createNotifcation = async (reminder) => {
+const createNotifcation = async (reminder, userId) => {
   const newNotif = {
     read: false,
+    type: "reminder",
     readTime: null,
     notifData: { ...reminder },
+    userId: userId,
   };
-  await prisma.notifications.create({
+  await prisma.notification.create({
     data: newNotif,
   });
 };

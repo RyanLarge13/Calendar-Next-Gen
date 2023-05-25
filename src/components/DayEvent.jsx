@@ -17,17 +17,18 @@ const DayEvent = ({ event, setEvent }) => {
     const hour = new Date(event.start.startTime).getHours();
     setZ(hour);
     if (event.start.startTime) {
-      const startHours = new Date(event.start.startTime).getHours() * 241.5;
+      const startHours = new Date(event.start.startTime).getHours() * 225;
       const startMinutes = new Date(event.start.startTime).getMinutes();
-      setMargin(() => startHours + 100 + (startMinutes === 30 ? 100 : 0));
+      setMargin(() => startHours + 112.5 + (startMinutes === 30 ? 112.5 : 0));
     }
     if (event.end.endTime) {
-      const startHours = new Date(event.start.startTime).getHours() * 241.5;
+      const startHours = new Date(event.start.startTime).getHours() * 225;
       const startMinutes = new Date(event.start.startTime).getMinutes();
-      const endHours = new Date(event.end.endTime).getHours() * 241.5;
+      const endHours = new Date(event.end.endTime).getHours() * 225;
       const endMinutes = new Date(event.end.endTime).getMinutes();
-      const startHeight = startHours + 100 + (startMinutes === 30 ? 100 : 0);
-      const endHeight = endHours + 100 + (endMinutes === 30 ? 100 : 0);
+      const startHeight =
+        startHours + 112.5 + (startMinutes === 30 ? 112.5 : 0);
+      const endHeight = endHours + 112.5 + (endMinutes === 30 ? 112.5 : 0);
       setHeight(endHeight - startHeight);
     }
   }, []);
@@ -40,10 +41,17 @@ const DayEvent = ({ event, setEvent }) => {
   const checkTime = (e) => {
     const end = e.clientY;
     const diff = end - start;
-    const rounded = Math.round(diff / 100);
-    const marginFrac = margin / 24;
-    // console.log(rounded * marginFrac);
-    // setMargin((prev) => prev + rounded * marginFrac);
+    if (diff < 0) {
+      const marginLeft = Math.round(diff + 121);
+      setMargin((prev) => prev + -marginLeft);
+    }
+    if (diff > 0) {
+      const marginLeft = Math.round(diff - 121);
+      setMargin((prev) => prev + -marginLeft);
+    }
+    if (diff === 0) {
+      setMargin((prev) => prev + 0);
+    }
   };
 
   return (
@@ -55,10 +63,10 @@ const DayEvent = ({ event, setEvent }) => {
       dragControls={dragControls}
       dragListener={false}
       onDragEnd={(e) => checkTime(e)}
-      initial={{ y: 50, opacity: 0 }}
-      whileInView={{ y: 0, opacity: 1, transition: { duration: 0.2 } }}
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
       style={{ top: `${margin}px`, height: height, minHeight: 50, zIndex: z }}
-      className={`p-3 rounded-md shadow-md w-[70%] absolute ${event.color} bg-opacity-10 hover:z-[998] hover:bg-opacity-50 duration-200 right-0`}
+      className={`p-3 rounded-md shadow-md w-[70%] duration-200 absolute ${event.color} bg-opacity-10 hover:z-[998] hover:bg-opacity-50 right-0`}
     >
       <div
         onPointerDown={(e) => startDrag(e)}

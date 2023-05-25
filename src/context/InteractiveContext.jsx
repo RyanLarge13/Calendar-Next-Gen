@@ -1,4 +1,5 @@
 import { createContext, useState, useEffect } from "react";
+import { urlBase64ToUint8Array } from "../utils/helpers";
 import Axios from "axios";
 
 const InteractiveContext = createContext({});
@@ -11,45 +12,58 @@ export const InteractiveProvider = ({ children }) => {
   useEffect(() => {
     if ("serviceWorker" in navigator) {
       send();
+      cachePage();
     }
   }, []);
 
-  function urlBase64ToUint8Array(base64String) {
-    var padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-    var base64 = (base64String + padding)
-      .replace(/\-/g, "+")
-      .replace(/_/g, "/");
-
-    var rawData = window.atob(base64);
-    var outputArray = new Uint8Array(rawData.length);
-
-    for (var i = 0; i < rawData.length; ++i) {
-      outputArray[i] = rawData.charCodeAt(i);
-    }
-    return outputArray;
-  }
-
   const send = async (reminder) => {
-      const reg = await navigator.serviceWorker.register("/sw.js", {
+    navigator.serviceWorker
+      .register("/sw.js", {
         scope: "/",
+      })
+      .then((registration) => {
+        // console.log("Registered", registration);
+        registration.pushManager
+          .subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(
+              import.meta.env.VITE_VAPID_PUBLIC_KEY
+            ),
+          })
+          .then((sub) => {
+            // console.log("Subscription", sub);
+            if (reminder) {
+              const token = localStorage.getItem("authToken");
+              Axios.post(
+                "https://calendar-next-gen.vercel.app/subscribe/reminders",
+                { sub: JSON.stringify(sub), reminder: reminder },
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                  },
+                }
+              );
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      })
+      .catch((err) => {
+        console.log(err);
       });
-      const sub = await reg.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(
-          import.meta.env.VITE_VAPID_PUBLIC_KEY
-        ),
+  };
+
+  const cachePage = () => {
+    navigator.serviceWorker
+      .register("/sw_cache.js")
+      .then((registration) => {
+        console.log(registration);
+      })
+      .catch((err) => {
+        console.log(err);
       });
-    if (reminder) {
-      Axios.post(
-        "http://localhost:8080/subscribe/reminders",
-        { sub: JSON.stringify(sub), reminder: reminder },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-    }
   };
 
   return (

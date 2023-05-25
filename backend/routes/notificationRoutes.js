@@ -1,8 +1,9 @@
 import express from "express";
-import { getNotifications } from "../controllers/notificationsController.hs";
+import auth from "../auth/authenticateToken.js";
+import { getNotifications } from "../controllers/notificationsController.js";
 
 const notifRouter = express.Router();
 
-notifRouter.route("/notifications", auth, getNotifications);
+notifRouter.get("/:username/notifications", auth, getNotifications);
 
-export default notifRouter
+export default notifRouter;

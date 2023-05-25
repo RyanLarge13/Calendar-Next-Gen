@@ -17,6 +17,7 @@ model User {
   createAt DateTime @default(now())
   events   Event[]
   reminders Reminder[]
+  notifications Notification[]
 
   @@unique([username, email])
 }
@@ -45,6 +46,16 @@ model Reminder {
   title String
   notes String
   time String
+  User User @relation(fields: [userId], references: [id])
+  userId String
+}
+
+model Notification {
+  id String @unique @id @default(uuid())
+  type String
+  read Boolean
+  readTime String?
+  notifData Json
   User User @relation(fields: [userId], references: [id])
   userId String
 }

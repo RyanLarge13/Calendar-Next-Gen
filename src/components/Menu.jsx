@@ -68,11 +68,6 @@ const Menu = () => {
 
   const deleteAReminder = (id) => {
     const token = localStorage.getItem("authToken");
-    //test
-    const newReminders = reminders.filter(
-      (reminder) => reminder.id !== res.data.reminderId
-    );
-    return setReminders(newReminders);
 
     if (token) {
       deleteReminder(user.username, id, token)
@@ -81,6 +76,9 @@ const Menu = () => {
             (reminder) => reminder.id !== res.data.reminderId
           );
           setReminders(newReminders);
+          if (selected.length < 1) {
+            return setSelectable(false);
+          }
         })
         .catch((err) => console.log(err));
     }
@@ -157,7 +155,10 @@ const Menu = () => {
                   initial={{ x: 50, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   className="px-4 py-1 rounded-md shadow-md bg-rose-300 absolute right-3 top-3"
-                  onClick={(e) => deleteAReminder(reminder.id)}
+                  onPointerDown={(e) => {
+                    e.stopPropagation();
+                    deleteAReminder(reminder.id);
+                  }}
                 >
                   Delete
                 </motion.button>

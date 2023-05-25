@@ -141,3 +141,13 @@ export const deleteReminder = (username, reminderId, token) => {
   );
   return res;
 };
+
+//Notifications
+export const getNotifications = (username, token) => {
+  const res = Axios.get(`${productionUrl}/${username}/notifications`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res;
+};
