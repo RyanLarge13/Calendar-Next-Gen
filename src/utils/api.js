@@ -2,7 +2,6 @@ import Axios from "axios";
 
 const devUrl = "http://localhost:8080";
 const productionUrl = "https://calendar-next-gen-production.up.railway.app";
-const source = Axios.CancelToken.source();
 
 export const getUserData = (token) => {
   const res = Axios.get(`${productionUrl}/user/data`, {
@@ -157,10 +156,9 @@ export const subscribe = (token, sub, reminder) => {
   );
   return res;
 };
+
 export const getNotifications = (username, token) => {
   const res = Axios.get(`${productionUrl}/${username}/notifications`, {
-    cancelToken: source.token,
-    timeout: 0,
     headers: {
       Authorization: `Bearer ${token}`,
     },
