@@ -9,7 +9,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.svg", "robots.txt", "sw.js", "sw_cache.js"],
+      includeAssets: ["favicon.svg", "robots.txt", "sw.js"],
       manifest: {
         name: "Calendar Next Gen",
         short_name: "CNG",

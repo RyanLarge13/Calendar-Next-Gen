@@ -12,7 +12,6 @@ export const InteractiveProvider = ({ children }) => {
   useEffect(() => {
     if ("serviceWorker" in navigator) {
       send();
-      cachePage();
     }
   }, []);
 
@@ -49,17 +48,6 @@ export const InteractiveProvider = ({ children }) => {
           .catch((err) => {
             console.log(err);
           });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  const cachePage = () => {
-    navigator.serviceWorker
-      .register("/sw_cache.js")
-      .then((registration) => {
-        console.log(registration);
       })
       .catch((err) => {
         console.log(err);
