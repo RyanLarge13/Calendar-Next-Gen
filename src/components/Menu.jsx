@@ -2,14 +2,18 @@ import { useState, useContext } from "react";
 import { motion, Reorder } from "framer-motion";
 import { RiArrowUpDownFill } from "react-icons/ri";
 import { AiOutlinePlus } from "react-icons/ai";
+import { deleteReminder } from "../utils/api.js";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext";
 
 const Menu = () => {
   const { menu, setMenu } = useContext(InteractiveContext);
-  const { reminders, setReminders } = useContext(UserContext);
+  const { reminders, setReminders, user } = useContext(UserContext);
   const [showReminders, setShowReminders] = useState(true);
   const [start, setStart] = useState(null);
+  const [selected, setSelected] = useState([]);
+  const [selectable, setSelectable] = useState(false);
+  let timeout;
 
   const checkEnd = (e) => {
     const width = window.innerWidth / 2;
@@ -28,6 +32,56 @@ const Menu = () => {
       return 100;
     }
     return Math.floor(percentage);
+  };
+
+  const startTime = (id) => {
+    if (selected.length > 1 && selected.includes(id)) {
+      return removeSelected(id);
+    }
+    if (selected.length === 1 && selected.includes(id)) {
+      setSelectable(false);
+      return removeSelected(id);
+    }
+    if (selectable === true) {
+      return addSelected(id);
+    }
+    timeout = setTimeout(() => {
+      setSelectable(true);
+      addSelected(id);
+    }, 750);
+  };
+
+  const stopTime = (id) => {
+    if (selectable === false) {
+      clearTimeout(timeout);
+    }
+  };
+
+  const addSelected = (id) => {
+    setSelected((prev) => [...prev, id]);
+  };
+
+  const removeSelected = (id) => {
+    const newList = selected.filter((item) => item !== id);
+    setSelected(newList);
+  };
+
+  const deleteAReminder = (id) => {
+    const token = localStorage.getItem("authToken");
+
+    if (token) {
+      deleteReminder(user.username, id, token)
+        .then((res) => {
+          const newReminders = reminders.filter(
+            (reminder) => reminder.id !== res.data.reminderId
+          );
+          setReminders(newReminders);
+          if (selected.length < 1) {
+            return setSelectable(false);
+          }
+        })
+        .catch((err) => console.log(err));
+    }
   };
 
   return (
@@ -71,19 +125,44 @@ const Menu = () => {
         }
         className="p-3 overflow-hidden shadow-sm"
       >
-        <Reorder.Group axis="y" values={reminders} onReorder={setReminders}>
+        <div>
           {reminders.map((reminder, index) => (
-            <Reorder.Item
+            <motion.div
+              animate={
+                selected.includes(reminder.id)
+                  ? {
+                      scaleX: 1.025,
+                      scaleY: 1.1,
+                      opacity: 0.75,
+                      boxShadow: "0 0.1em 0.5em 0 #f00",
+                    }
+                  : { scale: 1, opacity: 1, boxShadow: "0 0.1em 0.5em 0 #eee" }
+              }
               key={reminder.id}
-              value={reminder}
-              className="p-2 relative rounded-md shadow-md my-5"
+              className={"p-2 relative rounded-md my-5"}
               style={{ fontSize: 11 }}
+              onPointerDown={() => startTime(reminder.id)}
+              onPointerUp={() => stopTime(reminder.id)}
+              onPointerCancel={() => clearTimeout(timeout)}
             >
               <div className="z-50 pointer-events-none">
                 <p>{new Date(reminder.time).toLocaleDateString()}</p>
                 <p>{new Date(reminder.time).toLocaleTimeString()}</p>
                 <p>{reminder.title}</p>
               </div>
+              {selected.includes(reminder.id) && (
+                <motion.button
+                  initial={{ x: 50, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  className="px-4 py-1 rounded-md shadow-md bg-rose-300 absolute right-3 top-3"
+                  onPointerDown={(e) => {
+                    e.stopPropagation();
+                    deleteAReminder(reminder.id);
+                  }}
+                >
+                  Delete
+                </motion.button>
+              )}
               <div
                 className={`absolute inset-0 rounded-md bg-gradient-to-tr pointer-events-none ${
                   calcWidth(reminder.time) < 100
@@ -92,9 +171,9 @@ const Menu = () => {
                 } z-[-1]`}
                 style={{ width: `${calcWidth(reminder.time)}%` }}
               ></div>
-            </Reorder.Item>
+            </motion.div>
           ))}
-        </Reorder.Group>
+        </div>
       </motion.div>
       <div
         onClick={() => {}}

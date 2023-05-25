@@ -6,6 +6,7 @@ import {
   loginWithGoogle,
   getEvents,
   getReminders,
+  getNotifications,
   // getGoogleCalendarEvents,
 } from "../utils/api";
 
@@ -22,9 +23,7 @@ export const UserProvider = ({ children }) => {
   const [reminders, setReminders] = useState(
     JSON.parse(localStorage.getItem("reminders")) || []
   );
-  const [notifications, setNotifications] = useState(
-    JSON.parse(localStorage.getItem("notifications")) || []
-  );
+  const [notifications, setNotifications] = useState([]);
   const [googleToken, setGoogleToken] = useState(false);
   const [loginLoading, setLoginLoading] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
@@ -74,11 +73,18 @@ export const UserProvider = ({ children }) => {
             });
           getReminders(res.data.user.username, authToken)
             .then((response) => {
-              localStorage.setItem(
-                "reminders",
-                JSON.stringify(response.data.reminders)
-              );
+              // localStorage.setItem(
+              //   "reminders",
+              //   JSON.stringify(response.data.reminders)
+              // );
               setReminders(response.data.reminders);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+          getNotifications(res.data.user.username, authToken)
+            .then((response) => {
+              setNotifications(response.data.notifs);
             })
             .catch((err) => {
               console.log(err);

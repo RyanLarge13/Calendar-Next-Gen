@@ -109,10 +109,13 @@ const Modal = () => {
                     setAddEventWithStartTime(timeObj.time);
                     setAddNewEvent(true);
                   }}
-                  className={`${index === 0 ? "mt-0" : "my-[100px]"} ${
+                  style={
                     index % 2 === 0
-                      ? "text-md after:w-[100%]"
-                      : "text-xs after:w-[70%]"
+                      ? { fontSize: "15px" }
+                      : { fontSize: "10px" }
+                  }
+                  className={`${index === 0 ? "mt-0" : "my-[100px]"} ${
+                    index % 2 === 0 ? "after:w-[100%]" : "after:w-[70%]"
                   } relative after:left-0 after:bottom-0 after:h-[1px] after:absolute after:bg-slate-200`}
                 >
                   {timeObj.string}

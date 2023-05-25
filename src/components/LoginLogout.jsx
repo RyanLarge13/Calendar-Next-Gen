@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useGoogleLogin } from "@react-oauth/google";
 import { BiLogInCircle, BiLogOutCircle } from "react-icons/bi";
@@ -15,6 +15,7 @@ const LoginLogout = () => {
     setUser,
     setGoogleToken,
     loginLoading,
+    notifications,
     setLoginLoading,
     setAuthToken,
     setEvents,
@@ -26,6 +27,14 @@ const LoginLogout = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showNotifs, setShowNotifs] = useState(false);
+  const [unReadLength, setUnReadLength] = useState(0);
+
+  useEffect(() => {
+    const unReadNotifs = notifications.filter(
+      (notif) => notif.read === false
+    ).length;
+    setUnReadLength(unReadNotifs);
+  }, [notifications]);
 
   const loginGoogle = useGoogleLogin({
     onSuccess: (res) => {
@@ -89,7 +98,19 @@ const LoginLogout = () => {
                 onClick={() => logout()}
                 className="text-xl abolute left-2 top-2"
               />
-              <BsFillBellFill onClick={() => setShowNotifs((prev) => !prev)} />
+              <div
+                onClick={() => setShowNotifs((prev) => !prev)}
+                className="relative"
+              >
+                {unReadLength > 0 && (
+                  <div
+                    className={`absolute top-[-5px] right-[-5px] rounded-full w-[10px] h-[10px] bg-red-400`}
+                  >
+                    {unReadLength}
+                  </div>
+                )}
+                <BsFillBellFill />
+              </div>
             </div>
             <img
               src={user.avatarUrl}

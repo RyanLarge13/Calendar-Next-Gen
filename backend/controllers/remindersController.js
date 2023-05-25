@@ -37,3 +37,18 @@ export const addNewReminder = async (req, res) => {
     });
   }
 };
+
+export const deleteReminder = async (req, res) => {
+  const id = req.params.reminderId;
+  const deletedReminder = await prisma.reminder.delete({
+    where: {
+      id: id,
+    },
+  });
+  if (deletedReminder) {
+    return res.json({
+      message: "Successfully deleted reminder",
+      reminderId: deletedReminder.id,
+    });
+  }
+};
