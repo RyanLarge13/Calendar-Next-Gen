@@ -8,6 +8,7 @@ export const InteractiveProvider = ({ children }) => {
   const [menu, setMenu] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [confirm, setConfirm] = useState(false);
+  const [globalSubscription, setGlobalSubscription] = useState(null);
 
   useEffect(() => {
     if ("serviceWorker" in navigator) {
@@ -15,40 +16,24 @@ export const InteractiveProvider = ({ children }) => {
     }
   }, []);
 
-  const send = async (reminder) => {
-    navigator.serviceWorker
-      .register("/sw.js", {
+  const send = async () => {
+    try {
+      const registration = await navigator.serviceWorker.register("/sw.js", {
         scope: "/",
-      })
-      .then((registration) => {
-        // console.log("Registered", registration);
-        registration.pushManager
-          .subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(
-              import.meta.env.VITE_VAPID_PUBLIC_KEY
-            ),
-          })
-          .then((sub) => {
-            // console.log("Subscription", sub);
-            if (reminder) {
-              const token = localStorage.getItem("authToken");
-              subscribe(token, sub, reminder)
-                .then((res) => {
-                  console.log(res);
-                })
-                .catch((err) => {
-                  console.log(err);
-                });
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      })
-      .catch((err) => {
-        console.log(err);
       });
+
+      const subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(
+          import.meta.env.VITE_VAPID_PUBLIC_KEY
+        ),
+      });
+
+      setGlobalSubscription(subscription);
+
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (

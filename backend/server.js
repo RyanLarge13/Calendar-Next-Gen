@@ -35,10 +35,9 @@ app.post("/subscribe/reminders", auth, (req, res) => {
   const reminderTime = new Date(reminder.time).getTime();
   const now = new Date().getTime();
   const delay = reminderTime - now;
-  res.status(201).json({ message: "Reminder set" });
   setTimeout(() => {
     sendNotification(JSON.parse(sub), reminder);
-    createNotifcation(reminder, id);
+    createNotifcation(reminder, id, res);
   }, delay);
 });
 
@@ -51,7 +50,7 @@ const sendNotification = (sub, reminder) => {
 };
 
 //Creating a new Prisma Notification @ specified Date
-const createNotifcation = async (reminder, userId) => {
+const createNotifcation = async (reminder, userId, res) => {
   const newNotif = {
     read: false,
     type: "reminder",
@@ -59,9 +58,10 @@ const createNotifcation = async (reminder, userId) => {
     notifData: { ...reminder },
     userId: userId,
   };
-  await prisma.notification.create({
+  const createdNotif = await prisma.notification.create({
     data: newNotif,
   });
+  res.status(201).json({ message: "Reminder set", notif: createdNotif });
 };
 
 app.listen(PORT, () => {
