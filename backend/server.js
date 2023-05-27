@@ -33,6 +33,7 @@ app.post("/subscribe/reminders", auth, (req, res) => {
   const { sub, reminder } = req.body;
   const { id } = req.user;
   const reminderTime = new Date(reminder.time).getTime();
+  res.status(201).json({ message: "Reminder set" });
   const now = new Date().getTime();
   const delay = reminderTime - now;
   setTimeout(() => {
@@ -58,10 +59,9 @@ const createNotifcation = async (reminder, userId, res) => {
     notifData: { ...reminder },
     userId: userId,
   };
-  const createdNotif = await prisma.notification.create({
+  await prisma.notification.create({
     data: newNotif,
   });
-  res.status(201).json({ message: "Reminder set", notif: createdNotif });
 };
 
 app.listen(PORT, () => {

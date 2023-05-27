@@ -16,9 +16,11 @@ export default defineConfig({
         description:
           "A next generation calendar application built for the orginized and busy",
         start_url: "/",
-        display: "standalone",
+        display: "fullscreen",
+        orientation: "landscape", 
         background_color: "#ffffff",
         theme_color: "#000000",
+        serviceworker: "./sw.js", 
         icons: [
           {
             src: "/favicon.svg",
