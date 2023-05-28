@@ -2,18 +2,29 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export const getNotifications = async (req, res) => {
-  const id = req.user.id;
-  const notifs = await prisma.notification.findMany({
-    where: {
-      userId: id,
-    },
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  const {id} = req.user
+  cron.schedule("* * * * *", async () => {
+    try {
+      const notifications = await prisma.notification.findMany({
+        reminderTime: { $lte: new Date() },
+        sentNotification: false,
+        userId: id
+      });
+      notifications.forEach(async (notif) => {
+        //await sendReminderNotification(reminder);
+        notif.sentNotification = true;
+        await notif.save();
+        res.write(`data: ${JSON.stringify(notif)}\n\n`);
+      });
+    } catch (error) {
+      console.error("Error sending notifications:", error);
+    }
   });
-  if (notifs) {
-    return res
-      .status(201)
-      .json({ message: "Successfully fetched notifications", notifs: notifs });
-  }
-  if (!notifs) {
-    return res.status(401).json({ message: "Failed to fetch notifications" });
-  }
+  req.on("close", () => {
+    res.end();
+  });
 };

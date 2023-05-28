@@ -1,5 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
 import auth from "./auth/authenticateToken.js";
 import dotenv from "dotenv";
 import express from "express";
@@ -17,6 +16,8 @@ webpush.setVapidDetails(
 );
 
 const PORT = process.env.PORT || 8080;
+const prisma = new PrismaClient();
+let subscription;
 
 const app = express();
 app.use(cors());
@@ -30,16 +31,11 @@ app.post("/subscribe/reminders", auth, (req, res) => {
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept"
   );
-  const { sub, reminder } = req.body;
-  const { id } = req.user;
-  const reminderTime = new Date(reminder.time).getTime();
-  res.status(201).json({ message: "Reminder set" });
-  const now = new Date().getTime();
-  const delay = reminderTime - now;
-  setTimeout(() => {
-    sendNotification(JSON.parse(sub), reminder);
-    createNotifcation(reminder, id, res);
-  }, delay);
+  const { sub } = req.body;
+  subscription = sub;
+  res
+    .status(201)
+    .json({ message: "You have successfully subscribed to notifications" });
 });
 
 //Sending notification
@@ -59,9 +55,14 @@ const createNotifcation = async (reminder, userId, res) => {
     notifData: { ...reminder },
     userId: userId,
   };
-  await prisma.notification.create({
+  const createdNotif = await prisma.notification.create({
     data: newNotif,
   });
+  if (createdNotif) {
+    res.status(201).json({ message: "Reminder set" });
+  }
+  if (!createdNotif) {
+  }
 };
 
 app.listen(PORT, () => {

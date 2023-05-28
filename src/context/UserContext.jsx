@@ -82,13 +82,11 @@ export const UserProvider = ({ children }) => {
             .catch((err) => {
               console.log(err);
             });
-          getNotifications(res.data.user.username, authToken)
-            .then((response) => {
-              setNotifications(response.data.notifs);
-            })
-            .catch((err) => {
-              console.log(err);
-            });
+          const serverSentSource = getNotifications(
+            res.data.user.username,
+            authToken
+          );
+          setupNotifListener(serverSentSource);
         })
         .catch((err) => {
           console.log(err);
@@ -99,6 +97,17 @@ export const UserProvider = ({ children }) => {
       setUser(false);
     }
   }, [authToken]);
+
+  const setupNotifListener = (serverSentSource) => {
+    serverSentSource.addEventListener("message", (event) => {
+      const notification = JSON.parse(event.data);
+      setNotifications((prev) => [...prev, notification]);
+      console.log("Received notification:", notification);
+    });
+    serverSentSource.addEventListener("error", (error) => {
+      console.error("SSE error:", error);
+    });
+  };
 
   return (
     <UserContext.Provider
