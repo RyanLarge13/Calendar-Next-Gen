@@ -1,47 +1,52 @@
-# RyanLarge.com
-
-This is the official website for Ryan Large, showcasing his portfolio, projects, and information about him.
-
-## Table of Contents
-
-- [Introduction](#introduction)
-- [Features](#features)
-- [Technologies Used](#technologies-used)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
-- [Contact](#contact)
-
-## Introduction
-
-RyanLarge.com is a personal website designed to provide an overview of Ryan Large's professional work and interests. The website serves as a hub for accessing his portfolio, projects, and blog posts. It also includes information about his skills, experience, and contact details.
+# Calendar-Next-Gen
+### Calendar-Next-Gen is a modern and feature-rich calendar application built using HTML, CSS, and JavaScript. It provides a user-friendly interface for managing events, appointments, and reminders.
 
 ## Features
+Event Management: Add, edit, and delete events with details such as title, date, time, location, and description.
+Multiple Views: Switch between day, week, and month views to visualize events in different time frames.
+Drag and Drop: Easily move events by dragging and dropping them to different time slots or dates.
+Reminders: Set reminders for upcoming events to receive notifications.
+Color-coded Categories: Assign different categories or labels to events for better organization.
+Search Functionality: Search for events based on keywords, dates, or categories.
+Responsive Design: The application is optimized for various screen sizes, including mobile devices.
+Installation
+Clone the repository:
 
-- **Portfolio:** Explore Ryan Large's portfolio showcasing his projects and work samples.
-- **Projects:** Get detailed information about the projects Ryan has worked on, including descriptions, technologies used, and links to the project repositories or live demos.
-- **Blog:** Read Ryan's blog posts covering various topics related to technology, programming, and personal insights.
-- **About:** Learn more about Ryan Large, his background, skills, experience, and interests.
-- **Contact:** Find Ryan's contact information to reach out for inquiries, collaborations, or any other communication.
-
-## Technologies Used
-
-The website is built using the following technologies:
-
-- HTML
-- CSS
-- JavaScript
-- Bootstrap (for responsive design)
-- Markdown (for blog posts)
-
-## Installation
-
-As RyanLarge.com is a live website, there is no installation required. Simply visit [www.ryanlarge.com](https://www.ryanlarge.com) using your preferred web browser.
+## bash
+Copy code
+git clone https://github.com/RyanLarge13/Calendar-Next-Gen.git
+Open the index.html file in your preferred web browser.
 
 ## Usage
+Upon opening the application, you will be presented with the calendar view showing the current date.
 
-- Visit [www.ryanlarge.com](https://www.ryanlarge.com) to access the website.
+To add a new event, click on the desired date or time slot. A dialog box will appear, allowing you to enter event details.
+
+To edit an event, click on the event in the calendar view. The event details can be modified in the dialog box.
+
+To delete an event, click on the event in the calendar view and choose the delete option.
+
+Use the navigation buttons or the month/year dropdown to switch between different dates or views.
+
+The search bar can be used to search for specific events based on keywords, dates, or categories.
+
+## Contributing
+Contributions are welcome! If you'd like to enhance the Calendar-Next-Gen application, please follow these steps:
+
+Fork the repository.
+
+Create a new branch for your feature or bug fix.
+
+Make your changes and test thoroughly.
+
+Submit a pull request with a clear description of your changes.
+
+## License
+The Calendar-Next-Gen project is licensed under the MIT License.
+
+## Acknowledgments
+This project was inspired by the need for a modern and intuitive calendar application.
+Thanks to all the contributors who have helped improve and enhance the functionality of Calendar-Next-Gen.
 - Navigate through the different sections using the navigation menu or scroll down to explore the content.
 - Click on portfolio items or project links to view detailed information or access project repositories or live demos.
 - Read blog posts by clicking on the "Blog" section and selecting a specific post to read.
@@ -58,7 +63,7 @@ The content of this website is protected under all applicable copyright and inte
 
 For any inquiries or communication, you can contact Ryan Large through the following channels:
 
-- Email: [ryan@example.com](mailto:ryan@example.com)
+- Email: [ryanlarge@ryanlarge.dev](mailto:ryan@example.com)
 - LinkedIn: [linkedin.com/in/ryanlarge](https://www.linkedin.com/in/ryanlarge)
 - Twitter: [@ryanlarge](https://twitter.com/ryanlarge)
 
