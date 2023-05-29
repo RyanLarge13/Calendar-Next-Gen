@@ -4,6 +4,6 @@ import { getNotifications } from "../controllers/notificationsController.js";
 
 const notifRouter = express.Router();
 
-notifRouter.get("/:username/notifications", auth, getNotifications);
+notifRouter.get("/:username/notifications", getNotifications);
 
 export default notifRouter;

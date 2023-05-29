@@ -46,25 +46,6 @@ const sendNotification = (sub, reminder) => {
     .catch((err) => console.log(err));
 };
 
-//Creating a new Prisma Notification @ specified Date
-const createNotifcation = async (reminder, userId, res) => {
-  const newNotif = {
-    read: false,
-    type: "reminder",
-    readTime: null,
-    notifData: { ...reminder },
-    userId: userId,
-  };
-  const createdNotif = await prisma.notification.create({
-    data: newNotif,
-  });
-  if (createdNotif) {
-    res.status(201).json({ message: "Reminder set" });
-  }
-  if (!createdNotif) {
-  }
-};
-
 app.listen(PORT, () => {
   console.log(`Your app is listening on port ${PORT}`);
 });

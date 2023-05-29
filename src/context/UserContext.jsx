@@ -82,11 +82,8 @@ export const UserProvider = ({ children }) => {
             .catch((err) => {
               console.log(err);
             });
-          const serverSentSource = getNotifications(
-            res.data.user.username,
-            authToken
-          );
-          setupNotifListener(serverSentSource);
+          // const serverSentSource = getNotifications(res.data.user.id);
+          // setupNotifListener(serverSentSource);
         })
         .catch((err) => {
           console.log(err);
@@ -99,6 +96,9 @@ export const UserProvider = ({ children }) => {
   }, [authToken]);
 
   const setupNotifListener = (serverSentSource) => {
+    serverSentSource.addEventListener("open", () => {
+      console.log("Open");
+    });
     serverSentSource.addEventListener("message", (event) => {
       const notification = JSON.parse(event.data);
       setNotifications((prev) => [...prev, notification]);
@@ -106,6 +106,7 @@ export const UserProvider = ({ children }) => {
     });
     serverSentSource.addEventListener("error", (error) => {
       console.error("SSE error:", error);
+      serverSentSource.close();
     });
   };
 

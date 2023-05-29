@@ -121,7 +121,7 @@ export const getReminders = (username, token) => {
 
 export const addReminder = (reminder, token) => {
   const res = Axios.post(
-    `${productionUrl}/new/reminder`,
+    `${devUrl}/new/reminder`,
     { reminder },
     {
       headers: {
@@ -145,7 +145,7 @@ export const deleteReminder = (username, reminderId, token) => {
 //Notifications
 export const subscribe = (token, sub) => {
   const res = Axios.post(
-    `${productionUrl}/subscribe/reminders`,
+    `${devUrl}/subscribe/reminders`,
     { sub: JSON.stringify(sub) },
     {
       headers: {
@@ -157,11 +157,7 @@ export const subscribe = (token, sub) => {
   return res;
 };
 
-export const getNotifications = (username, token) => {
-  const eventSource = new EventSource(`/${username}/notifications`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  return eventSource
+export const getNotifications = (userId) => {
+  const eventSource = new EventSource(`${devUrl}/${userId}/notifications`);
+  return eventSource;
 };
