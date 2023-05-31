@@ -30,7 +30,7 @@ const Modal = () => {
     if (string === new Date().toLocaleDateString()) {
       const todaysHours = new Date().getHours();
       !addNewEvent
-        ? modalRef.current.scrollTo(0, todaysHours * 240)
+        ? modalRef.current.scrollTo(0, todaysHours * 237)
         : modalRef.current.scrollTo(0, 0);
     }
     addNewEvent && modalRef.current.scrollTo(0, 0);
@@ -58,7 +58,7 @@ const Modal = () => {
         timedEvents[0]?.start?.startTime
       ).getHours();
       !addNewEvent
-        ? modalRef.current.scrollTo(0, firstEventHour * 240)
+        ? modalRef.current.scrollTo(0, firstEventHour * 237)
         : modalRef.current.scrollTo(0, 0);
     }
     setDayEvents(timedEvents);

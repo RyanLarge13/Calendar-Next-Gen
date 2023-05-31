@@ -17,18 +17,18 @@ const DayEvent = ({ event, setEvent }) => {
     const hour = new Date(event.start.startTime).getHours();
     setZ(hour);
     if (event.start.startTime) {
-      const startHours = new Date(event.start.startTime).getHours() * 225;
+      const startHours = new Date(event.start.startTime).getHours() * 237;
       const startMinutes = new Date(event.start.startTime).getMinutes();
-      setMargin(() => startHours + 112.5 + (startMinutes === 30 ? 112.5 : 0));
+      setMargin(() => startHours + 118.5 + (startMinutes === 30 ? 118.5 : 0));
     }
     if (event.end.endTime) {
-      const startHours = new Date(event.start.startTime).getHours() * 225;
+      const startHours = new Date(event.start.startTime).getHours() * 237;
       const startMinutes = new Date(event.start.startTime).getMinutes();
-      const endHours = new Date(event.end.endTime).getHours() * 225;
+      const endHours = new Date(event.end.endTime).getHours() * 237;
       const endMinutes = new Date(event.end.endTime).getMinutes();
       const startHeight =
-        startHours + 112.5 + (startMinutes === 30 ? 112.5 : 0);
-      const endHeight = endHours + 112.5 + (endMinutes === 30 ? 112.5 : 0);
+        startHours + 118.5 + (startMinutes === 30 ? 118.5 : 0);
+      const endHeight = endHours + 118.5 + (endMinutes === 30 ? 118.5 : 0);
       setHeight(endHeight - startHeight);
     }
   }, []);
@@ -42,11 +42,11 @@ const DayEvent = ({ event, setEvent }) => {
     const end = e.clientY;
     const diff = end - start;
     if (diff < 0) {
-      const marginLeft = Math.round(diff + 121);
+      const marginLeft = Math.round(diff + 118.5);
       setMargin((prev) => prev + -marginLeft);
     }
     if (diff > 0) {
-      const marginLeft = Math.round(diff - 121);
+      const marginLeft = Math.round(diff - 118.5);
       setMargin((prev) => prev + -marginLeft);
     }
     if (diff === 0) {
