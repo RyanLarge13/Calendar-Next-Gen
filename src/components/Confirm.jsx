@@ -9,7 +9,7 @@ const Confirm = ({ func }) => {
     <motion.div
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex justify-between items-center fixed bottom-20 right-10 left-10 bg-white z-50 py-3 px-5 rounded-md shadow-md"
+      className="flex justify-between items-center fixed bottom-20 right-20 left-20 bg-white z-[900] py-3 px-5 rounded-md shadow-md"
     >
       <button
         onClick={() => func()}

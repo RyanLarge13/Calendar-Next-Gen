@@ -66,7 +66,11 @@ const DayEvent = ({ event, setEvent }) => {
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       style={{ top: `${margin}px`, height: height, minHeight: 50, zIndex: z }}
-      className={`p-3 rounded-md shadow-md w-[70%] duration-200 absolute ${event.color} bg-opacity-10 hover:z-[998] hover:bg-opacity-50 right-0`}
+      className={`p-3 rounded-md shadow-md w-[70%] duration-200 absolute ${
+        event.color
+      } ${
+        event.color === "bg-black" ? "text-white" : "text-black"
+      } bg-opacity-10 hover:z-[998] hover:bg-opacity-50 right-0`}
     >
       <div
         onPointerDown={(e) => startDrag(e)}
