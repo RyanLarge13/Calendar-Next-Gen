@@ -85,14 +85,14 @@ export const DatesProvider = ({ children }) => {
     const day = new Date().getDate();
     const dayOfWeek = new Date().getDay() + 1;
     let rowDays = [];
-    for (let i = day - dayOfWeek; i < 32; i++) {
-      if (i < day - dayOfWeek + 8 && i > day - dayOfWeek) {
+    for (let i = day - dayOfWeek; i < 36; i++) {
+      if (i >= day - dayOfWeek + 8 && i <= dayOfWeek) {
         rowDays.push(i);
       }
     }
     let column = new Date().getDay();
     let columnDays = [];
-    for (let i = column; i < 32; i++) {
+    for (let i = column; i < 36; i++) {
       if (
         i === column ||
         i === column + 7 ||

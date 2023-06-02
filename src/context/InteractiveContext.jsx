@@ -9,6 +9,7 @@ export const InteractiveProvider = ({ children }) => {
   const [showLogin, setShowLogin] = useState(false);
   const [confirm, setConfirm] = useState(false);
   const [notifications, setNotifications] = useState([]);
+  const [view, setView] = useState("month");
 
   useEffect(() => {
     if ("serviceWorker" in navigator) {
@@ -29,26 +30,26 @@ export const InteractiveProvider = ({ children }) => {
       });
       subscribe(localStorage.getItem("authToken"), subscription)
         .then((res) => {
-          setTimeout(() => {
-            if (res.status === "201") {
-              if (JSON.parse(localStorage.getItem("user"))) {
-                const user = JSON.parse(localStorage.getItem("user"));
-                const userId = user.id;
-                const serverSentSource = getNotifications(userId);
-                setupNotifListener(serverSentSource);
-              }
-            }
-          }, 10000);
+          console.log("Subscription:", res);
         })
         .catch((err) => {
           console.log(err);
         });
+      setTimeout(() => {
+        if (JSON.parse(localStorage.getItem("user"))) {
+          const user = JSON.parse(localStorage.getItem("user"));
+          const userId = user.id;
+          const serverSentSource = getNotifications(userId);
+          setupNotifListener(serverSentSource);
+        }
+      }, 10000);
     } catch (err) {
       console.log(err);
     }
   };
-  
+
   const setupNotifListener = (serverSentSource) => {
+    console.log("Set up and listening for notifications");
     serverSentSource.addEventListener("open", () => {
       console.log("Open");
     });
@@ -69,10 +70,12 @@ export const InteractiveProvider = ({ children }) => {
         menu,
         showLogin,
         confirm,
+        notifications,
+        view,
+        setView,
         send,
         setConfirm,
         setMenu,
-        notifications,
         setNotifications,
         setShowLogin,
       }}

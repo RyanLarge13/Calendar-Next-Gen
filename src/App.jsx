@@ -6,6 +6,8 @@ import { UserProvider } from "./context/UserContext";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import Calendar from "./components/Calendar";
 import Header from "./components/Header";
+import AddCircle from "./components/AddCircle";
+import Views from "./components/Views";
 
 const App = () => {
   return (
@@ -18,6 +20,8 @@ const App = () => {
               <div className="overflow-x-hidden w-full h-full">
                 <Calendar />
               </div>
+              <AddCircle />
+              <Views />
             </InteractiveProvider>
           </DatesProvider>
         </UserProvider>

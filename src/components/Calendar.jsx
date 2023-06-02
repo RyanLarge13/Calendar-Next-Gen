@@ -10,7 +10,7 @@ import UserContext from "../context/UserContext";
 
 const Calendar = () => {
   const { events, holidays, weekDays } = useContext(UserContext);
-  const { menu, setMenu, setShowLogin } = useContext(InteractiveContext);
+  const { menu, setMenu, setShowLogin, view } = useContext(InteractiveContext);
   const {
     setOpenModal,
     setString,
@@ -37,34 +37,48 @@ const Calendar = () => {
     setString(date);
   };
 
+  const calcDayEventHeight = (start, end) => {
+    if (!start || !end) {
+      return null;
+    } else {
+      const hours = new Date(end).getHours();
+      const minutes = new Date(end).getMinutes();
+      const hourHeight = 10 * hours;
+      const minuteHeight = 5 * minutes;
+      return hourHeight + minuteHeight;
+    }
+  };
+
   return (
     <main className="px-2">
       <section
         onTouchStart={(e) => {
-          if (!openModal && !menu) return setStart(e.touches[0].clientX);
+          if (!openModal && !menu && view === "month")
+            return setStart(e.touches[0].clientX);
         }}
         onTouchMove={(e) => {
-          if (!openModal && !menu) return moveCalendar(e);
+          if (!openModal && !menu && view === "month") return moveCalendar(e);
         }}
         onTouchEnd={() => {
-          if (!openModal && !menu) return finish();
+          if (!openModal && !menu && view === "month") return finish();
         }}
       >
         <div className="grid grid-cols-7 gap-2 justify-center items-center my-5">
-          {weekDays.map((day, index) => (
-            <p
-              key={day}
-              className={`${
-                index === new Date().getDay() &&
-                new Date(dateString).getMonth() === new Date().getMonth() &&
-                new Date(dateString).getYear() === new Date().getYear()
-                  ? "bg-gradient-to-r from-cyan-300 to-cyan-500 bg-clip-text text-transparent font-semibold border-b-2 rounded-md"
-                  : ""
-              } mx-2 text-center`}
-            >
-              {day.split("")[0]}
-            </p>
-          ))}
+          {view === "month" &&
+            weekDays.map((day, index) => (
+              <p
+                key={day}
+                className={`${
+                  index === new Date().getDay() &&
+                  new Date(dateString).getMonth() === new Date().getMonth() &&
+                  new Date(dateString).getYear() === new Date().getYear()
+                    ? "bg-gradient-to-r from-cyan-300 to-cyan-500 bg-clip-text text-transparent font-semibold border-b-2 rounded-md"
+                    : ""
+                } mx-2 text-center`}
+              >
+                {day.split("")[0]}
+              </p>
+            ))}
         </div>
         <section>
           {!loading ? (
@@ -78,91 +92,126 @@ const Calendar = () => {
                 animate="show"
                 className="grid grid-cols-7 gap-1 min-h-[76vh] overflow-hidden"
               >
-                {[...Array(paddingDays + daysInMonth)].map((abs, index) => (
-                  <motion.div
-                    variants={calendarBlocks}
-                    onClick={() =>
-                      index >= paddingDays &&
-                      addEvent(
-                        `${month + 1}/${index - paddingDays + 1}/${year}`
-                      )
-                    }
-                    key={index}
-                    style={
-                      new Date(dateString).getMonth() ===
-                        new Date().getMonth() &&
-                      new Date(dateString).getYear() === new Date().getYear()
-                        ? index === rowDays[0] ||
-                          index === rowDays[1] ||
-                          index === rowDays[2] ||
-                          index === rowDays[3] ||
-                          index === rowDays[4] ||
-                          index === rowDays[5] ||
-                          index === rowDays[6] ||
-                          index === columnDays[0] ||
-                          index === columnDays[1] ||
-                          index === columnDays[2] ||
-                          index === columnDays[3] ||
-                          index === columnDays[4] ||
-                          index === columnDays[5] ||
-                          index === columnDays[6]
-                          ? { backgroundColor: "#eee" }
+                {view === "month" &&
+                  [...Array(paddingDays + daysInMonth)].map((abs, index) => (
+                    <motion.div
+                      variants={calendarBlocks}
+                      onClick={() =>
+                        index >= paddingDays &&
+                        addEvent(
+                          `${month + 1}/${index - paddingDays + 1}/${year}`
+                        )
+                      }
+                      key={index}
+                      style={
+                        new Date(dateString).getMonth() ===
+                          new Date().getMonth() &&
+                        new Date(dateString).getYear() === new Date().getYear()
+                          ? index === rowDays[0] ||
+                            index === rowDays[1] ||
+                            index === rowDays[2] ||
+                            index === rowDays[3] ||
+                            index === rowDays[4] ||
+                            index === rowDays[5] ||
+                            index === rowDays[6] ||
+                            index === columnDays[0] ||
+                            index === columnDays[1] ||
+                            index === columnDays[2] ||
+                            index === columnDays[3] ||
+                            index === columnDays[4] ||
+                            index === columnDays[5] ||
+                            index === columnDays[6]
+                            ? { backgroundColor: "rgba(50,150,150,0.1)" }
+                            : { backgroundColor: "#fff" }
                           : { backgroundColor: "#fff" }
-                        : { backgroundColor: "#fff" }
-                    }
-                    className={`relative w-full min-h-[12vh] max-h-[15vh] rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start gap-y-1 overflow-hidden cursor-pointer ${
-                      index - paddingDays + 1 === day &&
-                      month === new Date().getMonth() &&
-                      year === new Date().getFullYear() &&
-                      "shadow-cyan-400 shadow-md"
-                    }`}
-                  >
-                    <div
-                      className={`text-center text-sm my-1 ${
+                      }
+                      className={`relative w-full min-h-[12vh] max-h-[15vh] rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start gap-y-1 overflow-hidden cursor-pointer ${
                         index - paddingDays + 1 === day &&
                         month === new Date().getMonth() &&
                         year === new Date().getFullYear() &&
-                        "w-[25px] h-[25px] rounded-full bg-cyan-100 shadow-sm"
+                        "shadow-cyan-400 shadow-md"
                       }`}
                     >
-                      <p>{index >= paddingDays && index - paddingDays + 1}</p>
-                    </div>
-                    <div className="w-full overflow-y-hidden absolute inset-0 pt-8">
+                      <div
+                        className={`text-center text-sm my-1 ${
+                          index - paddingDays + 1 === day &&
+                          month === new Date().getMonth() &&
+                          year === new Date().getFullYear() &&
+                          "w-[25px] h-[25px] rounded-full bg-cyan-100 shadow-sm"
+                        }`}
+                      >
+                        <p>{index >= paddingDays && index - paddingDays + 1}</p>
+                      </div>
+                      <div className="w-full overflow-y-hidden absolute inset-0 pt-8">
+                        {[...events, ...holidays].map(
+                          (event) =>
+                            new Date(event.date).toLocaleDateString() ===
+                              `${month + 1}/${
+                                index - paddingDays + 1
+                              }/${year}` && (
+                              <motion.div
+                                key={event.id}
+                                initial={{ opacity: 0, y: -50 }}
+                                animate={{
+                                  opacity: 1,
+                                  y: 0,
+                                  transition: {
+                                    delay: 0.8,
+                                    type: "spring",
+                                    stiffness: 200,
+                                  },
+                                }}
+                                className={`rounded-lg ${event.color} shadow-md p-1 w-[95%] my-1 mx-auto`}
+                              >
+                                <p
+                                  className={`whitespace-nowrap text-xs overflow-hidden ${
+                                    event.color === "bg-black"
+                                      ? "text-white"
+                                      : "text-black"
+                                  }`}
+                                >
+                                  {event.summary}
+                                </p>
+                              </motion.div>
+                            )
+                        )}
+                      </div>
+                    </motion.div>
+                  ))}
+                {view === "day" && (
+                  <div className="w-screen max-h-[300px] overflow-y-auto">
+                    <h2 className="text-center text-xl">
+                      {new Date().toLocaleDateString("en-us", {
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </h2>
+                    <div className="w-full mt-10">
                       {[...events, ...holidays].map(
                         (event) =>
                           new Date(event.date).toLocaleDateString() ===
-                            `${month + 1}/${
-                              index - paddingDays + 1
-                            }/${year}` && (
-                            <motion.div
+                            new Date().toLocaleDateString() && (
+                            <div
                               key={event.id}
-                              initial={{ opacity: 0, y: -50 }}
-                              animate={{
-                                opacity: 1,
-                                y: 0,
-                                transition: {
-                                  delay: 0.8,
-                                  type: "spring",
-                                  stiffness: 200,
-                                },
-                              }}
-                              className={`rounded-lg ${event.color} shadow-md p-1 w-[95%] my-1 mx-auto`}
+                              // style={{
+                              //   height: `${calcDayEventHeight(
+                              //     event.start.startTime,
+                              //     event.end.endTime
+                              //   )}px`,
+                              // }}
+                              className={`${event.color} p-5 rounded-md shadow-md my-5`}
                             >
-                              <p
-                                className={`whitespace-nowrap text-xs overflow-hidden ${
-                                  event.color === "bg-black"
-                                    ? "text-white"
-                                    : "text-black"
-                                }`}
-                              >
-                                {event.summary}
+                              <p className="font-bold">{event.summary}</p>
+                              <p className="mr-5 text-sm">
+                                {event.description}
                               </p>
-                            </motion.div>
+                            </div>
                           )
                       )}
                     </div>
-                  </motion.div>
-                ))}
+                  </div>
+                )}
               </motion.div>
             </div>
           ) : (
