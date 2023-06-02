@@ -7,26 +7,60 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      mode: "development",
+      mode: "production",
       registerType: "autoUpdate",
-      includeAssets: ["favicon.svg", "robots.txt", "sw.js"],
+      includeAssets: [
+        "favicon.svg",
+        "ios/180.png",
+        "android/android-launchericon-512-512.png",
+        "robots.txt",
+        "sw.js",
+      ],
       manifest: {
         name: "Calendar Next Gen",
         short_name: "CNG",
         description:
           "A next generation calendar application built for the orginized and busy",
         start_url: "/",
-        display: "standalone",
+        display: "fullscreen",
+        orientation: "natural",
         background_color: "#ffffff",
-        theme_color: "#000000",
+        theme_color: "#ffffff",
+        serviceworker: "/sw.js",
         icons: [
           {
-            src: "/favicon.svg",
+            src: "android/android-launchericon-192-192.png",
             sizes: "192x192",
-            type: "svg",
+            type: "image/png",
+          },
+          {
+            src: "android/android-launchericon-512-512.png",
+            sizes: "512x512",
+            type: "image/png",
+          },
+          {
+            src: "android/android-launchericon-512-512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "any maskable",
           },
         ],
       },
+      splash_pages: [],
+      custom_splash_pages: [
+        {
+          name: "Custom Splash Screen",
+          backgroundColor: "#ffffff",
+          assets: [
+            {
+              src: "android/android-launchericon-512-512.png",
+              sizes: "512x512",
+              type: "image/png",
+              purpose: "any maskable",
+            },
+          ],
+        },
+      ],
       strategies: "generateSW",
       workbox: {
         navigateFallback: "/index.html",

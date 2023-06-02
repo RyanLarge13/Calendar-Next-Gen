@@ -23,7 +23,6 @@ export const UserProvider = ({ children }) => {
   const [reminders, setReminders] = useState(
     JSON.parse(localStorage.getItem("reminders")) || []
   );
-  const [notifications, setNotifications] = useState([]);
   const [googleToken, setGoogleToken] = useState(false);
   const [loginLoading, setLoginLoading] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
@@ -44,6 +43,7 @@ export const UserProvider = ({ children }) => {
             .then((response) => {
               setUser(response.data.user);
               setAuthToken(response.data.token);
+              localStorage.setItem("user", JSON.stringify(response.data.user));
               localStorage.setItem("authToken", response.data.token);
             })
             .catch((err) => {
@@ -82,13 +82,6 @@ export const UserProvider = ({ children }) => {
             .catch((err) => {
               console.log(err);
             });
-          getNotifications(res.data.user.username, authToken)
-            .then((response) => {
-              setNotifications(response.data.notifs);
-            })
-            .catch((err) => {
-              console.log(err);
-            });
         })
         .catch((err) => {
           console.log(err);
@@ -111,8 +104,6 @@ export const UserProvider = ({ children }) => {
         googleToken,
         loginLoading,
         isOnline,
-        notifications,
-        setNotifications,
         setUser,
         setEvents,
         setGoogleToken,

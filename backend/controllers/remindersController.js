@@ -18,11 +18,23 @@ export const addNewReminder = async (req, res) => {
   const newReminder = {
     title,
     notes,
+    time, 
+    userId: id,
+  };
+  const newNotif = {
+    type: "reminder",
+    read: false,
+    readTime: null,
     time,
+    notifData: newReminder,
+    sentNotification: false,
     userId: id,
   };
   const returnedReminder = await prisma.reminder.create({
     data: newReminder,
+  });
+  await prisma.notification.create({
+    data: newNotif,
   });
   if (returnedReminder) {
     return res.status(201).json({

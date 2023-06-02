@@ -2,6 +2,7 @@ import Axios from "axios";
 
 const devUrl = "http://localhost:8080";
 const productionUrl = "https://calendar-next-gen-production.up.railway.app";
+const devProductionUrl = "https://calendar-next-gen-development.up.railway.app";
 
 export const getUserData = (token) => {
   const res = Axios.get(`${productionUrl}/user/data`, {
@@ -143,10 +144,10 @@ export const deleteReminder = (username, reminderId, token) => {
 };
 
 //Notifications
-export const subscribe = (token, sub, reminder) => {
+export const subscribe = (token, sub) => {
   const res = Axios.post(
-    `${productionUrl}/subscribe/reminders`,
-    { sub: JSON.stringify(sub), reminder: reminder },
+    `${productionUrl}/subscribe/notifications`,
+    { sub: JSON.stringify(sub) },
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -157,11 +158,9 @@ export const subscribe = (token, sub, reminder) => {
   return res;
 };
 
-export const getNotifications = (username, token) => {
-  const res = Axios.get(`${productionUrl}/${username}/notifications`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  return res;
+export const getNotifications = (userId) => {
+  const eventSource = new EventSource(
+    `${productionUrl}/${userId}/notifications`
+  );
+  return eventSource;
 };

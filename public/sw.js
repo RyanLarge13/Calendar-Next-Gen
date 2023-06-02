@@ -1,10 +1,14 @@
-self.addEventListener("push", (event) => {
+self.addEventListener("push", async (event) => {
+	try{
   const data = event.data.json();
   const options = {
     body: data.notes,
     icon: "/favicon.svg",
   };
   event.waitUntil(self.registration.showNotification(data.title, options));
+	} catch (err) {
+		console.log(err)
+	}
 });
 
 self.addEventListener("install", (event) => {
