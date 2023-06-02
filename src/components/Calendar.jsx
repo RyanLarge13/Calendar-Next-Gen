@@ -28,6 +28,7 @@ const Calendar = () => {
     dateString,
     rowDays,
     columnDays,
+    column,
   } = useContext(DatesContext);
 
   const addEvent = (date) => {
@@ -106,7 +107,7 @@ const Calendar = () => {
                           index === columnDays[4] ||
                           index === columnDays[5] ||
                           index === columnDays[6]
-                          ? { backgroundColor: "#eee" }
+                          ? { backgroundColor: "rgba(50,150,150,0.1)" }
                           : { backgroundColor: "#fff" }
                         : { backgroundColor: "#fff" }
                     }
