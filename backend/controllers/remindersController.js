@@ -18,6 +18,7 @@ export const addNewReminder = async (req, res) => {
   const newReminder = {
     title,
     notes,
+    time, 
     userId: id,
   };
   const newNotif = {
