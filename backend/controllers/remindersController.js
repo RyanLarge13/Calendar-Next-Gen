@@ -18,14 +18,13 @@ export const addNewReminder = async (req, res) => {
   const newReminder = {
     title,
     notes,
-    time,
     userId: id,
   };
   const newNotif = {
     type: "reminder",
     read: false,
     readTime: null,
-    time: newReminder.time,
+    time,
     notifData: newReminder,
     sentNotification: false,
     userId: id,

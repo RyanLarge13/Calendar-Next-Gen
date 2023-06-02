@@ -1,10 +1,10 @@
 import { useContext } from "react";
 import { motion } from "framer-motion";
 import { MdSystemSecurityUpdateGood } from "react-icons/md";
-import UserContext from "../context/UserContext";
+import InteractiveContext from "../context/InteractiveContext";
 
 const Notification = () => {
-  const { notifications, setNotifications } = useContext(UserContext);
+  const { notifications, setNotifications } = useContext(InteractiveContext);
 
   return (
     <motion.div

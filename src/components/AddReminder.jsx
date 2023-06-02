@@ -7,7 +7,7 @@ import UserContext from "../context/UserContext";
 import DatesContext from "../context/DatesContext";
 
 const AddReminder = () => {
-  const { globalSubscription, setMenu } = useContext(InteractiveContext);
+  const { setMenu } = useContext(InteractiveContext);
   const { setReminders } = useContext(UserContext);
   const { setOpenModal } = useContext(DatesContext);
 
@@ -24,7 +24,6 @@ const AddReminder = () => {
       notes,
       time,
     };
-    subscribe(token, globalSubscription, newReminder);
     addReminder(newReminder, token)
       .then((res) => {
         setOpenModal(false);
