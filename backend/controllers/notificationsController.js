@@ -26,7 +26,7 @@ export const subscribe = (req, res) => {
     "Origin, X-Requested-With, Content-Type, Accept"
   );
   const { sub } = req.body;
-  subscription = sub;
+  subscription = JSON.parse(sub);
   res
     .status(201)
     .json({ message: "You have successfully subscribed to notifications" });
