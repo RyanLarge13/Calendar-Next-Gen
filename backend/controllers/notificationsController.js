@@ -33,6 +33,7 @@ export const subscribe = (req, res) => {
 };
 
 const processNotifications = async (userId, res) => {
+  console.log("Processing");
   try {
     const notifications = await prisma.notification.findMany({
       where: {
@@ -66,11 +67,13 @@ export const getNotifications = async (req, res) => {
   res.setHeader("Connection", "keep-alive");
   res.setHeader("Access-Control-Allow-Origin", "*");
   const id = req.params.userId;
-  cron.schedule("*/30 * * * * *", () => {
+  const job = cron.schedule("*/30 * * * * *", () => {
     processNotifications(id, res);
   });
+  job.start();
   req.on("close", () => {
     console.log("Closing");
+    job.end();
     res.end();
   });
 };

@@ -9,7 +9,6 @@ import {
   BsFillClipboardDataFill,
   BsListTask,
 } from "react-icons/bs";
-import { MdViewAgenda } from "react-icons/md";
 
 export const AddCircle = () => {
   const [show, setShow] = useState(false);
@@ -19,11 +18,7 @@ export const AddCircle = () => {
         onClick={() => setShow((prev) => !prev)}
         className="absolute bottom-5 right-5 z-[800] p-3 rounded-full flex justify-center items-center bg-gradient-to-tr from-lime-200 to-yellow-100 shadow-md"
       >
-        {show ? (
-          <BsXCircleFill />
-        ) : (
-          <BsFillCalendarPlusFill />
-        )}
+        {show ? <BsXCircleFill /> : <BsFillCalendarPlusFill />}
       </div>
       <motion.div
         animate={
