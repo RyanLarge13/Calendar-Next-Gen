@@ -146,7 +146,7 @@ export const deleteReminder = (username, reminderId, token) => {
 //Notifications
 export const subscribe = (token, sub) => {
   const res = Axios.post(
-    `${devProductionUrl}/subscribe/notifications`,
+    `${productionUrl}/subscribe/notifications`,
     { sub: JSON.stringify(sub) },
     {
       headers: {
