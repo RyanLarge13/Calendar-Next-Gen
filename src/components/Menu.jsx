@@ -21,6 +21,9 @@ const Menu = () => {
   };
 
   const calcWidth = (time) => {
+  	if (new Date(time).toLocaleDateString() !== new Date().toLocaleDateString()) {
+  		return 0
+  	}
     const nowMinutes = new Date().getMinutes();
     const reminderMinutes = new Date(time).getMinutes();
     const nowHours = new Date().getHours() * 60;
@@ -89,7 +92,7 @@ const Menu = () => {
       drag="x"
       dragSnapToOrigin={true}
       dragConstraints={{ right: 0, left: 0 }}
-      dragListener={false}
+      // dragListener={false}
       onDragStart={(e) => setStart(e.clientX)}
       onDragEnd={(e) => checkEnd(e)}
       initial={{ x: "-110%", opacity: 0 }}
@@ -134,7 +137,7 @@ const Menu = () => {
                       scaleX: 1.025,
                       scaleY: 1.1,
                       opacity: 0.75,
-                      boxShadow: "0 0.1em 0.5em 0 #f00",
+                      boxShadow: "0 0.25em 0.25em 0 rgba(255,50,50,0.4)",
                     }
                   : { scale: 1, opacity: 1, boxShadow: "0 0.1em 0.5em 0 #eee" }
               }
@@ -154,13 +157,13 @@ const Menu = () => {
                 <motion.button
                   initial={{ x: 50, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
-                  className="px-4 py-1 rounded-md shadow-md bg-rose-300 absolute right-3 top-3"
+                  className="px-4 py-1 rounded-md shadow-md bg-rose-400 absolute right-1 top-1"
                   onPointerDown={(e) => {
                     e.stopPropagation();
                     deleteAReminder(reminder.id);
                   }}
                 >
-                  Delete
+                  delete
                 </motion.button>
               )}
               <div

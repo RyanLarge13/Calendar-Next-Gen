@@ -354,7 +354,7 @@ export const holidays = [
     color: "bg-pink-300",
     date: "5/29/2023",
     summary: "Memorial Day!!",
-    description: "Happy Father's day!",
+    description: "Happy Memorial day!",
     id: 12,
     reminders: {
       reminder: false,
@@ -374,12 +374,27 @@ export const holidays = [
     time: false,
   },
   {
+  	kimd: "event", 
     color: "bg-orange-300",
     date: "6/18/2023",
     summary: "Fathers Day!!",
+    description: "Happy Father's Day!", 
     id: 13,
-    reminders: false,
-    repeat: false,
+    reminders: {
+      reminder: false,
+    },
+    repeats: {
+      repeat: false,
+      howOften: "yearly",
+      nextDate: "5/29/2024",
+    },
+    start: {
+      startTime: null,
+    },
+    end: {
+      endTime: null,
+    },
+    location: "",
     time: false,
   },
   {

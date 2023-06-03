@@ -10,6 +10,8 @@ export const InteractiveProvider = ({ children }) => {
   const [confirm, setConfirm] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [view, setView] = useState("month");
+  const [addNewEvent, setAddNewEvent] = useState(false);
+const [type, setType] = useState("event");
 
   useEffect(() => {
     if ("serviceWorker" in navigator) {
@@ -72,6 +74,10 @@ export const InteractiveProvider = ({ children }) => {
         confirm,
         notifications,
         view,
+        addNewEvent,
+        type, 
+        setType, 
+        setAddNewEvent,
         setView,
         send,
         setConfirm,

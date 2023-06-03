@@ -86,7 +86,7 @@ export const DatesProvider = ({ children }) => {
     const dayOfWeek = new Date().getDay() + 1;
     let rowDays = [];
     for (let i = day - dayOfWeek; i < 36; i++) {
-      if (i >= day - dayOfWeek + 8 && i <= dayOfWeek) {
+      if (i >= day - dayOfWeek + 8 && i < dayOfWeek) {
         rowDays.push(i);
       }
     }

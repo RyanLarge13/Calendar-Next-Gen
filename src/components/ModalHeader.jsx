@@ -13,10 +13,10 @@ import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
 import Confirm from "./Confirm";
 
-const ModalHeader = ({ addEvent, allDayEvents, event, setEvent }) => {
+const ModalHeader = ({ allDayEvents, event, setEvent }) => {
   const { string } = useContext(DatesContext);
   const { user, events, setEvents, holidays } = useContext(UserContext);
-  const { confirm, setConfirm } = useContext(InteractiveContext);
+  const { confirm, setConfirm, addNewEvent } = useContext(InteractiveContext);
 
   const [showAllDayEvents, setShowAllDayEvents] = useState(true);
   const [x, setX] = useState("100%");
@@ -28,8 +28,10 @@ const ModalHeader = ({ addEvent, allDayEvents, event, setEvent }) => {
   }, []);
 
   useEffect(() => {
-    event || addEvent ? setShowAllDayEvents(false) : setShowAllDayEvents(true);
-  }, [event, addEvent]);
+    event || addNewEvent
+      ? setShowAllDayEvents(false)
+      : setShowAllDayEvents(true);
+  }, [event, addNewEvent]);
 
   const deleteAnEvent = () => {
     setConfirm(false);
@@ -52,7 +54,7 @@ const ModalHeader = ({ addEvent, allDayEvents, event, setEvent }) => {
   return (
     <>
       <motion.div
-        animate={event && !addEvent ? { left: 5 } : { left: "36%", x: x }}
+        animate={event && !addNewEvent ? { left: 5 } : { left: "36%", x: x }}
         className="bg-white z-[999] p-2 font-bold shadow-md fixed top-1 right-1 rounded-md"
       >
         <div className="flex justify-between items-center">

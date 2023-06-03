@@ -121,7 +121,7 @@ const Calendar = () => {
                             index === columnDays[4] ||
                             index === columnDays[5] ||
                             index === columnDays[6]
-                            ? { backgroundColor: "rgba(50,150,150,0.1)" }
+                            ? { backgroundColor: "rgba(0,0,0,0.1)" }
                             : { backgroundColor: "#fff" }
                           : { backgroundColor: "#fff" }
                       }
@@ -179,7 +179,7 @@ const Calendar = () => {
                     </motion.div>
                   ))}
                 {view === "day" && (
-                  <div className="w-screen max-h-[300px] overflow-y-auto">
+                  <div className="w-screen max-h-full overflow-y-auto">
                     <h2 className="text-center text-xl">
                       {new Date().toLocaleDateString("en-us", {
                         month: "long",
@@ -187,7 +187,7 @@ const Calendar = () => {
                         year: "numeric",
                       })}
                     </h2>
-                    <div className="w-full mt-10">
+                    <div className="w-[95%] mt-10">
                       {[...events, ...holidays].map(
                         (event) =>
                           new Date(event.date).toLocaleDateString() ===
@@ -200,7 +200,7 @@ const Calendar = () => {
                               //     event.end.endTime
                               //   )}px`,
                               // }}
-                              className={`${event.color} p-5 rounded-md shadow-md my-5`}
+                              className={`${event.color} bg-opacity-70 p-5 rounded-md shadow-md my-5`}
                             >
                               <p className="font-bold">{event.summary}</p>
                               <p className="mr-5 text-sm">
