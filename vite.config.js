@@ -9,6 +9,7 @@ export default defineConfig({
     VitePWA({
       mode: "production",
       registerType: "autoUpdate",
+      injectRegister: null,
       includeAssets: [
         "favicon.svg",
         "ios/180.png",
@@ -61,11 +62,15 @@ export default defineConfig({
           ],
         },
       ],
-      strategies: "generateSW",
+      strategies: "injectManifest",
       workbox: {
         navigateFallback: "/index.html",
         clientsClaim: true,
         skipWaiting: true,
+        swSrc: "src/InteractiveContext.jsx",
+        swDest: "dist/registerSW.js",
+        globDirectory: "dist", // Directory containing the assets to be cached
+        globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
       },
     }),
   ],

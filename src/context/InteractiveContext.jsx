@@ -1,5 +1,9 @@
 import { createContext, useState, useEffect } from "react";
-import { subscribe, getNotifications } from "../utils/api";
+import {
+  subscribe,
+  getNotifications,
+  getNotificationsAtStart,
+} from "../utils/api";
 import { urlBase64ToUint8Array } from "../utils/helpers";
 
 const InteractiveContext = createContext({});
@@ -11,7 +15,7 @@ export const InteractiveProvider = ({ children }) => {
   const [notifications, setNotifications] = useState([]);
   const [view, setView] = useState("month");
   const [addNewEvent, setAddNewEvent] = useState(false);
-const [type, setType] = useState("event");
+  const [type, setType] = useState("event");
 
   useEffect(() => {
     if ("serviceWorker" in navigator) {
@@ -30,21 +34,29 @@ const [type, setType] = useState("event");
           import.meta.env.VITE_VAPID_PUBLIC_KEY
         ),
       });
-      subscribe(localStorage.getItem("authToken"), subscription)
-        .then((res) => {
-          console.log("Subscription:", res);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-      setTimeout(() => {
-        if (JSON.parse(localStorage.getItem("user"))) {
-          const user = JSON.parse(localStorage.getItem("user"));
-          const userId = user.id;
-          const serverSentSource = getNotifications(userId);
-          setupNotifListener(serverSentSource);
-        }
-      }, 10000);
+      const token = localStorage.getItem("authToken");
+      const user = localStorage.getItem("user");
+      if (token && user) {
+        const parsedUser = JSON.parse(user);
+        const userId = parsedUser.id;
+        const serverSentSource = getNotifications(userId);
+        subscribe(localStorage.getItem("authToken"), subscription)
+          .then((res) => {
+            console.log("Subscription:", res);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+        getNotificationsAtStart(parsedUser.username, token)
+          .then((res) => {
+            const oldNotifs = res.data.notifs;
+            setNotifications(oldNotifs);
+            setupNotifListener(serverSentSource);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
     } catch (err) {
       console.log(err);
     }
@@ -57,7 +69,7 @@ const [type, setType] = useState("event");
     });
     serverSentSource.addEventListener("message", (event) => {
       const notification = JSON.parse(event.data);
-      setNotifications((prev) => [...prev, notification]);
+      setNotifications((prev) => [notification, ...prev]);
       console.log("Received notification:", notification);
     });
     serverSentSource.addEventListener("error", (error) => {
@@ -75,8 +87,8 @@ const [type, setType] = useState("event");
         notifications,
         view,
         addNewEvent,
-        type, 
-        setType, 
+        type,
+        setType,
         setAddNewEvent,
         setView,
         send,
