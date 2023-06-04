@@ -9,6 +9,7 @@ export default defineConfig({
     VitePWA({
       mode: "production",
       registerType: "autoUpdate",
+      strategies: "injectManifest",
       injectRegister: null,
       includeAssets: [
         "favicon.svg",
@@ -63,10 +64,9 @@ export default defineConfig({
         },
       ],
       devOptions: {
-      	enabled: true, 
+        enabled: true,
         type: "module",
       },
-      strategies: "injectManifest",
     }),
   ],
 });
