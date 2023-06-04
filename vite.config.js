@@ -62,16 +62,11 @@ export default defineConfig({
           ],
         },
       ],
-      strategies: "injectManifest",
-      workbox: {
-        navigateFallback: "/index.html",
-        clientsClaim: true,
-        skipWaiting: true,
-        swSrc: "src/InteractiveContext.jsx",
-        swDest: "dist/registerSW.js",
-        globDirectory: "dist", // Directory containing the assets to be cached
-        globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
+      devOptions: {
+      	enabled: true, 
+        type: "module",
       },
+      strategies: "injectManifest",
     }),
   ],
 });

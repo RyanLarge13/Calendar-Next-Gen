@@ -21,12 +21,7 @@
     "react-dom": "^18.2.0",
     "react-icons": "^4.8.0",
     "react-loader-spinner": "^5.3.4",
-    "uuid": "^9.0.0",
-    "workbox-core": "^7.0.0",
-    "workbox-expiration": "^7.0.0",
-    "workbox-precaching": "^7.0.0",
-    "workbox-routing": "^7.0.0",
-    "workbox-webpack-plugin": "^6.5.4"
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.27",
@@ -36,6 +31,11 @@
     "postcss": "^8.4.21",
     "tailwindcss": "^3.2.7",
     "vite": "^4.1.0",
-    "vite-plugin-pwa": "^0.15.1"
+    "vite-plugin-pwa": "^0.15.1",
+    "workbox-core": "^7.0.0",
+    "workbox-expiration": "^7.0.0",
+    "workbox-precaching": "^7.0.0",
+    "workbox-routing": "^7.0.0",
+    "workbox-webpack-plugin": "^7.0.0"
   }
 }

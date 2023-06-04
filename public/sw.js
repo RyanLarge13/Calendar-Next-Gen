@@ -2,19 +2,12 @@ import { precacheAndRoute, cleanupOutdatedCaches } from "workbox-precaching";
 import { registerRoute } from "workbox-routing";
 import { clientsClaim } from "workbox-core";
 
+cleanupOutdatedCaches()
+precacheAndRoute(self.__WB_MANIFEST);
 self.skipWaiting();
 clientsClaim();
 
 // Cleanup outdated caches
-cleanupOutdatedCaches();
-// Precache and route all files
-precacheAndRoute([
-  {
-    urlPattern: /.*/,
-    handler: "CacheFirst",
-  },
-]);
-precacheAndRoute(self.__WB_MANIFEST);
 
 // Cache API endpoints
 registerRoute(
