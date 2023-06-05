@@ -73,7 +73,41 @@ export const getNotifications = async (req, res) => {
   job.start();
   req.on("close", () => {
     console.log("Closing");
-    job.end();
+    job.stop();
     res.end();
   });
+};
+
+export const getOldNotifications = async (req, res) => {
+  const userId = req.user.id;
+  const notifications = await prisma.notification.findMany({
+    where: {
+      sentNotification: true,
+      userId,
+    },
+  });
+  if (notifications) {
+    res.status(200).json({
+      message: "Succesfully fetched notifications",
+      notifs: notifications,
+    });
+  }
+  if (!notifications) {
+    res.status(401).json({ message: "Failed to fetch notifications" });
+  }
+};
+
+export const updateNotification = async (req, res) => {
+  const ids = req.body.notifs;
+  const userId = req.user.id;
+  const update = await prisma.notification.updateMany({
+    where: { id: { in: ids }, userId },
+    data: { read: true },
+  });
+  if (update) {
+    res.status(201).json({ message: "Successfully updated notifications" });
+  }
+  if (!update) {
+    res.status(401).json({ message: "Error updating notifications" });
+  }
 };

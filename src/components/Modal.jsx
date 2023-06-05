@@ -3,11 +3,11 @@ import { motion } from "framer-motion";
 import { FaCalendarPlus } from "react-icons/fa";
 import { staticTimes } from "../constants";
 import DatesContext from "../context/DatesContext";
+import UserContext from "../context/UserContext";
+import InteractiveContext from "../context/InteractiveContext";
 import DayEvent from "./DayEvent";
 import AddEvent from "./AddEvent";
-import CalendarEventTypeMenu from "./CalendarEventTypeMenu";
 import Event from "./Event";
-import UserContext from "../context/UserContext";
 import ModalHeader from "./ModalHeader";
 import AddReminder from "./AddReminder";
 import AddList from "./AddList";
@@ -17,11 +17,11 @@ import AddTask from "./AddTask";
 const Modal = () => {
   const { events, holidays } = useContext(UserContext);
   const { string, setOpenModal } = useContext(DatesContext);
+  const { addNewEvent, setAddNewEvent, type, setType } =
+    useContext(InteractiveContext);
 
   const [dayEvents, setDayEvents] = useState([]);
-  const [addNewEvent, setAddNewEvent] = useState(false);
   const [event, setEvent] = useState(null);
-  const [type, setType] = useState("event");
   const [allDayEvents, setAllDayEvents] = useState([]);
   const [addEventWithStartTime, setAddEventWithStartTime] = useState(null);
   const modalRef = useRef(0);
@@ -70,10 +70,12 @@ const Modal = () => {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        onClick={() => setOpenModal(false)}
+        onClick={() => {
+          setAddNewEvent(false);
+          setOpenModal(false);
+        }}
         className="fixed inset-0 bg-[rgba(0,0,0,0.4)] flex"
       ></motion.div>
-      {addNewEvent && <CalendarEventTypeMenu type={type} setType={setType} />}
       <motion.div
         initial={{ x: 1000 }}
         animate={{ x: 0 }}
@@ -81,7 +83,6 @@ const Modal = () => {
         ref={modalRef}
       >
         <ModalHeader
-          addEvent={addNewEvent}
           allDayEvents={allDayEvents}
           event={event}
           setEvent={setEvent}
@@ -127,14 +128,6 @@ const Modal = () => {
                 <DayEvent key={event.id} event={event} setEvent={setEvent} />
               ))}
             </div>
-            <motion.button
-              initial={{ x: 100 }}
-              animate={{ x: 0, transition: { delay: 1 } }}
-              onClick={() => setAddNewEvent(true)}
-              className="px-5 py-2 mt-5 fixed bottom-5 right-5 rounded-md shadow-md bg-gradient-to-r from-green-300 to-green-200 z-[999]"
-            >
-              <FaCalendarPlus />
-            </motion.button>
           </div>
         )}
         {event && !addNewEvent && (

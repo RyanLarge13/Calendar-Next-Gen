@@ -3,13 +3,14 @@ import { motion } from "framer-motion";
 import { useGoogleLogin } from "@react-oauth/google";
 import { BiLogInCircle, BiLogOutCircle } from "react-icons/bi";
 import { BsFillBellFill } from "react-icons/bs";
-import { loginWithPasswordAndUsername } from "../utils/api";
+import { loginWithPasswordAndUsername, updateNotification } from "../utils/api";
 import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
 import Notification from "./Notification";
 
 const LoginLogout = () => {
-  const { showLogin, setShowLogin, notifications} = useContext(InteractiveContext);
+  const { showLogin, setShowLogin, notifications } =
+    useContext(InteractiveContext);
   const {
     user,
     setUser,
@@ -27,6 +28,24 @@ const LoginLogout = () => {
   const [password, setPassword] = useState("");
   const [showNotifs, setShowNotifs] = useState(false);
   const [unReadLength, setUnReadLength] = useState(0);
+  const [idsToUpdate, setIdsToUpdate] = useState([]);
+
+  useEffect(() => {
+    if (idsToUpdate.length > 0) {
+      updateNotification(
+        idsToUpdate,
+        localStorage.getItem("authToken"),
+        user.username
+      )
+        .then((res) => {
+          console.log(res);
+          setIdsToUpdate([]);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [showNotifs]);
 
   useEffect(() => {
     const unReadNotifs = notifications.filter(
@@ -78,7 +97,12 @@ const LoginLogout = () => {
 
   return (
     <>
-      {showNotifs && <Notification />}
+      {showNotifs && (
+        <Notification
+          idsToUpdate={idsToUpdate}
+          setIdsToUpdate={setIdsToUpdate}
+        />
+      )}
       {showLogin && (
         <div
           onClick={() => setShowLogin(false)}
@@ -88,7 +112,7 @@ const LoginLogout = () => {
       <motion.div
         initial={{ y: "100%", opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="p-3 fixed bottom-0 left-0 right-0 rounded-md shadow-md bg-white z-10"
+        className="p-3 fixed bottom-0 left-0 right-0 rounded-md shadow-md bg-white z-[150]"
       >
         {user ? (
           <div className="">

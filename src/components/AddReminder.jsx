@@ -7,7 +7,7 @@ import UserContext from "../context/UserContext";
 import DatesContext from "../context/DatesContext";
 
 const AddReminder = () => {
-  const { setMenu } = useContext(InteractiveContext);
+  const { setMenu, setAddNewEvent} = useContext(InteractiveContext);
   const { setReminders } = useContext(UserContext);
   const { setOpenModal } = useContext(DatesContext);
 
@@ -27,6 +27,7 @@ const AddReminder = () => {
     addReminder(newReminder, token)
       .then((res) => {
         setOpenModal(false);
+        setAddNewEvent(false)
         setReminders((prev) => [...prev, res.data.reminder]);
         setMenu(true);
       })
@@ -57,7 +58,7 @@ const AddReminder = () => {
       </div>
       <div className="flex justify-around p-2 mt-10 w-full">
         <button
-          // onClick={() => setAddNewEvent(false)}
+          onClick={() => setAddNewEvent(false)}
           className="px-5 py-2 rounded-md shadow-md bg-gradient-to-r from-red-300 to-red-200 w-[100px]"
         >
           Cancel

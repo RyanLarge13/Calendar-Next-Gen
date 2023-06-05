@@ -158,9 +158,31 @@ export const subscribe = (token, sub) => {
   return res;
 };
 
+export const getNotificationsAtStart = (username, token) => {
+  const res = Axios.get(`${productionUrl}/${username}/notifs`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res;
+};
+
 export const getNotifications = (userId) => {
   const eventSource = new EventSource(
     `${productionUrl}/${userId}/notifications`
   );
   return eventSource;
+};
+
+export const updateNotification = (idArray, token, username) => {
+  const res = Axios.patch(
+    `${productionUrl}/${username}/update/notif`,
+    { notifs: idArray },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return res;
 };

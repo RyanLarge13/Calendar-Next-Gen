@@ -3,8 +3,19 @@ import { motion } from "framer-motion";
 import { MdSystemSecurityUpdateGood } from "react-icons/md";
 import InteractiveContext from "../context/InteractiveContext";
 
-const Notification = () => {
+const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
   const { notifications, setNotifications } = useContext(InteractiveContext);
+
+  const openNotif = (id) => {
+    if (!idsToUpdate.includes(id)) {
+      setIdsToUpdate((prev) => [...prev, id]);
+    }
+    const notif = notifications.filter((notif) => notif.id === id)[0];
+    const notifArrayCopy = notifications.filter((notif) => notif.id !== id);
+    notif.read = true;
+    notifArrayCopy.push(notif);
+    setNotifications(notifArrayCopy);
+  };
 
   return (
     <motion.div
@@ -25,6 +36,7 @@ const Notification = () => {
       ) : (
         notifications.map((notif) => (
           <div
+            onClick={() => openNotif(notif.id)}
             key={notif.id}
             className="rounded-md p-2 my-3 shadow-md bg-white relative"
           >

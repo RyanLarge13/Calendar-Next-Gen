@@ -116,6 +116,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
       postEvent(newEvent, localStorage.getItem("authToken"))
         .then((res) => {
           setEvents((prev) => [...prev, ...res.data.event]);
+          setAddNewEvent(false)
           setOpenModal(false);
         })
         .catch((err) => {
