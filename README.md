@@ -11,77 +11,83 @@
 <p><b>CNG is a PWA installable cross platform web application built for the orginized. There is a ton of functionality, integration & fun in this app. Some of the things that can be done with this app includes...</b></p>
 
 <ul>
-<li>Adding events, reminders, todo-Lists, kanban boards, tasks & more</li>
+<li>Adding events, reminders, todo-lists, kanban boards, tasks & more</li>
 <li>Sync with Google Calendar</li>
 <li>Works online & offline!</li>
 <li>Sign in with Google, Facebook, Github, Discord & more.</li>
 </ul>
 
-<p><b>Hourly notifications will persist when the tab on your browser is still open for the website. <i>No notification support for mobile devices.</i> You will be promted to accept notifications first. If accepted, it will display the current temperature of the hour in your area.</b></p>
-
-<p><b>For an added touch to the website as any good weather site would include are three top news articles in the US that will redirect you to the article.</b></p>
+<p><b>Creating new Calendar content is meant to be as simple and as straightforward as possible. The UI/UX is build with the idea in mind that managing your day should be done with ease with as few clicks as possible & keep you organized.</b></p>
 
 ## Table Of Contents
 
-- <a href="#location">Location</a>
-  - <a href="#weather-data">Weather Data</a>
-  - <a href="#city-and-county">City And County</a>
-- <a href="#notifications">Notifications</a>
-  - <a href="#frequency">Frequency</a>
-  - <a href="#location-data">Location Data</a>
-  - <a href="#weather-data">Weather Data</a>
-- <a href="#accuracy-and-features">Accuracy And Features</a>
-  - <a href="#weather-data">Weather Data</a>
+- <a href="#design">Design</a>
+  - <a href="#ui">UI</a>
+  - <a href="#ux">UX</a>
+- <a href="#functionality">Functionality</a>
+  - <a href="#accounts">Accounts</a>
+  - <a href="#adding-content">Adding Content</a>
+  - <a href="#syncronizing">Synchronizing</a>
+  - <a href="#installation">Installation</a>
+- <a href="#security">Security</a>
+  - <a href="#account-data">Account Data</a>
+  - <a href="#user-agreement">User Agreement</a>
 - <a href="#contributions">Contributions</a>
 - <a href="#refrences">Refrences</a>
 
-## Location
+## Design
 
-<img src="https://img.shields.io/badge/Permissons-Requested-green?style=flat&logo=appveyor" alt="permissons" /><br />
-<img src="https://img.shields.io/badge/Saftey-10/10-green?style=flat&logo=appveyor" alt="website" /><br />
-<img src="https://img.shields.io/badge/User Data Storage-Prohibited-green?style=flat&logo=databricks" alt="website" /><br />
+<img src="https://img.shields.io/badge/UI/UX-Optimal-green?style=flat&logo=appveyor" alt="design rating" /><br />
+<img src="https://img.shields.io/badge/Effecient-10/10-green?style=flat&logo=appveyor" alt="efficiency" /><br />
+<img src="https://img.shields.io/badge/Sleek-10/10-green?style=flat&logo=databricks" alt="website" /><br />
 
-### Weather Data
+### UI
 
-<p><b>All weather data is requested by your longitude and latitude coordinates via Javascripts built in Navigator API and sent through an <a href="https://open-meteo.com/en/docs">Open Meteo</a> query string. Open Meteo carries outstanding accuracy in their information from cities, town & counties all around the world providing you with reliable data.</b></p>
+<p><b>CNG showcases an exceptional user experience and a thoughtfully designed user interface that effortlessly guides users through its features. It has a minimalist and intuitive layout which promotes clarity and ease of use, allowing users to accomplish tasks efficiently and effectively, such as managing a schedule, creating events, etc... The color scheme and typography enhance the overall aesthetic appeal, the default is a light and bright colors. This enhances the mood of the user and induces productivity and positivity.</b></p>
 
-<p><i>THINGS TO CONSIDER</i></p>
-
-<ul>
-<li>Depending on your place in the world (if extremely rural), and no data for your exact coordinates exsists, Open Meteo will either provide you with weather data from the closest town to your coordinates with exsisting information, or weather data from the county your coordinates reside in.</li>
-<li>Weather information is gathered from multiple data sources dependant to your country</li>
-</ul>
-
-### City And County
-
-<p><b>Via <a href="https://openweathermap.org/api">Open Weather Map API</a>, reverse geocoding is used to fetch your city and county information via coordinates given from Javascripts Navigation API</b></p>
-
-<p><i>THINGS TO CONSIDER</i></p>
+<p>The app's responsive design seamlessly adapts to different devices, ensuring a consistent and enjoyable experience across screens. With its well-placed interactive elements and clear feedback, users can effortlessly navigate the app and complete tasks with confidence. The app's attention to detail, consistent branding, and helpful onboarding contribute to a delightful user experience that keeps users engaged and satisfied</b></p>
 
 <ul>
-<li>Depending on your place in the world (if extremely rural), and no data for your exact coordinates exsists, Open Weather Map will either provide you with city & county information from the closest town to your coordinates, or city & county from the closest county your coordinates reside in.</li>
-<li>In rare cases the city & county information returned might not match the weather information given from Open Meteo exactly.</li>
+<li>Supports Light & Dark themes. (light theme is default)</li>
+<li>Light animations to keep a high performance profile & an unobtrusive experience, but still beautiful</li>
+<li>Gestures supported on all major app elements</li>
+<li>Completely cross browser compatable</li>
+<li>Responsive layouts for ALL screen sizes</li>
 </ul>
 
-**_!!!No location data is ever stored in ANY way to ANY databases, localstorage, cookies, or any other place!!!_**
+### UX
 
-## Notifications
+<p><b>CNG excels in functionality, providing users with a comprehensive set of features that cater to their scheduling needs. Its intuitive design ensures ease of use, allowing users to effortlessly create, manage, and organize their events and appointments. The app's seamless navigation enables users to swiftly switch between different calendar views, making it effortless to plan and track their schedules.</b></p>
 
-<img src="https://img.shields.io/badge/Permissons-Requested-green?style=flat&logo=appveyor" alt="permissons" /><br />
-<img src="https://img.shields.io/badge/Saftey-10/10-green?style=flat&logo=appveyor" alt="website" /><br />
-<img src="https://img.shields.io/badge/Frequency-Every Hour-yellow?style=flat&logo=appveyor" alt="website" /><br />
+<p>Additionally, the app's helpful features such as reminders, notifications, and integration with other platforms enhance its utility, ensuring that users never miss important dates or deadlines. With its user-friendly interface and efficient functionality, the calendar app serves as an indispensable tool that simplifies scheduling and empowers users to stay organized and productive</b></p>
 
-### Frequency
+<ul>
+<li>Supports adding events, reminders, kanban boards, task & todo Lists</li>
+<li>Notifications are supported on desktop, mobile, web & in app</li>
+<li>Full CRUD functionality. Create, Read, Update & Delete all data</li>
+<li>Sync your Google Calendar data</li>
+<li>Share events with friends or coworkers</li>
+<li>Create multiple Calendars</li>
+<li>Supports month view, day view, week view & schedule view</li>
+<li>Create categories</li>
+<li>Reorder times on events & reminders</li>
+</ul>
 
-<p><b>The frequency that notifications are sent to your browser starts when loading the wesite and every hour thereafter after the permissons & IF the permissions have been accepted. At any time you can turn off notification in the browser by going to the settings for this website on thr browser and turning them off.</b></p>
+## Functionality 
 
-<p><i>THINGS TO CONSIDER</i></p>
+<img src="https://img.shields.io/badge/Speed-10/10-green?style=flat&logo=appveyor" alt="app speed" /><br />
+<img src="https://img.shields.io/badge/Informative-10/10-green?style=flat&logo=appveyor" alt="website" /><br />
+<img src="https://img.shields.io/badge/Data Reliability-10/10-green?style=flat&logo=appveyor" alt="website" /><br />
+
+### Accounts
+
+<p><b>Creating an account & logging in has never been easier. With many options to choose from you can create a new account with 2 clicks of a button and zero configuration. Or you can fully customize your account as you desire. The data which is stored within the application for new users is minimal and secured. If ever your account is deleted all data will be wiped clean in relation of all datasets. No personal information other than a username, photo, email & password are stored.</b></p>
 
 <ul>
 <li>The website will not request again for your notification permissions if they are denied. You will need to manually turn notifications back on from the browser agian if your mind changes.</li>
 </ul>
 
-### Location Data
+### Adding Data
 
 <p><b>Your locaton is shown in the notification from the data recieved by reverse geoloation provided by Open Weather Map's API... <a href="#location">See Location Info</a></b></p>
 
