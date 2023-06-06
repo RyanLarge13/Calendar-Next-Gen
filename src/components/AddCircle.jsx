@@ -15,7 +15,8 @@ import DatesContext from "../context/DatesContext";
 export const AddCircle = () => {
   const { addNewEvent, setAddNewEvent, setMenu, type, setType } =
     useContext(InteractiveContext);
-  const { openModal, setOpenModal } = useContext(DatesContext);
+  const { openModal, setOpenModal, setString, string } =
+    useContext(DatesContext);
 
   const [show, setShow] = useState(false);
   return (
@@ -69,7 +70,7 @@ export const AddCircle = () => {
         animate={
           show
             ? { x: -95, y: -105, scale: 1.25, transition: { delay: 0.2 } }
-            : { x: 0, y: 0, scale: 0}
+            : { x: 0, y: 0, scale: 0 }
         }
         className={`p-3 text-xs rounded-full absolute z-[700] right-5 bottom-5 bg-gradient-to-r from-red-300 to-rose-200 shadow-md`}
       >
@@ -86,7 +87,7 @@ export const AddCircle = () => {
         animate={
           show
             ? { x: -55, y: -150, scale: 1.25, transition: { delay: 0.3 } }
-            : { x: 0, y: 0, scale: 0}
+            : { x: 0, y: 0, scale: 0 }
         }
         className={`p-3 text-xs rounded-full absolute z-[700] right-5 bottom-5 bg-gradient-to-r from-cyan-300 to-sky-200 shadow-md`}
       >
@@ -96,6 +97,9 @@ export const AddCircle = () => {
         onClick={() => {
           setShow(false);
           setType("event");
+          if (!string) {
+          	setString(new Date().toLocaleDateString())
+          }
           setMenu(false);
           setOpenModal(true);
           setAddNewEvent(true);
@@ -103,7 +107,7 @@ export const AddCircle = () => {
         animate={
           show
             ? { x: 5, y: -170, scale: 1.25, transition: { delay: 0.4 } }
-            : { x: 0, y: 0, scale: 0}
+            : { x: 0, y: 0, scale: 0 }
         }
         className={`p-3 text-xs rounded-full absolute z-[700] right-5 bottom-5 bg-gradient-to-r from-orange-300 to-yellow-200 shadow-md`}
       >
