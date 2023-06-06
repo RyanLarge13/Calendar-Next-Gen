@@ -1,9 +1,9 @@
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import { DatesProvider } from "./context/DatesContext";
 import { InteractiveProvider } from "./context/InteractiveContext";
 import { UserProvider } from "./context/UserContext";
-import { GoogleOAuthProvider } from "@react-oauth/google";
 import Calendar from "./components/Calendar";
 import Header from "./components/Header";
 import AddCircle from "./components/AddCircle";

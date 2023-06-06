@@ -105,7 +105,10 @@ const LoginLogout = () => {
       )}
       {showLogin && (
         <div
-          onClick={() => setShowLogin(false)}
+          onClick={() => {
+            if (showNotifs) return setShowNotifs(false);
+            setShowLogin(false);
+          }}
           className="fixed inset-0 bg-[rgba(0,0,0,0.4)] z-10"
         ></div>
       )}
