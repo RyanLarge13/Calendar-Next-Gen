@@ -172,3 +172,12 @@ export const updateNotification = (idArray, token, username) => {
   );
   return res;
 };
+
+export const deleteNotification = (token, id) => {
+  const res = Axios.delete(`${productionUrl}/notification/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res;
+};

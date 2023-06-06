@@ -80,3 +80,23 @@ export const updateNotification = async (req, res) => {
     res.status(401).json({ message: "Error updating notifications" });
   }
 };
+
+export const deleteNotification = async (req, res) => {
+  const notifId = req.params.notifId;
+  const deletedNotif = await prisma.notification.delete({
+    where: {
+      id: notifId,
+    },
+  });
+  if (deletedNotif) {
+    return res.status(201).json({
+      message: "Successfully deleted notification",
+      notif: deletedNotif,
+    });
+  }
+  if (!deletedNotif) {
+    return res
+      .status(400)
+      .json({ message: "There was an error deleting your notification" });
+  }
+};

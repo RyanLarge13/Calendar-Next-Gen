@@ -1,4 +1,6 @@
 import { useContext, useState } from "react";
+import { deleteNotification } from "../utils/api";
+import { formatTime } from "../utils/helpers";
 import { motion } from "framer-motion";
 import { IoIosAlarm } from "react-icons/io";
 import { MdSystemSecurityUpdateGood } from "react-icons/md";
@@ -6,10 +8,11 @@ import InteractiveContext from "../context/InteractiveContext";
 import Confirm from "./Confirm";
 
 const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
-  const { notifications, setNotifications } = useContext(InteractiveContext);
+  const { notifications, setNotifications, confirm, setConfirm } =
+    useContext(InteractiveContext);
 
   const [notifOpen, setNotifOpen] = useState("");
-  const [confirm, setVonfirm] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
 
   const openNotif = (id, read) => {
     setNotifOpen((prev) => (prev === id ? "" : id));
@@ -32,7 +35,22 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
     if (type === "reminder") return <IoIosAlarm />;
   };
 
-  const deleteNotif = (id) => {};
+  const deleteNotif = () => {
+    setConfirm(false);
+    const token = localStorage.getItem("authToken");
+    if (!token) return;
+    if (deleteId) {
+      const newNotifs = notifications.filter((item) => item.id !== deleteId);
+      setNotifications(newNotifs);
+      deleteNotification(token, deleteId)
+        .then((res) => {
+          setDeleteId(null);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
 
   return (
     <motion.div
@@ -56,9 +74,9 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
             animate={
               notifOpen === notif.id
                 ? {
-                    height: 200,
+                    height: 220,
                   }
-                : { height: 100 }
+                : { height: 120 }
             }
             onClick={() => openNotif(notif.id, notif.read)}
             key={notif.id}
@@ -68,14 +86,17 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
               <div className="absolute top-[-5px] left-[-5px] rounded-full w-[10px] h-[10px] bg-red-300"></div>
             )}
             <div>
-              <div className="flex justify-between items-center">
-                <p className="text-xs border-b mb-1">
-                  {new Date(notif.notifData.time).toLocaleDateString("en-US", {
-                    weekday: "short",
-                    month: "long",
-                    year: "numeric",
-                  })}
-                </p>
+              <div className="flex justify-between items-start">
+                <div className="text-xs mb-1">
+                  <p className="border-b">
+                    {new Date(notif.time).toLocaleDateString("en-US", {
+                      weekday: "short",
+                      month: "long",
+                      year: "numeric",
+                    })}
+                  </p>
+                  <p>{formatTime(new Date(notif.time))}</p>
+                </div>
                 {getIcon(notif.type)}
               </div>
               <p className="text-sm">{notif.notifData.title}</p>
@@ -100,7 +121,10 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                   <p>Mark As UnOpen</p>
                 ) : (
                   <p
-                    onClick={() => readNotif(notif.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      readNotif(notif.id);
+                    }}
                     className="border-b border-b-cyan-300"
                   >
                     Mark As Read
@@ -109,6 +133,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                 <p
                   onClick={(e) => {
                     e.stopPropagation();
+                    setDeleteId(notif.id);
                     setConfirm(true);
                   }}
                   className="border-b border-b-rose-300"
