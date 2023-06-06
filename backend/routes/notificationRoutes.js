@@ -2,7 +2,6 @@ import express from "express";
 import auth from "../auth/authenticateToken.js";
 import {
   getNotifications,
-  subscribe,
   getOldNotifications,
   updateNotification,
 } from "../controllers/notificationsController.js";
