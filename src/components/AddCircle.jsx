@@ -19,6 +19,18 @@ export const AddCircle = () => {
     useContext(DatesContext);
 
   const [show, setShow] = useState(false);
+
+  const openModalAndSetType = (type) => {
+    if (!string) {
+      setString(new Date().toLocaleDateString());
+    }
+    setShow(false);
+    setType(type);
+    setMenu(false);
+    setOpenModal(true);
+    setAddNewEvent(true);
+  };
+
   return (
     <>
       <div
@@ -28,13 +40,7 @@ export const AddCircle = () => {
         {show ? <BsXCircleFill /> : <BsFillCalendarPlusFill />}
       </div>
       <motion.div
-        onClick={() => {
-          setShow(false);
-          setType("task");
-          setMenu(false);
-          setOpenModal(true);
-          setAddNewEvent(true);
-        }}
+        onClick={() => openModalAndSetType("task")}
         animate={
           show ? { x: -130, y: 5, scale: 1.25 } : { x: 0, y: 0, scale: 0 }
         }
@@ -43,13 +49,7 @@ export const AddCircle = () => {
         <BsListTask />
       </motion.div>
       <motion.div
-        onClick={() => {
-          setShow(false);
-          setType("kanban");
-          setMenu(false);
-          setOpenModal(true);
-          setAddNewEvent(true);
-        }}
+        onClick={() => openModalAndSetType("kanban")}
         animate={
           show
             ? { x: -120, y: -50, scale: 1.25, transition: { delay: 0.1 } }
@@ -60,13 +60,7 @@ export const AddCircle = () => {
         <BsFillClipboardDataFill />
       </motion.div>
       <motion.div
-        onClick={() => {
-          setShow(false);
-          setType("reminder");
-          setMenu(false);
-          setOpenModal(true);
-          setAddNewEvent(true);
-        }}
+        onClick={() => openModalAndSetType("reminder")}
         animate={
           show
             ? { x: -95, y: -105, scale: 1.25, transition: { delay: 0.2 } }
@@ -77,13 +71,7 @@ export const AddCircle = () => {
         <BsAlarmFill />
       </motion.div>
       <motion.div
-        onClick={() => {
-          setShow(false);
-          setType("todo-list");
-          setMenu(false);
-          setOpenModal(true);
-          setAddNewEvent(true);
-        }}
+        onClick={() => openModalAndSetType("todo-list")}
         animate={
           show
             ? { x: -55, y: -150, scale: 1.25, transition: { delay: 0.3 } }
@@ -94,16 +82,7 @@ export const AddCircle = () => {
         <BsListCheck />
       </motion.div>
       <motion.div
-        onClick={() => {
-          setShow(false);
-          setType("event");
-          if (!string) {
-          	setString(new Date().toLocaleDateString())
-          }
-          setMenu(false);
-          setOpenModal(true);
-          setAddNewEvent(true);
-        }}
+        onClick={() => openModalAndSetType("event")} 
         animate={
           show
             ? { x: 5, y: -170, scale: 1.25, transition: { delay: 0.4 } }

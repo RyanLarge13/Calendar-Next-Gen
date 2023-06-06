@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-import { addReminder, subscribe } from "../utils/api";
+import { addReminder } from "../utils/api";
 import Toggle from "./Toggle";
 import TimeSetter from "./TimeSetter";
 import InteractiveContext from "../context/InteractiveContext";
