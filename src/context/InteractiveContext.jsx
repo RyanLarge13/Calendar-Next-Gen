@@ -1,10 +1,5 @@
 import { createContext, useState, useEffect } from "react";
-import {
-  subscribe,
-  getNotifications,
-  getNotificationsAtStart,
-} from "../utils/api";
-import { urlBase64ToUint8Array } from "../utils/helpers";
+import { getNotifications, getNotificationsAtStart } from "../utils/api";
 
 const InteractiveContext = createContext({});
 
@@ -18,35 +13,17 @@ export const InteractiveProvider = ({ children }) => {
   const [type, setType] = useState("event");
 
   useEffect(() => {
-    if ("serviceWorker" in navigator) {
-      send();
-    }
+    send();
   }, []);
 
   const send = async () => {
     try {
-      const registration = await navigator.serviceWorker.register("/sw.js", {
-        scope: "/",
-      });
-      const subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(
-          import.meta.env.VITE_VAPID_PUBLIC_KEY
-        ),
-      });
       const token = localStorage.getItem("authToken");
       const user = localStorage.getItem("user");
       if (token && user) {
         const parsedUser = JSON.parse(user);
         const userId = parsedUser.id;
         const serverSentSource = getNotifications(userId);
-        subscribe(localStorage.getItem("authToken"), subscription)
-          .then((res) => {
-            console.log("Subscription:", res);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
         getNotificationsAtStart(parsedUser.username, token)
           .then((res) => {
             const oldNotifs = res.data.notifs;
@@ -91,7 +68,6 @@ export const InteractiveProvider = ({ children }) => {
         setType,
         setAddNewEvent,
         setView,
-        send,
         setConfirm,
         setMenu,
         setNotifications,

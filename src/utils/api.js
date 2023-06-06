@@ -144,19 +144,6 @@ export const deleteReminder = (username, reminderId, token) => {
 };
 
 //Notifications
-export const subscribe = (token, sub) => {
-  const res = Axios.post(
-    `${productionUrl}/subscribe/notifications`,
-    { sub: JSON.stringify(sub) },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    }
-  );
-  return res;
-};
 
 export const getNotificationsAtStart = (username, token) => {
   const res = Axios.get(`${productionUrl}/${username}/notifs`, {

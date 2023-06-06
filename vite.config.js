@@ -9,8 +9,8 @@ export default defineConfig({
     VitePWA({
       mode: "production",
       registerType: "autoUpdate",
-      strategies: "injectManifest",
-      injectRegister: null,
+      strategies: "generateSW",
+      injectRegister: "auto",
       includeAssets: [
         "favicon.svg",
         "ios/180.png",
@@ -66,6 +66,11 @@ export default defineConfig({
       devOptions: {
         enabled: true,
         type: "module",
+      },
+      workbox: {
+        	clientsClaim: true,
+        skipWaiting: true,
+        globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
       },
     }),
   ],
