@@ -17,6 +17,7 @@ export default defineConfig({
         "android/android-launchericon-512-512.png",
         "robots.txt",
         "sw.js",
+        "registerSW.js",
       ],
       manifest: {
         name: "Calendar Next Gen",
