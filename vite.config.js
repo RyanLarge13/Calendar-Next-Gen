@@ -65,6 +65,7 @@ export default defineConfig({
         },
       ],
       workbox: {
+        importScripts: ["/pushSW.js"],
         clientsClaim: true,
         skipWaiting: true,
         globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
