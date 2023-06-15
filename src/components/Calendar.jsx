@@ -84,7 +84,7 @@ const Calendar = () => {
           {!loading ? (
             <div
               style={{ transform: `translateX(${diff}px)` }}
-              className="duration-100"
+              className="duration-75"
             >
               <motion.div
                 variants={calendar}

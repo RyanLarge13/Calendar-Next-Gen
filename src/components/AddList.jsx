@@ -11,6 +11,7 @@ const AddList = () => {
   const [color, setColor] = useState("");
 
   const createList = () => {
+  	if (!title) return
     setAddItems(true);
   };
 
@@ -39,16 +40,15 @@ const AddList = () => {
     <div className="mt-20 text-center">
       {!addItems ? (
         <div>
-          <h2>Create a new list!!</h2>
-          <p>What is the name of your list?</p>
+          <h2 className="text-lg">Create a list</h2>
           <input
             type="text"
             value={title}
             placeholder="Title"
             onChange={(e) => setTitle(e.target.value)}
+            className={`w-full p-2 rounded-md shadow-md my-5 bg-opacity-80 ${color}`}
           />
-          <p>Pick a color</p>
-          <div className="flex flex-wrap gap-2 items-center justify-center px-5">
+          <div className="flex flex-wrap gap-3 items-center justify-center px-5 my-10">
             {colors.map((item) => (
               <div
                 key={item.color}
@@ -59,7 +59,7 @@ const AddList = () => {
           </div>
           <button
             onClick={() => createList()}
-            className="rounded-md shadow-md py-2 w-full bg-gradient-to-tr from-lime-300 to-emerald-200"
+            className="rounded-md shadow-md py-2 w-[95%] bg-gradient-to-tr from-lime-300 to-emerald-200 absolute bottom-5 left-[2%]"
           >
             Create
           </button>
@@ -86,7 +86,7 @@ const AddList = () => {
           >
             Add
           </button>
-          <div className="text-left">
+          <div className="text-left mb-40">
             {listItems.length > 0 &&
               listItems.map((item, index) => (
                 <div
@@ -98,7 +98,7 @@ const AddList = () => {
                 </div>
               ))}
           </div>
-          <div className="flex flex-col">
+          <div className="flex flex-col fixed bottom-5 w-[60%]">
             <button
               onClick={() => setAddItems(false)}
               className="mb-1 mt-5 py-1 w-full rounded-md shadow-md bg-gradient-to-tr from-rose-300 to-amber-200"
