@@ -7,6 +7,7 @@ import {
   getEvents,
   getReminders,
   getNotifications,
+  getAllLists,
   // getGoogleCalendarEvents,
 } from "../utils/api";
 
@@ -20,6 +21,7 @@ export const UserProvider = ({ children }) => {
   const [events, setEvents] = useState(
     JSON.parse(localStorage.getItem("events")) || []
   );
+  const [lists, setLists] = useState([]);
   const [reminders, setReminders] = useState(
     JSON.parse(localStorage.getItem("reminders")) || []
   );
@@ -82,6 +84,13 @@ export const UserProvider = ({ children }) => {
             .catch((err) => {
               console.log(err);
             });
+          getAllLists(authToken, res.data.user.username)
+            .then((response) => {
+              setLists(response.data.lists);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
         })
         .catch((err) => {
           console.log(err);
@@ -104,6 +113,8 @@ export const UserProvider = ({ children }) => {
         googleToken,
         loginLoading,
         isOnline,
+        lists,
+        setLists,
         setUser,
         setEvents,
         setGoogleToken,

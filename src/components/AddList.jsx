@@ -1,9 +1,11 @@
-import { useState } from "react";
-import { motion, Reorder } from "framer-motion";
+import { useState, useContext } from "react";
+import { createNewList } from "../utils/api.js";
+import UserContext from "../context/UserContext.jsx";
 import { AiFillCloseCircle } from "react-icons/ai";
 import { colors } from "../constants.js";
 
 const AddList = () => {
+  const { user } = useContext(UserContext);
   const [addItems, setAddItems] = useState(false);
   const [listItems, setListItems] = useState([]);
   const [itemTitle, setItemTitle] = useState("");
@@ -11,7 +13,7 @@ const AddList = () => {
   const [color, setColor] = useState("");
 
   const createList = () => {
-  	if (!title) return
+    if (!title) return;
     setAddItems(true);
   };
 
@@ -29,7 +31,17 @@ const AddList = () => {
     setItemTitle("");
   };
 
-  const addListToDB = () => {};
+  const addListToDB = () => {
+    const newList = {
+      title,
+      items: listItems,
+      color,
+      userId: user.id,
+    };
+    const token = localStorage.getItem("authToken");
+    if (!token) return;
+    createNewList(token, user.username, newList);
+  };
 
   const removeItem = (item) => {
     const newList = listItems.filter((prevItem) => prevItem !== item);
