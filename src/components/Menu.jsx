@@ -8,8 +8,10 @@ import UserContext from "../context/UserContext";
 
 const Menu = () => {
   const { menu, setMenu } = useContext(InteractiveContext);
-  const { reminders, setReminders, user } = useContext(UserContext);
+  const { reminders, setReminders, user, lists, setLists } =
+    useContext(UserContext);
   const [showReminders, setShowReminders] = useState(true);
+  const [showLsits, setShowLists] = useState(true);
   const [start, setStart] = useState(null);
   const [selected, setSelected] = useState([]);
   const [selectable, setSelectable] = useState(false);
@@ -21,9 +23,11 @@ const Menu = () => {
   };
 
   const calcWidth = (time) => {
-  	if (new Date(time).toLocaleDateString() !== new Date().toLocaleDateString()) {
-  		return 0
-  	}
+    if (
+      new Date(time).toLocaleDateString() !== new Date().toLocaleDateString()
+    ) {
+      return 0;
+    }
     const nowMinutes = new Date().getMinutes();
     const reminderMinutes = new Date(time).getMinutes();
     const nowHours = new Date().getHours() * 60;
@@ -179,7 +183,7 @@ const Menu = () => {
         </div>
       </motion.div>
       <div
-        onClick={() => {}}
+        onClick={() => setShowLists((prev) => !prev)}
         className="bg-gradient-to-tr from-purple-200 to-fucsia-100 p-2 rounded-t-md shadow-md flex justify-between items-center"
       >
         <div className="flex">
@@ -188,6 +192,34 @@ const Menu = () => {
         </div>
         <p>Todo Lists</p>
       </div>
+      <motion.div
+        animate={
+          showLsits
+            ? {
+                height: "max-content",
+              }
+            : { height: "0px" }
+        }
+        className="p-3 overflow-hidden shadow-sm"
+      >
+        {lists.map((list) => (
+          <div
+            key={list.id}
+            className={`my-5 mx-2 p-3 rounded-md shadow-md ${list.color}`}
+          >
+            <p className="mb-2 bg-white rounded-md shadow-md px-2 py-1">
+              {list.title}
+            </p>
+            <div>
+              {list?.items?.map((item, index) => (
+                <div key={index}>
+                  <p>{item}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </motion.div>
       <div
         onClick={() => {}}
         className="bg-gradient-to-tr from-purple-200 to-fucsia-100 p-2 rounded-t-md shadow-md flex justify-between items-center"

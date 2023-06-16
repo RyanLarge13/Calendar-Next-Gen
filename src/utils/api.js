@@ -172,3 +172,35 @@ export const updateNotification = (idArray, token, username) => {
   );
   return res;
 };
+
+export const deleteNotification = (token, id) => {
+  const res = Axios.delete(`${productionUrl}/notification/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res;
+};
+
+// List apis
+export const getAllLists = (token, username) => {
+  const res = Axios.get(`${productionUrl}/${username}/lists`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res;
+};
+
+export const createNewList = (token, username, newList) => {
+  const res = Axios.post(
+    `${productionUrl}/new/list/${username}`,
+    { newList },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return res;
+};
