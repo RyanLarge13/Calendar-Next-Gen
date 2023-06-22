@@ -226,7 +226,7 @@ const Calendar = () => {
             </div>
           )}
         </section>
-        {openModal && <Modal />}
+        <Modal />
         <Menu />
       </section>
     </main>

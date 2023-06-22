@@ -25,7 +25,7 @@ export default defineConfig({
         description:
           "A next generation calendar application built for the orginized and busy",
         start_url: "/",
-        display: "fullscreen",
+        display: "standalone",
         orientation: "natural",
         background_color: "#ffffff",
         theme_color: "#ffffff",

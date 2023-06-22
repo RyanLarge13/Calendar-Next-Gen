@@ -67,7 +67,7 @@ const Header = () => {
           />
         )}
       </div>
-      {showLogin && <LoginLogout />}
+      <LoginLogout />
     </motion.header>
   );
 };
