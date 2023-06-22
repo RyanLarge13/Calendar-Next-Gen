@@ -1,21 +1,24 @@
 import { useState, useEffect, useContext } from "react";
 import { motion } from "framer-motion";
 import { colors } from "../constants";
-import { MdLocationPin } from "react-icons/md";
+import { MdLocationPin, MdCancel } from "react-icons/md";
 import { FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";
 import { RiGalleryUploadFill } from "react-icons/ri";
+import { BsFillSaveFill } from "react-icons/bs";
 import { postEvent } from "../utils/api.js";
 import { repeatOptions } from "../constants";
 import { v4 as uuidv4 } from "uuid";
 import DatesContext from "../context/DatesContext";
-import Color from "./Color";
 import UserContext from "../context/UserContext";
+import InteractiveContext from "../context/InteractiveContext";
+import Color from "./Color";
 import Toggle from "./Toggle";
 import TimeSetter from "./TimeSetter";
 
 const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
   const { setEvents, user, isOnline } = useContext(UserContext);
+  const {setType} = useContext(InteractiveContext)
   const { string, setOpenModal } = useContext(DatesContext);
 
   // Basic event data
@@ -104,11 +107,11 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
         attatchments: [],
         color: color ? color : "bg-white",
         start: {
-          startTime: startTime ? allDay ? null : startWhen : null,
+          startTime: startTime ? (allDay ? null : startWhen) : null,
           timeZone,
         },
         end: {
-          endTime: endTime ? allDay ? null : endWhen : null,
+          endTime: endTime ? (allDay ? null : endWhen) : null,
           timeZone,
         },
         userId: user.id,
@@ -116,7 +119,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
       postEvent(newEvent, localStorage.getItem("authToken"))
         .then((res) => {
           setEvents((prev) => [...prev, ...res.data.event]);
-          setAddNewEvent(false)
+          setAddNewEvent(false);
           setOpenModal(false);
         })
         .catch((err) => {
@@ -265,7 +268,9 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
                       openTimeSetter={setStartTime}
                     />
                   ) : (
-                    <p>{startTimeString}</p>
+                    <p className={`${color} rounded-md shadow-sm px-2 py-1`}>
+                      {startTimeString}
+                    </p>
                   )}
                 </div>
               )}
@@ -285,31 +290,35 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
                     openTimeSetter={setEndTime}
                   />
                 ) : (
-                  <p>{endTimeString}</p>
+                  <p className={`${color} rounded-md shadow-sm px-2 py-1`}>
+                    {endTimeString}
+                  </p>
                 )}
               </div>
             )}
           </div>
         </>
       )}
-      <div className="mt-5">
+      <div className="mt-10 mb-20 flex justify-center items-center">
         <label>
           <RiGalleryUploadFill className="text-xl" />
           <input type="file" className="w-0 h-0" />
         </label>
       </div>
-      <div className="flex justify-around p-2 mt-10 w-full">
+      <div className="fixed right-[65vw] bottom-5 flex flex-col justify-center items-center px-2">
         <button
-          onClick={() => setAddNewEvent(false)}
-          className="px-5 py-2 rounded-md shadow-md bg-gradient-to-r from-red-300 to-red-200 w-[100px]"
+          onClick={() => {
+          setType(null)
+          setAddNewEvent(false)}} 
+          className="p-3 rounded-full shadow-md bg-gradient-to-r from-red-300 to-red-200"
         >
-          Cancel
+          <MdCancel />
         </button>
         <button
           onClick={() => addEvent()}
-          className="px-5 py-2 rounded-md shadow-md bg-gradient-to-r from-green-300 to-green-200 w-[100px]"
+          className="rounded-full p-3 shadow-md bg-gradient-to-r from-green-300 to-green-200 mt-5"
         >
-          Save
+          <BsFillSaveFill />
         </button>
       </div>
     </div>

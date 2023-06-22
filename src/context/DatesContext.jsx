@@ -83,12 +83,11 @@ export const DatesProvider = ({ children }) => {
     setPaddingDays(weekDays.indexOf(dateString.split(", ")[0]));
     setLoading(false);
     const day = new Date().getDate();
-    const dayOfWeek = new Date().getDay() + 1;
+    const dayOfWeek = new Date().getDay();
+    const diff = day - dayOfWeek;
     let rowDays = [];
-    for (let i = day - dayOfWeek; i < 36; i++) {
-      if (i >= day - dayOfWeek + 8 && i < dayOfWeek) {
-        rowDays.push(i);
-      }
+    for (let i = diff + 6 - dayOfWeek; i < 36; i++) {
+      rowDays.push(i);
     }
     let column = new Date().getDay();
     let columnDays = [];

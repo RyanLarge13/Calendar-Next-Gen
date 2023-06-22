@@ -112,6 +112,30 @@ export const getEvents = async (req, res) => {
   res.status(200).json({ events: usersEvents, message: "Success" });
 };
 
+const createReminder = (event) => {
+  const newReminder = {
+    title: event.summary,
+    notes: event.description,
+    time: event.reminders.when,
+    userId: event.userId,
+  };
+  const newNotif = {
+    type: "event",
+    read: false,
+    readTime: null,
+    time: event.reminders.when,
+    notifData: newReminder,
+    sentNotification: false,
+    userId: event.userId,
+  };
+  await prisma.reminder.create({
+    data: newReminder,
+  });
+  await prisma.notification.create({
+    data: newNotif,
+  });
+};
+
 export const addEvent = async (req, res) => {
   const newEvent = req.body.event;
   const user = req.user;
@@ -119,6 +143,9 @@ export const addEvent = async (req, res) => {
     newEvent,
     newEvent.repeats.howOften
   );
+  if (newEvent.reminders.reminder) {
+    createReminder(newEvent);
+  }
   const createdEvent = await prisma.event.create({
     data: newEvent,
   });

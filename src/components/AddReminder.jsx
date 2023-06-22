@@ -1,5 +1,7 @@
 import { useState, useContext } from "react";
 import { addReminder } from "../utils/api";
+import { MdCancel } from "react-icons/md";
+import { BsFillSaveFill } from "react-icons/bs";
 import Toggle from "./Toggle";
 import TimeSetter from "./TimeSetter";
 import InteractiveContext from "../context/InteractiveContext";
@@ -7,7 +9,7 @@ import UserContext from "../context/UserContext";
 import DatesContext from "../context/DatesContext";
 
 const AddReminder = () => {
-  const { setMenu, setAddNewEvent} = useContext(InteractiveContext);
+  const { setMenu, setAddNewEvent, setType } = useContext(InteractiveContext);
   const { setReminders } = useContext(UserContext);
   const { setOpenModal } = useContext(DatesContext);
 
@@ -27,7 +29,8 @@ const AddReminder = () => {
     addReminder(newReminder, token)
       .then((res) => {
         setOpenModal(false);
-        setAddNewEvent(false)
+        setAddNewEvent(false);
+        setType(null);
         setReminders((prev) => [...prev, res.data.reminder]);
         setMenu(true);
       })
@@ -36,7 +39,7 @@ const AddReminder = () => {
 
   return (
     <div className="p-2 pt-10">
-      <h2 className="text-center">Create A New Reminder</h2>
+      <h2 className="text-center">New Reminder</h2>
       <div className="mt-10 w-full">
         <input
           placeholder="New Reminder"
@@ -56,18 +59,20 @@ const AddReminder = () => {
         </div>
         {time && timeString && addTime && <p>{timeString}</p>}
       </div>
-      <div className="flex justify-around p-2 mt-10 w-full">
+      <div className="fixed right-[65vw] bottom-5 flex flex-col justify-center items-center px-2">
         <button
-          onClick={() => setAddNewEvent(false)}
-          className="px-5 py-2 rounded-md shadow-md bg-gradient-to-r from-red-300 to-red-200 w-[100px]"
+          onClick={() => {
+          setType(null)
+          setAddNewEvent(false)}} 
+          className="p-3 rounded-full shadow-md bg-gradient-to-r from-red-300 to-red-200"
         >
-          Cancel
+          <MdCancel />
         </button>
         <button
           onClick={() => addAReminder()}
-          className="px-5 py-2 rounded-md shadow-md bg-gradient-to-r from-green-300 to-green-200 w-[100px]"
+          className="rounded-full p-3 shadow-md bg-gradient-to-r from-green-300 to-green-200 mt-5"
         >
-          Save
+          <BsFillSaveFill />
         </button>
       </div>
       {addTime && !time && !timeString && (

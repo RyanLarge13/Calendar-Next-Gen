@@ -33,12 +33,15 @@ export const AddCircle = () => {
 
   return (
     <>
-      <div
+      <motion.div
+        animate={
+          type === null ? { bottom: 20, right: 20 } : { bottom: 80, left: 20 }
+        }
         onClick={() => setShow((prev) => !prev)}
-        className="absolute bottom-5 right-5 z-[100] p-3 rounded-full flex justify-center items-center bg-gradient-to-tr from-lime-200 to-yellow-100 shadow-md"
+        className="absolute w-[40px] h-[40px] z-[100] p-3 rounded-full flex justify-center items-center bg-gradient-to-tr from-lime-200 to-yellow-100 shadow-md"
       >
         {show ? <BsXCircleFill /> : <BsFillCalendarPlusFill />}
-      </div>
+      </motion.div>
       <motion.div
         onClick={() => openModalAndSetType("task")}
         animate={
@@ -82,7 +85,7 @@ export const AddCircle = () => {
         <BsListCheck />
       </motion.div>
       <motion.div
-        onClick={() => openModalAndSetType("event")} 
+        onClick={() => openModalAndSetType("event")}
         animate={
           show
             ? { x: 5, y: -170, scale: 1.25, transition: { delay: 0.4 } }
