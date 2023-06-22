@@ -112,7 +112,7 @@ export const getEvents = async (req, res) => {
   res.status(200).json({ events: usersEvents, message: "Success" });
 };
 
-const createReminder = (event) => {
+const createReminder = async (event) => {
   const newReminder = {
     title: event.summary,
     notes: event.description,
