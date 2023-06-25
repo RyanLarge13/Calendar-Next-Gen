@@ -2,6 +2,7 @@ import { useState, useContext } from "react";
 import { createNewList } from "../utils/api.js";
 import UserContext from "../context/UserContext.jsx";
 import { AiFillCloseCircle } from "react-icons/ai";
+import Color from "./Color";
 import { colors } from "../constants.js";
 
 const AddList = () => {
@@ -60,13 +61,15 @@ const AddList = () => {
             onChange={(e) => setTitle(e.target.value)}
             className={`w-full p-2 rounded-md shadow-md my-5 bg-opacity-80 ${color}`}
           />
-          <div className="flex flex-wrap gap-3 items-center justify-center px-5 my-10">
-            {colors.map((item) => (
-              <div
-                key={item.color}
-                onClick={() => setColor(item.color)}
-                className={`${item.color} w-[20px] h-[20px] rounded-full shadow-sm`}
-              ></div>
+          <div className="flex flex-wrap items-center justify-center px-5 my-10">
+            {colors.map((item, index) => (
+              <Color
+                key={index}
+                string={item.color}
+                color={color}
+                setColor={setColor}
+                index={index}
+              />
             ))}
           </div>
           <button

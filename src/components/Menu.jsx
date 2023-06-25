@@ -1,10 +1,16 @@
 import { useState, useContext } from "react";
-import { motion, Reorder } from "framer-motion";
+import { motion } from "framer-motion";
 import { RiArrowUpDownFill } from "react-icons/ri";
 import { AiOutlinePlus } from "react-icons/ai";
+import {
+  BsFillTrashFill,
+  BsFillPenFill,
+  BsFillShareFill,
+} from "react-icons/bs";
 import { deleteReminder } from "../utils/api.js";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext";
+import ListItems from "./ListItems";
 
 const Menu = () => {
   const { menu, setMenu } = useContext(InteractiveContext);
@@ -207,16 +213,14 @@ const Menu = () => {
             key={list.id}
             className={`my-5 mx-2 p-3 rounded-md shadow-md ${list.color}`}
           >
-            <p className="mb-2 bg-white rounded-md shadow-md px-2 py-1">
-              {list.title}
-            </p>
-            <div>
-              {list?.items?.map((item, index) => (
-                <div key={index}>
-                  <p>{item}</p>
-                </div>
-              ))}
+            <div className="mb-2 bg-white rounded-md shadow-md p-3 flex justify-between items-center">
+              <p>{list.title}</p>
+              <div className="flex gap-x-3">
+                <BsFillShareFill />
+                <BsFillPenFill /> <BsFillTrashFill />
+              </div>
             </div>
+            <ListItems items={list?.items} />
           </div>
         ))}
       </motion.div>

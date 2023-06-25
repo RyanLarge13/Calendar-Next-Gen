@@ -45,10 +45,10 @@ export const DatesProvider = ({ children }) => {
   };
 
   const finish = () => {
-    if (diff < -150) {
+    if (diff < -120) {
       setNav((prev) => prev + 1);
     }
-    if (diff > 150) {
+    if (diff > 120) {
       setNav((prev) => prev - 1);
     }
     setTimeout(() => {
@@ -83,10 +83,13 @@ export const DatesProvider = ({ children }) => {
     setPaddingDays(weekDays.indexOf(dateString.split(", ")[0]));
     setLoading(false);
     const day = new Date().getDate();
+    //23
     const dayOfWeek = new Date().getDay();
-    const diff = day - dayOfWeek;
+    //5
+    const end = day + (6 - 5) + paddingDays - 1;
+    const start = day - dayOfWeek + paddingDays - 1;
     let rowDays = [];
-    for (let i = diff + 6 - dayOfWeek; i < 36; i++) {
+    for (let i = start; i <= end; i++) {
       rowDays.push(i);
     }
     let column = new Date().getDay();
@@ -105,7 +108,7 @@ export const DatesProvider = ({ children }) => {
     }
     setColumnDays(columnDays);
     setRowDays(rowDays);
-  }, [dateString]);
+  }, [dateString, paddingDays]);
 
   return (
     <DatesContext.Provider

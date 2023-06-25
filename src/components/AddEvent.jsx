@@ -18,7 +18,7 @@ import TimeSetter from "./TimeSetter";
 
 const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
   const { setEvents, user, isOnline } = useContext(UserContext);
-  const {setType} = useContext(InteractiveContext)
+  const { setType } = useContext(InteractiveContext);
   const { string, setOpenModal } = useContext(DatesContext);
 
   // Basic event data
@@ -137,6 +137,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
             string={item.color}
             color={color}
             setColor={setColor}
+            index={index}
           />
         ))}
       </div>
@@ -308,8 +309,9 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
       <div className="fixed right-[65vw] bottom-5 flex flex-col justify-center items-center px-2">
         <button
           onClick={() => {
-          setType(null)
-          setAddNewEvent(false)}} 
+            setType(null);
+            setAddNewEvent(false);
+          }}
           className="p-3 rounded-full shadow-md bg-gradient-to-r from-red-300 to-red-200"
         >
           <MdCancel />

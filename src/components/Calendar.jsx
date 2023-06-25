@@ -84,7 +84,7 @@ const Calendar = () => {
           {!loading ? (
             <div
               style={{ transform: `translateX(${diff}px)` }}
-              className="duration-75"
+              className="duration-100"
             >
               <motion.div
                 variants={calendar}
@@ -179,7 +179,7 @@ const Calendar = () => {
                     </motion.div>
                   ))}
                 {view === "day" && (
-                  <div className="w-screen max-h-full overflow-y-auto">
+                  <div className="overflow-y-auto">
                     <h2 className="text-center text-xl">
                       {new Date().toLocaleDateString("en-us", {
                         month: "long",

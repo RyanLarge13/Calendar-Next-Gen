@@ -14,8 +14,8 @@ const DayEvent = ({ event, setEvent }) => {
   const dragControls = useDragControls();
 
   useEffect(() => {
-    const hour = new Date(event.start.startTime).getHours();
-    setZ(hour);
+     const hour = new Date(event.start.startTime).getHours();
+    setZ(hour)
     if (event.start.startTime) {
       const startHours = new Date(event.start.startTime).getHours() * 237;
       const startMinutes = new Date(event.start.startTime).getMinutes();
