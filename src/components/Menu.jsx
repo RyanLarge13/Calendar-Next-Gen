@@ -2,6 +2,7 @@ import { useState, useContext } from "react";
 import { motion } from "framer-motion";
 import { RiArrowUpDownFill } from "react-icons/ri";
 import { AiOutlinePlus } from "react-icons/ai";
+import { RiMenuUnfoldFill } from "react-icons/ri";
 import {
   BsFillTrashFill,
   BsFillPenFill,
@@ -18,15 +19,9 @@ const Menu = () => {
     useContext(UserContext);
   const [showReminders, setShowReminders] = useState(true);
   const [showLsits, setShowLists] = useState(true);
-  const [start, setStart] = useState(null);
   const [selected, setSelected] = useState([]);
   const [selectable, setSelectable] = useState(false);
   let timeout;
-
-  const checkEnd = (e) => {
-    const width = window.innerWidth / 2;
-    e.clientX - start >= width ? setMenu(false) : null;
-  };
 
   const calcWidth = (time) => {
     if (
@@ -97,27 +92,29 @@ const Menu = () => {
     }
   };
 
+  const deleteEntireList = (listId) => {};
+
   return (
     <motion.div
-      drag="x"
-      dragSnapToOrigin={true}
-      dragConstraints={{ right: 0, left: 0 }}
-      // dragListener={false}
-      onDragStart={(e) => setStart(e.clientX)}
-      onDragEnd={(e) => checkEnd(e)}
       initial={{ x: "-110%", opacity: 0 }}
       animate={
         menu
           ? {
               x: 0,
               opacity: 1,
-              transition: { duration: 0.25, type: "spring", stiffness: 250 },
+              transition: { duration: 0.25 },
             }
           : { x: "-110%", opacity: 0 }
       }
-      className="fixed inset-4 top-20 rounded-md bg-white shadow-md shadow-purple-200 overflow-y-auto"
+      className="fixed inset-0 rounded-md bg-white shadow-md shadow-purple-200 overflow-y-auto"
       style={{ fontSize: 12 }}
     >
+      <div className="p-5 sticky top-0 right-0 left-0 shadow-md z-10 bg-white">
+        <RiMenuUnfoldFill
+          onClick={() => setMenu(false)}
+          className="text-lg cursor-pointer"
+        />
+      </div>
       <div
         onClick={() => setShowReminders((prev) => !prev)}
         className="bg-gradient-to-tr from-purple-200 to-fucsia-100 p-2 rounded-t-md shadow-md flex justify-between items-center"
@@ -217,7 +214,8 @@ const Menu = () => {
               <p>{list.title}</p>
               <div className="flex gap-x-3">
                 <BsFillShareFill />
-                <BsFillPenFill /> <BsFillTrashFill />
+                <BsFillPenFill />{" "}
+                <BsFillTrashFill onClick={() => deleteEntireList(list.id)} />
               </div>
             </div>
             <ListItems items={list?.items} />

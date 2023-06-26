@@ -36,3 +36,7 @@ export const addNewList = async (req, res) => {
       .json({ message: "An error occured and your list was not sent" });
   }
 };
+
+export const updateList = async (req, res) => {};
+
+export const deleteList = async (req, res) => {};

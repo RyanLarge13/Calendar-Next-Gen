@@ -14,8 +14,7 @@ import DatesContext from "../context/DatesContext";
 const Header = () => {
   const { dt, setNav } = useContext(DatesContext);
   const { user } = useContext(UserContext);
-  const { setMenu, showLogin, setShowLogin } =
-    useContext(InteractiveContext);
+  const { setMenu, showLogin, setShowLogin } = useContext(InteractiveContext);
 
   return (
     <motion.header
@@ -28,6 +27,7 @@ const Header = () => {
           setShowLogin(false);
           setMenu((prev) => !prev);
         }}
+        className="cursor-pointer"
       />
       <div className="flex justify-center items-center">
         <BsFillArrowLeftCircleFill
@@ -55,7 +55,7 @@ const Header = () => {
               setShowLogin((prev) => !prev);
             }}
             alt="user"
-            className="w-[25px] h-[25px] rounded-full shadow-md"
+            className="w-[25px] h-[25px] rounded-full cursor-pointer shadow-md"
           />
         ) : (
           <BsThreeDotsVertical

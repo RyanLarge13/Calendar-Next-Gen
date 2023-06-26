@@ -1,12 +1,16 @@
 import { useState, useContext } from "react";
 import { createNewList } from "../utils/api.js";
 import UserContext from "../context/UserContext.jsx";
+import InteractiveContext from "../context/InteractiveContext.jsx";
+import DatesContext from "../context/DatesContext.jsx";
 import { AiFillCloseCircle } from "react-icons/ai";
 import Color from "./Color";
 import { colors } from "../constants.js";
 
 const AddList = () => {
-  const { user } = useContext(UserContext);
+  const { user, setLists } = useContext(UserContext);
+  const { setMenu } = useContext(InteractiveContext);
+  const { setOpenModal } = useContext(DatesContext);
   const [addItems, setAddItems] = useState(false);
   const [listItems, setListItems] = useState([]);
   const [itemTitle, setItemTitle] = useState("");
@@ -41,7 +45,16 @@ const AddList = () => {
     };
     const token = localStorage.getItem("authToken");
     if (!token) return;
-    createNewList(token, user.username, newList);
+    createNewList(token, user.username, newList)
+      .then((res) => {
+        const addedList = res.data.list;
+        setLists((prev) => [addedList, ...prev]);
+        setOpenModal(false);
+        setMenu(true);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const removeItem = (item) => {

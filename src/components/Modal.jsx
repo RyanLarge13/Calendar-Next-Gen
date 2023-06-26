@@ -122,7 +122,7 @@ const Modal = () => {
                       }
                       className={`${index === 0 ? "mt-0" : "my-[100px]"} ${
                         index % 2 === 0 ? "after:w-[100%]" : "after:w-[70%]"
-                      } relative after:left-0 after:bottom-0 after:h-[1px] after:absolute after:bg-slate-200`}
+                      } relative cursor-pointer after:left-0 after:bottom-0 after:h-[1px] after:absolute after:bg-slate-200`}
                     >
                       {timeObj.string}
                     </p>

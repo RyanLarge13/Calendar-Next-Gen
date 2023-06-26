@@ -79,9 +79,12 @@ const ModalHeader = ({ allDayEvents, event, setEvent }) => {
               <>
                 {!holidays.includes(event) && (
                   <>
-                    <BsFillShareFill />
-                    <BsFillPenFill />
-                    <BsFillTrashFill onClick={() => setConfirm(true)} />
+                    <BsFillShareFill className="cursor-pointer" />
+                    <BsFillPenFill className="cursor-pointer" />
+                    <BsFillTrashFill
+                      onClick={() => setConfirm(true)}
+                      className="cursor-pointer"
+                    />
                   </>
                 )}
               </>
@@ -101,7 +104,9 @@ const ModalHeader = ({ allDayEvents, event, setEvent }) => {
               key={event.id}
               className={`py-1 px-2 rounded-md shadow-sm flex justify-between ${
                 event.color
-              } ${index === 0 && !showAllDayEvents ? "mt-0" : "mt-2"} ${event.color === "bg-black" ? "text-white" : "text-black"}`}
+              } ${index === 0 && !showAllDayEvents ? "mt-0" : "mt-2"} ${
+                event.color === "bg-black" ? "text-white" : "text-black"
+              }`}
             >
               <p onClick={() => setEvent(event)}>{event.summary}</p>
             </motion.div>

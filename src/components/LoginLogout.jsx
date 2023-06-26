@@ -121,11 +121,11 @@ const LoginLogout = () => {
                   <div className="flex justify-between items-center bg-purple-100 rounded-md shadow-md p-2 mb-5">
                     <BiLogOutCircle
                       onClick={() => logout()}
-                      className="text-xl abolute left-2 top-2"
+                      className="text-xl abolute left-2 top-2 cursor-pointer"
                     />
                     <div
                       onClick={() => setShowNotifs((prev) => !prev)}
-                      className="relative"
+                      className="relative cursor-pointer"
                     >
                       {unReadLength > 0 && (
                         <div
@@ -144,7 +144,9 @@ const LoginLogout = () => {
                   />
                   <div className="text-xs font-bold mt-2">
                     <p>{user.username}</p>
-                    <p>{user.email}</p>
+                    <a href={`mailto:${user.email}`}>
+                      <p>{user.email}</p>
+                    </a>
                   </div>
                 </div>
               ) : (

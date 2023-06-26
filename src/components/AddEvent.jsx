@@ -257,7 +257,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
           <div className="my-3 flex justify-center items-center w-full">
             <div
               onClick={() => setStartTime(true)}
-              className="w-full mr-1 p-3 rounded-md shadow-md"
+              className="w-full mr-1 p-3 rounded-md shadow-md cursor-pointer"
             >
               <p>Start</p>
               {startTime && (
@@ -279,7 +279,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
           </div>
           <div
             onClick={() => setEndTime(true)}
-            className="w-full mr-1 p-3 rounded-md shadow-md"
+            className="w-full mr-1 p-3 rounded-md shadow-md cursor-pointer"
           >
             <p>End</p>
             {endTime && (
