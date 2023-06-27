@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { motion } from "framer-motion";
 import { RiMenuUnfoldFill } from "react-icons/ri";
 import {
@@ -14,8 +14,7 @@ import DatesContext from "../context/DatesContext";
 const Header = () => {
   const { dt, setNav, theDay, setTheDay } = useContext(DatesContext);
   const { user } = useContext(UserContext);
-  const { setMenu, showLogin, setShowLogin, view } =
-    useContext(InteractiveContext);
+  const { setMenu, setShowLogin, view } = useContext(InteractiveContext);
 
   const changeDay = (operand) => {
     if (operand === "minus") {
@@ -34,7 +33,7 @@ const Header = () => {
     <motion.header
       initial={{ y: -200 }}
       animate={{ y: 0 }}
-      className="flex justify-between p-5 mb-5 shadow-md"
+      className="fixed top-0 left-0 right-0 bg-white z-[1] flex justify-between p-5 mb-5 shadow-md"
     >
       <RiMenuUnfoldFill
         onClick={() => {

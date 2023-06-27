@@ -1,10 +1,11 @@
-import { useState, useContext, useRef, memo, useEffect } from "react";
+import { useState, useContext, memo, useEffect } from "react";
 import { Dna } from "react-loader-spinner";
 import { motion } from "framer-motion";
-import { calendar, calendarBlocks } from "../motion";
+import { calendar } from "../motion";
 import Modal from "./Modal";
 import Menu from "./Menu";
-import Event from "./Event";
+import MonthView from "./MonthView";
+import DayView from "./DayView";
 import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext";
@@ -19,22 +20,13 @@ const Calendar = () => {
     moveCalendar,
     finish,
     loading,
-    paddingDays,
-    daysInMonth,
-    month,
-    year,
     theDay,
-    day,
     openModal,
     diff,
     dateString,
-    rowDays,
-    columnDays,
   } = useContext(DatesContext);
 
   const [todaysEvents, setTodaysEvents] = useState([]);
-  const [event, setEvent] = useState(null);
-  const dayViewContainer = useRef(null);
 
   useEffect(() => {
     const eventsToday = [...events, ...holidays].filter(
@@ -44,19 +36,6 @@ const Calendar = () => {
     setTodaysEvents(eventsToday);
   }, [theDay]);
 
-  const getDayViewTime = () => {
-    let time;
-    time = setInterval(() => {
-      const now = new Date();
-      const percentageOfDay =
-        (now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds()) /
-        (24 * 3600);
-      const containerHeight = dayViewContainer.current.clientHeight;
-      const newPosition = Math.floor(percentageOfDay * containerHeight);
-      return newPosition;
-    }, 1000);
-  };
-
   const addEvent = (date) => {
     setMenu(false);
     setShowLogin(false);
@@ -64,20 +43,8 @@ const Calendar = () => {
     setString(date);
   };
 
-  const calcDayEventHeight = (start, end) => {
-    if (!start || !end) {
-      return null;
-    } else {
-      const hours = new Date(end).getHours();
-      const minutes = new Date(end).getMinutes();
-      const hourHeight = 10 * hours;
-      const minuteHeight = 5 * minutes;
-      return hourHeight + minuteHeight;
-    }
-  };
-
   return (
-    <main className="px-2">
+    <main className="px-2 mt-20">
       <section
         onTouchStart={(e) => {
           if (!openModal && !menu && view === "month")
@@ -123,137 +90,8 @@ const Calendar = () => {
                     : ""
                 }`}
               >
-                {view === "month" &&
-                  [...Array(paddingDays + daysInMonth)].map((abs, index) => (
-                    <motion.div
-                      variants={calendarBlocks}
-                      onClick={() =>
-                        index >= paddingDays &&
-                        addEvent(
-                          `${month + 1}/${index - paddingDays + 1}/${year}`
-                        )
-                      }
-                      key={index}
-                      style={
-                        new Date(dateString).getMonth() ===
-                          new Date().getMonth() &&
-                        new Date(dateString).getYear() === new Date().getYear()
-                          ? index === rowDays[0] ||
-                            index === rowDays[1] ||
-                            index === rowDays[2] ||
-                            index === rowDays[3] ||
-                            index === rowDays[4] ||
-                            index === rowDays[5] ||
-                            index === rowDays[6] ||
-                            index === columnDays[0] ||
-                            index === columnDays[1] ||
-                            index === columnDays[2] ||
-                            index === columnDays[3] ||
-                            index === columnDays[4] ||
-                            index === columnDays[5] ||
-                            index === columnDays[6]
-                            ? { backgroundColor: "rgba(0,0,0,0.1)" }
-                            : { backgroundColor: "#fff" }
-                          : { backgroundColor: "#fff" }
-                      }
-                      className={`relative w-full min-h-[12vh] max-h-[15vh] rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start gap-y-1 overflow-hidden cursor-pointer ${
-                        index - paddingDays + 1 === day &&
-                        month === new Date().getMonth() &&
-                        year === new Date().getFullYear() &&
-                        "shadow-cyan-400 shadow-md"
-                      }`}
-                    >
-                      <div
-                        className={`text-center text-sm my-1 ${
-                          index - paddingDays + 1 === day &&
-                          month === new Date().getMonth() &&
-                          year === new Date().getFullYear() &&
-                          "w-[25px] h-[25px] rounded-full bg-cyan-100 shadow-sm"
-                        }`}
-                      >
-                        <p>{index >= paddingDays && index - paddingDays + 1}</p>
-                      </div>
-                      <div className="w-full overflow-y-hidden absolute inset-0 pt-8">
-                        {[...events, ...holidays].map(
-                          (event) =>
-                            new Date(event.date).toLocaleDateString() ===
-                              `${month + 1}/${
-                                index - paddingDays + 1
-                              }/${year}` && (
-                              <motion.div
-                                key={event.id}
-                                initial={{ opacity: 0, y: -50 }}
-                                animate={{
-                                  opacity: 1,
-                                  y: 0,
-                                  transition: {
-                                    delay: 0.8,
-                                    type: "spring",
-                                    stiffness: 200,
-                                  },
-                                }}
-                                className={`rounded-lg ${event.color} shadow-md p-1 w-[95%] my-1 mx-auto`}
-                              >
-                                <p
-                                  className={`whitespace-nowrap text-xs overflow-hidden ${
-                                    event.color === "bg-black"
-                                      ? "text-white"
-                                      : "text-black"
-                                  }`}
-                                >
-                                  {event.summary}
-                                </p>
-                              </motion.div>
-                            )
-                        )}
-                      </div>
-                    </motion.div>
-                  ))}
-                {view === "day" && (
-                  <div ref={dayViewContainer} className="text-sm min-h-[70vh]">
-                    {todaysEvents.length > 0 ? (
-                      <div
-                        // style={{ top: getDayViewTime() }}
-                        className="absolute right-0 top-0"
-                      >
-                        <div className="w-[20px] h-[20px] rounded-full shadow-md bg-lime-200 after:w-20 after:h-[2px] after:bg-black after:absolute after:top-[50%] after:z-[-1] after:left-[-350%]">
-                          <p className="absolute px-1 shadow-md bg-white rounded-md left-[-375%] top-[-50%]">
-                            {new Date().toLocaleTimeString()}
-                          </p>
-                        </div>
-                      </div>
-                    ) : (
-                      <p className="text-center">No Events Today</p>
-                    )}
-                    <div className="mt-5">
-                      {todaysEvents.map((event) => (
-                        <div
-                          key={event.id}
-                          style={{
-                            height: `${calcDayEventHeight(
-                              event.start.startTime,
-                              event.end.endTime
-                            )}px`,
-                          }}
-                          onClick={() => setEvent(event)}
-                          className={`${event.color} bg-opacity-70 p-5 rounded-md shadow-md my-5`}
-                        >
-                          <p className="font-bold">{event.summary}</p>
-                          <p className="mr-5 text-sm">{event.description}</p>
-                        </div>
-                      ))}
-                    </div>
-                    {event && (
-                      <Event
-                        event={event}
-                        setEvent={setEvent}
-                        dayEvents={events.filter(
-                          (e) => new Date(e.date) === new Date()
-                        )}
-                      />
-                    )}
-                  </div>
-                )}
+                {view === "month" && <MonthView />}
+                {view === "day" && <DayView todaysEvents={todaysEvents} />}
               </motion.div>
             </div>
           ) : (

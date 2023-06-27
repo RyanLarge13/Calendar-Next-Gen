@@ -38,13 +38,15 @@ const Event = ({ event, setEvent, dayEvents }) => {
       interval = setInterval(() => {
         calcTime(totalMinutesToStart);
       }, 1000);
+      timeInLeft = setInterval(() => {
+        calcTimeIn();
+      }, 1000);
       if (totalMinutesToStart <= nowMinutes + nowHourMinutes) {
         clearInterval(interval);
         clearInterval(timeLeftInterval);
+        clearInterval(timeInLeft);
+        setTimeInEvent(98);
         setWidth(98);
-        timeInLeft = setInterval(() => {
-          calcTimeIn();
-        }, 1000);
       }
     }
 
@@ -62,7 +64,12 @@ const Event = ({ event, setEvent, dayEvents }) => {
       const numerator = totalEndMinutes - totalStartMinutes;
       const result = (denominator / numerator) * 100;
       if (result >= 98) {
+        clearInterval(timeInLeft);
         return setTimeInEvent(98);
+      }
+      if (result < 0) {
+        clearInterval(timeInLeft);
+        return setTimeInEvent(0);
       }
       setTimeInEvent(result);
     };
@@ -92,14 +99,14 @@ const Event = ({ event, setEvent, dayEvents }) => {
       const final = 100 - Math.round(decimal * 100);
       if (final >= 100) {
         clearInterval(interval);
-        return setWidth(100 - 2);
+        return setWidth(98);
       }
       if (final < 100) {
         return setWidth(final - 2);
       }
     };
     return () => {
-    	clearInterval(calcTimeIn)
+      clearInterval(timeLeftInterval);
       clearInterval(interval);
       clearInterval(timeInLeft);
     };
