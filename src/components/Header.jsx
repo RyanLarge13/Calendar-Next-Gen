@@ -17,6 +17,19 @@ const Header = () => {
   const { setMenu, showLogin, setShowLogin, view } =
     useContext(InteractiveContext);
 
+  const changeDay = (operand) => {
+    if (operand === "minus") {
+      const newDay = new Date();
+      newDay.setDate(theDay.getDate() - 1);
+      setTheDay(newDay);
+    }
+    if (operand === "plus") {
+      const newDay = new Date();
+      newDay.setDate(theDay.getDate() + 1);
+      setTheDay(newDay);
+    }
+  };
+
   return (
     <motion.header
       initial={{ y: -200 }}
@@ -52,18 +65,18 @@ const Header = () => {
       {view === "day" && (
         <div className="flex justify-center items-center">
           <BsFillArrowLeftCircleFill
-            onClick={() => setTheDay(new Date().setDate(new Date().getDate() - 1))}
+            onClick={() => changeDay("minus")}
             className="text-xl cursor-pointer"
           />
           <p className="mx-5">
-            {new Date().toLocaleDateString("en-us", {
+            {theDay.toLocaleDateString("en-us", {
               month: "short",
               day: "numeric",
               year: "numeric",
             })}
           </p>
           <BsFillArrowRightCircleFill
-            onClick={() => {}}
+            onClick={() => changeDay("plus")}
             className="text-xl cursor-pointer"
           />
         </div>

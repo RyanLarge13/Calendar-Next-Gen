@@ -39,4 +39,17 @@ export const addNewList = async (req, res) => {
 
 export const updateList = async (req, res) => {};
 
-export const deleteList = async (req, res) => {};
+export const deleteList = async (req, res) => {
+  const listId = req.params.listId;
+  const deletedList = await prisma.list.delete({
+    where: {
+      id: listId,
+    },
+  });
+  if (deletedList) {
+    res.status(201).json({ message: "Succesfully deleted list" });
+  }
+  if (!deletedList) {
+    res.status(401).json({ message: "Failure deleting list" });
+  }
+};

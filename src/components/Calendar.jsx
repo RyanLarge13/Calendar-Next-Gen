@@ -1,4 +1,4 @@
-import { useState, useContext, memo } from "react";
+import { useState, useContext, useRef, memo, useEffect } from "react";
 import { Dna } from "react-loader-spinner";
 import { motion } from "framer-motion";
 import { calendar, calendarBlocks } from "../motion";
@@ -23,8 +23,7 @@ const Calendar = () => {
     daysInMonth,
     month,
     year,
-    theDay, 
-    setTheDay, 
+    theDay,
     day,
     openModal,
     diff,
@@ -34,6 +33,20 @@ const Calendar = () => {
   } = useContext(DatesContext);
 
   const [event, setEvent] = useState(null);
+  const dayViewContainer = useRef(null);
+
+  const getDayViewTime = () => {
+    let time;
+    time = setInterval(() => {
+      const now = new Date();
+      const percentageOfDay =
+        (now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds()) /
+        (24 * 3600);
+      const containerHeight = dayViewContainer.current.clientHeight;
+      const newPosition = Math.floor(percentageOfDay * containerHeight);
+      return newPosition;
+    }, 1000);
+  };
 
   const addEvent = (date) => {
     setMenu(false);
@@ -188,7 +201,17 @@ const Calendar = () => {
                     </motion.div>
                   ))}
                 {view === "day" && (
-                  <div className="text-sm">
+                  <div ref={dayViewContainer} className="text-sm">
+                    <div
+                      // style={{ top: getDayViewTime() }}
+                      className="absolute right-0 top-0"
+                    >
+                      <div className="w-[20px] h-[20px] rounded-full shadow-md bg-lime-200 after:w-20 after:h-[2px] after:bg-black after:absolute after:top-[50%] after:z-[-1] after:left-[-350%]">
+                        <p className="absolute left-[-375%] top-[-50%]">
+                          {new Date().toLocaleTimeString()}
+                        </p>
+                      </div>
+                    </div>
                     <div className="mt-10">
                       {[...events, ...holidays].map(
                         (event) =>

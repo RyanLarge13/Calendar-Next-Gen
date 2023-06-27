@@ -2,19 +2,19 @@ import { useState, useContext } from "react";
 import { motion } from "framer-motion";
 import { RiArrowUpDownFill } from "react-icons/ri";
 import { AiOutlinePlus } from "react-icons/ai";
-import { RiMenuUnfoldFill } from "react-icons/ri";
 import {
   BsFillTrashFill,
   BsFillPenFill,
   BsFillShareFill,
 } from "react-icons/bs";
-import { deleteReminder } from "../utils/api.js";
+import { deleteReminder, deleteList } from "../utils/api.js";
+import { formatTime } from "../utils/helpers.js";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext";
 import ListItems from "./ListItems";
 
 const Menu = () => {
-  const { menu, setMenu } = useContext(InteractiveContext);
+  const { menu } = useContext(InteractiveContext);
   const { reminders, setReminders, user, lists, setLists } =
     useContext(UserContext);
   const [showReminders, setShowReminders] = useState(true);
@@ -92,7 +92,19 @@ const Menu = () => {
     }
   };
 
-  const deleteEntireList = (listId) => {};
+  const deleteEntireList = (listId) => {
+    const token = localStorage.getItem("authToken");
+    if (!token) return;
+    const newListOfLists = lists.filter((item) => item.id !== listId);
+    setLists(newListOfLists);
+    deleteList(token, listId)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   return (
     <motion.div
@@ -152,6 +164,7 @@ const Menu = () => {
               <div className="z-50 pointer-events-none">
                 <p>{new Date(reminder.time).toLocaleDateString()}</p>
                 <p>{new Date(reminder.time).toLocaleTimeString()}</p>
+                <p>{formatTime(new Date(reminder.time))}</p>
                 <p>{reminder.title}</p>
               </div>
               {selected.includes(reminder.id) && (

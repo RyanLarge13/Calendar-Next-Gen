@@ -221,7 +221,7 @@ export const updateList = (token, listId, listTitle, data) => {
 };
 
 export const deleteList = (token, listId) => {
-  const res = Axios.delete(`${devUrl}/delete/list/${listId}`, {
+  const res = Axios.delete(`${productionUrl}/delete/list/${listId}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
