@@ -120,6 +120,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
         .then((res) => {
           setEvents((prev) => [...prev, ...res.data.event]);
           setAddNewEvent(false);
+          setType(null)
           setOpenModal(false);
         })
         .catch((err) => {

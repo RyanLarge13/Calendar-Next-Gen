@@ -32,8 +32,17 @@ const Calendar = () => {
     columnDays,
   } = useContext(DatesContext);
 
+  const [todaysEvents, setTodaysEvents] = useState([]);
   const [event, setEvent] = useState(null);
   const dayViewContainer = useRef(null);
+
+  useEffect(() => {
+    const eventsToday = [...events, ...holidays].filter(
+      (item) =>
+        new Date(item.date).toLocaleDateString() === theDay.toLocaleDateString()
+    );
+    setTodaysEvents(eventsToday);
+  }, [theDay]);
 
   const getDayViewTime = () => {
     let time;
@@ -201,40 +210,38 @@ const Calendar = () => {
                     </motion.div>
                   ))}
                 {view === "day" && (
-                  <div ref={dayViewContainer} className="text-sm">
-                    <div
-                      // style={{ top: getDayViewTime() }}
-                      className="absolute right-0 top-0"
-                    >
-                      <div className="w-[20px] h-[20px] rounded-full shadow-md bg-lime-200 after:w-20 after:h-[2px] after:bg-black after:absolute after:top-[50%] after:z-[-1] after:left-[-350%]">
-                        <p className="absolute left-[-375%] top-[-50%]">
-                          {new Date().toLocaleTimeString()}
-                        </p>
+                  <div ref={dayViewContainer} className="text-sm min-h-[70vh]">
+                    {todaysEvents.length > 0 ? (
+                      <div
+                        // style={{ top: getDayViewTime() }}
+                        className="absolute right-0 top-0"
+                      >
+                        <div className="w-[20px] h-[20px] rounded-full shadow-md bg-lime-200 after:w-20 after:h-[2px] after:bg-black after:absolute after:top-[50%] after:z-[-1] after:left-[-350%]">
+                          <p className="absolute px-1 shadow-md bg-white rounded-md left-[-375%] top-[-50%]">
+                            {new Date().toLocaleTimeString()}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                    <div className="mt-10">
-                      {[...events, ...holidays].map(
-                        (event) =>
-                          new Date(event.date).toLocaleDateString() ===
-                            theDay.toLocaleDateString() && (
-                            <div
-                              key={event.id}
-                              style={{
-                                height: `${calcDayEventHeight(
-                                  event.start.startTime,
-                                  event.end.endTime
-                                )}px`,
-                              }}
-                              onClick={() => setEvent(event)}
-                              className={`${event.color} bg-opacity-70 p-5 rounded-md shadow-md my-5`}
-                            >
-                              <p className="font-bold">{event.summary}</p>
-                              <p className="mr-5 text-sm">
-                                {event.description}
-                              </p>
-                            </div>
-                          )
-                      )}
+                    ) : (
+                      <p className="text-center">No Events Today</p>
+                    )}
+                    <div className="mt-5">
+                      {todaysEvents.map((event) => (
+                        <div
+                          key={event.id}
+                          style={{
+                            height: `${calcDayEventHeight(
+                              event.start.startTime,
+                              event.end.endTime
+                            )}px`,
+                          }}
+                          onClick={() => setEvent(event)}
+                          className={`${event.color} bg-opacity-70 p-5 rounded-md shadow-md my-5`}
+                        >
+                          <p className="font-bold">{event.summary}</p>
+                          <p className="mr-5 text-sm">{event.description}</p>
+                        </div>
+                      ))}
                     </div>
                     {event && (
                       <Event

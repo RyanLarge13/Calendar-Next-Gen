@@ -9,7 +9,7 @@ import { colors } from "../constants.js";
 
 const AddList = () => {
   const { user, setLists } = useContext(UserContext);
-  const { setMenu, setType } = useContext(InteractiveContext);
+  const { setMenu, setType, setAddNewEvent} = useContext(InteractiveContext);
   const { setOpenModal } = useContext(DatesContext);
   const [addItems, setAddItems] = useState(false);
   const [listItems, setListItems] = useState([]);
@@ -48,9 +48,10 @@ const AddList = () => {
     createNewList(token, user.username, newList)
       .then((res) => {
         const addedList = res.data.list;
-        setType(false);
+        setType(null);
         setLists((prev) => [addedList, ...prev]);
         setOpenModal(false);
+        setAddNewEvent(false)
         setMenu(true);
       })
       .catch((err) => {

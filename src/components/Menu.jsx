@@ -114,7 +114,7 @@ const Menu = () => {
           ? {
               x: 0,
               opacity: 1,
-              transition: { duration: 0.25 },
+              transition: { duration: 0.25, type: "spring", stiffness: 400 },
             }
           : { x: "-110%", opacity: 0 }
       }
@@ -161,7 +161,7 @@ const Menu = () => {
               onPointerUp={() => stopTime(reminder.id)}
               onPointerCancel={() => clearTimeout(timeout)}
             >
-              <div className="z-50 pointer-events-none">
+              <div className="z-50 pointer-events-none text-[9px]">
                 <p>{new Date(reminder.time).toLocaleDateString()}</p>
                 <p>{new Date(reminder.time).toLocaleTimeString()}</p>
                 <p>{formatTime(new Date(reminder.time))}</p>
