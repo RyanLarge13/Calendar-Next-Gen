@@ -38,7 +38,7 @@ export const AddCircle = () => {
           type === null ? { bottom: 20, right: 20 } : { bottom: 80, left: 20 }
         }
         onClick={() => setShow((prev) => !prev)}
-        className="absolute w-[40px] h-[40px] z-[100] p-3 rounded-full cursor-pointer flex justify-center items-center bg-gradient-to-tr from-lime-200 to-yellow-100 shadow-md"
+        className="fixed w-[40px] h-[40px] z-[100] p-3 rounded-full cursor-pointer flex justify-center items-center bg-gradient-to-tr from-lime-200 to-yellow-100 shadow-md"
       >
         {show ? <BsXCircleFill /> : <BsFillCalendarPlusFill />}
       </motion.div>

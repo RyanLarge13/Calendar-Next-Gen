@@ -106,15 +106,9 @@ const Menu = () => {
             }
           : { x: "-110%", opacity: 0 }
       }
-      className="fixed inset-0 rounded-md bg-white shadow-md shadow-purple-200 overflow-y-auto"
+      className="fixed inset-0 top-20 rounded-md bg-white shadow-md shadow-purple-200 overflow-y-auto"
       style={{ fontSize: 12 }}
     >
-      <div className="p-5 sticky top-0 right-0 left-0 shadow-md z-10 bg-white">
-        <RiMenuUnfoldFill
-          onClick={() => setMenu(false)}
-          className="text-lg cursor-pointer"
-        />
-      </div>
       <div
         onClick={() => setShowReminders((prev) => !prev)}
         className="bg-gradient-to-tr from-purple-200 to-fucsia-100 p-2 rounded-t-md shadow-md flex justify-between items-center"

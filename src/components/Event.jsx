@@ -61,6 +61,9 @@ const Event = ({ event, setEvent, dayEvents }) => {
       const denominator = totalNowMinutes - totalStartMinutes;
       const numerator = totalEndMinutes - totalStartMinutes;
       const result = (denominator / numerator) * 100;
+      if (result >= 98) {
+        return setTimeInEvent(98);
+      }
       setTimeInEvent(result);
     };
 
@@ -96,8 +99,9 @@ const Event = ({ event, setEvent, dayEvents }) => {
       }
     };
     return () => {
+    	clearInterval(calcTimeIn)
       clearInterval(interval);
-      clearInterval(timeLeftInterval);
+      clearInterval(timeInLeft);
     };
   }, [event]);
 
@@ -241,7 +245,7 @@ const Event = ({ event, setEvent, dayEvents }) => {
             </div>
           )}
         </div>
-        <div className="flex-1 bg-white rounded-md shadow-md my-2 h-full overflow-y-auto p-2"></div>
+        {/*<div className="flex-1 bg-white rounded-md shadow-md my-2 h-full overflow-y-auto p-2"></div>*/}
         <div className="sticky top-[50%] right-2 left-2 py-2 flex justify-between items-center text-xl">
           {index > 0 ? (
             <BsFillArrowLeftCircleFill onClick={() => getPreviousEvent()} />

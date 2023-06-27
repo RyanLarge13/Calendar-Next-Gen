@@ -12,9 +12,10 @@ import InteractiveContext from "../context/InteractiveContext";
 import DatesContext from "../context/DatesContext";
 
 const Header = () => {
-  const { dt, setNav } = useContext(DatesContext);
+  const { dt, setNav, theDay, setTheDay } = useContext(DatesContext);
   const { user } = useContext(UserContext);
-  const { setMenu, showLogin, setShowLogin } = useContext(InteractiveContext);
+  const { setMenu, showLogin, setShowLogin, view } =
+    useContext(InteractiveContext);
 
   return (
     <motion.header
@@ -29,23 +30,44 @@ const Header = () => {
         }}
         className="cursor-pointer"
       />
-      <div className="flex justify-center items-center">
-        <BsFillArrowLeftCircleFill
-          onClick={() => setNav((prev) => prev - 1)}
-          className="text-xl cursor-pointer"
-        />
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="mx-5"
-        >{`${dt.toLocaleString("default", {
-          month: "long",
-        })} ${dt.getFullYear()}`}</motion.p>
-        <BsFillArrowRightCircleFill
-          onClick={() => setNav((prev) => prev + 1)}
-          className="text-xl cursor-pointer"
-        />
-      </div>
+      {view === "month" && (
+        <div className="flex justify-center items-center">
+          <BsFillArrowLeftCircleFill
+            onClick={() => setNav((prev) => prev - 1)}
+            className="text-xl cursor-pointer"
+          />
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="mx-5"
+          >{`${dt.toLocaleString("default", {
+            month: "long",
+          })} ${dt.getFullYear()}`}</motion.p>
+          <BsFillArrowRightCircleFill
+            onClick={() => setNav((prev) => prev + 1)}
+            className="text-xl cursor-pointer"
+          />
+        </div>
+      )}
+      {view === "day" && (
+        <div className="flex justify-center items-center">
+          <BsFillArrowLeftCircleFill
+            onClick={() => setTheDay(new Date().setDate(new Date().getDate() - 1))}
+            className="text-xl cursor-pointer"
+          />
+          <p className="mx-5">
+            {new Date().toLocaleDateString("en-us", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })}
+          </p>
+          <BsFillArrowRightCircleFill
+            onClick={() => {}}
+            className="text-xl cursor-pointer"
+          />
+        </div>
+      )}
       <div className="w-[25px] h-[25px]">
         {user ? (
           <img

@@ -19,7 +19,7 @@ const Views = () => {
     <>
       <div
         onClick={() => setShow((prev) => !prev)}
-        className="absolute cursor-pointer bottom-5 left-5 z-[100] p-3 rounded-full flex justify-center items-center bg-gradient-to-tr from-lime-200 to-yellow-100 shadow-md"
+        className="fixed cursor-pointer bottom-5 left-5 z-[100] p-3 rounded-full flex justify-center items-center bg-gradient-to-tr from-lime-200 to-yellow-100 shadow-md"
       >
         {show ? <BsXCircleFill /> : <BsColumnsGap />}
       </div>
