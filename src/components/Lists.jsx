@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import ListItems from "./ListItems";
+import { deleteList } from "../utils/api";
 import { motion } from "framer-motion";
 import {
   BsFillTrashFill,

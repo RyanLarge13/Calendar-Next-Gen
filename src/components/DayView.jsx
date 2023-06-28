@@ -18,12 +18,21 @@ const DayView = ({ todaysEvents }) => {
     if (!start || !end) {
       return null;
     } else {
-      const hours = new Date(end).getHours();
-      const minutes = new Date(end).getMinutes();
-      const hourHeight = 10 * hours;
-      const minuteHeight = 5 * minutes;
-      return hourHeight + minuteHeight;
+      const duration = end.getTime() - start.getTime();
+      const containerHeight = dayViewContainer.current.clientHeight;
+      const componentHeight =
+        (duration / (24 * 60 * 60 * 1000)) * containerHeight;
+      return componentHeight;
     }
+  };
+
+  const fromTop = (startTime) => {
+    const currentTime = new Date();
+    const timeDifference = currentTime.getTime() - startTime.getTime();
+    const containerHeight = dayViewContainer.current.clientHeight;
+    const distanceFromTop =
+      (timeDifference / (24 * 60 * 60 * 1000)) * containerHeight;
+    return distanceFromTop;
   };
 
   const getTime = () => {
@@ -56,12 +65,13 @@ const DayView = ({ todaysEvents }) => {
         {todaysEvents.map((event) => (
           <div
             key={event.id}
-            style={{
-              height: `${calcDayEventHeight(
-                event.start.startTime,
-                event.end.endTime
-              )}px`,
-            }}
+            // style={{
+            //   height: `${calcDayEventHeight(
+            //     new Date(event.start.startTime),
+            //     new Date(event.end.endTime)
+            //   )}px`,
+            //   top: fromTop(new Date(event.start.startTime)),
+            // }}
             onClick={() => setEvent(event)}
             className={`${event.color} bg-opacity-70 p-5 rounded-md shadow-md my-5`}
           >

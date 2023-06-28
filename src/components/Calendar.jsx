@@ -12,10 +12,8 @@ import UserContext from "../context/UserContext";
 
 const Calendar = () => {
   const { events, holidays, weekDays } = useContext(UserContext);
-  const { menu, setMenu, setShowLogin, view } = useContext(InteractiveContext);
+  const { menu, view } = useContext(InteractiveContext);
   const {
-    setOpenModal,
-    setString,
     setStart,
     moveCalendar,
     finish,
@@ -34,14 +32,7 @@ const Calendar = () => {
         new Date(item.date).toLocaleDateString() === theDay.toLocaleDateString()
     );
     setTodaysEvents(eventsToday);
-  }, [theDay]);
-
-  const addEvent = (date) => {
-    setMenu(false);
-    setShowLogin(false);
-    setOpenModal(true);
-    setString(date);
-  };
+  }, [theDay, events]);
 
   return (
     <main className="px-2 mt-20">

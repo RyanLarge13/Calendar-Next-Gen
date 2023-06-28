@@ -5,9 +5,11 @@ import { AiOutlinePlus } from "react-icons/ai";
 import Reminders from "./Reminders.jsx";
 import Lists from "./Lists.jsx";
 import InteractiveContext from "../context/InteractiveContext";
+import DatesContext from "../context/DatesContext.jsx";
 
 const Menu = () => {
-  const { menu } = useContext(InteractiveContext);
+  const { setOpenModal, string, setString } = useContext(DatesContext);
+  const { menu, setAddNewEvent, setType } = useContext(InteractiveContext);
   const [showReminders, setShowReminders] = useState(true);
   const [showLists, setShowLists] = useState(true);
 
@@ -26,13 +28,23 @@ const Menu = () => {
       className="fixed inset-0 top-20 rounded-md bg-white shadow-md shadow-purple-200 overflow-y-auto"
       style={{ fontSize: 12 }}
     >
-      <div
-        onClick={() => setShowReminders((prev) => !prev)}
-        className="bg-gradient-to-tr from-purple-200 to-fucsia-100 p-2 rounded-t-md shadow-md flex justify-between items-center"
-      >
+      <div className="bg-gradient-to-tr from-purple-200 to-fucsia-100 p-2 rounded-t-md shadow-md flex justify-between items-center">
         <div className="flex">
-          <RiArrowUpDownFill />
-          <AiOutlinePlus className="ml-3" />
+          <RiArrowUpDownFill
+            onClick={() => setShowReminders((prev) => !prev)}
+            className="font-bold text-lg cursor-pointer mr-3"
+          />
+          <AiOutlinePlus
+            onClick={() => {
+              if (!string) {
+                setString(new Date().toLocaleDateString());
+              }
+              setOpenModal(true);
+              setAddNewEvent(true);
+              setType("reminder");
+            }}
+            className="font-bold text-lg cursor-pointer mr-5"
+          />
         </div>
         <p>Reminders</p>
       </div>

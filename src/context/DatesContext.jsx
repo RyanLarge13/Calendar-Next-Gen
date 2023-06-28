@@ -84,9 +84,7 @@ export const DatesProvider = ({ children }) => {
     setPaddingDays(weekDays.indexOf(dateString.split(", ")[0]));
     setLoading(false);
     const day = new Date().getDate();
-    //26
     const dayOfWeek = new Date().getDay();
-    //1
     const end = day + (6 - dayOfWeek) + paddingDays - 1;
     const start = day - dayOfWeek + paddingDays - 1;
     let rowDays = [];
@@ -124,8 +122,8 @@ export const DatesProvider = ({ children }) => {
         string,
         openModal,
         diff,
-        theDay, 
-        setTheDay, 
+        theDay,
+        setTheDay,
         setNav,
         setOpenModal,
         setString,

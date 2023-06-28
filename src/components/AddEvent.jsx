@@ -17,7 +17,7 @@ import Toggle from "./Toggle";
 import TimeSetter from "./TimeSetter";
 
 const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
-  const { setEvents, user, isOnline } = useContext(UserContext);
+  const { setEvents, user, isOnline, setReminders } = useContext(UserContext);
   const { setType } = useContext(InteractiveContext);
   const { string, setOpenModal } = useContext(DatesContext);
 
@@ -119,8 +119,9 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
       postEvent(newEvent, localStorage.getItem("authToken"))
         .then((res) => {
           setEvents((prev) => [...prev, ...res.data.event]);
+          setReminders((prev) => [...prev, res.data.reminders]);
           setAddNewEvent(false);
-          setType(null)
+          setType(null);
           setOpenModal(false);
         })
         .catch((err) => {

@@ -10,7 +10,7 @@ const ListItems = ({ items }) => {
       {indexes?.map((listItem, index) => (
         <Reorder.Item
           whileDrag={{
-            scale: 1.05,
+            scale: 1.025,
             backgroundColor: "rgba(255,255,255,1)",
             cursor: "grabbing",
           }}
