@@ -1,11 +1,16 @@
 import { useState, useContext } from "react";
 import { createNewList } from "../utils/api.js";
 import UserContext from "../context/UserContext.jsx";
+import InteractiveContext from "../context/InteractiveContext.jsx";
+import DatesContext from "../context/DatesContext.jsx";
 import { AiFillCloseCircle } from "react-icons/ai";
+import Color from "./Color";
 import { colors } from "../constants.js";
 
 const AddList = () => {
-  const { user } = useContext(UserContext);
+  const { user, setLists } = useContext(UserContext);
+  const { setMenu, setType, setAddNewEvent} = useContext(InteractiveContext);
+  const { setOpenModal } = useContext(DatesContext);
   const [addItems, setAddItems] = useState(false);
   const [listItems, setListItems] = useState([]);
   const [itemTitle, setItemTitle] = useState("");
@@ -40,7 +45,18 @@ const AddList = () => {
     };
     const token = localStorage.getItem("authToken");
     if (!token) return;
-    createNewList(token, user.username, newList);
+    createNewList(token, user.username, newList)
+      .then((res) => {
+        const addedList = res.data.list;
+        setType(null);
+        setLists((prev) => [addedList, ...prev]);
+        setOpenModal(false);
+        setAddNewEvent(false)
+        setMenu(true);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const removeItem = (item) => {
@@ -60,13 +76,15 @@ const AddList = () => {
             onChange={(e) => setTitle(e.target.value)}
             className={`w-full p-2 rounded-md shadow-md my-5 bg-opacity-80 ${color}`}
           />
-          <div className="flex flex-wrap gap-3 items-center justify-center px-5 my-10">
-            {colors.map((item) => (
-              <div
-                key={item.color}
-                onClick={() => setColor(item.color)}
-                className={`${item.color} w-[20px] h-[20px] rounded-full shadow-sm`}
-              ></div>
+          <div className="flex flex-wrap items-center justify-center px-5 my-10">
+            {colors.map((item, index) => (
+              <Color
+                key={index}
+                string={item.color}
+                color={color}
+                setColor={setColor}
+                index={index}
+              />
             ))}
           </div>
           <button

@@ -79,7 +79,7 @@ const DayEvent = ({ event, setEvent }) => {
         }}
         className={`${event.color} px-3 py-1 rounded-md font-extrabold mb-5 shadow-sm justify-between flex items-start`}
       >
-        <h3 onClick={() => setEvent(event)} className="text-sm">
+        <h3 onClick={() => setEvent(event)} className="text-sm cursor-pointer">
           {event.summary}
         </h3>
         <div className="flex">

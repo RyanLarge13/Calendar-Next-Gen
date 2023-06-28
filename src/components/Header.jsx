@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { motion } from "framer-motion";
 import { RiMenuUnfoldFill } from "react-icons/ri";
 import {
@@ -12,40 +12,74 @@ import InteractiveContext from "../context/InteractiveContext";
 import DatesContext from "../context/DatesContext";
 
 const Header = () => {
-  const { dt, setNav } = useContext(DatesContext);
+  const { dt, setNav, theDay, setTheDay } = useContext(DatesContext);
   const { user } = useContext(UserContext);
-  const { setMenu, showLogin, setShowLogin } =
-    useContext(InteractiveContext);
+  const { setMenu, setShowLogin, view } = useContext(InteractiveContext);
+
+  const changeDay = (operand) => {
+    if (operand === "minus") {
+      const newDay = new Date();
+      newDay.setDate(theDay.getDate() - 1);
+      setTheDay(newDay);
+    }
+    if (operand === "plus") {
+      const newDay = new Date();
+      newDay.setDate(theDay.getDate() + 1);
+      setTheDay(newDay);
+    }
+  };
 
   return (
     <motion.header
       initial={{ y: -200 }}
       animate={{ y: 0 }}
-      className="flex justify-between p-5 mb-5 shadow-md"
+      className="fixed top-0 left-0 right-0 bg-white z-[1] flex justify-between p-5 mb-5 shadow-md"
     >
       <RiMenuUnfoldFill
         onClick={() => {
           setShowLogin(false);
           setMenu((prev) => !prev);
         }}
+        className="cursor-pointer"
       />
-      <div className="flex justify-center items-center">
-        <BsFillArrowLeftCircleFill
-          onClick={() => setNav((prev) => prev - 1)}
-          className="text-xl cursor-pointer"
-        />
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="mx-5"
-        >{`${dt.toLocaleString("default", {
-          month: "long",
-        })} ${dt.getFullYear()}`}</motion.p>
-        <BsFillArrowRightCircleFill
-          onClick={() => setNav((prev) => prev + 1)}
-          className="text-xl cursor-pointer"
-        />
-      </div>
+      {view === "month" && (
+        <div className="flex justify-center items-center">
+          <BsFillArrowLeftCircleFill
+            onClick={() => setNav((prev) => prev - 1)}
+            className="text-xl cursor-pointer"
+          />
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="mx-5"
+          >{`${dt.toLocaleString("default", {
+            month: "long",
+          })} ${dt.getFullYear()}`}</motion.p>
+          <BsFillArrowRightCircleFill
+            onClick={() => setNav((prev) => prev + 1)}
+            className="text-xl cursor-pointer"
+          />
+        </div>
+      )}
+      {view === "day" && (
+        <div className="flex justify-center items-center">
+          <BsFillArrowLeftCircleFill
+            onClick={() => changeDay("minus")}
+            className="text-xl cursor-pointer"
+          />
+          <p className="mx-5">
+            {theDay.toLocaleDateString("en-us", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })}
+          </p>
+          <BsFillArrowRightCircleFill
+            onClick={() => changeDay("plus")}
+            className="text-xl cursor-pointer"
+          />
+        </div>
+      )}
       <div className="w-[25px] h-[25px]">
         {user ? (
           <img
@@ -55,7 +89,7 @@ const Header = () => {
               setShowLogin((prev) => !prev);
             }}
             alt="user"
-            className="w-[25px] h-[25px] rounded-full shadow-md"
+            className="w-[25px] h-[25px] rounded-full cursor-pointer shadow-md"
           />
         ) : (
           <BsThreeDotsVertical

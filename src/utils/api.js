@@ -76,7 +76,7 @@ export const getEvents = async (username, token) => {
 
 export const postEvent = (event, token) => {
   const res = Axios.post(
-    `${productionUrl}/new/event`,
+    `${devUrl}/new/event`,
     { event: event },
     {
       headers: {
@@ -202,5 +202,29 @@ export const createNewList = (token, username, newList) => {
       },
     }
   );
+  return res;
+};
+
+export const updateList = (token, listId, listTitle, data) => {
+  const res = Axios.patch(
+    `${devUrl}/update/list/${listTitle}`,
+    {
+      data: { data, listId },
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return res;
+};
+
+export const deleteList = (token, listId) => {
+  const res = Axios.delete(`${productionUrl}/delete/list/${listId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
   return res;
 };

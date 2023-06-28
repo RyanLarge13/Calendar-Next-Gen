@@ -17,8 +17,8 @@ import Toggle from "./Toggle";
 import TimeSetter from "./TimeSetter";
 
 const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
-  const { setEvents, user, isOnline } = useContext(UserContext);
-  const {setType} = useContext(InteractiveContext)
+  const { setEvents, user, isOnline, setReminders } = useContext(UserContext);
+  const { setType } = useContext(InteractiveContext);
   const { string, setOpenModal } = useContext(DatesContext);
 
   // Basic event data
@@ -119,7 +119,9 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
       postEvent(newEvent, localStorage.getItem("authToken"))
         .then((res) => {
           setEvents((prev) => [...prev, ...res.data.event]);
+          setReminders((prev) => [...prev, res.data.reminders]);
           setAddNewEvent(false);
+          setType(null);
           setOpenModal(false);
         })
         .catch((err) => {
@@ -137,6 +139,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
             string={item.color}
             color={color}
             setColor={setColor}
+            index={index}
           />
         ))}
       </div>
@@ -256,7 +259,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
           <div className="my-3 flex justify-center items-center w-full">
             <div
               onClick={() => setStartTime(true)}
-              className="w-full mr-1 p-3 rounded-md shadow-md"
+              className="w-full mr-1 p-3 rounded-md shadow-md cursor-pointer"
             >
               <p>Start</p>
               {startTime && (
@@ -278,7 +281,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
           </div>
           <div
             onClick={() => setEndTime(true)}
-            className="w-full mr-1 p-3 rounded-md shadow-md"
+            className="w-full mr-1 p-3 rounded-md shadow-md cursor-pointer"
           >
             <p>End</p>
             {endTime && (
@@ -308,8 +311,9 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
       <div className="fixed right-[65vw] bottom-5 flex flex-col justify-center items-center px-2">
         <button
           onClick={() => {
-          setType(null)
-          setAddNewEvent(false)}} 
+            setType(null);
+            setAddNewEvent(false);
+          }}
           className="p-3 rounded-full shadow-md bg-gradient-to-r from-red-300 to-red-200"
         >
           <MdCancel />

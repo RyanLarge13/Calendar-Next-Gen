@@ -125,7 +125,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                   )}
                 </div>
                 <div>
-                  <div className="text-xs flex justify-between items-center p-1 px-2 mt-4 rounded-b-md bg-purple-100">
+                  <div className="text-xs flex justify-between items-center p-1 px-2 mt-4 rounded-b-md bg-purple-100 cursor-pointer">
                     {notif.read ? (
                       <p>Mark As UnOpen</p>
                     ) : (
@@ -134,7 +134,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                           e.stopPropagation();
                           readNotif(notif.id);
                         }}
-                        className="border-b border-b-cyan-300"
+                        className="border-b border-b-cyan-300 cursor-pointer"
                       >
                         Mark As Read
                       </p>
@@ -145,7 +145,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                         setDeleteId(notif.id);
                         setConfirm(true);
                       }}
-                      className="border-b border-b-rose-300"
+                      className="border-b border-b-rose-300 cursor-pointer"
                     >
                       Delete
                     </p>

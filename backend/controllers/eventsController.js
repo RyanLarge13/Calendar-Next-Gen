@@ -128,23 +128,25 @@ const createReminder = async (event) => {
     sentNotification: false,
     userId: event.userId,
   };
-  await prisma.reminder.create({
+  const reminder = await prisma.reminder.create({
     data: newReminder,
   });
   await prisma.notification.create({
     data: newNotif,
   });
+  return reminder;
 };
 
 export const addEvent = async (req, res) => {
   const newEvent = req.body.event;
   const user = req.user;
+  let reminder;
   const repeatEvents = await addMultipleEvents(
     newEvent,
     newEvent.repeats.howOften
   );
   if (newEvent.reminders.reminder) {
-    createReminder(newEvent);
+    reminder = await createReminder(newEvent);
   }
   const createdEvent = await prisma.event.create({
     data: newEvent,
@@ -161,6 +163,7 @@ export const addEvent = async (req, res) => {
         createdAt: user.createAt,
       },
       event: [createdEvent, ...repeatEvents],
+      reminders: reminder,
     });
   }
 };

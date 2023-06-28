@@ -24,6 +24,7 @@ export const DatesProvider = ({ children }) => {
   const [paddingDays, setPaddingDays] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [string, setString] = useState("");
+  const [theDay, setTheDay] = useState(new Date());
   const [rowDays, setRowDays] = useState([]);
   const [columnDays, setColumnDays] = useState([]);
 
@@ -45,10 +46,10 @@ export const DatesProvider = ({ children }) => {
   };
 
   const finish = () => {
-    if (diff < -150) {
+    if (diff < -120) {
       setNav((prev) => prev + 1);
     }
-    if (diff > 150) {
+    if (diff > 120) {
       setNav((prev) => prev - 1);
     }
     setTimeout(() => {
@@ -84,9 +85,10 @@ export const DatesProvider = ({ children }) => {
     setLoading(false);
     const day = new Date().getDate();
     const dayOfWeek = new Date().getDay();
-    const diff = day - dayOfWeek;
+    const end = day + (6 - dayOfWeek) + paddingDays - 1;
+    const start = day - dayOfWeek + paddingDays - 1;
     let rowDays = [];
-    for (let i = diff + 6 - dayOfWeek; i < 36; i++) {
+    for (let i = start; i <= end; i++) {
       rowDays.push(i);
     }
     let column = new Date().getDay();
@@ -105,7 +107,7 @@ export const DatesProvider = ({ children }) => {
     }
     setColumnDays(columnDays);
     setRowDays(rowDays);
-  }, [dateString]);
+  }, [dateString, paddingDays]);
 
   return (
     <DatesContext.Provider
@@ -120,6 +122,8 @@ export const DatesProvider = ({ children }) => {
         string,
         openModal,
         diff,
+        theDay,
+        setTheDay,
         setNav,
         setOpenModal,
         setString,

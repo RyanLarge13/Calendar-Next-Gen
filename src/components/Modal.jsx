@@ -78,13 +78,13 @@ const Modal = () => {
               setOpenModal(false);
               setType(null);
             }}
-            className="fixed inset-0 bg-[rgba(0,0,0,0.4)] flex"
+            className="fixed inset-0 bg-[rgba(0,0,0,0.4)] flex z-[10]"
           ></motion.div>
           <motion.div
             initial={{ x: 1000 }}
             exit={{ x: 1000 }}
             animate={{ x: 0 }}
-            className={`bg-white rounded-md shadow-lg shadow-purple-200 px-2 fixed top-0 bottom-0 right-0 w-[65%] overflow-y-auto scroll-smooth scrollbar-hide`}
+            className={`bg-white rounded-md z-[10] shadow-lg shadow-purple-200 px-2 fixed top-0 bottom-0 right-0 w-[65%] overflow-y-auto scroll-smooth scrollbar-hide`}
             ref={modalRef}
           >
             <ModalHeader
@@ -122,14 +122,14 @@ const Modal = () => {
                       }
                       className={`${index === 0 ? "mt-0" : "my-[100px]"} ${
                         index % 2 === 0 ? "after:w-[100%]" : "after:w-[70%]"
-                      } relative after:left-0 after:bottom-0 after:h-[1px] after:absolute after:bg-slate-200`}
+                      } relative cursor-pointer after:left-0 after:bottom-0 after:h-[1px] after:absolute after:bg-slate-200`}
                     >
                       {timeObj.string}
                     </p>
                   ))}
                 </div>
                 <div className="w-full">
-                  {dayEvents.map((event) => (
+                  {dayEvents.map((event, index) => (
                     <DayEvent
                       key={event.id}
                       event={event}

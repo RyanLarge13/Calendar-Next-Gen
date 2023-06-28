@@ -2,26 +2,35 @@ import { useState, useEffect } from "react";
 import {
   BsFillArrowLeftCircleFill,
   BsFillArrowRightCircleFill,
+  BsFillTrashFill,
 } from "react-icons/bs";
+import { FiRepeat } from "react-icons/fi";
+import { IoIosAlarm } from "react-icons/io";
+import { MdLocationPin } from "react-icons/md";
+import { FaExternalLinkAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
 
 const Event = ({ event, setEvent, dayEvents }) => {
-  const [start, setStart] = useState(0);
   const [open, setOpen] = useState(true);
-  const [width, setWidth] = useState(0);
   const [timeLeft, setTimeLeft] = useState(null);
+  const [start, setStart] = useState(0);
+  const [width, setWidth] = useState(0);
+  const [timeInEvent, setTimeInEvent] = useState(0);
   const [index, setIndex] = useState(dayEvents.indexOf(event));
 
   useEffect(() => {
     let interval;
     let timeLeftInterval;
+    let timeInLeft;
     if (
       event &&
       new Date(event.date).toLocaleDateString() ===
         new Date().toLocaleDateString()
     ) {
       const startHourMinutes = new Date(event.start.startTime).getHours() * 60;
+      const nowHourMinutes = new Date().getHours() * 60;
       const startMinutes = new Date(event.start.startTime).getMinutes();
+      const nowMinutes = new Date().getMinutes();
       const totalMinutesToStart = startHourMinutes + startMinutes;
       timeLeftInterval = setInterval(() => {
         checkTimeLeft();
@@ -29,7 +38,41 @@ const Event = ({ event, setEvent, dayEvents }) => {
       interval = setInterval(() => {
         calcTime(totalMinutesToStart);
       }, 1000);
+      timeInLeft = setInterval(() => {
+        calcTimeIn();
+      }, 1000);
+      if (totalMinutesToStart <= nowMinutes + nowHourMinutes) {
+        clearInterval(interval);
+        clearInterval(timeLeftInterval);
+        clearInterval(timeInLeft);
+        setTimeInEvent(98);
+        setWidth(98);
+      }
     }
+
+    const calcTimeIn = () => {
+      const currentHours = new Date().getHours();
+      const currentMinutes = new Date().getMinutes();
+      const startHours = new Date(event.start.startTime).getHours();
+      const startMinutes = new Date(event.start.startTime).getMinutes();
+      const endHours = new Date(event.end.endTime).getHours();
+      const endMinutes = new Date(event.end.endTime).getMinutes();
+      const totalStartMinutes = startHours * 60 + startMinutes;
+      const totalEndMinutes = endHours * 60 + endMinutes;
+      const totalNowMinutes = currentHours * 60 + currentMinutes;
+      const denominator = totalNowMinutes - totalStartMinutes;
+      const numerator = totalEndMinutes - totalStartMinutes;
+      const result = (denominator / numerator) * 100;
+      if (result >= 98) {
+        clearInterval(timeInLeft);
+        return setTimeInEvent(98);
+      }
+      if (result < 0) {
+        clearInterval(timeInLeft);
+        return setTimeInEvent(0);
+      }
+      setTimeInEvent(result);
+    };
 
     const checkTimeLeft = () => {
       const startHours = new Date(event.start.startTime).getHours();
@@ -56,15 +99,16 @@ const Event = ({ event, setEvent, dayEvents }) => {
       const final = 100 - Math.round(decimal * 100);
       if (final >= 100) {
         clearInterval(interval);
-        return setWidth(100 - 2);
+        return setWidth(98);
       }
       if (final < 100) {
         return setWidth(final - 2);
       }
     };
     return () => {
-      clearInterval(interval);
       clearInterval(timeLeftInterval);
+      clearInterval(interval);
+      clearInterval(timeInLeft);
     };
   }, [event]);
 
@@ -121,7 +165,7 @@ const Event = ({ event, setEvent, dayEvents }) => {
         className={`w-full h-full rounded-md bg-opacity-20 p-3 ${event.color}`}
       >
         <div className={`p-2 rounded-md shadow-sm font-bold ${event.color}`}>
-          <h1>{event.summary}</h1>
+          <h1 className="text-lg">{event.summary}</h1>
         </div>
         <div
           className={`p-2 mt-2 rounded-md shadow-sm font-bold ${event.color} bg-opacity-50`}
@@ -129,27 +173,86 @@ const Event = ({ event, setEvent, dayEvents }) => {
           <p>{event.description}</p>
         </div>
         {event.start.startTime && (
-          <div className="relative mt-2 py-2 px-3 rounded-3xl shadow-sm flex w-full justify-between items-center bg-white">
-            <motion.div
-              animate={{
-                width: `${width}%`,
-                transition: { duration: 0.1, type: "spring", stiffness: 400 },
-              }}
-              className={`absolute left-1 top-1 bottom-1 ${event.color} bg-opacity-50 rounded-3xl`}
-            ></motion.div>
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1, transition: { delay: 1.5 } }}
-              className="z-10 font-bold"
-            >
-              {timeLeft}
-            </motion.p>
-            <p className="z-10">
-              {new Date(event.start.startTime).toLocaleTimeString()}
-            </p>
-          </div>
+          <>
+            <div className="relative mt-2 py-2 px-3 rounded-3xl shadow-sm flex w-full justify-between items-center bg-white">
+              <motion.div
+                animate={{
+                  width: `${width}%`,
+                  transition: { duration: 0.1, type: "spring", stiffness: 400 },
+                }}
+                className={`absolute left-1 top-1 bottom-1 ${event.color} bg-opacity-50 rounded-3xl`}
+              ></motion.div>
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1, transition: { delay: 1.5 } }}
+                className="z-10 font-bold"
+              >
+                {timeLeft}
+              </motion.p>
+              <p className="z-10">
+                {new Date(event.start.startTime).toLocaleTimeString()}
+              </p>
+            </div>
+            <div className="relative mt-2 py-2 px-3 rounded-3xl shadow-sm flex w-full justify-between items-center bg-white">
+              <motion.div
+                animate={{
+                  width: `${timeInEvent}%`,
+                  transition: { duration: 0.1, type: "spring", stiffness: 400 },
+                }}
+                className={`absolute left-1 top-1 bottom-1 ${event.color} bg-opacity-50 rounded-3xl`}
+              ></motion.div>
+              <p className="z-10">
+                {new Date(event.start.startTime).toLocaleTimeString()}
+              </p>
+              <p className="z-10">
+                {new Date(event.end.endTime).toLocaleTimeString()}
+              </p>
+            </div>
+          </>
         )}
-        <p></p>
+        <div className="my-2 bg-white rounded-md shadow-md p-2 flex justify-between items-center">
+          {event.location ? (
+            <>
+              <div>
+                <MdLocationPin />
+                <p>{event.location}</p>
+              </div>
+              <div className="mr-5">
+                <FaExternalLinkAlt />
+              </div>
+            </>
+          ) : (
+            <p>No location provided</p>
+          )}
+        </div>
+        <div className="p-2 rounded-md shadow-md my-2 flex justify-between items-center bg-white">
+          {event.reminders.reminder ? (
+            <>
+              <div>
+                <IoIosAlarm />
+                <p>{new Date(event.reminders.when).toLocaleTimeString()}</p>
+              </div>
+              <div className="mr-5">
+                <BsFillTrashFill />
+              </div>
+            </>
+          ) : (
+            <p>No reminders set</p>
+          )}
+        </div>
+        <div className="bg-white rounded-md shadow-md p-2 my-2">
+          {event.repeats.repeat ? (
+            <div className="">
+              <FiRepeat />
+              <p>{event.repeats.howOften}</p>
+            </div>
+          ) : (
+            <div>
+              <p>No repeated events</p>
+            </div>
+          )}
+        </div>
+        {/*<div className="flex-1 bg-white rounded-md shadow-md my-2 h-full overflow-y-auto p-2"></div>*/}
         <div className="sticky top-[50%] right-2 left-2 py-2 flex justify-between items-center text-xl">
           {index > 0 ? (
             <BsFillArrowLeftCircleFill onClick={() => getPreviousEvent()} />
