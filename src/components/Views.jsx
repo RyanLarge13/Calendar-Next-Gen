@@ -11,7 +11,7 @@ import { MdViewAgenda } from "react-icons/md";
 import InteractiveContext from "../context/InteractiveContext";
 
 const Views = () => {
-  const { setView } = useContext(InteractiveContext);
+  const { setView, showLogin } = useContext(InteractiveContext);
 
   const [show, setShow] = useState(false);
 
@@ -19,7 +19,11 @@ const Views = () => {
     <>
       <div
         onClick={() => setShow((prev) => !prev)}
-        className="fixed cursor-pointer bottom-5 left-5 z-[100] p-3 rounded-full flex justify-center items-center bg-gradient-to-tr from-lime-200 to-yellow-100 shadow-md"
+        className={`fixed cursor-pointer bottom-5 left-5 ${
+          showLogin
+            ? "opacity-0 pointer-events-none"
+            : "opacity-100 pointer-events-auto"
+        } p-3 rounded-full flex justify-center items-center bg-gradient-to-tr from-lime-200 to-yellow-100 shadow-md`}
       >
         {show ? <BsXCircleFill /> : <BsColumnsGap />}
       </div>

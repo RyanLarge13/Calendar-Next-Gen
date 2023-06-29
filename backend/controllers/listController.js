@@ -37,7 +37,29 @@ export const addNewList = async (req, res) => {
   }
 };
 
-export const updateList = async (req, res) => {};
+export const updateList = async (req, res) => {
+  const lists = req.body.listUpdate;
+  const updateLists = async () => {
+    for (const update of lists) {
+      const { listId, listItems } = update;
+
+      await prisma.list.updateMany({
+        where: { id: listId },
+        data: { items: listItems },
+      });
+    }
+  };
+  updateLists()
+    .then(() => {
+      return res
+        .status(201)
+        .json({ message: "Successfuly updated all lists!" });
+    })
+    .catch((err) => {
+      console.log(err);
+      return res.status(401).json({ message: "Error updating your lists" });
+    });
+};
 
 export const deleteList = async (req, res) => {
   const listId = req.params.listId;

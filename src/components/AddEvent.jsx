@@ -119,7 +119,9 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
       postEvent(newEvent, localStorage.getItem("authToken"))
         .then((res) => {
           setEvents((prev) => [...prev, ...res.data.event]);
-          setReminders((prev) => [...prev, res.data.reminders]);
+          if (res.data.reminders) {
+            setReminders((prev) => [...prev, res.data.reminders]);
+          }
           setAddNewEvent(false);
           setType(null);
           setOpenModal(false);
