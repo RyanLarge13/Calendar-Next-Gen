@@ -17,10 +17,10 @@ const processNotifications = async (userId, res) => {
     for (const notification of notifications) {
       if (new Date(notification.time) <= new Date()) {
         res.write(`data: ${JSON.stringify(notification)}\n\n`);
-        const payload = {
+        const payload = JSON.stringify({
           title: notification.notifData.title,
           body: notification.notifData.notes,
-        };
+        });
         sendNotification(payload);
         notificationIdsToUpdate.push(notification.id);
       }
