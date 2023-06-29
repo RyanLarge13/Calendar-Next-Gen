@@ -6,12 +6,13 @@ const InteractiveContext = createContext({});
 export const InteractiveProvider = ({ children }) => {
   const [menu, setMenu] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
-const [showNotifs, setShowNotifs] = useState(false);
+  const [showNotifs, setShowNotifs] = useState(false);
   const [confirm, setConfirm] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [view, setView] = useState("month");
   const [addNewEvent, setAddNewEvent] = useState(false);
   const [type, setType] = useState(null);
+  const [listUpdate, setListUpdate] = useState([]);
 
   useEffect(() => {
     send();
@@ -66,8 +67,10 @@ const [showNotifs, setShowNotifs] = useState(false);
         view,
         addNewEvent,
         type,
-        showNotifs, 
-        setShowNotifs, 
+        showNotifs,
+        listUpdate,
+        setListUpdate,
+        setShowNotifs,
         setType,
         setAddNewEvent,
         setView,

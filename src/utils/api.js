@@ -205,11 +205,11 @@ export const createNewList = (token, username, newList) => {
   return res;
 };
 
-export const updateList = (token, listId, listTitle, data) => {
+export const updateList = (token, listUpdate) => {
   const res = Axios.patch(
-    `${devUrl}/update/list/${listTitle}`,
+    `${productionUrl}/update/lists`,
     {
-      data: { data, listId },
+      listUpdate,
     },
     {
       headers: {

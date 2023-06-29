@@ -11,16 +11,8 @@ import Notification from "./Notification";
 const LoginLogout = () => {
   const { showLogin, setShowLogin, notifications, showNotifs, setShowNotifs } =
     useContext(InteractiveContext);
-  const {
-    user,
-    setUser,
-    setGoogleToken,
-    loginLoading,
-    setLoginLoading,
-    setAuthToken,
-    setEvents,
-    events,
-  } = useContext(UserContext);
+  const { user, setUser, setGoogleToken, loginLoading, setAuthToken } =
+    useContext(UserContext);
 
   const [regularLogin, setRegularLogin] = useState(false);
   const [username, setUsername] = useState("");
@@ -114,7 +106,7 @@ const LoginLogout = () => {
               initial={{ y: "100%", opacity: 0 }}
               exit={{ y: "100%", opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              className="p-3 fixed bottom-0 left-0 right-0 rounded-md shadow-md bg-white z-[150]"
+              className="p-3 fixed bottom-0 left-0 right-0 rounded-md shadow-md bg-white z-10"
             >
               {user ? (
                 <div className="">

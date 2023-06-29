@@ -11,7 +11,7 @@ const listRouter = express.Router();
 
 listRouter.get("/:username/lists", auth, getLists);
 listRouter.post("/new/list/:username", auth, addNewList);
-listRouter.patch("/update/list/:title", auth, updateList);
+listRouter.patch("/update/lists", auth, updateList);
 listRouter.delete("/delete/list/:listId", auth, deleteList);
 
 export default listRouter;

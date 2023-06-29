@@ -13,10 +13,9 @@ import InteractiveContext from "../context/InteractiveContext";
 import DatesContext from "../context/DatesContext";
 
 export const AddCircle = () => {
-  const { addNewEvent, setAddNewEvent, setMenu, type, setType } =
+  const { setAddNewEvent, setMenu, type, setType, showLogin } =
     useContext(InteractiveContext);
-  const { openModal, setOpenModal, setString, string } =
-    useContext(DatesContext);
+  const { setOpenModal, setString, string } = useContext(DatesContext);
 
   const [show, setShow] = useState(false);
 
@@ -38,7 +37,11 @@ export const AddCircle = () => {
           type === null ? { bottom: 20, right: 20 } : { bottom: 80, left: 20 }
         }
         onClick={() => setShow((prev) => !prev)}
-        className="fixed w-[40px] h-[40px] z-[100] p-3 rounded-full cursor-pointer flex justify-center items-center bg-gradient-to-tr from-lime-200 to-yellow-100 shadow-md"
+        className={`fixed w-[40px] h-[40px] ${
+          showLogin
+            ? "opacity-0 pointer-events-none"
+            : "opacity-100 pointer-events-auto"
+        } p-3 rounded-full cursor-pointer flex justify-center items-center bg-gradient-to-tr from-lime-200 to-yellow-100 shadow-md`}
       >
         {show ? <BsXCircleFill /> : <BsFillCalendarPlusFill />}
       </motion.div>
@@ -47,7 +50,7 @@ export const AddCircle = () => {
         animate={
           show ? { x: -130, y: 5, scale: 1.25 } : { x: 0, y: 0, scale: 0 }
         }
-        className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] right-5 bottom-5 bg-gradient-to-r from-pink-300 to-violet-200 shadow-md`}
+        className={`p-3 text-xs cursor-pointer rounded-full fixed z-[100] right-5 bottom-5 bg-gradient-to-r from-pink-300 to-violet-200 shadow-md`}
       >
         <BsListTask />
       </motion.div>

@@ -108,7 +108,9 @@ const ModalHeader = ({ allDayEvents, event, setEvent }) => {
                 event.color === "bg-black" ? "text-white" : "text-black"
               }`}
             >
-              <p onClick={() => setEvent(event)}>{event.summary}</p>
+              <p onClick={() => setEvent(event)} className="cursor-pointer">
+                {event.summary}
+              </p>
             </motion.div>
           ))}
         </motion.div>

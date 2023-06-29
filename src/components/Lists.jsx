@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import ListItems from "./ListItems";
 import { deleteList } from "../utils/api";
 import { motion } from "framer-motion";
@@ -7,10 +7,12 @@ import {
   BsFillPenFill,
   BsFillShareFill,
 } from "react-icons/bs";
+import { BiListMinus, BiListPlus } from "react-icons/bi";
 import UserContext from "../context/UserContext";
 
 const Lists = ({ showLists }) => {
   const { lists, setLists } = useContext(UserContext);
+  const [addItems, setAddItems] = useState([]);
 
   const deleteEntireList = (listId) => {
     const token = localStorage.getItem("authToken");
@@ -45,12 +47,26 @@ const Lists = ({ showLists }) => {
           <div className="mb-2 bg-white rounded-md shadow-md p-3 flex justify-between items-center">
             <p>{list.title}</p>
             <div className="flex gap-x-3">
+              {!addItems.includes(list.id) ? (
+                <BiListPlus
+                  onClick={() => setAddItems((prev) => [...prev, list.id])}
+                  className="text-lg cursor-pointer"
+                />
+              ) : (
+                <BiListMinus
+                  onClick={() => {
+                    const newIds = addItems.filter((i) => i !== list.id);
+                    setAddItems(newIds);
+                  }}
+                  className="text-lg cursor-pointer"
+                />
+              )}
               <BsFillShareFill />
-              <BsFillPenFill />{" "}
+              <BsFillPenFill />
               <BsFillTrashFill onClick={() => deleteEntireList(list.id)} />
             </div>
           </div>
-          <ListItems items={list?.items} />
+          <ListItems addItems={addItems} listId={list.id} items={list?.items} />
         </div>
       ))}
     </motion.div>

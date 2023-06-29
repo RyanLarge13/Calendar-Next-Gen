@@ -1,10 +1,12 @@
 import { motion } from "framer-motion";
 import { calendarBlocks } from "../motion";
-import { holidays } from "../constants";
-import { useContext } from "react";
+import { holidays, weatherCodes } from "../constants";
+import { useContext, useEffect, useState } from "react";
 import DatesContext from "../context/DatesContext";
 import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
+import Axios from "axios";
+import { Sunny, Cloudy, Windy, Stormy, Rainy, Foggy } from "../assets";
 
 const MonthView = () => {
   const { events } = useContext(UserContext);
@@ -21,6 +23,45 @@ const MonthView = () => {
     setOpenModal,
     setString,
   } = useContext(DatesContext);
+
+  const [weatherData, setWeatherData] = useState([]);
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition((position) => {
+      const long = position.coords.longitude;
+      const lat = position.coords.latitude;
+      getInfo(long, lat);
+    });
+  }, []);
+
+  const getInfo = (long, lat) => {
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const dayOfWeek = new Date().getDay();
+    const start = dayOfWeek - 1;
+    const end = 7 + (dayOfWeek - 1);
+    Axios.get(
+      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${long}&daily=weathercode&temperature_unit=fahrenheit&past_days=${start}&forecast_days=${end}&timezone=${timeZone}`
+    )
+      .then((res) => {
+        const data = [
+          {
+            codes: res.data.daily.weathercode,
+            dates: res.data.daily.time,
+          },
+        ];
+        setWeatherData(data);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const getIcon = (weatherCode) => {
+    for (const aCode of weatherCodes) {
+      if (aCode.codes.includes(weatherCode)) {
+        return aCode.icon;
+      }
+    }
+    return null;
+  };
 
   const addEvent = (date) => {
     setMenu(false);
@@ -77,6 +118,37 @@ const MonthView = () => {
           >
             <p>{index >= paddingDays && index - paddingDays + 1}</p>
           </div>
+          {weatherData.length > 0 &&
+            weatherData[0].dates.map(
+              (time, i) =>
+                new Date(time).toLocaleDateString() ===
+                  `${month + 1}/${index - paddingDays + 1}/${year}` && (
+                  <motion.img
+                    key={time}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1, transition: { delay: 1 } }}
+                    src={
+                      getIcon(weatherData[0].codes[i]) === 0
+                        ? Sunny
+                        : getIcon(weatherData[0].codes[i]) === 1
+                        ? Cloudy
+                        : getIcon(weatherData[0].codes[i]) === 2
+                        ? Rainy
+                        : getIcon(weatherData[0].codes[i]) === 3
+                        ? Snowy
+                        : getIcon(weatherData[0].codes[i]) === 4
+                        ? Stormy
+                        : getIcon(weatherData[0].codes[i]) === 5
+                        ? Foggy
+                        : getIcon(weatherData[0].codes[i]) === 6
+                        ? Rainy
+                        : null
+                    }
+                    alt="icon"
+                    className="absolute top-0 left-0 rounded-md shadow-sm flex justify-center items-center w-[20px] h-[20px] bg-purple-200"
+                  />
+                )
+            )}
           <div className="w-full overflow-y-hidden absolute inset-0 pt-8">
             {[...events, ...holidays].map(
               (event) =>
