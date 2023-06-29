@@ -9,15 +9,15 @@ export default defineConfig({
     VitePWA({
       mode: "production",
       registerType: "autoUpdate",
-      strategies: "generateSW",
-      injectRegister: "auto",
+      strategies: "injectManifest",
+      injectRegister: false,
       includeAssets: [
         "favicon.svg",
         "ios/180.png",
         "android/android-launchericon-512-512.png",
         "robots.txt",
         "sw.js",
-        "registerSW.js",
+        "registerSw.js",
       ],
       manifest: {
         name: "Calendar Next Gen",
@@ -65,6 +65,7 @@ export default defineConfig({
         },
       ],
       workbox: {
+        injectRegister: false,
         clientsClaim: true,
         skipWaiting: true,
         globPatterns: ["**/*.{js,css,html,ico,png,svg}"],

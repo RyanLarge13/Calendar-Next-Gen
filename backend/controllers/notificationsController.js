@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import { sendNotification } from "../utils/notificationService.js";
 import cron from "node-cron";
+const prisma = new PrismaClient();
 
 const processNotifications = async (userId, res) => {
   console.log("Processing");
@@ -16,6 +17,11 @@ const processNotifications = async (userId, res) => {
     for (const notification of notifications) {
       if (new Date(notification.time) <= new Date()) {
         res.write(`data: ${JSON.stringify(notification)}\n\n`);
+        const payload = {
+          title: notification.notifData.title,
+          body: notification.notifData.notes,
+        };
+        sendNotification(payload);
         notificationIdsToUpdate.push(notification.id);
       }
     }
