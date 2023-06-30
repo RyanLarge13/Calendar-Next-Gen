@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import Event from "./Event";
 
-const DayView = ({ todaysEvents }) => {
+const DayView = ({ todaysEvents, todaysReminders }) => {
   const [event, setEvent] = useState(null);
   const [time, setTime] = useState(new Date().toLocaleTimeString());
   const [height, setheight] = useState(0);
@@ -62,23 +62,29 @@ const DayView = ({ todaysEvents }) => {
         <p className="text-center">No Events Today</p>
       )}
       <div className="mt-5">
-        {todaysEvents.map((event) => (
-          <div
-            key={event.id}
-            // style={{
-            //   height: `${calcDayEventHeight(
-            //     new Date(event.start.startTime),
-            //     new Date(event.end.endTime)
-            //   )}px`,
-            //   top: fromTop(new Date(event.start.startTime)),
-            // }}
-            onClick={() => setEvent(event)}
-            className={`${event.color} bg-opacity-70 p-5 rounded-md shadow-md my-5`}
-          >
-            <p className="font-bold">{event.summary}</p>
-            <p className="mr-5 text-sm">{event.description}</p>
-          </div>
-        ))}
+        {[...todaysEvents, ...todaysReminders].map((item) => {
+         return item.hasOwnProperty("description") ? (
+            <div
+              key={item.id}
+              // style={{
+              //   height: `${calcDayEventHeight(
+              //     new Date(event.start.startTime),
+              //     new Date(event.end.endTime)
+              //   )}px`,
+              //   top: fromTop(new Date(event.start.startTime)),
+              // }}
+              onClick={() => setEvent(item)}
+              className={`${item.color} bg-opacity-70 p-5 rounded-md shadow-md my-5`}
+            >
+              <p className="font-bold">{item.summary}</p>
+              <p className="mr-5 text-sm">{item.description}</p>
+            </div>
+          ) : (
+            <div key={item.id}>
+              <p>{item.title}</p>
+            </div>
+          );
+        })}
       </div>
       {event && (
         <Event event={event} setEvent={setEvent} dayEvents={todaysEvents} />

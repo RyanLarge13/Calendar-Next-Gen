@@ -19,7 +19,7 @@ const Views = () => {
     <>
       <div
         onClick={() => setShow((prev) => !prev)}
-        className={`fixed cursor-pointer bottom-5 left-5 ${
+        className={`fixed cursor-pointer bottom-5 left-5 z-[700] ${
           showLogin
             ? "opacity-0 pointer-events-none"
             : "opacity-100 pointer-events-auto"

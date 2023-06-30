@@ -145,7 +145,7 @@ const MonthView = () => {
                         : null
                     }
                     alt="icon"
-                    className="absolute top-0 left-0 rounded-md shadow-sm flex justify-center items-center w-[20px] h-[20px] bg-purple-200"
+                    className="absolute top-0 left-0 rounded-md shadow-sm flex justify-center items-center w-[15px] h-[15px] bg-purple-200"
                   />
                 )
             )}

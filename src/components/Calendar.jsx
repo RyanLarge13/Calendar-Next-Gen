@@ -11,7 +11,7 @@ import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext";
 
 const Calendar = () => {
-  const { events, holidays, weekDays } = useContext(UserContext);
+  const { events, holidays, reminders, weekDays } = useContext(UserContext);
   const { menu, view } = useContext(InteractiveContext);
   const {
     setStart,
@@ -25,6 +25,7 @@ const Calendar = () => {
   } = useContext(DatesContext);
 
   const [todaysEvents, setTodaysEvents] = useState([]);
+  const [todaysReminders, setTodaysReminder] = useState([]);
 
   useEffect(() => {
     const eventsToday = [...events, ...holidays].filter(
@@ -32,6 +33,12 @@ const Calendar = () => {
         new Date(item.date).toLocaleDateString() === theDay.toLocaleDateString()
     );
     setTodaysEvents(eventsToday);
+    const remindersToday = reminders.filter(
+      (reminder) =>
+        new Date(reminder.time).toLocaleDateString() ===
+        theDay.toLocaleDateString()
+    );
+    setTodaysReminder(remindersToday);
   }, [theDay, events]);
 
   return (
@@ -82,7 +89,12 @@ const Calendar = () => {
                 }`}
               >
                 {view === "month" && <MonthView />}
-                {view === "day" && <DayView todaysEvents={todaysEvents} />}
+                {view === "day" && (
+                  <DayView
+                    todaysEvents={todaysEvents}
+                    todaysReminders={todaysReminders}
+                  />
+                )}
               </motion.div>
             </div>
           ) : (

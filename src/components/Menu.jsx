@@ -2,6 +2,8 @@ import { useState, useContext, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { RiArrowUpDownFill } from "react-icons/ri";
 import { AiOutlinePlus } from "react-icons/ai";
+import {BsListCheck} from "react-icons/bs"
+import { IoIosAlarm } from "react-icons/io";
 import Reminders from "./Reminders.jsx";
 import Lists from "./Lists.jsx";
 import InteractiveContext from "../context/InteractiveContext";
@@ -52,10 +54,11 @@ const Menu = () => {
           initial={{ y: "110%", opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: "110%", opacity: 0 }}
-          className="fixed inset-0 top-20 rounded-md bg-white shadow-md shadow-purple-200 overflow-y-auto"
+          className="fixed inset-0 bottom-[-20px] pt-20 pb-10 rounded-md bg-white shadow-md shadow-purple-200 overflow-y-auto"
           style={{ fontSize: 12 }}
         >
           <div className="bg-gradient-to-tr from-purple-200 to-fucsia-100 p-2 rounded-t-md shadow-md flex justify-between items-center">
+            <IoIosAlarm className="text-lg" />
             <div className="flex">
               <RiArrowUpDownFill
                 onClick={() => setShowReminders((prev) => !prev)}
@@ -70,21 +73,30 @@ const Menu = () => {
                   setAddNewEvent(true);
                   setType("reminder");
                 }}
-                className="font-bold text-lg cursor-pointer mr-5"
+                className="font-bold text-lg cursor-pointer"
               />
             </div>
-            <p>Reminders</p>
           </div>
           <Reminders showReminders={showReminders} />
-          <div
-            onClick={() => setShowLists((prev) => !prev)}
-            className="bg-gradient-to-tr from-purple-200 to-fucsia-100 p-2 rounded-t-md shadow-md flex justify-between items-center"
-          >
+          <div className="bg-gradient-to-tr from-purple-200 to-fucsia-100 p-2 rounded-t-md shadow-md flex justify-between items-center">
+            <BsListCheck className="text-lg" />
             <div className="flex">
-              <RiArrowUpDownFill />
-              <AiOutlinePlus />
+              <RiArrowUpDownFill
+                className="font-bold text-lg cursor-pointer mr-3"
+                onClick={() => setShowLists((prev) => !prev)}
+              />
+              <AiOutlinePlus
+                className="font-bold text-lg cursor-pointer"
+                onClick={() => {
+                  if (!string) {
+                    setString(new Date().toLocaleDateString());
+                  }
+                  setOpenModal(true);
+                  setAddNewEvent(true);
+                  setType("todo-list");
+                }}
+              />
             </div>
-            <p>Todo Lists</p>
           </div>
           <Lists showLists={showLists} />
           <div
