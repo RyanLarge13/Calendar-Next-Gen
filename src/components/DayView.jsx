@@ -6,10 +6,19 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
   const [event, setEvent] = useState(null);
   const [time, setTime] = useState(new Date().toLocaleTimeString());
   const [height, setheight] = useState(0);
+  const [combinedArray, setCombinedArray] = useState([]);
   const dayViewContainer = useRef(null);
   let interval;
 
   useEffect(() => {
+    const combined = [...todaysEvents, ...todaysReminders];
+    combined.sort((a, b) => {
+      const dateA = new Date((a.start && a.start.startTime) || a.time);
+      const dateB = new Date((b.start && b.start.startTime) || b.time);
+
+      return dateA - dateB;
+    });
+    setCombinedArray(combined);
     getTime();
     return () => clearInterval(interval);
   }, []);
@@ -62,29 +71,25 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
         <p className="text-center">No Events Today</p>
       )}
       <div className="mt-5">
-        {[...todaysEvents, ...todaysReminders].map((item) => {
-         return item.hasOwnProperty("description") ? (
-            <div
-              key={item.id}
-              // style={{
-              //   height: `${calcDayEventHeight(
-              //     new Date(event.start.startTime),
-              //     new Date(event.end.endTime)
-              //   )}px`,
-              //   top: fromTop(new Date(event.start.startTime)),
-              // }}
-              onClick={() => setEvent(item)}
-              className={`${item.color} bg-opacity-70 p-5 rounded-md shadow-md my-5`}
-            >
-              <p className="font-bold">{item.summary}</p>
-              <p className="mr-5 text-sm">{item.description}</p>
-            </div>
-          ) : (
-            <div key={item.id}>
-              <p>{item.title}</p>
-            </div>
-          );
-        })}
+        {combinedArray.map((item) => (
+          <div
+            key={item.id}
+            // style={{
+            //   height: `${calcDayEventHeight(
+            //     new Date(event.start.startTime),
+            //     new Date(event.end.endTime)
+            //   )}px`,
+            //   top: fromTop(new Date(event.start.startTime)),
+            // }}
+            // onClick={() => setEvent(item)}
+            className={`${
+              item.color || "bg-slate-200"
+            } bg-opacity-70 p-5 rounded-md shadow-md my-5`}
+          >
+            <p className="font-bold">{item.summary || item.title}</p>
+            <p className="mr-5 text-sm">{item.description || item.notes}</p>
+          </div>
+        ))}
       </div>
       {event && (
         <Event event={event} setEvent={setEvent} dayEvents={todaysEvents} />
