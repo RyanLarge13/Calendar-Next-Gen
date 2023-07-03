@@ -34,6 +34,23 @@ const MonthView = () => {
     });
   }, []);
 
+  const getCellStyle = (index) => {
+    const currentDate = new Date();
+    const targetDate = new Date(dateString);
+    const isSameMonthAndYear =
+      targetDate.getMonth() === currentDate.getMonth() &&
+      targetDate.getFullYear() === currentDate.getFullYear();
+    if (
+      (isSameMonthAndYear &&
+        (rowDays.includes(index) || columnDays.includes(index))) ||
+      !isSameMonthAndYear
+    ) {
+      return { backgroundColor: "rgba(0, 0, 0, 0.1)" };
+    } else {
+      return { backgroundColor: "#fff" };
+    }
+  };
+
   const getInfo = (long, lat) => {
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const dayOfWeek = new Date().getDay();
@@ -80,27 +97,7 @@ const MonthView = () => {
             addEvent(`${month + 1}/${index - paddingDays + 1}/${year}`)
           }
           key={index}
-          style={
-            new Date(dateString).getMonth() === new Date().getMonth() &&
-            new Date(dateString).getYear() === new Date().getYear()
-              ? index === rowDays[0] ||
-                index === rowDays[1] ||
-                index === rowDays[2] ||
-                index === rowDays[3] ||
-                index === rowDays[4] ||
-                index === rowDays[5] ||
-                index === rowDays[6] ||
-                index === columnDays[0] ||
-                index === columnDays[1] ||
-                index === columnDays[2] ||
-                index === columnDays[3] ||
-                index === columnDays[4] ||
-                index === columnDays[5] ||
-                index === columnDays[6]
-                ? { backgroundColor: "rgba(0,0,0,0.1)" }
-                : { backgroundColor: "#fff" }
-              : { backgroundColor: "#fff" }
-          }
+          style={getCellStyle(index)}
           className={`relative w-full min-h-[12vh] max-h-[15vh] rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start gap-y-1 overflow-hidden cursor-pointer ${
             index - paddingDays + 1 === day &&
             month === new Date().getMonth() &&

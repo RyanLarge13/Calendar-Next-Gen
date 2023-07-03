@@ -27,6 +27,7 @@ export const DatesProvider = ({ children }) => {
   const [theDay, setTheDay] = useState(new Date());
   const [rowDays, setRowDays] = useState([]);
   const [columnDays, setColumnDays] = useState([]);
+  const [currentWeek, setCurrentWeek] = useState([]);
 
   useEffect(() => {
     setLoading(true);
@@ -93,7 +94,7 @@ export const DatesProvider = ({ children }) => {
     }
     let column = new Date().getDay();
     let columnDays = [];
-    for (let i = column; i < 36; i++) {
+    for (let i = column; i < 40; i++) {
       if (
         i === column ||
         i === column + 7 ||
@@ -109,6 +110,21 @@ export const DatesProvider = ({ children }) => {
     setRowDays(rowDays);
   }, [dateString, paddingDays]);
 
+  useEffect(() => {
+    const today = new Date();
+    const currentDay = today.getDay();
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - currentDay);
+
+    const week = [];
+    for (let i = 0; i < 7; i++) {
+      const day = new Date(startOfWeek);
+      day.setDate(startOfWeek.getDate() + i);
+      week.push(day);
+    }
+    setCurrentWeek(week);
+  }, []);
+
   return (
     <DatesContext.Provider
       value={{
@@ -123,6 +139,8 @@ export const DatesProvider = ({ children }) => {
         openModal,
         diff,
         theDay,
+        currentWeek,
+        setCurrentWeek,
         setTheDay,
         setNav,
         setOpenModal,

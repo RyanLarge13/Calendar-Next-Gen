@@ -1,13 +1,11 @@
 import { useState, useEffect, useRef, useContext } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaCalendarPlus } from "react-icons/fa";
 import { staticTimes } from "../constants";
 import DatesContext from "../context/DatesContext";
 import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
 import DayEvent from "./DayEvent";
 import AddEvent from "./AddEvent";
-import Event from "./Event";
 import ModalHeader from "./ModalHeader";
 import AddReminder from "./AddReminder";
 import AddList from "./AddList";
@@ -15,9 +13,9 @@ import AddKanban from "./AddKanban";
 import AddTask from "./AddTask";
 
 const Modal = () => {
-  const { events, holidays, reminders } = useContext(UserContext);
+  const { events, holidays } = useContext(UserContext);
   const { string, setOpenModal, openModal } = useContext(DatesContext);
-  const { addNewEvent, setAddNewEvent, type, setType, event, setEvent} =
+  const { addNewEvent, setAddNewEvent, type, setType, event, setEvent } =
     useContext(InteractiveContext);
 
   const [dayEvents, setDayEvents] = useState([]);
@@ -128,10 +126,8 @@ const Modal = () => {
                   ))}
                 </div>
                 <div className="w-full">
-                  {dayEvents.map((event, index) => (
-                    <DayEvent
-                      key={event.id}
-                    />
+                  {dayEvents.map((event) => (
+                    <DayEvent dayEvent={event} />
                   ))}
                 </div>
               </div>

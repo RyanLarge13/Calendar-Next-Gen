@@ -1,13 +1,13 @@
 import { useState, useEffect, useContext } from "react";
 import { motion, useDragControls } from "framer-motion";
-import InteractiveContext from "../context/InteractiveContext"
+import InteractiveContext from "../context/InteractiveContext";
 import { MdEventAvailable, MdEventNote, MdEventRepeat } from "react-icons/md";
 import { MdLocationPin } from "react-icons/md";
 import { FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";
 
-const DayEvent = () => {
-	const {event, setEvent} =useContext(InteractiveContext)
+const DayEvent = ({ dayEvent }) => {
+  const { setEvent } = useContext(InteractiveContext);
   const [margin, setMargin] = useState(0);
   const [height, setHeight] = useState(0);
   const [z, setZ] = useState(0);
@@ -16,18 +16,18 @@ const DayEvent = () => {
   const dragControls = useDragControls();
 
   useEffect(() => {
-    const hour = new Date(event.start.startTime).getHours();
+    const hour = new Date(dayEvent.start.startTime).getHours();
     setZ(hour);
-    if (event.start.startTime) {
-      const startHours = new Date(event.start.startTime).getHours() * 237;
-      const startMinutes = new Date(event.start.startTime).getMinutes();
+    if (dayEvent.start.startTime) {
+      const startHours = new Date(dayEvent.start.startTime).getHours() * 237;
+      const startMinutes = new Date(dayEvent.start.startTime).getMinutes();
       setMargin(() => startHours + 118.5 + (startMinutes === 30 ? 118.5 : 0));
     }
-    if (event.end.endTime) {
-      const startHours = new Date(event.start.startTime).getHours() * 237;
-      const startMinutes = new Date(event.start.startTime).getMinutes();
-      const endHours = new Date(event.end.endTime).getHours() * 237;
-      const endMinutes = new Date(event.end.endTime).getMinutes();
+    if (dayEvent.end.endTime) {
+      const startHours = new Date(dayEvent.start.startTime).getHours() * 237;
+      const startMinutes = new Date(dayEvent.start.startTime).getMinutes();
+      const endHours = new Date(dayEvent.end.endTime).getHours() * 237;
+      const endMinutes = new Date(dayEvent.end.endTime).getMinutes();
       const startHeight =
         startHours + 118.5 + (startMinutes === 30 ? 118.5 : 0);
       const endHeight = endHours + 118.5 + (endMinutes === 30 ? 118.5 : 0);
@@ -58,7 +58,7 @@ const DayEvent = () => {
 
   return (
     <motion.div
-      key={event.id}
+      key={dayEvent.id}
       drag="y"
       dragSnapToOrigin={false}
       dragMomentum={false}
@@ -69,9 +69,9 @@ const DayEvent = () => {
       whileInView={{ opacity: 1 }}
       style={{ top: `${margin}px`, height: height, minHeight: 50, zIndex: z }}
       className={`p-3 rounded-md shadow-md w-[70%] duration-200 absolute ${
-        event.color
+        dayEvent.color
       } ${
-        event.color === "bg-black" ? "text-white" : "text-black"
+        dayEvent.color === "bg-black" ? "text-white" : "text-black"
       } bg-opacity-10 hover:z-[998] hover:bg-opacity-50 right-0`}
     >
       <div
@@ -79,20 +79,23 @@ const DayEvent = () => {
         style={{
           touchAction: "none",
         }}
-        className={`${event.color} px-3 py-1 rounded-md font-extrabold mb-5 shadow-sm justify-between flex items-start`}
+        className={`${dayEvent.color} px-3 py-1 rounded-md font-extrabold mb-5 shadow-sm justify-between flex items-start`}
       >
-        <h3 onClick={() => setEvent(event)} className="text-sm cursor-pointer">
-          {event.summary}
+        <h3
+          onClick={() => setEvent(dayEvent)}
+          className="text-sm cursor-pointer"
+        >
+          {dayEvent.summary}
         </h3>
         <div className="flex">
           <p>
-            {(event.kind === "Event" && <MdEventNote />) ||
-              (event.kind === "Reminder" && <MdEventAvailable />) ||
-              (event.kind === "Repeat" && <MdEventRepeat />)}
+            {(dayEvent.kind === "Event" && <MdEventNote />) ||
+              (dayEvent.kind === "Reminder" && <MdEventAvailable />) ||
+              (dayEvent.kind === "Repeat" && <MdEventRepeat />)}
           </p>
-          <p>{event.repeats.repeat && <FiRepeat />}</p>
-          <p>{event.reminders.reminder && <IoIosAlarm />}</p>
-          <p>{event.location && <MdLocationPin />}</p>
+          <p>{dayEvent.repeats.repeat && <FiRepeat />}</p>
+          <p>{dayEvent.reminders.reminder && <IoIosAlarm />}</p>
+          <p>{dayEvent.location && <MdLocationPin />}</p>
         </div>
       </div>
     </motion.div>
