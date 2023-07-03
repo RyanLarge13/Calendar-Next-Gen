@@ -12,7 +12,7 @@ import UserContext from "../context/UserContext";
 
 const Calendar = () => {
   const { events, holidays, reminders, weekDays } = useContext(UserContext);
-  const { menu, view } = useContext(InteractiveContext);
+  const { menu, view, event, setEvent } = useContext(InteractiveContext);
   const {
     setStart,
     moveCalendar,
@@ -111,6 +111,7 @@ const Calendar = () => {
         </section>
         <Modal />
         <Menu />
+        {event && <Event dayEvents={todaysEvents} />} 
       </section>
     </main>
   );

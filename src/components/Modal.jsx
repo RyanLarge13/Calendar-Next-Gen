@@ -17,11 +17,10 @@ import AddTask from "./AddTask";
 const Modal = () => {
   const { events, holidays, reminders } = useContext(UserContext);
   const { string, setOpenModal, openModal } = useContext(DatesContext);
-  const { addNewEvent, setAddNewEvent, type, setType } =
+  const { addNewEvent, setAddNewEvent, type, setType, event, setEvent} =
     useContext(InteractiveContext);
 
   const [dayEvents, setDayEvents] = useState([]);
-  const [event, setEvent] = useState(null);
   const [allDayEvents, setAllDayEvents] = useState([]);
   const [addEventWithStartTime, setAddEventWithStartTime] = useState(null);
   const modalRef = useRef(0);
@@ -132,15 +131,10 @@ const Modal = () => {
                   {dayEvents.map((event, index) => (
                     <DayEvent
                       key={event.id}
-                      event={event}
-                      setEvent={setEvent}
                     />
                   ))}
                 </div>
               </div>
-            )}
-            {event && !addNewEvent && (
-              <Event event={event} setEvent={setEvent} dayEvents={dayEvents} />
             )}
           </motion.div>
         </>

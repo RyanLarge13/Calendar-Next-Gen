@@ -1,11 +1,13 @@
+import { useState, useEffect, useContext } from "react";
 import { motion, useDragControls } from "framer-motion";
+import InteractiveContext from "../context/InteractiveContext"
 import { MdEventAvailable, MdEventNote, MdEventRepeat } from "react-icons/md";
 import { MdLocationPin } from "react-icons/md";
 import { FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";
-import { useState, useEffect } from "react";
 
-const DayEvent = ({ event, setEvent }) => {
+const DayEvent = () => {
+	const {event, setEvent} =useContext(InteractiveContext)
   const [margin, setMargin] = useState(0);
   const [height, setHeight] = useState(0);
   const [z, setZ] = useState(0);
