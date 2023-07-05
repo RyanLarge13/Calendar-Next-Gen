@@ -10,6 +10,7 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
   const [height, setheight] = useState(0);
   const [combinedArray, setCombinedArray] = useState([]);
   const dayViewContainer = useRef(null);
+  const [times, setTimes] = useState([]);
   let interval;
 
   useEffect(() => {
@@ -71,6 +72,14 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
     }
   };
 
+  const checkToSetTime = (e, index) => {
+    const end = e.clientX;
+    if (end > window.innerWidth / 2) {
+      // if (times.includes(time)) return;
+      setTimes(index);
+    }
+  };
+
   return (
     <div className="py-20">
       <div ref={dayViewContainer} className="text-sm min-h-[400vh] relative">
@@ -90,14 +99,18 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
         )}
         <div>
           <div className="">
-            {staticTimes.map((time, index) => (
+            {staticTimes.map((staticTime, index) => (
               <motion.div
+                drag="x"
+                dragConstraints={{ left: 0 }}
+                dragSnapToOrigin={true}
+                // onDragEnd={(e) => checkToSetTime(e, index)}
                 whileTap={{ backgroundColor: "#ddd" }}
                 key={index}
                 style={{ height: `${getHeight()}px` }}
                 className={`${index === 0 ? "border-b border-t" : "border-b"}`}
               >
-                <p className="text-[11px]">{time.string}</p>
+                <p className="text-[11px]">{staticTime.string}</p>
               </motion.div>
             ))}
           </div>

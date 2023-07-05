@@ -374,7 +374,7 @@ export const holidays = [
     time: false,
   },
   {
-    kimd: "event",
+    kind: "Event",
     color: "bg-orange-300",
     date: "6/18/2023",
     summary: "Fathers Day!!",
@@ -398,12 +398,27 @@ export const holidays = [
     time: false,
   },
   {
+    kind: "Event",
     color: "bg-blue-300",
     date: "7/4/2023",
     summary: "Independance Day!!",
+    description: "Happy 4th of July!", 
     id: 14,
-    reminders: false,
-    repeat: false,
+       reminders: {
+      reminder: false,
+    },
+    repeats: {
+      repeat: false,
+      howOften: "yearly",
+      nextDate: "5/29/2024",
+    },
+    start: {
+      startTime: null,
+    },
+    end: {
+      endTime: null,
+    },
+    location: "",
     time: false,
   },
   {
