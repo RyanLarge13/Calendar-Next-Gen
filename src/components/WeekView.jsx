@@ -38,7 +38,7 @@ const WeekView = () => {
         const componentWidth = (duration / (24 * 60 * 60 * 1000)) * width;
         return componentWidth;
       }
-      return 0
+      return 0;
     }
   };
 
@@ -82,6 +82,7 @@ const WeekView = () => {
                 ))}
                 {eventsForDay(date).map((weekDayEvent) => (
                   <div
+                    key={weekDayEvent.id}
                     style={{
                       width: `${calcDayEventWidth(
                         new Date(weekDayEvent.start.startTime),
@@ -89,7 +90,7 @@ const WeekView = () => {
                       )}px`,
                       left: fromLeft(new Date(weekDayEvent.start.startTime)),
                     }}
-                    className={`absolute top-5 bottom-2 rounded-sm shadow-sm ${weekDayEvent.color}`}
+                    className={`absolute top-5 bottom-2 rounded-md shadow-md p-2 ${weekDayEvent.color}`}
                   >
                     <p>{weekDayEvent.description}</p>
                   </div>
