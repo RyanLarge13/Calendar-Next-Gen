@@ -3,38 +3,24 @@ import { motion } from "framer-motion";
 import { staticTimes } from "../constants.js";
 import UserContext from "../context/UserContext";
 import DatesContext from "../context/DatesContext";
+import InteractiveContext from "../context/InteractiveContext";
 
 const WeekView = () => {
   const { events, holidays } = useContext(UserContext);
+  const { setEvent } = useContext(InteractiveContext);
   const { currentWeek, setCurrentWeek } = useContext(DatesContext);
   const currentWeekday = new Date().getDay();
-  const [timeWidth, setTimeWidth] = useState(0);
   const [weeklyEvents, setWeeklyEvents] = useState([]);
   const containerWidth = useRef(null);
 
   useEffect(() => {
-    const matchingEvents = events.filter((item) =>
-      currentWeek.includes(new Date(item.date).toLocaleDateString())
+    const matchingEvents = currentWeek.map((weekDay) =>
+      [...events, ...holidays].filter(
+        (e) => e.date === weekDay.toLocaleDateString()
+      )
     );
     setWeeklyEvents(matchingEvents);
   }, [currentWeek]);
-
-  const getElemWidth = () => {
-    if (containerWidth.current) {
-      const widthOfContainer =
-        containerWidth.current.clientWidth / staticTimes.length;
-      return widthOfContainer;
-    }
-    return 600;
-  };
-
-  const eventsForDay = (date) => {
-    const dayEvents = events.filter(
-      (item) =>
-        new Date(item.date).toLocaleDateString() === date.toLocaleDateString()
-    );
-    return dayEvents;
-  };
 
   const calcDayEventWidth = (start, end) => {
     if (!start || !end) {
@@ -67,8 +53,10 @@ const WeekView = () => {
       {currentWeek.map((date, index) => (
         <div key={index} className="w-full border-r border-l rounded-t-lg">
           <p
-            className={`rounded-full shadow-md p-2 text-[14px] ${
-              date.getDay() === currentWeekday ? "bg-teal-300" : "bg-teal-100"
+            className={`rounded-full shadow-md p-2 text-[14px] mb-1 ${
+              date.getDay() === currentWeekday
+                ? "bg-purple-300"
+                : "bg-purple-100"
             }`}
           >
             {date.toLocaleDateString("en-US", { weekday: "long" })} -{" "}
@@ -87,38 +75,22 @@ const WeekView = () => {
                   </motion.div>
                 ))}
                 {weeklyEvents.length > 0 &&
-                  weeklyEvents.map(
-                    (weekDayEvent) => new Date(weekDayEvent.date).toLocaleDateString () === date.toLocaleDateString()
-                  ) && (
+                  weeklyEvents[index].map((weekEvent) => (
                     <div
-                      key={weekDayEvent.id}
+                      key={weekEvent.id}
                       style={{
                         width: `${calcDayEventWidth(
-                          new Date(weekDayEvent.start.startTime),
-                          new Date(weekDayEvent.end.endTime)
+                          new Date(weekEvent.start.startTime),
+                          new Date(weekEvent.end.endTime)
                         )}px`,
-                        left: fromLeft(new Date(weekDayEvent.start.startTime)),
+                        left: fromLeft(new Date(weekEvent.start.startTime)),
                       }}
-                      className={`absolute top-5 bottom-2 rounded-md shadow-md p-2 ${weekDayEvent.color}`}
+                      className={`absolute top-5 bottom-2 rounded-md shadow-md p-2 ${weekEvent.color}`}
+                      onClick={() => setEvent(weekEvent)}
                     >
-                      <p>{weekDayEvent.description}</p>
+                      <p>{weekEvent.summary}</p>
                     </div>
-                  )}
-                {/*{eventsForDay(date).map((weekDayEvent) => (
-                  <div
-                    key={weekDayEvent.id}
-                    style={{
-                      width: `${calcDayEventWidth(
-                        new Date(weekDayEvent.start.startTime),
-                        new Date(weekDayEvent.end.endTime)
-                      )}px`,
-                      left: fromLeft(new Date(weekDayEvent.start.startTime)),
-                    }}
-                    className={`absolute top-5 bottom-2 rounded-md shadow-md p-2 ${weekDayEvent.color}`}
-                  >
-                    <p>{weekDayEvent.description}</p>
-                  </div>
-                ))}*/}
+                  ))}
               </div>
             </div>
           </div>

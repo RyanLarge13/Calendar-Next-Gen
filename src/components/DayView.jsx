@@ -76,7 +76,7 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
   const checkToSetTime = (e, staticString) => {
     const end = e.clientX;
     if (end > window.innerWidth / 2) {
-      setTimes(staticString);
+      setTimes((prev) => [...prev, staticString]);
     }
   };
 
@@ -104,7 +104,7 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
                 drag="x"
                 dragConstraints={{ left: 0 }}
                 dragSnapToOrigin={true}
-                // onDragEnd={(e) => checkToSetTime(e, staticTime.string)}
+                onDragEnd={(e) => checkToSetTime(e, staticTime.string)}
                 whileTap={{ backgroundColor: "#ddd" }}
                 key={index}
                 style={{
