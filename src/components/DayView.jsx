@@ -53,6 +53,7 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
   };
 
   const getTime = () => {
+    if (todaysEvents.length < 1) return;
     interval = setInterval(() => {
       const now = new Date();
       const percentageOfDay =
@@ -74,10 +75,7 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
 
   const checkToSetTime = (e, staticString) => {
     const end = e.clientX;
-    console.log(staticString);
     if (end > window.innerWidth / 2) {
-      console.log("I am here");
-      // if (times.includes(time)) return;
       setTimes(staticString);
     }
   };
@@ -106,10 +104,12 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
                 drag="x"
                 dragConstraints={{ left: 0 }}
                 dragSnapToOrigin={true}
-                onDragEnd={(e) => checkToSetTime(e, staticTime.string)}
+                // onDragEnd={(e) => checkToSetTime(e, staticTime.string)}
                 whileTap={{ backgroundColor: "#ddd" }}
                 key={index}
-                style={{ height: `${getHeight()}px` }}
+                style={{
+                  height: `${getHeight()}px`,
+                }}
                 className={`${index === 0 ? "border-b border-t" : "border-b"}`}
               >
                 <p className="text-[11px]">{staticTime.string}</p>

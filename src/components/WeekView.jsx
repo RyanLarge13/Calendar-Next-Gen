@@ -9,7 +9,15 @@ const WeekView = () => {
   const { currentWeek, setCurrentWeek } = useContext(DatesContext);
   const currentWeekday = new Date().getDay();
   const [timeWidth, setTimeWidth] = useState(0);
+  const [weeklyEvents, setWeeklyEvents] = useState([]);
   const containerWidth = useRef(null);
+
+  useEffect(() => {
+    const matchingEvents = events.filter((item) =>
+      currentWeek.includes(new Date(item.date).toLocaleDateString())
+    );
+    setWeeklyEvents(matchingEvents);
+  }, [currentWeek]);
 
   const getElemWidth = () => {
     if (containerWidth.current) {
@@ -38,7 +46,6 @@ const WeekView = () => {
         const componentWidth = (duration / (24 * 60 * 60 * 1000)) * width;
         return componentWidth;
       }
-      return 0;
     }
   };
 
@@ -53,7 +60,6 @@ const WeekView = () => {
       const result = (percentage * width) / 100;
       return result;
     }
-    return 0;
   };
 
   return (
@@ -80,7 +86,25 @@ const WeekView = () => {
                     <p>{time.string}</p>
                   </motion.div>
                 ))}
-                {eventsForDay(date).map((weekDayEvent) => (
+                {weeklyEvents.length > 0 &&
+                  weeklyEvents.map(
+                    (weekDayEvent) => new Date(weekDayEvent.date).toLocaleDateString () === date.toLocaleDateString()
+                  ) && (
+                    <div
+                      key={weekDayEvent.id}
+                      style={{
+                        width: `${calcDayEventWidth(
+                          new Date(weekDayEvent.start.startTime),
+                          new Date(weekDayEvent.end.endTime)
+                        )}px`,
+                        left: fromLeft(new Date(weekDayEvent.start.startTime)),
+                      }}
+                      className={`absolute top-5 bottom-2 rounded-md shadow-md p-2 ${weekDayEvent.color}`}
+                    >
+                      <p>{weekDayEvent.description}</p>
+                    </div>
+                  )}
+                {/*{eventsForDay(date).map((weekDayEvent) => (
                   <div
                     key={weekDayEvent.id}
                     style={{
@@ -94,7 +118,7 @@ const WeekView = () => {
                   >
                     <p>{weekDayEvent.description}</p>
                   </div>
-                ))}
+                ))}*/}
               </div>
             </div>
           </div>
