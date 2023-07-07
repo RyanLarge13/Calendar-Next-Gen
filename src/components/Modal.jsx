@@ -127,7 +127,7 @@ const Modal = () => {
                 </div>
                 <div className="w-full">
                   {dayEvents.map((event) => (
-                    <DayEvent dayEvent={event} />
+                    <DayEvent key={event.id} dayEvent={event} />
                   ))}
                 </div>
               </div>

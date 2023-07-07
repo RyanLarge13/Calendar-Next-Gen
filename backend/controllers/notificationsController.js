@@ -9,7 +9,7 @@ const processNotifications = async (userId, res) => {
     const notifications = await prisma.notification.findMany({
       where: {
         sentNotification: false,
-        userId,
+        userId: userId,
       },
       take: 25,
     });

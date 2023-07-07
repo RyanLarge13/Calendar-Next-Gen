@@ -4,6 +4,8 @@ import { staticTimes } from "../constants.js";
 import UserContext from "../context/UserContext";
 import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
+import { AiOutlinePlusCircle } from "react-icons/ai";
+import { BsFillCalendarDayFill } from "react-icons/bs";
 
 const WeekView = () => {
   const { events, holidays } = useContext(UserContext);
@@ -51,17 +53,23 @@ const WeekView = () => {
   return (
     <section className="relative flex flex-col justify-between items-start">
       {currentWeek.map((date, index) => (
-        <div key={index} className="w-full border-r border-l rounded-t-lg">
-          <p
-            className={`rounded-full shadow-md p-2 text-[14px] mb-1 ${
+        <div key={index} className={`w-full border-r border-l rounded-t-lg`}>
+          <div
+            className={`w-full flex justify-between items-center rounded-full shadow-md p-2 text-[14px] mb-1 ${
               date.getDay() === currentWeekday
                 ? "bg-purple-300"
                 : "bg-purple-100"
             }`}
           >
-            {date.toLocaleDateString("en-US", { weekday: "long" })} -{" "}
-            {date.toLocaleDateString()}
-          </p>
+            <p>
+              {date.toLocaleDateString("en-US", { weekday: "long" })} -{" "}
+              {date.toLocaleDateString()}
+            </p>
+            <div className="flex gap-x-3">
+              <BsFillCalendarDayFill />
+              <AiOutlinePlusCircle />
+            </div>
+          </div>
           <div>
             <div className="overflow-x-auto">
               <div ref={containerWidth} className="flex relative w-[800vw]">
