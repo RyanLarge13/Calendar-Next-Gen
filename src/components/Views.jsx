@@ -19,7 +19,7 @@ const Views = () => {
     <>
       <div
         onClick={() => setShow((prev) => !prev)}
-        className={`fixed cursor-pointer bottom-5 left-5 ${
+        className={`fixed cursor-pointer bottom-5 left-5 z-[700] ${
           showLogin
             ? "opacity-0 pointer-events-none"
             : "opacity-100 pointer-events-auto"
@@ -42,13 +42,12 @@ const Views = () => {
             : { x: 0, y: 0, scale: 0 }
         }
         className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] left-5 bottom-5 bg-gradient-to-r from-lime-300 to-emerald-200 shadow-md`}
+        onClick={() => {
+          setShow(false);
+          setView("day");
+        }}
       >
-        <BsFillCalendarDayFill
-          onClick={() => {
-            setShow(false);
-            setView("day");
-          }}
-        />
+        <BsFillCalendarDayFill />
       </motion.div>
       <motion.div
         animate={
@@ -57,13 +56,12 @@ const Views = () => {
             : { x: 0, y: 0, scale: 0 }
         }
         className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] left-5 bottom-5 bg-gradient-to-r from-red-300 to-rose-200 shadow-md`}
+        onClick={() => {
+          setShow(false);
+          setView("month");
+        }}
       >
-        <BsFillCalendarMonthFill
-          onClick={() => {
-            setShow(false);
-            setView("month");
-          }}
-        />
+        <BsFillCalendarMonthFill />
       </motion.div>
       <motion.div
         animate={
@@ -82,6 +80,10 @@ const Views = () => {
             : { x: 0, y: 0, scale: 0 }
         }
         className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] left-5 bottom-5 bg-gradient-to-r from-orange-300 to-yellow-200 shadow-md`}
+        onClick={() => {
+          setShow(false);
+          setView("week");
+        }}
       >
         <BsFillCalendarWeekFill />
       </motion.div>

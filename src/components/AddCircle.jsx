@@ -37,7 +37,7 @@ export const AddCircle = () => {
           type === null ? { bottom: 20, right: 20 } : { bottom: 80, left: 20 }
         }
         onClick={() => setShow((prev) => !prev)}
-        className={`fixed w-[40px] h-[40px] ${
+        className={`fixed w-[40px] h-[40px] z-[700] ${
           showLogin
             ? "opacity-0 pointer-events-none"
             : "opacity-100 pointer-events-auto"

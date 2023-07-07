@@ -11,22 +11,17 @@ const hashPassword = async (password) => {
 
 export const fetchUserData = (req, res) => {
   const { username, email, avatarUrl, birthday, id, createAt } = req.user;
-  res
-    .status(200)
-    .json({
-      message: "Success",
-      user: { username, email, avatarUrl, birthday, id, createAt },
-    });
+  res.status(200).json({
+    message: "Success",
+    user: { username, email, avatarUrl, birthday, id, createAt },
+  });
 };
 
 export const loginWithGoogle = async (req, res) => {
   const { id, username, email, avatarUrl } = req.body.user;
   const exsistingUser = await prisma.user.findUnique({
     where: {
-      username_email: {
-        username: username,
-        email: email,
-      },
+      email: email,
     },
   });
   if (exsistingUser) {

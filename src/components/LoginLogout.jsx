@@ -9,10 +9,24 @@ import InteractiveContext from "../context/InteractiveContext";
 import Notification from "./Notification";
 
 const LoginLogout = () => {
-  const { showLogin, setShowLogin, notifications, showNotifs, setShowNotifs } =
-    useContext(InteractiveContext);
-  const { user, setUser, setGoogleToken, loginLoading, setAuthToken } =
-    useContext(UserContext);
+  const {
+    showLogin,
+    setShowLogin,
+    notifications,
+    setNotifications,
+    showNotifs,
+    setShowNotifs,
+  } = useContext(InteractiveContext);
+  const {
+    user,
+    setUser,
+    setGoogleToken,
+    loginLoading,
+    setAuthToken,
+    setEvents,
+    setReminders,
+    setLists,
+  } = useContext(UserContext);
 
   const [regularLogin, setRegularLogin] = useState(false);
   const [username, setUsername] = useState("");
@@ -84,6 +98,10 @@ const LoginLogout = () => {
     // localStorage.setItem("events", JSON.stringify(events));
     setAuthToken(false);
     setUser(false);
+    setEvents([]);
+    setNotifications([]);
+    setReminders([]);
+    setLists([]);
   };
 
   return (

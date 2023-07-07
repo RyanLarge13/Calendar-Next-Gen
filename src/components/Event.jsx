@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import {
   BsFillArrowLeftCircleFill,
   BsFillArrowRightCircleFill,
@@ -8,9 +8,11 @@ import { FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";
 import { MdLocationPin } from "react-icons/md";
 import { FaExternalLinkAlt } from "react-icons/fa";
+import InteractiveContext from "../context/InteractiveContext"
 import { motion } from "framer-motion";
 
-const Event = ({ event, setEvent, dayEvents }) => {
+const Event = ({ dayEvents }) => {
+	const {event, setEvent} = useContext(InteractiveContext)
   const [open, setOpen] = useState(true);
   const [timeLeft, setTimeLeft] = useState(null);
   const [start, setStart] = useState(0);
@@ -44,8 +46,8 @@ const Event = ({ event, setEvent, dayEvents }) => {
       if (totalMinutesToStart <= nowMinutes + nowHourMinutes) {
         clearInterval(interval);
         clearInterval(timeLeftInterval);
-        clearInterval(timeInLeft);
-        setTimeInEvent(98);
+        // clearInterval(timeInLeft);
+        // setTimeInEvent(98);
         setWidth(98);
       }
     }
@@ -180,7 +182,9 @@ const Event = ({ event, setEvent, dayEvents }) => {
                   width: `${width}%`,
                   transition: { duration: 0.1, type: "spring", stiffness: 400 },
                 }}
-                className={`absolute left-1 top-1 bottom-1 ${event.color} bg-opacity-50 rounded-3xl`}
+                className={`absolute left-1 top-1 bottom-1 ${
+                  event.color === "bg-white" ? "bg-slate-200" : event.color
+                } bg-opacity-50 rounded-3xl`}
               ></motion.div>
               <motion.p
                 initial={{ opacity: 0 }}
@@ -199,7 +203,9 @@ const Event = ({ event, setEvent, dayEvents }) => {
                   width: `${timeInEvent}%`,
                   transition: { duration: 0.1, type: "spring", stiffness: 400 },
                 }}
-                className={`absolute left-1 top-1 bottom-1 ${event.color} bg-opacity-50 rounded-3xl`}
+                className={`absolute left-1 top-1 bottom-1 ${
+                  event.color === "bg-white" ? "bg-slate-200" : event.color
+                } bg-opacity-50 rounded-3xl`}
               ></motion.div>
               <p className="z-10">
                 {new Date(event.start.startTime).toLocaleTimeString()}

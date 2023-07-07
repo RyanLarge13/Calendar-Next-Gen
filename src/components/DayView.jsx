@@ -1,41 +1,59 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useContext } from "react";
 import { motion } from "framer-motion";
+import { staticTimes } from "../constants.js";
+import InteractiveContext from "../context/InteractiveContext";
 import Event from "./Event";
 
-const DayView = ({ todaysEvents }) => {
-  const [event, setEvent] = useState(null);
+const DayView = ({ todaysEvents, todaysReminders }) => {
+  const { event, setEvent } = useContext(InteractiveContext);
   const [time, setTime] = useState(new Date().toLocaleTimeString());
   const [height, setheight] = useState(0);
+  const [combinedArray, setCombinedArray] = useState([]);
   const dayViewContainer = useRef(null);
+  const [times, setTimes] = useState([]);
   let interval;
 
   useEffect(() => {
+    const combined = [...todaysEvents, ...todaysReminders];
+    combined.sort((a, b) => {
+      const dateA = new Date((a.start && a.start.startTime) || a.time);
+      const dateB = new Date((b.start && b.start.startTime) || b.time);
+      return dateA - dateB;
+    });
+    setCombinedArray(combined);
     getTime();
     return () => clearInterval(interval);
-  }, []);
+  }, [todaysEvents, todaysReminders]);
 
   const calcDayEventHeight = (start, end) => {
     if (!start || !end) {
       return null;
     } else {
-      const duration = end.getTime() - start.getTime();
-      const containerHeight = dayViewContainer.current.clientHeight;
-      const componentHeight =
-        (duration / (24 * 60 * 60 * 1000)) * containerHeight;
-      return componentHeight;
+      if (dayViewContainer.current) {
+        const duration = end.getTime() - start.getTime();
+        const containerHeight = dayViewContainer.current.clientHeight;
+        const componentHeight =
+          (duration / (24 * 60 * 60 * 1000)) * containerHeight;
+        return componentHeight;
+      }
     }
   };
 
   const fromTop = (startTime) => {
-    const currentTime = new Date();
-    const timeDifference = currentTime.getTime() - startTime.getTime();
-    const containerHeight = dayViewContainer.current.clientHeight;
-    const distanceFromTop =
-      (timeDifference / (24 * 60 * 60 * 1000)) * containerHeight;
-    return distanceFromTop;
+    if (dayViewContainer.current) {
+      const containerHeight = dayViewContainer.current.clientHeight;
+      const timeInSeconds =
+        startTime.getHours() * 3600 +
+        startTime.getMinutes() * 60 +
+        startTime.getSeconds();
+      const percentage = (timeInSeconds / (24 * 3600)) * 100;
+      return (percentage * containerHeight) / 100;
+    }
+    return 0; // Return 0 if dayViewContainer is not available
   };
 
   const getTime = () => {
+    if (todaysEvents.length < 1) return;
     interval = setInterval(() => {
       const now = new Date();
       const percentageOfDay =
@@ -48,41 +66,84 @@ const DayView = ({ todaysEvents }) => {
     }, 1000);
   };
 
+  const getHeight = () => {
+    if (dayViewContainer.current) {
+      const height = dayViewContainer.current.clientHeight / staticTimes.length;
+      return height;
+    }
+  };
+
+  const checkToSetTime = (e, staticString) => {
+    const end = e.clientX;
+    if (end > window.innerWidth / 2) {
+      setTimes((prev) => [...prev, staticString]);
+    }
+  };
+
   return (
-    <div ref={dayViewContainer} className="text-sm min-h-screen">
-      {todaysEvents.length > 0 ? (
-        <motion.div animate={{ top: height }} className="absolute right-0">
-          <div className="w-[20px] h-[20px] rounded-full shadow-md bg-lime-200 after:w-20 after:h-[2px] after:bg-black after:absolute after:top-[50%] after:z-[-1] after:left-[-350%]">
-            <p className="absolute px-1 shadow-md bg-white rounded-md left-[-375%] top-[-50%]">
-              {time}
-            </p>
-          </div>
-        </motion.div>
-      ) : (
-        <p className="text-center">No Events Today</p>
-      )}
-      <div className="mt-5">
-        {todaysEvents.map((event) => (
-          <div
-            key={event.id}
-            // style={{
-            //   height: `${calcDayEventHeight(
-            //     new Date(event.start.startTime),
-            //     new Date(event.end.endTime)
-            //   )}px`,
-            //   top: fromTop(new Date(event.start.startTime)),
-            // }}
-            onClick={() => setEvent(event)}
-            className={`${event.color} bg-opacity-70 p-5 rounded-md shadow-md my-5`}
+    <div className="py-20">
+      <div ref={dayViewContainer} className="text-sm min-h-[400vh] relative">
+        {todaysEvents.length > 0 ? (
+          <motion.div
+            animate={{ top: height }}
+            className="absolute right-0 z-[200] translate-y-[-50%]"
           >
-            <p className="font-bold">{event.summary}</p>
-            <p className="mr-5 text-sm">{event.description}</p>
+            <div className="w-[20px] h-[20px] rounded-full shadow-md bg-lime-200 after:w-20 after:h-[2px] after:bg-black after:absolute after:top-[50%] after:z-[-1] after:left-[-350%]">
+              <p className="absolute px-1 shadow-md bg-white rounded-md left-[-375%] top-[-50%]">
+                {time}
+              </p>
+            </div>
+          </motion.div>
+        ) : (
+          <p className="text-center">No Events Today</p>
+        )}
+        <div>
+          <div className="">
+            {staticTimes.map((staticTime, index) => (
+              <motion.div
+                drag="x"
+                dragConstraints={{ left: 0 }}
+                dragSnapToOrigin={true}
+                onDragEnd={(e) => checkToSetTime(e, staticTime.string)}
+                whileTap={{ backgroundColor: "#ddd" }}
+                key={index}
+                style={{
+                  height: `${getHeight()}px`,
+                }}
+                className={`${index === 0 ? "border-b border-t" : "border-b"}`}
+              >
+                <p className="text-[11px]">{staticTime.string}</p>
+              </motion.div>
+            ))}
           </div>
-        ))}
+          {combinedArray.map((item) => (
+            <div
+              key={item.id}
+              style={
+                item.start
+                  ? {
+                      height: `${calcDayEventHeight(
+                        new Date(item.start.startTime),
+                        new Date(item.end.endTime)
+                      )}px`,
+                      top: fromTop(new Date(item.start.startTime)),
+                    }
+                  : {
+                      height: `${getHeight()}px`,
+                      top: fromTop(new Date(item.time)),
+                    }
+              }
+              onClick={() => (item.start ? setEvent(item) : null)}
+              className={`${item.color || "bg-slate-200"} ${
+                item.start ? "z-[10]" : "z-[50]"
+              } absolute right-5 left-20 bg-opacity-70 p-2 rounded-md shadow-md`}
+            >
+              <p className="font-bold">{item.summary || item.title}</p>
+              <p className="mr-5 text-sm">{item.description || item.notes}</p>
+            </div>
+          ))}
+        </div>
       </div>
-      {event && (
-        <Event event={event} setEvent={setEvent} dayEvents={todaysEvents} />
-      )}
     </div>
   );
 };

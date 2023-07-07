@@ -74,7 +74,7 @@ const ListItems = ({ addItems, listId, items }) => {
               <p className="absolute top-[-6px] left-[-6px] w-[15px] h-[15px] shadow-md flex justify-center items-center rounded-full bg-white">
                 {index + 1}
               </p>
-              <p>{listItem}</p>
+              <p className="mr-3">{listItem}</p>
             </div>
             <AiFillCloseCircle
               onClick={() => removeItem(listItem)}

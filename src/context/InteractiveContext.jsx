@@ -13,6 +13,7 @@ export const InteractiveProvider = ({ children }) => {
   const [addNewEvent, setAddNewEvent] = useState(false);
   const [type, setType] = useState(null);
   const [listUpdate, setListUpdate] = useState([]);
+  const [event, setEvent] = useState(null);
 
   useEffect(() => {
     send();
@@ -69,6 +70,8 @@ export const InteractiveProvider = ({ children }) => {
         type,
         showNotifs,
         listUpdate,
+        event, 
+        setEvent, 
         setListUpdate,
         setShowNotifs,
         setType,

@@ -12,7 +12,8 @@ import InteractiveContext from "../context/InteractiveContext";
 import DatesContext from "../context/DatesContext";
 
 const Header = () => {
-  const { dt, setNav, theDay, setTheDay } = useContext(DatesContext);
+  const { dt, setNav, theDay, setTheDay, currentWeek } =
+    useContext(DatesContext);
   const { user } = useContext(UserContext);
   const { setMenu, setShowLogin, view } = useContext(InteractiveContext);
 
@@ -76,6 +77,22 @@ const Header = () => {
           </p>
           <BsFillArrowRightCircleFill
             onClick={() => changeDay("plus")}
+            className="text-xl cursor-pointer"
+          />
+        </div>
+      )}
+      {view === "week" && (
+        <div className="flex justify-center items-center">
+          <BsFillArrowLeftCircleFill
+            onClick={() => {}}
+            className="text-xl cursor-pointer"
+          />
+          <p className="mx-5 text-[12px]">
+            {currentWeek[0].toLocaleDateString()} -{" "}
+            {currentWeek[currentWeek.length - 1].toLocaleDateString()}
+          </p>
+          <BsFillArrowRightCircleFill
+            onClick={() => {}}
             className="text-xl cursor-pointer"
           />
         </div>

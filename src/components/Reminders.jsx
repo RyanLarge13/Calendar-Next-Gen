@@ -1,4 +1,5 @@
 import { useState, useContext } from "react";
+import { IoIosAlarm } from "react-icons/io";
 import { motion } from "framer-motion";
 import { deleteReminder } from "../utils/api.js";
 import { formatTime } from "../utils/helpers.js";
@@ -82,6 +83,7 @@ const Reminders = ({ showReminders }) => {
 
   return (
     <motion.div
+    initial={{height: "0px"}} 
       animate={
         showReminders
           ? {

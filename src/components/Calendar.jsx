@@ -4,15 +4,17 @@ import { motion } from "framer-motion";
 import { calendar } from "../motion";
 import Modal from "./Modal";
 import Menu from "./Menu";
+import Event from "./Event";
 import MonthView from "./MonthView";
 import DayView from "./DayView";
 import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext";
+import WeekView from "./WeekView";
 
 const Calendar = () => {
-  const { events, holidays, weekDays } = useContext(UserContext);
-  const { menu, view } = useContext(InteractiveContext);
+  const { events, holidays, reminders, weekDays } = useContext(UserContext);
+  const { menu, view, event } = useContext(InteractiveContext);
   const {
     setStart,
     moveCalendar,
@@ -25,6 +27,7 @@ const Calendar = () => {
   } = useContext(DatesContext);
 
   const [todaysEvents, setTodaysEvents] = useState([]);
+  const [todaysReminders, setTodaysReminder] = useState([]);
 
   useEffect(() => {
     const eventsToday = [...events, ...holidays].filter(
@@ -32,6 +35,12 @@ const Calendar = () => {
         new Date(item.date).toLocaleDateString() === theDay.toLocaleDateString()
     );
     setTodaysEvents(eventsToday);
+    const remindersToday = reminders.filter(
+      (reminder) =>
+        new Date(reminder.time).toLocaleDateString() ===
+        theDay.toLocaleDateString()
+    );
+    setTodaysReminder(remindersToday);
   }, [theDay, events]);
 
   return (
@@ -82,7 +91,13 @@ const Calendar = () => {
                 }`}
               >
                 {view === "month" && <MonthView />}
-                {view === "day" && <DayView todaysEvents={todaysEvents} />}
+                {view === "day" && (
+                  <DayView
+                    todaysEvents={todaysEvents}
+                    todaysReminders={todaysReminders}
+                  />
+                )}
+                {view === "week" && <WeekView />}
               </motion.div>
             </div>
           ) : (
@@ -99,6 +114,7 @@ const Calendar = () => {
         </section>
         <Modal />
         <Menu />
+        {event && <Event dayEvents={todaysEvents} />}
       </section>
     </main>
   );
