@@ -41,9 +41,8 @@ const MonthView = () => {
       targetDate.getMonth() === currentDate.getMonth() &&
       targetDate.getFullYear() === currentDate.getFullYear();
     if (
-      (isSameMonthAndYear &&
-        (rowDays.includes(index) || columnDays.includes(index))) ||
-      !isSameMonthAndYear
+      isSameMonthAndYear &&
+      (rowDays.includes(index) || columnDays.includes(index))
     ) {
       return { backgroundColor: "rgba(0, 0, 0, 0.1)" };
     } else {
