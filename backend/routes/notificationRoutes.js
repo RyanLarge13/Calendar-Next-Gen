@@ -1,6 +1,7 @@
 import express from "express";
 import auth from "../auth/authenticateToken.js";
 import {
+  subscribeToNotifications,
   deleteNotification,
   getNotifications,
   getOldNotifications,
@@ -9,8 +10,9 @@ import {
 
 const notifRouter = express.Router();
 
-notifRouter.get("/:username/notifications", getNotifications);
+notifRouter.get("/:userId/notifications", getNotifications);
 notifRouter.get("/:username/notifs", auth, getOldNotifications);
+notifRouter.post("/subscribe/notifs", auth, subscribeToNotifications);
 notifRouter.patch("/:username/update/notif", auth, updateNotification);
 notifRouter.delete("/notification/:notifId", auth, deleteNotification);
 

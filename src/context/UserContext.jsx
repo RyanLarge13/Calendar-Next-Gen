@@ -6,9 +6,8 @@ import {
   loginWithGoogle,
   getEvents,
   getReminders,
-  getNotifications,
+  requestAndSubscribe,
   getAllLists,
-  // getGoogleCalendarEvents,
 } from "../utils/api";
 
 const UserContext = createContext({});
@@ -65,9 +64,11 @@ export const UserProvider = ({ children }) => {
       getUserData(authToken)
         .then((res) => {
           setUser(res.data.user);
+          if (!res.data.user.notifSub) {
+            requestPermissonsAndSubscribe(authToken);
+          }
           getEvents(res.data.user.username, authToken)
             .then((response) => {
-              // setEvents((prev) => [...prev, response.data.events]);
               setEvents(response.data.events);
             })
             .catch((err) => {
@@ -75,10 +76,6 @@ export const UserProvider = ({ children }) => {
             });
           getReminders(res.data.user.username, authToken)
             .then((response) => {
-              // localStorage.setItem(
-              //   "reminders",
-              //   JSON.stringify(response.data.reminders)
-              // );
               setReminders(response.data.reminders);
             })
             .catch((err) => {
@@ -101,6 +98,10 @@ export const UserProvider = ({ children }) => {
       setUser(false);
     }
   }, [authToken]);
+
+  const requestPermissonsAndSubscribe = (token) => {
+    requestAndSubscribe(token);
+  };
 
   return (
     <UserContext.Provider

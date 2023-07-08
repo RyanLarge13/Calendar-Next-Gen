@@ -25,17 +25,19 @@ export const InteractiveProvider = ({ children }) => {
       const user = localStorage.getItem("user");
       if (token && user) {
         const parsedUser = JSON.parse(user);
-        const userId = parsedUser.id;
-        const serverSentSource = getNotifications(userId);
-        getNotificationsAtStart(parsedUser.username, token)
-          .then((res) => {
-            const oldNotifs = res.data.notifs;
-            setNotifications(oldNotifs);
-            setupNotifListener(serverSentSource);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+        if (parsedUser.notifSub) {
+          const userId = parsedUser.id;
+          const serverSentSource = getNotifications(userId);
+          getNotificationsAtStart(parsedUser.username, token)
+            .then((res) => {
+              const oldNotifs = res.data.notifs;
+              setNotifications(oldNotifs);
+              setupNotifListener(serverSentSource);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
       }
     } catch (err) {
       console.log(err);
@@ -70,8 +72,8 @@ export const InteractiveProvider = ({ children }) => {
         type,
         showNotifs,
         listUpdate,
-        event, 
-        setEvent, 
+        event,
+        setEvent,
         setListUpdate,
         setShowNotifs,
         setType,

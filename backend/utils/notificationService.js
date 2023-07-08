@@ -8,13 +8,7 @@ WebPush.setVapidDetails(
   process.env.VAPID_PRIVATE_KEY
 );
 
-let subscription = null;
-
-function setSubscription(sub) {
-  subscription = sub;
-}
-
-function sendNotification(payload) {
+function sendNotification(payload, subscription) {
   if (!subscription) {
     throw new Error(
       "Subscription not set. Please call setSubscription() before sending notifications."
@@ -25,4 +19,4 @@ function sendNotification(payload) {
   });
 }
 
-export { sendNotification, setSubscription };
+export { sendNotification };
