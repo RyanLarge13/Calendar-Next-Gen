@@ -5,17 +5,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { IoIosAlarm } from "react-icons/io";
 import { MdSystemSecurityUpdateGood } from "react-icons/md";
 import InteractiveContext from "../context/InteractiveContext";
+import UserContext from "../context/UserContext";
 import Confirm from "./Confirm";
 
 const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
-  const {
-    notifications,
-    setNotifications,
-    confirm,
-    setConfirm,
-    showNotifs,
-    setShowNotifs,
-  } = useContext(InteractiveContext);
+  const { notifications, setNotifications } = useContext(UserContext);
+  const { confirm, setConfirm, showNotifs, setShowNotifs } =
+    useContext(InteractiveContext);
 
   const [notifOpen, setNotifOpen] = useState("");
   const [deleteId, setDeleteId] = useState(null);

@@ -10,9 +10,7 @@ WebPush.setVapidDetails(
 
 function sendNotification(payload, subscription) {
   if (!subscription) {
-    throw new Error(
-      "Subscription not set. Please call setSubscription() before sending notifications."
-    );
+    throw new Error("Subscription not set");
   }
   WebPush.sendNotification(subscription, payload).catch((error) => {
     console.error("Error sending notification:", error);

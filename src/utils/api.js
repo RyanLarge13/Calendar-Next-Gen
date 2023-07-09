@@ -153,7 +153,7 @@ export const getNotificationsAtStart = (username, token) => {
   return res;
 };
 
-export const requestAndSubscribe = async (token) => {
+export const requestAndSubscribe = async (token, userId) => {
   if ("serviceWorker" in navigator && "PushManager" in window) {
     navigator.serviceWorker.ready
       .then((registration) => {
@@ -184,6 +184,7 @@ export const requestAndSubscribe = async (token) => {
           .then((response) => {
             if (response.ok) {
               console.log("Subscription successful");
+              getNotifications(userId);
             } else {
               throw new Error("Failed to subscribe");
             }

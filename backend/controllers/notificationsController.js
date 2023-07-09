@@ -16,7 +16,7 @@ export const subscribeToNotifications = async (req, res) => {
     if (updatedUser) {
       const payload = JSON.stringify({
         title: "Welcome!",
-        body: "Thank you for subscribing!",
+        body: "Thank you for subscribing to notifications with Calng!",
       });
       sendNotification(payload, subscription);
       return res.status(200).json({
@@ -37,6 +37,7 @@ export const subscribeToNotifications = async (req, res) => {
 };
 
 const processNotifications = async (userId, res) => {
+  console.log("Processing notifications");
   try {
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user)
@@ -88,8 +89,8 @@ export const getNotifications = async (req, res) => {
   job.start();
   req.on("close", () => {
     console.log("broswer closing");
-    // job.stop();
-    // res.end();
+    job.stop();
+    res.end();
   });
 };
 

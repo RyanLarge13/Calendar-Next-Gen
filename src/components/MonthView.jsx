@@ -53,10 +53,12 @@ const MonthView = () => {
   const getInfo = (long, lat) => {
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const dayOfWeek = new Date().getDay();
-    const start = dayOfWeek - 1;
-    const end = 7 + (dayOfWeek - 1);
+    const start = dayOfWeek;
+    const end = 7 + dayOfWeek;
     Axios.get(
-      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${long}&daily=weathercode&temperature_unit=fahrenheit&past_days=${start}&forecast_days=${end}&timezone=${timeZone}`
+      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${long}&daily=weathercode&temperature_unit=fahrenheit&past_days=${
+        start < 0 ? 0 : start
+      }&forecast_days=${end}&timezone=${timeZone}`
     )
       .then((res) => {
         const data = [

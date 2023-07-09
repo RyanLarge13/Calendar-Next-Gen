@@ -8,6 +8,8 @@ import {
   getReminders,
   requestAndSubscribe,
   getAllLists,
+  getNotifications,
+  getNotificationsAtStart,
 } from "../utils/api";
 
 const UserContext = createContext({});
@@ -24,6 +26,7 @@ export const UserProvider = ({ children }) => {
   const [reminders, setReminders] = useState(
     JSON.parse(localStorage.getItem("reminders")) || []
   );
+  const [notifications, setNotifications] = useState([]);
   const [googleToken, setGoogleToken] = useState(false);
   const [loginLoading, setLoginLoading] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
@@ -65,7 +68,10 @@ export const UserProvider = ({ children }) => {
         .then((res) => {
           setUser(res.data.user);
           if (!res.data.user.notifSub) {
-            requestPermissonsAndSubscribe(authToken);
+            requestPermissonsAndSubscribe(authToken, res.data.user.id);
+          }
+          if (res.data.user.notifSub) {
+            send(authToken, res.data.user.id);
           }
           getEvents(res.data.user.username, authToken)
             .then((response) => {
@@ -99,8 +105,46 @@ export const UserProvider = ({ children }) => {
     }
   }, [authToken]);
 
-  const requestPermissonsAndSubscribe = (token) => {
-    requestAndSubscribe(token);
+  const requestPermissonsAndSubscribe = (token, userId) => {
+    requestAndSubscribe(token, userId);
+  };
+
+  const send = async (token, userId) => {
+    try {
+      if (token && user) {
+        const parsedUser = JSON.parse(user);
+        if (parsedUser.notifSub) {
+          const serverSentSource = getNotifications(userId);
+          getNotificationsAtStart(parsedUser.username, token)
+            .then((res) => {
+              const oldNotifs = res.data.notifs;
+              setNotifications(oldNotifs);
+              setupNotifListener(serverSentSource);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const setupNotifListener = (serverSentSource) => {
+    console.log("Set up and listening for notifications");
+    serverSentSource.addEventListener("open", () => {
+      console.log("Open");
+    });
+    serverSentSource.addEventListener("message", (event) => {
+      const notification = JSON.parse(event.data);
+      setNotifications((prev) => [notification, ...prev]);
+      console.log("Received notification:", notification);
+    });
+    serverSentSource.addEventListener("error", (error) => {
+      console.error("SSE error:", error);
+      serverSentSource.close();
+    });
   };
 
   return (
@@ -115,6 +159,8 @@ export const UserProvider = ({ children }) => {
         loginLoading,
         isOnline,
         lists,
+        notifications,
+        setNotifications,
         setLists,
         setUser,
         setEvents,

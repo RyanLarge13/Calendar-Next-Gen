@@ -9,19 +9,15 @@ import InteractiveContext from "../context/InteractiveContext";
 import Notification from "./Notification";
 
 const LoginLogout = () => {
-  const {
-    showLogin,
-    setShowLogin,
-    notifications,
-    setNotifications,
-    showNotifs,
-    setShowNotifs,
-  } = useContext(InteractiveContext);
+  const { showLogin, setShowLogin, showNotifs, setShowNotifs } =
+    useContext(InteractiveContext);
   const {
     user,
     setUser,
     setGoogleToken,
     loginLoading,
+    notifications,
+    setNotifications,
     setAuthToken,
     setEvents,
     setReminders,
