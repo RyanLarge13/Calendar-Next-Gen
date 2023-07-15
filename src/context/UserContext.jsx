@@ -143,7 +143,13 @@ export const UserProvider = ({ children }) => {
     });
     serverSentSource.addEventListener("error", (error) => {
       console.error("SSE error:", error);
-      serverSentSource.close();
+      if (error.eventPhase === EventSource.CLOSED) {
+        console.log("SSE connection closed.");
+        setTimeout(() => {
+        	const source = getNotifications(user.id)
+        	setupNotifListener(source)
+        }, 3000) 
+      }
     });
   };
 

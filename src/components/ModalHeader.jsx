@@ -11,7 +11,6 @@ import {
 import DatesContext from "../context/DatesContext";
 import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
-import Confirm from "./Confirm";
 
 const ModalHeader = ({ allDayEvents, event, setEvent }) => {
   const { string } = useContext(DatesContext);
@@ -34,7 +33,7 @@ const ModalHeader = ({ allDayEvents, event, setEvent }) => {
   }, [event, addNewEvent]);
 
   const deleteAnEvent = () => {
-    setConfirm(false);
+    setConfirm({show:false, func:null });
     const authToken = localStorage.getItem("authToken");
     deleteEvent(user.username, event.id, authToken)
       .then((res) => {
@@ -52,71 +51,68 @@ const ModalHeader = ({ allDayEvents, event, setEvent }) => {
   };
 
   return (
-    <>
-      <motion.div
-        animate={event && !addNewEvent ? { left: 5 } : { left: "36%", x: x }}
-        className="bg-white z-[999] p-2 font-bold shadow-md fixed top-1 right-1 rounded-md"
-      >
-        <div className="flex justify-between items-center">
-          <h2 className="bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent">
-            {string}
-          </h2>
-          <div className="flex gap-x-3">
-            {allDayEvents.length > 0 && (
-              <div>
-                {showAllDayEvents ? (
-                  <BsFillArrowUpCircleFill
-                    onClick={() => setShowAllDayEvents(false)}
+    <motion.div
+      animate={event && !addNewEvent ? { left: 5 } : { left: "36%", x: x }}
+      className="bg-white z-[999] p-2 font-bold shadow-md fixed top-1 right-1 rounded-md"
+    >
+      <div className="flex justify-between items-center">
+        <h2 className="bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent">
+          {string}
+        </h2>
+        <div className="flex gap-x-3">
+          {allDayEvents.length > 0 && (
+            <div>
+              {showAllDayEvents ? (
+                <BsFillArrowUpCircleFill
+                  onClick={() => setShowAllDayEvents(false)}
+                />
+              ) : (
+                <BsFillArrowDownCircleFill
+                  onClick={() => setShowAllDayEvents(true)}
+                />
+              )}
+            </div>
+          )}
+          {event && (
+            <>
+              {!holidays.includes(event) && (
+                <>
+                  <BsFillShareFill className="cursor-pointer" />
+                  <BsFillPenFill className="cursor-pointer" />
+                  <BsFillTrashFill
+                    onClick={() => setConfirm({show: true, func: deleteAnEvent})}
+                    className="cursor-pointer"
                   />
-                ) : (
-                  <BsFillArrowDownCircleFill
-                    onClick={() => setShowAllDayEvents(true)}
-                  />
-                )}
-              </div>
-            )}
-            {event && (
-              <>
-                {!holidays.includes(event) && (
-                  <>
-                    <BsFillShareFill className="cursor-pointer" />
-                    <BsFillPenFill className="cursor-pointer" />
-                    <BsFillTrashFill
-                      onClick={() => setConfirm(true)}
-                      className="cursor-pointer"
-                    />
-                  </>
-                )}
-              </>
-            )}
-          </div>
+                </>
+              )}
+            </>
+          )}
         </div>
-        <motion.div
-          animate={showAllDayEvents ? { height: "max-content" } : { height: 0 }}
-        >
-          {allDayEvents.map((event, index) => (
-            <motion.div
-              animate={
-                showAllDayEvents
-                  ? { opacity: 1, y: 0, transition: { delay: 0.25 } }
-                  : { opacity: 0, y: -50 }
-              }
-              key={event.id}
-              className={`py-1 px-2 rounded-md shadow-sm flex justify-between ${
-                event.color
-              } ${index === 0 && !showAllDayEvents ? "mt-0" : "mt-2"} ${
-                event.color === "bg-black" ? "text-white" : "text-black"
-              }`}
-            >
-              <p onClick={() => setEvent(event)} className="cursor-pointer">
-                {event.summary}
-              </p>
-            </motion.div>
-          ))}
-        </motion.div>
+      </div>
+      <motion.div
+        animate={showAllDayEvents ? { height: "max-content" } : { height: 0 }}
+      >
+        {allDayEvents.map((event, index) => (
+          <motion.div
+            animate={
+              showAllDayEvents
+                ? { opacity: 1, y: 0, transition: { delay: 0.25 } }
+                : { opacity: 0, y: -50 }
+            }
+            key={event.id}
+            className={`py-1 px-2 rounded-md shadow-sm flex justify-between ${
+              event.color
+            } ${index === 0 && !showAllDayEvents ? "mt-0" : "mt-2"} ${
+              event.color === "bg-black" ? "text-white" : "text-black"
+            }`}
+          >
+            <p onClick={() => setEvent(event)} className="cursor-pointer">
+              {event.summary}
+            </p>
+          </motion.div>
+        ))}
       </motion.div>
-      {confirm && <Confirm func={deleteAnEvent} />}
-    </>
+    </motion.div>
   );
 };
 

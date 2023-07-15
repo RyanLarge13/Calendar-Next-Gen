@@ -6,7 +6,6 @@ import { IoIosAlarm } from "react-icons/io";
 import { MdSystemSecurityUpdateGood } from "react-icons/md";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext";
-import Confirm from "./Confirm";
 
 const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
   const { notifications, setNotifications } = useContext(UserContext);
@@ -38,7 +37,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
   };
 
   const deleteNotif = () => {
-    setConfirm(false);
+    setConfirm({show:false, func: null});
     const token = localStorage.getItem("authToken");
     if (!token) return;
     if (deleteId) {
@@ -139,7 +138,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                       onClick={(e) => {
                         e.stopPropagation();
                         setDeleteId(notif.id);
-                        setConfirm(true);
+                        setConfirm({show:true, func: deleteNotif});
                       }}
                       className="border-b border-b-rose-300 cursor-pointer"
                     >
@@ -150,7 +149,6 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
               </motion.div>
             ))
           )}
-          {confirm && <Confirm func={deleteNotif} />}
         </motion.div>
       )}
     </AnimatePresence>

@@ -82,15 +82,16 @@ export const getNotifications = async (req, res) => {
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
   res.setHeader("Access-Control-Allow-Origin", "*");
+  const clientResponse = res;
   const id = req.params.userId;
   const job = cron.schedule("*/30 * * * * *", () => {
     processNotifications(id, res);
   });
   job.start();
   req.on("close", () => {
-    console.log("broswer closing");
-    job.stop();
-    res.end();
+    setTimeout(() => {
+      clientResponse.write(`Attempting SSE event after reconnection\n\n`);
+    }, 3000);
   });
 };
 
