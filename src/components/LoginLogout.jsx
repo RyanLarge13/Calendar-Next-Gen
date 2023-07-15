@@ -168,75 +168,102 @@ const LoginLogout = () => {
                       className="absolute top-5 right-5"
                     />
                   )}
-                  {regularLogin ? (
-                    <motion.form
-                      initial={{ opacity: 0, y: "100%" }}
-                      animate={{ opacity: 1, y: 0 }}
-                      onSubmit={loginPasswordUsername}
-                      className="w-full flex flex-col items-center justify-center"
-                    >
-                      <input
-                        onChange={(e) => setUsername(e.target.value)}
-                        type="text"
-                        placeholder="Username"
-                        value={username}
-                        id="username"
-                        name="username"
-                        className="w-full p-3 rounded-md shadow-md"
-                      />
-                      <input
-                        onChange={(e) => setEmail(e.target.value)}
-                        type="email"
-                        placeholder="Email"
-                        value={email}
-                        id="email"
-                        name="email"
-                        className="w-full p-3 my-2 rounded-md shadow-md"
-                      />
-                      <input
-                        onChange={(e) => setPassword(e.target.value)}
-                        type="password"
-                        placeholder="Password"
-                        value={password}
-                        id="password"
-                        name="password"
-                        className="w-full p-3 rounded-md shadow-md"
-                      />
-                      <button
-                        type="submit"
-                        className="px-3 py-2 rounded-md shadow-md bg-gradient-to-tr from-green-200 to-green-300 w-full mt-5"
+                  <AnimatePresence>
+                    {regularLogin && (
+                      <motion.form
+                        initial={{ opacity: 0, y: "100%" }}
+                        exit={{ opacity: 0, y: "100%", position: "absolute" }}
+                        animate={{
+                          opacity: 1,
+                          y: 0,
+                          transition: { delay: 0.25 },
+                        }}
+                        onSubmit={loginPasswordUsername}
+                        className="w-full flex flex-col items-center justify-center"
                       >
-                        Login
-                      </button>
-                    </motion.form>
-                  ) : (
-                    <>
-                      <button
-                        onClick={() => loginGoogle()}
-                        className="px-5 py-2 m-2 w-full font-bold rounded-md shadow-md text-white google"
+                        <input
+                          onChange={(e) => setUsername(e.target.value)}
+                          type="text"
+                          placeholder="Username"
+                          value={username}
+                          id="username"
+                          name="username"
+                          className="w-full p-3 my-2 rounded-md shadow-md"
+                        />
+                        <input
+                          onChange={(e) => setEmail(e.target.value)}
+                          type="email"
+                          placeholder="Email"
+                          value={email}
+                          id="email"
+                          name="email"
+                          className="w-full p-3 my-2 rounded-md shadow-md"
+                        />
+                        <input
+                          onChange={(e) => setPassword(e.target.value)}
+                          type="password"
+                          placeholder="Password"
+                          value={password}
+                          id="password"
+                          name="password"
+                          className="w-full p-3 my-2 rounded-md shadow-md"
+                        />
+                        <button
+                          type="submit"
+                          className="px-3 py-2 my-2 rounded-md shadow-md bg-gradient-to-tr from-green-200 to-green-300 w-full mt-5"
+                        >
+                          Login
+                        </button>
+                      </motion.form>
+                    )}
+                  </AnimatePresence>
+                  <AnimatePresence>
+                    {!regularLogin && (
+                      <motion.div
+                        initial={{ opacity: 0, y: "100%" }}
+                        exit={{ opacity: 0, y: "100%", position: "absolute" }}
+                        animate={{
+                          opacity: 1,
+                          y: 0,
+                          transition: { delay: 0.25 },
+                        }}
                       >
-                        {loginLoading ? <p>Loadin...</p> : <p>Google</p>}
-                      </button>
-                      <button
-                        // onClick={() => {
-                        // setLoginLoading(true);
-                        // loginFacebook();
-                        // }}
-                        className="px-5 py-2 m-2 w-full font-bold rounded-md shadow-md text-white facebook opacity-50"
-                      >
-                        Facebook
-                      </button>
-                      <button
-                        // onClick={() => {
-                        //   setLoginLoading(true);
-                        //   loginGithub();
-                        // }}
-                        className="px-5 py-2 m-2 w-full font-bold rounded-md shadow-md text-white github opacity-50"
-                      >
-                        Github
-                      </button>
-                    </>
-                  )}
+                        <button
+                          onClick={() => loginGoogle()}
+                          className="px-5 py-2 my-2 w-full font-bold rounded-md shadow-md text-white google"
+                        >
+                          {loginLoading ? <p>Loadin...</p> : <p>Google</p>}
+                        </button>
+                        <button
+                          // onClick={() => {
+                          // setLoginLoading(true);
+                          // loginFacebook();
+                          // }}
+                          className="px-5 py-2 my-2 w-full font-bold rounded-md shadow-md text-white facebook opacity-50"
+                        >
+                          Facebook
+                        </button>
+                        <button
+                          // onClick={() => {
+                          // setLoginLoading(true);
+                          // loginFacebook();
+                          // }}
+                          className="px-5 py-2 my-2 w-full font-bold rounded-md shadow-md text-white discord opacity-50"
+                        >
+                          Discord
+                        </button>
+                        <button
+                          // onClick={() => {
+                          //   setLoginLoading(true);
+                          //   loginGithub();
+                          // }}
+                          className="px-5 py-2 my-2 w-full font-bold rounded-md shadow-md text-white github opacity-50"
+                        >
+                          Github
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               )}
             </motion.div>
