@@ -91,7 +91,7 @@ export const getNotifications = async (req, res) => {
   req.on("close", () => {
     setTimeout(() => {
       clientResponse.write(`Attempting SSE event after reconnection\n\n`);
-    }, 3000);
+    }, 5000);
   });
 };
 
