@@ -28,6 +28,9 @@ const LoginLogout = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [validUserName, setValidUserName] = useState(false);
+  const [validEmail, setValidEmail] = useState(false);
+  const [validPassword, setValidPassword] = useState(false);
   const [unReadLength, setUnReadLength] = useState(0);
   const [idsToUpdate, setIdsToUpdate] = useState([]);
 
@@ -69,8 +72,28 @@ const LoginLogout = () => {
 
   // const loginGithub = () => {};
 
+  const checkValidInput = (type) => {
+    if (type === "username") {
+      const usernameRegex = /^[a-zA-Z0-9_-]{3,20}$/;
+      const isValid = usernameRegex.test(username);
+      setValidUserName(isValid);
+    }
+    if (type === "email") {
+      const emailRegex = /^[\w.-]+@[a-zA-Z_-]+?(?:\.[a-zA-Z]{2,})+$/;
+      const isValid = emailRegex.test(email);
+      setValidEmail(isValid);
+    }
+    if (type === "password") {
+      const passwordRegex =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+      const isValid = passwordRegex.test(password);
+      setValidPassword(isValid);
+    }
+  };
+
   const loginPasswordUsername = (e) => {
     e.preventDefault();
+    if (!validPassword || !validEmail || !validUserName) return
     const credentials = {
       username,
       email,
@@ -182,35 +205,52 @@ const LoginLogout = () => {
                         className="w-full flex flex-col items-center justify-center"
                       >
                         <input
-                          onChange={(e) => setUsername(e.target.value)}
+                          onChange={(e) => {
+                            setUsername(e.target.value);
+                            checkValidInput("username");
+                          }}
                           type="text"
                           placeholder="Username"
                           value={username}
                           id="username"
                           name="username"
-                          className="w-full p-3 my-2 rounded-md shadow-md"
+                          className={`${
+                            validUserName ? "" : "shadow-red-200"
+                          } w-full p-2 my-2 rounded-md shadow-md`}
                         />
                         <input
-                          onChange={(e) => setEmail(e.target.value)}
+                          onChange={(e) => {
+                            setEmail(e.target.value);
+                            checkValidInput("email");
+                          }}
                           type="email"
                           placeholder="Email"
                           value={email}
                           id="email"
                           name="email"
-                          className="w-full p-3 my-2 rounded-md shadow-md"
+                          className={`${
+                            validEmail ? "shadow-green-200" : "shadow-red-200"
+                          } w-full p-3 rounded-md shadow-md`}
                         />
                         <input
-                          onChange={(e) => setPassword(e.target.value)}
+                          onChange={(e) => {
+                            setPassword(e.target.value);
+                            checkValidInput("password");
+                          }}
                           type="password"
                           placeholder="Password"
                           value={password}
                           id="password"
                           name="password"
-                          className="w-full p-3 my-2 rounded-md shadow-md"
+                          className={`${
+                            validPassword
+                              ? "shadow-green-200"
+                              : "shadow-red-200"
+                          } w-full p-3 my-2 rounded-md shadow-md`}
                         />
                         <button
                           type="submit"
-                          className="px-3 py-2 my-2 rounded-md shadow-md bg-gradient-to-tr from-green-200 to-green-300 w-full mt-5"
+                          className="px-3 py-2 rounded-md shadow-md bg-gradient-to-tr from-green-200 to-green-300 w-full mt-4"
                         >
                           Login
                         </button>

@@ -11,6 +11,7 @@ import {
   getNotifications,
   getNotificationsAtStart,
 } from "../utils/api";
+import IndexedDBManager from "../utils/indexDBApi";
 
 const UserContext = createContext({});
 
@@ -26,6 +27,7 @@ export const UserProvider = ({ children }) => {
   const [reminders, setReminders] = useState(
     JSON.parse(localStorage.getItem("reminders")) || []
   );
+  const [localDB, setLocalDB] = useState(null)
   const [notifications, setNotifications] = useState([]);
   const [googleToken, setGoogleToken] = useState(false);
   const [loginLoading, setLoginLoading] = useState(false);
@@ -102,6 +104,7 @@ export const UserProvider = ({ children }) => {
     if (!authToken && user) {
       localStorage.removeItem("authToken");
       setUser(false);
+      openIndexDB();
     }
   }, [authToken]);
 
@@ -146,11 +149,17 @@ export const UserProvider = ({ children }) => {
       if (error.eventPhase === EventSource.CLOSED) {
         console.log("SSE connection closed.");
         setTimeout(() => {
-        	const source = getNotifications(user.id)
-        	setupNotifListener(source)
-        }, 3000) 
+          const source = getNotifications(user.id);
+          setupNotifListener(source);
+        }, 3000);
       }
     });
+  };
+
+  const openIndexDB = () => {
+    const request = indexedDB.open("myCalngDB", 1);
+    calngIndexDBManager = new IndexedDBManager(request);
+    setLocalDB(calngIndexDBManager)
   };
 
   return (
