@@ -73,10 +73,7 @@ export const loginWithPasswordUsername = async (req, res) => {
   const { username, email, password, avatarUrl } = req.body;
   const exsistingUser = await prisma.user.findUnique({
     where: {
-      username_email: {
-        username: username,
-        email: email,
-      },
+    	email: email
     },
   });
   if (exsistingUser) {

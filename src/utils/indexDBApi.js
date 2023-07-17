@@ -18,7 +18,13 @@ class IndexedDBManager {
   }
   handleUpgradeNeeded(event) {
     const db = event.target.result;
-    // Perform database schema changes or initialization
+    const objectStoreName = "events";
+    if (!db.objectStoreNames.contains(objectStoreName)) {
+      const objectStore = db.createObjectStore(objectStoreName, {
+        keyPath: "id",
+        autoIncrement: true,
+      });
+    }
   }
   // Example method for adding a new event
   addEvent(eventData) {
