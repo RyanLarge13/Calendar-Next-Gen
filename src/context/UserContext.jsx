@@ -107,10 +107,10 @@ export const UserProvider = ({ children }) => {
       getUserData(authToken)
         .then((res) => {
           setUser(res.data.user);
-          if (res.data.user.notifSub === "") {
+          if (res.data.user.notifSub === null) {
             requestPermissonsAndSubscribe(authToken, res.data.user.id);
           }
-          if (res.data.user.notifSub !== "") {
+          if (res.data.user.notifSub !== null) {
             send(authToken, res.data.user.id);
           }
           getEvents(res.data.user.username, authToken)
