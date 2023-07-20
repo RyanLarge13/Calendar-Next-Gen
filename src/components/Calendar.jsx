@@ -14,7 +14,7 @@ import WeekView from "./WeekView";
 
 const Calendar = () => {
   const { events, holidays, reminders, weekDays } = useContext(UserContext);
-  const { menu, view, event, confirm} = useContext(InteractiveContext);
+  const { menu, view, event, confirm } = useContext(InteractiveContext);
   const {
     setStart,
     moveCalendar,
@@ -114,7 +114,7 @@ const Calendar = () => {
         </section>
         <Modal />
         <Menu />
-        {confirm.show && confirm.func && <Confirm />} 
+        {confirm.show && confirm.func && <Confirm />}
         {event && <Event dayEvents={todaysEvents} />}
       </section>
     </main>

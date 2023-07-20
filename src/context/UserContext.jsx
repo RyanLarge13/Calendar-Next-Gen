@@ -16,29 +16,64 @@ import IndexedDBManager from "../utils/indexDBApi";
 const UserContext = createContext({});
 
 export const UserProvider = ({ children }) => {
+  const systemNotifReset = {
+    show: false,
+    title: null,
+    text: null,
+    color: null,
+    actions: null,
+  };
   const [user, setUser] = useState(false);
   const [authToken, setAuthToken] = useState(
     localStorage.getItem("authToken") || false
   );
-  const [events, setEvents] = useState(
-    JSON.parse(localStorage.getItem("events")) || []
-  );
+  const [events, setEvents] = useState([]);
   const [lists, setLists] = useState([]);
-  const [reminders, setReminders] = useState(
-    JSON.parse(localStorage.getItem("reminders")) || []
-  );
-  const [localDB, setLocalDB] = useState(null)
+  const [reminders, setReminders] = useState([]);
+  const [localDB, setLocalDB] = useState(null);
   const [notifications, setNotifications] = useState([]);
+  const [systemNotif, setSystemNotif] = useState({
+    show: true,
+    title: "Welcome",
+    text: "Welcome to Calng! Is this your first time? Take a tour..",
+    color: "bg-green-300",
+    actions: [
+      { text: "close", func: () => setSystemNotif(systemNotifReset) },
+      { text: "start tour 😊", func: () => console.log("start tour") },
+    ],
+  });
   const [googleToken, setGoogleToken] = useState(false);
   const [loginLoading, setLoginLoading] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
 
+  const updateStatus = () => {
+    setIsOnline(navigator.onLine);
+  };
+
   useEffect(() => {
-    window.navigator.onLine
-      ? setIsOnline(() => true)
-      : setIsOnline(() => false);
-    if (!isOnline) alert("You are offline");
-  }, [events]);
+    window.addEventListener("online", updateStatus);
+    window.addEventListener("offline", updateStatus);
+    return () => {
+      window.removeEventListener("online", updateStatus);
+      window.removeEventListener("offline", updateStatus);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isOnline) {
+      const newNotif = {
+        show: true,
+        title: "Network",
+        text: "You are offline",
+        color: "bg-red-300",
+        actions: [
+          { text: "close", func: () => setSystemNotif(systemNotifReset) },
+          { text: "refresh", func: () => window.reload() },
+        ],
+      };
+      setSystemNotif(newNotif);
+    }
+  }, [isOnline]);
 
   useEffect(() => {
     if (googleToken && !authToken) {
@@ -62,7 +97,7 @@ export const UserProvider = ({ children }) => {
           setEvents(localStorage.getItem("events") || []);
         });
     }
-  }, [googleToken]);
+  }, [isOnline, googleToken]);
 
   useEffect(() => {
     if (authToken) {
@@ -159,7 +194,7 @@ export const UserProvider = ({ children }) => {
   const openIndexDB = () => {
     const request = indexedDB.open("myCalngDB", 1);
     calngIndexDBManager = new IndexedDBManager(request);
-    setLocalDB(calngIndexDBManager)
+    setLocalDB(calngIndexDBManager);
   };
 
   return (
@@ -175,6 +210,8 @@ export const UserProvider = ({ children }) => {
         isOnline,
         lists,
         notifications,
+        systemNotif,
+        setSystemNotif,
         setNotifications,
         setLists,
         setUser,

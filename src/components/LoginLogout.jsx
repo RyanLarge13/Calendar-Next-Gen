@@ -28,9 +28,9 @@ const LoginLogout = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [validUserName, setValidUserName] = useState(false);
-  const [validEmail, setValidEmail] = useState(false);
-  const [validPassword, setValidPassword] = useState(false);
+  const [validUserName, setValidUserName] = useState(null);
+  const [validEmail, setValidEmail] = useState(null);
+  const [validPassword, setValidPassword] = useState(null);
   const [unReadLength, setUnReadLength] = useState(0);
   const [idsToUpdate, setIdsToUpdate] = useState([]);
 
@@ -93,7 +93,8 @@ const LoginLogout = () => {
 
   const loginPasswordUsername = (e) => {
     e.preventDefault();
-    if (!validPassword || !validEmail || !validUserName) return
+    if (!validPassword || !validEmail || !validUserName) return;
+    if (!password || !email || !username) return;
     const credentials = {
       username,
       email,
@@ -140,8 +141,8 @@ const LoginLogout = () => {
               className="fixed inset-0 bg-[rgba(0,0,0,0.4)] z-10"
             ></motion.div>
             <motion.div
-              initial={{ y: "100%", opacity: 0 }}
-              exit={{ y: "100%", opacity: 0 }}
+              initial={{ y: 100, opacity: 0 }}
+              exit={{ y: 200, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               className="p-3 fixed bottom-0 left-0 right-0 rounded-md shadow-md bg-white z-10"
             >
@@ -179,23 +180,36 @@ const LoginLogout = () => {
                   </div>
                 </div>
               ) : (
-                <div className="pt-10 flex flex-col justify-center items-center">
-                  {!regularLogin ? (
-                    <BiLogInCircle
+                <div className="">
+                  {!regularLogin && (
+                    <motion.div
+                      initial={{ x: 50, opacity: 0 }}
+                      exit={{ x: 50, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      className="text-xs flex justify-end items-center pb-5"
                       onClick={() => setRegularLogin(true)}
-                      className="absolute top-5 right-5"
-                    />
-                  ) : (
-                    <BiLogOutCircle
+                    >
+                      <p className="mr-2">original login</p>
+                      <BiLogInCircle />
+                    </motion.div>
+                  )}
+                  {regularLogin && (
+                    <motion.div
+                      initial={{ x: -50, opacity: 0 }}
+                      exit={{ x: -50, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      className="text-xs flex justify-start items-center pb-5"
                       onClick={() => setRegularLogin(false)}
-                      className="absolute top-5 right-5"
-                    />
+                    >
+                      <BiLogOutCircle />
+                      <p className="ml-2">0Auth</p>
+                    </motion.div>
                   )}
                   <AnimatePresence>
                     {regularLogin && (
                       <motion.form
-                        initial={{ opacity: 0, y: "100%" }}
-                        exit={{ opacity: 0, y: "100%", position: "absolute" }}
+                        initial={{ opacity: 0, y: 50 }}
+                        exit={{ opacity: 0, y: 50, position: "absolute" }}
                         animate={{
                           opacity: 1,
                           y: 0,
@@ -215,7 +229,11 @@ const LoginLogout = () => {
                           id="username"
                           name="username"
                           className={`${
-                            validUserName ? "" : "shadow-red-200"
+                            validUserName === null
+                              ? ""
+                              : validUserName
+                              ? "shadow-green-200"
+                              : "shadow-red-200"
                           } w-full p-2 my-2 rounded-md shadow-md`}
                         />
                         <input
@@ -229,7 +247,11 @@ const LoginLogout = () => {
                           id="email"
                           name="email"
                           className={`${
-                            validEmail ? "shadow-green-200" : "shadow-red-200"
+                            validEmail === null
+                              ? ""
+                              : validEmail
+                              ? "shadow-green-200"
+                              : "shadow-red-200"
                           } w-full p-3 rounded-md shadow-md`}
                         />
                         <input
@@ -243,7 +265,9 @@ const LoginLogout = () => {
                           id="password"
                           name="password"
                           className={`${
-                            validPassword
+                            validPassword === null
+                              ? ""
+                              : validPassword
                               ? "shadow-green-200"
                               : "shadow-red-200"
                           } w-full p-3 my-2 rounded-md shadow-md`}
@@ -254,14 +278,20 @@ const LoginLogout = () => {
                         >
                           Login
                         </button>
+                        <button
+                          type="text"
+                          className="px-3 py-2 rounded-md shadow-md bg-gradient-to-tr from-pink-400 to-yellow-300 w-full mt-4"
+                        >
+                          Sign Up
+                        </button>
                       </motion.form>
                     )}
                   </AnimatePresence>
                   <AnimatePresence>
                     {!regularLogin && (
                       <motion.div
-                        initial={{ opacity: 0, y: "100%" }}
-                        exit={{ opacity: 0, y: "100%", position: "absolute" }}
+                        initial={{ opacity: 0, y: 50 }}
+                        exit={{ opacity: 0, y: 50, position: "absolute" }}
                         animate={{
                           opacity: 1,
                           y: 0,
@@ -300,6 +330,15 @@ const LoginLogout = () => {
                           className="px-5 py-2 my-2 w-full font-bold rounded-md shadow-md text-white github opacity-50"
                         >
                           Github
+                        </button>
+                        <button
+                          // onClick={() => {
+                          //   setLoginLoading(true);
+                          //   loginGithub();
+                          // }}
+                          className="px-5 py-2 my-2 w-full font-bold rounded-md shadow-md text-white apple opacity-50"
+                        >
+                          Apple
                         </button>
                       </motion.div>
                     )}

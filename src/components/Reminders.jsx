@@ -109,11 +109,11 @@ const Reminders = ({ showReminders }) => {
             key={reminder.id}
             className={`${
               new Date(reminder.time) < new Date()
-                ? "bg-orange-200"
+                ? "bg-teal-200"
                 : new Date(reminder.time).toLocaleDateString() ===
                   new Date().toLocaleDateString()
                 ? ""
-                : "bg-blue-200"
+                : "bg-slate-200"
             } p-2 relative rounded-md my-5`}
             style={{ fontSize: 11 }}
             onPointerDown={() => startTime(reminder.id)}

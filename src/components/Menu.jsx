@@ -2,7 +2,7 @@ import { useState, useContext, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { RiArrowUpDownFill } from "react-icons/ri";
 import { AiOutlinePlus } from "react-icons/ai";
-import {BsListCheck} from "react-icons/bs"
+import { BsListCheck } from "react-icons/bs";
 import { IoIosAlarm } from "react-icons/io";
 import Reminders from "./Reminders.jsx";
 import Lists from "./Lists.jsx";
@@ -51,9 +51,9 @@ const Menu = () => {
     <AnimatePresence>
       {menu && (
         <motion.div
-          initial={{ y: "110%", opacity: 0 }}
+          initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          exit={{ y: "110%", opacity: 0 }}
+          exit={{ y: 200, opacity: 0 }}
           className="fixed inset-0 bottom-[-20px] pt-20 pb-10 rounded-md bg-white shadow-md shadow-purple-200 overflow-y-auto"
           style={{ fontSize: 12 }}
         >

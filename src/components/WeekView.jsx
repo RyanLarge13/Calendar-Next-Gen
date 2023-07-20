@@ -9,10 +9,13 @@ import { BsFillCalendarDayFill } from "react-icons/bs";
 
 const WeekView = () => {
   const { events, holidays } = useContext(UserContext);
-  const { setEvent } = useContext(InteractiveContext);
-  const { currentWeek, setCurrentWeek } = useContext(DatesContext);
-  const currentWeekday = new Date().getDay();
+  const { setEvent, setAddNewEvent, setType } = useContext(InteractiveContext);
+  const { currentWeek, setCurrentWeek, string, setString, setOpenModal } =
+    useContext(DatesContext);
+
   const [weeklyEvents, setWeeklyEvents] = useState([]);
+
+  const currentWeekday = new Date().getDay();
   const containerWidth = useRef(null);
 
   useEffect(() => {
@@ -67,7 +70,15 @@ const WeekView = () => {
             </p>
             <div className="flex gap-x-3">
               <BsFillCalendarDayFill />
-              <AiOutlinePlusCircle />
+              <AiOutlinePlusCircle
+                className="text-lg"
+                onClick={() => {
+                  setOpenModal(true);
+                  setString(date);
+                  setType("event");
+                  setAddNewEvent(true);
+                }}
+              />
             </div>
           </div>
           <div>
