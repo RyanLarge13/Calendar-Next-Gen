@@ -32,16 +32,19 @@ export const UserProvider = ({ children }) => {
   const [reminders, setReminders] = useState([]);
   const [localDB, setLocalDB] = useState(null);
   const [notifications, setNotifications] = useState([]);
-  const [systemNotif, setSystemNotif] = useState({
-    show: true,
-    title: "Welcome",
-    text: "Welcome to Calng! Is this your first time? Take a tour..",
-    color: "bg-green-300",
-    actions: [
-      { text: "close", func: () => setSystemNotif(systemNotifReset) },
-      { text: "start tour 😊", func: () => console.log("start tour") },
-    ],
-  });
+  const [systemNotif, setSystemNotif] = useState({show: false})
+  
+  // useState({
+//     show: true,
+//     title: "Welcome",
+//     text: "Welcome to Calng! Is this your first time? Take a tour..",
+//     color: "bg-green-300",
+//     actions: [
+//       { text: "close", func: () => setSystemNotif(systemNotifReset) },
+//       { text: "start tour 😊", func: () => console.log("start tour") },
+//     ],
+//   });
+  
   const [googleToken, setGoogleToken] = useState(false);
   const [loginLoading, setLoginLoading] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
@@ -104,10 +107,10 @@ export const UserProvider = ({ children }) => {
       getUserData(authToken)
         .then((res) => {
           setUser(res.data.user);
-          if (!res.data.user.notifSub) {
+          if (res.data.user.notifSub === "") {
             requestPermissonsAndSubscribe(authToken, res.data.user.id);
           }
-          if (res.data.user.notifSub) {
+          if (res.data.user.notifSub !== "") {
             send(authToken, res.data.user.id);
           }
           getEvents(res.data.user.username, authToken)

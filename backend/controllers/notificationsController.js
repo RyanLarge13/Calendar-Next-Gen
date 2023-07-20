@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { sendNotification } from "../utils/notificationService.js";
 import cron from "node-cron";
 const prisma = new PrismaClient();
+const connectedClients = [];
 
 export const subscribeToNotifications = async (req, res) => {
   const subscription = req.body;
@@ -56,7 +57,7 @@ const processNotifications = async (userId, res) => {
       const notificationIdsToUpdate = [];
       for (const notification of notifications) {
         if (new Date(notification.time) <= new Date()) {
-          res.write(`data: ${JSON.stringify(notification)}\n\n`);
+          sendSSEEventToClient(userId, notification);
           const payload = JSON.stringify({
             title: notification.notifData.title,
             body: notification.notifData.notes,
@@ -77,6 +78,13 @@ const processNotifications = async (userId, res) => {
   }
 };
 
+function sendSSEEventToClient(clientId, eventData) {
+  const client = connectedClients.find((c) => c.id === clientId);
+  if (client) {
+    client.response.write(`data: ${JSON.stringify(eventData)}\n\n`);
+  }
+}
+
 export const getNotifications = async (req, res) => {
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
@@ -84,8 +92,10 @@ export const getNotifications = async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   const clientResponse = res;
   const id = req.params.userId;
+  const client = { id: id, response: clientResponse };
+  connectedClients.push(client);
   const job = cron.schedule("*/30 * * * * *", () => {
-    processNotifications(id, res);
+    processNotifications(id, clientResponse);
   });
   job.start();
   req.on("close", () => {
