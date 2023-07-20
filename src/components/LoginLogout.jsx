@@ -9,19 +9,15 @@ import InteractiveContext from "../context/InteractiveContext";
 import Notification from "./Notification";
 
 const LoginLogout = () => {
-  const {
-    showLogin,
-    setShowLogin,
-    notifications,
-    setNotifications,
-    showNotifs,
-    setShowNotifs,
-  } = useContext(InteractiveContext);
+  const { showLogin, setShowLogin, showNotifs, setShowNotifs } =
+    useContext(InteractiveContext);
   const {
     user,
     setUser,
     setGoogleToken,
     loginLoading,
+    notifications,
+    setNotifications,
     setAuthToken,
     setEvents,
     setReminders,
@@ -32,6 +28,9 @@ const LoginLogout = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [validUserName, setValidUserName] = useState(null);
+  const [validEmail, setValidEmail] = useState(null);
+  const [validPassword, setValidPassword] = useState(null);
   const [unReadLength, setUnReadLength] = useState(0);
   const [idsToUpdate, setIdsToUpdate] = useState([]);
 
@@ -73,8 +72,29 @@ const LoginLogout = () => {
 
   // const loginGithub = () => {};
 
+  const checkValidInput = (type) => {
+    if (type === "username") {
+      const usernameRegex = /^[a-zA-Z0-9_-]{3,20}$/;
+      const isValid = usernameRegex.test(username);
+      setValidUserName(isValid);
+    }
+    if (type === "email") {
+      const emailRegex = /^[\w.-]+@[a-zA-Z_-]+?(?:\.[a-zA-Z]{2,})+$/;
+      const isValid = emailRegex.test(email);
+      setValidEmail(isValid);
+    }
+    if (type === "password") {
+      const passwordRegex =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+      const isValid = passwordRegex.test(password);
+      setValidPassword(isValid);
+    }
+  };
+
   const loginPasswordUsername = (e) => {
     e.preventDefault();
+    if (!validPassword || !validEmail || !validUserName) return;
+    if (!password || !email || !username) return;
     const credentials = {
       username,
       email,
@@ -121,8 +141,8 @@ const LoginLogout = () => {
               className="fixed inset-0 bg-[rgba(0,0,0,0.4)] z-10"
             ></motion.div>
             <motion.div
-              initial={{ y: "100%", opacity: 0 }}
-              exit={{ y: "100%", opacity: 0 }}
+              initial={{ y: 100, opacity: 0 }}
+              exit={{ y: 200, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               className="p-3 fixed bottom-0 left-0 right-0 rounded-md shadow-md bg-white z-10"
             >
@@ -160,87 +180,169 @@ const LoginLogout = () => {
                   </div>
                 </div>
               ) : (
-                <div className="pt-10 flex flex-col justify-center items-center">
-                  {!regularLogin ? (
-                    <BiLogInCircle
+                <div className="">
+                  {!regularLogin && (
+                    <motion.div
+                      initial={{ x: 50, opacity: 0 }}
+                      exit={{ x: 50, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      className="text-xs flex justify-end items-center pb-5"
                       onClick={() => setRegularLogin(true)}
-                      className="absolute top-5 right-5"
-                    />
-                  ) : (
-                    <BiLogOutCircle
-                      onClick={() => setRegularLogin(false)}
-                      className="absolute top-5 right-5"
-                    />
-                  )}
-                  {regularLogin ? (
-                    <motion.form
-                      initial={{ opacity: 0, y: "100%" }}
-                      animate={{ opacity: 1, y: 0 }}
-                      onSubmit={loginPasswordUsername}
-                      className="w-full flex flex-col items-center justify-center"
                     >
-                      <input
-                        onChange={(e) => setUsername(e.target.value)}
-                        type="text"
-                        placeholder="Username"
-                        value={username}
-                        id="username"
-                        name="username"
-                        className="w-full p-3 rounded-md shadow-md"
-                      />
-                      <input
-                        onChange={(e) => setEmail(e.target.value)}
-                        type="email"
-                        placeholder="Email"
-                        value={email}
-                        id="email"
-                        name="email"
-                        className="w-full p-3 my-2 rounded-md shadow-md"
-                      />
-                      <input
-                        onChange={(e) => setPassword(e.target.value)}
-                        type="password"
-                        placeholder="Password"
-                        value={password}
-                        id="password"
-                        name="password"
-                        className="w-full p-3 rounded-md shadow-md"
-                      />
-                      <button
-                        type="submit"
-                        className="px-3 py-2 rounded-md shadow-md bg-gradient-to-tr from-green-200 to-green-300 w-full mt-5"
-                      >
-                        Login
-                      </button>
-                    </motion.form>
-                  ) : (
-                    <>
-                      <button
-                        onClick={() => loginGoogle()}
-                        className="px-5 py-2 m-2 w-full font-bold rounded-md shadow-md text-white google"
-                      >
-                        {loginLoading ? <p>Loadin...</p> : <p>Google</p>}
-                      </button>
-                      <button
-                        // onClick={() => {
-                        // setLoginLoading(true);
-                        // loginFacebook();
-                        // }}
-                        className="px-5 py-2 m-2 w-full font-bold rounded-md shadow-md text-white facebook opacity-50"
-                      >
-                        Facebook
-                      </button>
-                      <button
-                        // onClick={() => {
-                        //   setLoginLoading(true);
-                        //   loginGithub();
-                        // }}
-                        className="px-5 py-2 m-2 w-full font-bold rounded-md shadow-md text-white github opacity-50"
-                      >
-                        Github
-                      </button>
-                    </>
+                      <p className="mr-2">original login</p>
+                      <BiLogInCircle />
+                    </motion.div>
                   )}
+                  {regularLogin && (
+                    <motion.div
+                      initial={{ x: -50, opacity: 0 }}
+                      exit={{ x: -50, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      className="text-xs flex justify-start items-center pb-5"
+                      onClick={() => setRegularLogin(false)}
+                    >
+                      <BiLogOutCircle />
+                      <p className="ml-2">0Auth</p>
+                    </motion.div>
+                  )}
+                  <AnimatePresence>
+                    {regularLogin && (
+                      <motion.form
+                        initial={{ opacity: 0, y: 50 }}
+                        exit={{ opacity: 0, y: 50, position: "absolute" }}
+                        animate={{
+                          opacity: 1,
+                          y: 0,
+                          transition: { delay: 0.25 },
+                        }}
+                        onSubmit={loginPasswordUsername}
+                        className="w-full flex flex-col items-center justify-center"
+                      >
+                        <input
+                          onChange={(e) => {
+                            setUsername(e.target.value);
+                            checkValidInput("username");
+                          }}
+                          type="text"
+                          placeholder="Username"
+                          value={username}
+                          id="username"
+                          name="username"
+                          className={`${
+                            validUserName === null
+                              ? ""
+                              : validUserName
+                              ? "shadow-green-200"
+                              : "shadow-red-200"
+                          } w-full p-2 my-2 rounded-md shadow-md`}
+                        />
+                        <input
+                          onChange={(e) => {
+                            setEmail(e.target.value);
+                            checkValidInput("email");
+                          }}
+                          type="email"
+                          placeholder="Email"
+                          value={email}
+                          id="email"
+                          name="email"
+                          className={`${
+                            validEmail === null
+                              ? ""
+                              : validEmail
+                              ? "shadow-green-200"
+                              : "shadow-red-200"
+                          } w-full p-3 rounded-md shadow-md`}
+                        />
+                        <input
+                          onChange={(e) => {
+                            setPassword(e.target.value);
+                            checkValidInput("password");
+                          }}
+                          type="password"
+                          placeholder="Password"
+                          value={password}
+                          id="password"
+                          name="password"
+                          className={`${
+                            validPassword === null
+                              ? ""
+                              : validPassword
+                              ? "shadow-green-200"
+                              : "shadow-red-200"
+                          } w-full p-3 my-2 rounded-md shadow-md`}
+                        />
+                        <button
+                          type="submit"
+                          className="px-3 py-2 rounded-md shadow-md bg-gradient-to-tr from-green-200 to-green-300 w-full mt-4"
+                        >
+                          Login
+                        </button>
+                        <button
+                          type="text"
+                          className="px-3 py-2 rounded-md shadow-md bg-gradient-to-tr from-pink-400 to-yellow-300 w-full mt-4"
+                        >
+                          Sign Up
+                        </button>
+                      </motion.form>
+                    )}
+                  </AnimatePresence>
+                  <AnimatePresence>
+                    {!regularLogin && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 50 }}
+                        exit={{ opacity: 0, y: 50, position: "absolute" }}
+                        animate={{
+                          opacity: 1,
+                          y: 0,
+                          transition: { delay: 0.25 },
+                        }}
+                      >
+                        <button
+                          onClick={() => loginGoogle()}
+                          className="px-5 py-2 my-2 w-full font-bold rounded-md shadow-md text-white google"
+                        >
+                          {loginLoading ? <p>Loadin...</p> : <p>Google</p>}
+                        </button>
+                        <button
+                          // onClick={() => {
+                          // setLoginLoading(true);
+                          // loginFacebook();
+                          // }}
+                          className="px-5 py-2 my-2 w-full font-bold rounded-md shadow-md text-white facebook opacity-50"
+                        >
+                          Facebook
+                        </button>
+                        <button
+                          // onClick={() => {
+                          // setLoginLoading(true);
+                          // loginFacebook();
+                          // }}
+                          className="px-5 py-2 my-2 w-full font-bold rounded-md shadow-md text-white discord opacity-50"
+                        >
+                          Discord
+                        </button>
+                        <button
+                          // onClick={() => {
+                          //   setLoginLoading(true);
+                          //   loginGithub();
+                          // }}
+                          className="px-5 py-2 my-2 w-full font-bold rounded-md shadow-md text-white github opacity-50"
+                        >
+                          Github
+                        </button>
+                        <button
+                          // onClick={() => {
+                          //   setLoginLoading(true);
+                          //   loginGithub();
+                          // }}
+                          className="px-5 py-2 my-2 w-full font-bold rounded-md shadow-md text-white apple opacity-50"
+                        >
+                          Apple
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               )}
             </motion.div>

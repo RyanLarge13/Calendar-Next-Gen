@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import { motion } from "framer-motion";
 import {
   BsFillCalendarPlusFill,
@@ -18,6 +18,12 @@ export const AddCircle = () => {
   const { setOpenModal, setString, string } = useContext(DatesContext);
 
   const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    if (showLogin) {
+      setShow(false);
+    }
+  }, [showLogin]);
 
   const openModalAndSetType = (type) => {
     if (!string) {

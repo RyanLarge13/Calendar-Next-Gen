@@ -69,6 +69,15 @@ export default defineConfig({
         clientsClaim: true,
         skipWaiting: true,
         globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
+        runtimeCaching: [
+    {
+      urlPattern: /^https:\/\/calendar-next-gen-production\.up\.railway\.app\//,
+      handler: 'NetworkFirst',
+      options: {
+        cacheName: 'api-cache',
+      },
+    },
+  ],
       },
     }),
   ],

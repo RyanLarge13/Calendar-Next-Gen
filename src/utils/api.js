@@ -153,10 +153,56 @@ export const getNotificationsAtStart = (username, token) => {
   return res;
 };
 
+export const requestAndSubscribe = async (token, userId) => {
+  if ("serviceWorker" in navigator && "PushManager" in window) {
+    navigator.serviceWorker.ready
+      .then((registration) => {
+        return Notification.requestPermission()
+          .then((permission) => {
+            // If permission is granted, subscribe the user
+            if (permission === "granted") {
+              // Subscribe the user
+              return registration.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: import.meta.env.VITE_VAPID_PUBLIC_KEY,
+              });
+            } else {
+              throw new Error("Permission denied for notifications");
+            }
+          })
+          .then((subscription) => {
+            // Send the subscription details to the server
+            return fetch(`${devUrl}/subscribe/notifs`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify(subscription),
+            });
+          })
+          .then((response) => {
+            if (response.ok) {
+              console.log("Subscription successful");
+              getNotifications(userId);
+            } else {
+              throw new Error("Failed to subscribe");
+            }
+          })
+          .catch((error) => {
+            console.error("Error subscribing to push notifications:", error);
+          });
+      })
+      .catch((error) => {
+        console.error("Error getting service worker registration:", error);
+      });
+  } else {
+    console.warn("Push notifications are not supported");
+  }
+};
+
 export const getNotifications = (userId) => {
-  const eventSource = new EventSource(
-    `${productionUrl}/${userId}/notifications`
-  );
+  const eventSource = new EventSource(`${devUrl}/${userId}/notifications`);
   return eventSource;
 };
 

@@ -5,17 +5,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { IoIosAlarm } from "react-icons/io";
 import { MdSystemSecurityUpdateGood } from "react-icons/md";
 import InteractiveContext from "../context/InteractiveContext";
-import Confirm from "./Confirm";
+import UserContext from "../context/UserContext";
 
 const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
-  const {
-    notifications,
-    setNotifications,
-    confirm,
-    setConfirm,
-    showNotifs,
-    setShowNotifs,
-  } = useContext(InteractiveContext);
+  const { notifications, setNotifications } = useContext(UserContext);
+  const { confirm, setConfirm, showNotifs, setShowNotifs } =
+    useContext(InteractiveContext);
 
   const [notifOpen, setNotifOpen] = useState("");
   const [deleteId, setDeleteId] = useState(null);
@@ -42,7 +37,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
   };
 
   const deleteNotif = () => {
-    setConfirm(false);
+    setConfirm({show:false, func: null});
     const token = localStorage.getItem("authToken");
     if (!token) return;
     if (deleteId) {
@@ -143,7 +138,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                       onClick={(e) => {
                         e.stopPropagation();
                         setDeleteId(notif.id);
-                        setConfirm(true);
+                        setConfirm({show:true, func: deleteNotif});
                       }}
                       className="border-b border-b-rose-300 cursor-pointer"
                     >
@@ -154,7 +149,6 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
               </motion.div>
             ))
           )}
-          {confirm && <Confirm func={deleteNotif} />}
         </motion.div>
       )}
     </AnimatePresence>

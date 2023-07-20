@@ -41,9 +41,8 @@ const MonthView = () => {
       targetDate.getMonth() === currentDate.getMonth() &&
       targetDate.getFullYear() === currentDate.getFullYear();
     if (
-      (isSameMonthAndYear &&
-        (rowDays.includes(index) || columnDays.includes(index))) ||
-      !isSameMonthAndYear
+      isSameMonthAndYear &&
+      (rowDays.includes(index) || columnDays.includes(index))
     ) {
       return { backgroundColor: "rgba(0, 0, 0, 0.1)" };
     } else {
@@ -51,13 +50,33 @@ const MonthView = () => {
     }
   };
 
+  // Function to get the first day of the current week
+  function getFirstDayOfWeek() {
+    const currentDate = new Date();
+    const firstDayOfWeek = new Date(currentDate);
+    const dayOfWeek = currentDate.getDay();
+    const diff = currentDate.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+    firstDayOfWeek.setDate(diff);
+    return firstDayOfWeek.toISOString().split("T")[0];
+  }
+
+  // Function to get the last day of the current week
+  function getLastDayOfWeek() {
+    const currentDate = new Date();
+    const lastDayOfWeek = new Date(currentDate);
+    const dayOfWeek = currentDate.getDay();
+    const diff =
+      currentDate.getDate() - dayOfWeek + 7 - (dayOfWeek === 0 ? 7 : 0);
+    lastDayOfWeek.setDate(diff);
+    return lastDayOfWeek.toISOString().split("T")[0];
+  }
+
   const getInfo = (long, lat) => {
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const dayOfWeek = new Date().getDay();
-    const start = dayOfWeek - 1;
-    const end = 7 + (dayOfWeek - 1);
+    const firstDayOfWeek = getFirstDayOfWeek();
+    const lastDayOfWeek = getLastDayOfWeek();
     Axios.get(
-      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${long}&daily=weathercode&temperature_unit=fahrenheit&past_days=${start}&forecast_days=${end}&timezone=${timeZone}`
+      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${long}&daily=weathercode&temperature_unit=fahrenheit&start_date=${firstDayOfWeek}&end_date=${lastDayOfWeek}&timezone=${timeZone}`
     )
       .then((res) => {
         const data = [

@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   BsFillCalendarWeekFill,
@@ -14,6 +14,12 @@ const Views = () => {
   const { setView, showLogin } = useContext(InteractiveContext);
 
   const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    if (showLogin) {
+      setShow(false);
+    }
+  }, [showLogin]);
 
   return (
     <>

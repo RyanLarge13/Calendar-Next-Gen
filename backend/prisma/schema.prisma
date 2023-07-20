@@ -15,6 +15,7 @@ model User {
   password String
   birthday DateTime?
   createAt DateTime @default(now())
+  notifSub String?
   events   Event[]
   reminders Reminder[]
   notifications Notification[]

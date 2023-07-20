@@ -8,11 +8,11 @@ import { FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";
 import { MdLocationPin } from "react-icons/md";
 import { FaExternalLinkAlt } from "react-icons/fa";
-import InteractiveContext from "../context/InteractiveContext"
+import InteractiveContext from "../context/InteractiveContext";
 import { motion } from "framer-motion";
 
 const Event = ({ dayEvents }) => {
-	const {event, setEvent} = useContext(InteractiveContext)
+  const { event, setEvent } = useContext(InteractiveContext);
   const [open, setOpen] = useState(true);
   const [timeLeft, setTimeLeft] = useState(null);
   const [start, setStart] = useState(0);
