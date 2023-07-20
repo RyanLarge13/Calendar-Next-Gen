@@ -172,7 +172,7 @@ export const requestAndSubscribe = async (token, userId) => {
           })
           .then((subscription) => {
             // Send the subscription details to the server
-            return fetch(`${devUrl}/subscribe/notifs`, {
+            return fetch(`${productionUrl}/subscribe/notifs`, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
