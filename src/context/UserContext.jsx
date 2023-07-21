@@ -16,13 +16,6 @@ import IndexedDBManager from "../utils/indexDBApi";
 const UserContext = createContext({});
 
 export const UserProvider = ({ children }) => {
-  const systemNotifReset = {
-    show: false,
-    title: null,
-    text: null,
-    color: null,
-    actions: null,
-  };
   const [user, setUser] = useState(false);
   const [authToken, setAuthToken] = useState(
     localStorage.getItem("authToken") || false
@@ -32,19 +25,20 @@ export const UserProvider = ({ children }) => {
   const [reminders, setReminders] = useState([]);
   const [localDB, setLocalDB] = useState(null);
   const [notifications, setNotifications] = useState([]);
-  const [systemNotif, setSystemNotif] = useState({show: false})
-  
+  const [systemNotif, setSystemNotif] = useState({ show: false });
+  const [backOnlineTrigger, setBackOnlineTrigger] = useState(false);
+
   // useState({
-//     show: true,
-//     title: "Welcome",
-//     text: "Welcome to Calng! Is this your first time? Take a tour..",
-//     color: "bg-green-300",
-//     actions: [
-//       { text: "close", func: () => setSystemNotif(systemNotifReset) },
-//       { text: "start tour 😊", func: () => console.log("start tour") },
-//     ],
-//   });
-  
+  //     show: true,
+  //     title: "Welcome",
+  //     text: "Welcome to Calng! Is this your first time? Take a tour..",
+  //     color: "bg-green-300",
+  //     actions: [
+  //       { text: "close", func: () => setSystemNotif(systemNotifReset) },
+  //       { text: "start tour 😊", func: () => console.log("start tour") },
+  //     ],
+  //   });
+
   const [googleToken, setGoogleToken] = useState(false);
   const [loginLoading, setLoginLoading] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
@@ -70,11 +64,26 @@ export const UserProvider = ({ children }) => {
         text: "You are offline",
         color: "bg-red-300",
         actions: [
-          { text: "close", func: () => setSystemNotif(systemNotifReset) },
-          { text: "refresh", func: () => window.reload() },
+          { text: "close", func: () => setSystemNotif({ show: false }) },
+          { text: "refresh", func: () => window.location.reload() },
         ],
       };
       setSystemNotif(newNotif);
+      setBackOnlineTrigger(true);
+    }
+    if (isOnline && backOnlineTrigger === true) {
+      // Logic to show notification when going back online
+      const newNotif = {
+        show: true,
+        title: "Network",
+        text: "You are back online",
+        color: "bg-green-300",
+        actions: [
+          { text: "close", func: () => setSystemNotif({ show: false }) },
+        ],
+      };
+      setSystemNotif(newNotif);
+      setBackOnlineTrigger(false);
     }
   }, [isOnline]);
 
