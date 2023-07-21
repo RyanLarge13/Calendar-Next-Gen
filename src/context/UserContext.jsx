@@ -27,18 +27,6 @@ export const UserProvider = ({ children }) => {
   const [notifications, setNotifications] = useState([]);
   const [systemNotif, setSystemNotif] = useState({ show: false });
   const [backOnlineTrigger, setBackOnlineTrigger] = useState(false);
-
-  // useState({
-  //     show: true,
-  //     title: "Welcome",
-  //     text: "Welcome to Calng! Is this your first time? Take a tour..",
-  //     color: "bg-green-300",
-  //     actions: [
-  //       { text: "close", func: () => setSystemNotif(systemNotifReset) },
-  //       { text: "start tour 😊", func: () => console.log("start tour") },
-  //     ],
-  //   });
-
   const [googleToken, setGoogleToken] = useState(false);
   const [loginLoading, setLoginLoading] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
@@ -198,6 +186,16 @@ export const UserProvider = ({ children }) => {
     serverSentSource.addEventListener("message", (event) => {
       const notification = JSON.parse(event.data);
       setNotifications((prev) => [notification, ...prev]);
+      setSystemNotif({
+        show: true,
+        title: event.data.type,
+        text: "",
+        color: "bg-purple-300",
+        actions: [
+          { text: "close", func: () => setSystemNotif({ show: false }) },
+          { text: "open", func: (customFunc) => customFunc },
+        ],
+      });
       console.log("Received notification:", notification);
     });
     serverSentSource.addEventListener("error", (error) => {
