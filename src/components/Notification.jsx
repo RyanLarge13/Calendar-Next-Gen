@@ -9,7 +9,7 @@ import UserContext from "../context/UserContext";
 
 const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
   const { notifications, setNotifications } = useContext(UserContext);
-  const { confirm, setConfirm, showNotifs, setShowNotifs } =
+  const { setConfirm, showNotifs, setShowNotifs } =
     useContext(InteractiveContext);
 
   const [notifOpen, setNotifOpen] = useState("");
@@ -25,11 +25,15 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
     if (!idsToUpdate.includes(id)) {
       setIdsToUpdate((prev) => [...prev, id]);
     }
-    const notif = notifications.filter((notif) => notif.id === id)[0];
-    const notifArrayCopy = notifications.filter((notif) => notif.id !== id);
-    notif.read = true;
-    notifArrayCopy.push(notif);
-    setNotifications(notifArrayCopy);
+    // Create a new array with the updated notification
+    const updatedNotifications = notifications.map((notif) =>
+      notif.id === id ? { ...notif, read: true } : notif
+    );
+    // Sort the updatedNotifications array by time from newest to oldest
+    const sortedNotifications = updatedNotifications.sort(
+      (a, b) => b.time - a.time
+    );
+    setNotifications(sortedNotifications);
   };
 
   const getIcon = (type) => {
@@ -37,7 +41,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
   };
 
   const deleteNotif = () => {
-    setConfirm({show:false, func: null});
+    setConfirm({ show: false, func: null });
     const token = localStorage.getItem("authToken");
     if (!token) return;
     if (deleteId) {
@@ -137,8 +141,8 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                     <p
                       onClick={(e) => {
                         e.stopPropagation();
-                        setDeleteId(notif.id);
-                        setConfirm({show:true, func: deleteNotif});
+                        setDeleteId(() => notif.id);
+                        setConfirm({ show: true, func: deleteNotif });
                       }}
                       className="border-b border-b-rose-300 cursor-pointer"
                     >

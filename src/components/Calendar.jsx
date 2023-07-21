@@ -7,10 +7,11 @@ import Menu from "./Menu";
 import Event from "./Event";
 import MonthView from "./MonthView";
 import DayView from "./DayView";
+import Confirm from "./Confirm";
+import WeekView from "./WeekView";
 import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext";
-import WeekView from "./WeekView";
 
 const Calendar = () => {
   const { events, holidays, reminders, weekDays } = useContext(UserContext);
