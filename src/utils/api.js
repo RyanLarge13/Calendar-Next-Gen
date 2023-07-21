@@ -56,12 +56,12 @@ export const loginWithPasswordAndUsername = async (credentials) => {
   return res;
 };
 
-// export const getGoogleCalendarEvents = async (email) => {
-//   const res = await Axios.get(
-//     `https://apidata.googleusercontent.com/caldav/v2/${email}/user`
-//   );
-//   return res
-// }
+export const getGoogleCalendarEvents = async (email) => {
+  const res = await Axios.get(
+    `https://apidata.googleusercontent.com/caldav/v2/${email}/user`
+  );
+  return res;
+};
 
 export const getEvents = async (username, token) => {
   const res = await Axios.get(`${productionUrl}/${username}/events`, {
@@ -202,7 +202,9 @@ export const requestAndSubscribe = async (token, userId) => {
 };
 
 export const getNotifications = (userId) => {
-  const eventSource = new EventSource(`${devUrl}/${userId}/notifications`);
+  const eventSource = new EventSource(
+    `${productionUrl}/${userId}/notifications`
+  );
   return eventSource;
 };
 
