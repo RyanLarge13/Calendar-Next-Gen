@@ -10,10 +10,12 @@ const hashPassword = async (password) => {
 };
 
 export const fetchUserData = (req, res) => {
-  const { username, email, avatarUrl, birthday, id, createAt } = req.user;
+  console.log(req.user);
+  const { username, email, avatarUrl, birthday, id, createAt, notifSub } =
+    req.user;
   res.status(200).json({
     message: "Success",
-    user: { username, email, avatarUrl, birthday, id, createAt },
+    user: { username, email, avatarUrl, birthday, id, createAt, notifSub },
   });
 };
 
@@ -39,6 +41,7 @@ export const loginWithGoogle = async (req, res) => {
           birthday: exsistingUser.birthday,
           id: exsistingUser.id,
           createdAt: exsistingUser.createAt,
+          notifSub: exsistingUser.notifSub,
         },
       });
     });
@@ -73,7 +76,7 @@ export const loginWithPasswordUsername = async (req, res) => {
   const { username, email, password, avatarUrl } = req.body;
   const exsistingUser = await prisma.user.findUnique({
     where: {
-    	email: email
+      email: email,
     },
   });
   if (exsistingUser) {
@@ -91,6 +94,7 @@ export const loginWithPasswordUsername = async (req, res) => {
           birthday: exsistingUser.birthday,
           id: exsistingUser.id,
           createdAt: exsistingUser.createAt,
+          notifSub: exsistingUser.notifSub,
         },
       });
     });
