@@ -112,6 +112,7 @@ const LoginLogout = () => {
   };
 
   const logout = () => {
+    localStorage.removeItem("user");
     localStorage.removeItem("authToken");
     localStorage.removeItem("events");
     localStorage.removeItem("reminders");

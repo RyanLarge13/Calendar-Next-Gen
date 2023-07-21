@@ -119,7 +119,10 @@ export const UserProvider = ({ children }) => {
             });
           getReminders(res.data.user.username, authToken)
             .then((response) => {
-              setReminders(response.data.reminders);
+              const sortedReminders = response.data.reminders.sort(
+                (a, b) => b.time - a.time
+              );
+              setReminders(sortedReminders);
             })
             .catch((err) => {
               console.log(err);
@@ -166,7 +169,8 @@ export const UserProvider = ({ children }) => {
         getNotificationsAtStart(user.username, token)
           .then((res) => {
             const oldNotifs = res.data.notifs;
-            setNotifications(oldNotifs);
+            const sortedOldNotifs = oldNotifs.sort((a, b) => b.time - b.time);
+            setNotifications(sortedOldNotifs);
             setupNotifListener(serverSentSource);
           })
           .catch((err) => {
@@ -193,7 +197,7 @@ export const UserProvider = ({ children }) => {
         color: "bg-purple-300",
         actions: [
           { text: "close", func: () => setSystemNotif({ show: false }) },
-          { text: "open", func: (customFunc) => customFunc },
+          { text: "open", func: (customFunc) => customFunc() },
         ],
       });
       console.log("Received notification:", notification);

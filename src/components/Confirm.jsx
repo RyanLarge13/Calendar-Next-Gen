@@ -11,7 +11,7 @@ const Confirm = () => {
     <motion.div
       initial={{ opacity: 0, y: -50 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex justify-between items-center sticky top-5 right-5 left-5 bg-white z-[999] py-3 px-5 rounded-md shadow-md"
+      className="flex justify-between items-center fixed top-5 right-5 left-5 bg-white z-[999] py-3 px-5 rounded-md shadow-md"
     >
       <button
         onClick={() => confirm.func()}
