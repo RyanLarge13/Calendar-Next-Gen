@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { sendNotification } from "../utils/notificationService.js";
-import signToken from "../auth/signToken.js"; 
+import signToken from "../auth/signToken.js";
 import cron from "node-cron";
 const prisma = new PrismaClient();
 const connectedClients = [];
@@ -21,10 +21,11 @@ export const subscribeToNotifications = async (req, res) => {
         body: "Thank you for subscribing to notifications with Calng!",
       });
       sendNotification(payload, subscription);
-        const newSignture = signToken(exsistingUser);
+      const newSignture = signToken(updatedUser);
       return res.status(200).json({
         message: "Subscription received successfully and user updated",
-        token: newSignture
+        token: newSignture,
+        user: updatedUser,
       });
     }
     if (!updatedUser) {
@@ -32,10 +33,10 @@ export const subscribeToNotifications = async (req, res) => {
         .status(401)
         .json({ message: "Failed to update user, subscription still saved" });
     }
-  } catch {
+  } catch (err) {
+    console.log(err);
     return res.status(401).json({
-      message:
-        "The server failed, I am terribly sorry for the inconveniece, please try to subscribe to notifications again by reloading the page",
+      message: `The server failed, I am terribly sorry for the inconveniece, please try to subscribe to notifications again by reloading the page. Error: ${err}`,
     });
   }
 };
@@ -102,6 +103,7 @@ export const getNotifications = async (req, res) => {
   });
   job.start();
   req.on("close", () => {
+    console.log("Stopping Server");
     res.end();
     return job.stop();
     setTimeout(() => {

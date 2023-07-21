@@ -155,8 +155,8 @@ export const getNotificationsAtStart = (username, token) => {
 
 export const requestAndSubscribe = async (token, userId) => {
   if ("serviceWorker" in navigator && "PushManager" in window) {
-    navigator.serviceWorker.ready
-      .then((registration) => {
+    const subscribeFunction = navigator.serviceWorker.ready.then(
+      (registration) => {
         return Notification.requestPermission()
           .then((permission) => {
             // If permission is granted, subscribe the user
@@ -180,23 +180,10 @@ export const requestAndSubscribe = async (token, userId) => {
               },
               body: JSON.stringify(subscription),
             });
-          })
-          .then((response) => {
-            if (response.ok) {
-              console.log("Subscription successful");
-              localStorage.setItem("authToken", response.data.token)
-              getNotifications(userId);
-            } else {
-              throw new Error("Failed to subscribe");
-            }
-          })
-          .catch((error) => {
-            console.error("Error subscribing to push notifications:", error);
           });
-      })
-      .catch((error) => {
-        console.error("Error getting service worker registration:", error);
-      });
+      }
+    );
+    return subscribeFunction;
   } else {
     console.warn("Push notifications are not supported");
   }

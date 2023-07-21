@@ -120,7 +120,7 @@ export const UserProvider = ({ children }) => {
             requestPermissonsAndSubscribe(authToken, res.data.user.id);
           }
           if (res.data.user.notifSub !== null) {
-            send(authToken, res.data.user.id);
+            send(authToken, res.data.user.id, res.data.user.notifSub);
           }
           getEvents(res.data.user.username, authToken)
             .then((response) => {
@@ -155,26 +155,35 @@ export const UserProvider = ({ children }) => {
     }
   }, [authToken]);
 
-  const requestPermissonsAndSubscribe = (token, userId) => {
-    requestAndSubscribe(token, userId);
+  const requestPermissonsAndSubscribe = async (token, userId) => {
+    try {
+      requestAndSubscribe(token, userId)
+        .then((res) => res.json())
+        .then((data) => {
+          setUser(data.user);
+          localStorage.setItem("authToken", data.token);
+          localStorage.setItem("user", JSON.stringify(data.user));
+          send(data.token, data.user.id, data.user.notifSub);
+        })
+        .catch((err) => console.log(err));
+    } catch (err) {
+      console.error("Error getting service worker registration:", err);
+    }
   };
 
-  const send = async (token, userId) => {
+  const send = async (token, userId, notifSub) => {
     try {
-      if (token && user) {
-        const parsedUser = JSON.parse(user);
-        if (parsedUser.notifSub) {
-          const serverSentSource = getNotifications(userId);
-          getNotificationsAtStart(parsedUser.username, token)
-            .then((res) => {
-              const oldNotifs = res.data.notifs;
-              setNotifications(oldNotifs);
-              setupNotifListener(serverSentSource);
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        }
+      if (notifSub) {
+        const serverSentSource = getNotifications(userId);
+        getNotificationsAtStart(user.username, token)
+          .then((res) => {
+            const oldNotifs = res.data.notifs;
+            setNotifications(oldNotifs);
+            setupNotifListener(serverSentSource);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       }
     } catch (err) {
       console.log(err);
