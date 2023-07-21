@@ -184,6 +184,7 @@ export const requestAndSubscribe = async (token, userId) => {
           .then((response) => {
             if (response.ok) {
               console.log("Subscription successful");
+              localStorage.setItem("authToken", response.data.token)
               getNotifications(userId);
             } else {
               throw new Error("Failed to subscribe");

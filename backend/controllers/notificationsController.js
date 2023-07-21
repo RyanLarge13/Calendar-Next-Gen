@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { sendNotification } from "../utils/notificationService.js";
+import signToken from "../auth/signToken.js"; 
 import cron from "node-cron";
 const prisma = new PrismaClient();
 const connectedClients = [];
@@ -20,8 +21,10 @@ export const subscribeToNotifications = async (req, res) => {
         body: "Thank you for subscribing to notifications with Calng!",
       });
       sendNotification(payload, subscription);
+        const newSignture = signToken(exsistingUser);
       return res.status(200).json({
         message: "Subscription received successfully and user updated",
+        token: newSignture
       });
     }
     if (!updatedUser) {
@@ -99,6 +102,8 @@ export const getNotifications = async (req, res) => {
   });
   job.start();
   req.on("close", () => {
+    res.end();
+    return job.stop();
     setTimeout(() => {
       clientResponse.write(`Attempting SSE event after reconnection\n\n`);
     }, 5000);

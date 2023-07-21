@@ -10,7 +10,6 @@ const hashPassword = async (password) => {
 };
 
 export const fetchUserData = (req, res) => {
-  console.log(req.user);
   const { username, email, avatarUrl, birthday, id, createAt, notifSub } =
     req.user;
   res.status(200).json({
