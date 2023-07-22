@@ -57,7 +57,7 @@ const Menu = () => {
           className="fixed inset-0 bottom-[-20px] pt-20 pb-10 rounded-md bg-white shadow-md shadow-purple-200 overflow-y-auto"
           style={{ fontSize: 12 }}
         >
-          <div className="bg-gradient-to-tr from-purple-200 to-fucsia-100 p-2 rounded-t-md shadow-md flex justify-between items-center">
+          <div className="sticky top-0 right-0 left-0 z-10 bg-gradient-to-tr from-purple-200 to-fucsia-100 p-2 rounded-t-md shadow-md flex justify-between items-center">
             <IoIosAlarm className="text-lg" />
             <div className="flex">
               <RiArrowUpDownFill
@@ -78,7 +78,7 @@ const Menu = () => {
             </div>
           </div>
           <Reminders showReminders={showReminders} />
-          <div className="bg-gradient-to-tr from-purple-200 to-fucsia-100 p-2 rounded-t-md shadow-md flex justify-between items-center">
+          <div className="sticky top-10 right-0 left-0 z-10 bg-gradient-to-tr from-purple-200 to-fucsia-100 p-2 rounded-t-md shadow-md flex justify-between items-center">
             <BsListCheck className="text-lg" />
             <div className="flex">
               <RiArrowUpDownFill
