@@ -34,11 +34,12 @@ const Lists = ({ showLists }) => {
       animate={
         showLists
           ? {
-              height: "max-content",
+              height: "95vh",
+              overflowY: "auto",
             }
-          : { height: "0px" }
+          : { height: "0px", overflowY: "hidden" }
       }
-      className="p-3 overflow-hidden shadow-sm"
+      className="p-3"
     >
       {lists.map((list) => (
         <div

@@ -33,6 +33,10 @@ const Views = () => {
       >
         {show ? <BsXCircleFill /> : <BsColumnsGap />}
       </div>
+            <motion.div
+        initial={{ opacity: 0 }}
+        animate={show ? { opacity: 1 } : { opacity: 0 }}
+      >
       <motion.div
         animate={
           show ? { x: 130, y: 5, scale: 1.25 } : { x: 0, y: 0, scale: 0 }
@@ -92,6 +96,7 @@ const Views = () => {
         }}
       >
         <BsFillCalendarWeekFill />
+      </motion.div>
       </motion.div>
     </>
   );

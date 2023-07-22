@@ -83,15 +83,16 @@ const Reminders = ({ showReminders }) => {
 
   return (
     <motion.div
-    initial={{height: "0px"}} 
+      initial={{ height: "95vh" }}
       animate={
         showReminders
           ? {
-              height: "max-content",
+              height: "95vh",
+              overflowY: "auto",
             }
-          : { height: "0px" }
+          : { height: "0px", overflowY: "hidden" }
       }
-      className="p-3 overflow-hidden shadow-sm"
+      className="p-3"
     >
       <div>
         {reminders.map((reminder, index) => (
