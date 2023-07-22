@@ -96,18 +96,41 @@ export const getNotifications = async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   const clientResponse = res;
   const id = req.params.userId;
-  const client = { id: id, response: clientResponse };
-  connectedClients.push(client);
-  const job = cron.schedule("*/30 * * * * *", () => {
-    processNotifications(id, clientResponse);
-  });
-  job.start();
+  // Check if the client with the requested ID already exists in connectedClients
+  const existingClientIndex = connectedClients.findIndex(
+    (client) => client.id === id
+  );
+  if (existingClientIndex !== -1) {
+    const existingClient = connectedClients[existingClientIndex];
+    // Update the existing client's response object
+    existingClient.response = clientResponse;
+    // Clean up the old cron job
+    existingClient.job.stop();
+    // Start a new cron job with the updated response object
+    const newJob = cron.schedule("*/30 * * * * *", () => {
+      processNotifications(id, clientResponse);
+    });
+    existingClient.job = newJob;
+    newJob.start();
+  } else {
+    // If the client doesn't exist, create a new client and add it to connectedClients
+    const newClient = { id: id, response: clientResponse };
+    const newJob = cron.schedule("*/30 * * * * *", () => {
+      processNotifications(id, clientResponse);
+    });
+    newClient.job = newJob;
+    newJob.start();
+    connectedClients.push(newClient);
+  }
   req.on("close", () => {
-    console.log("Stopping Server");
-    res.end();
-    return job.stop();
+    console.log("Restating connection");
     setTimeout(() => {
-      clientResponse.write(`Attempting SSE event after reconnection\n\n`);
+      console.log("Closing connection");
+      // Clean up the old cron job if the client exists
+      if (existingClientIndex !== -1) {
+        const existingClient = connectedClients[existingClientIndex];
+        existingClient.job.stop();
+      }
     }, 5000);
   });
 };

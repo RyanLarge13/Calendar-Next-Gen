@@ -190,9 +190,7 @@ export const requestAndSubscribe = async (token, userId) => {
 };
 
 export const getNotifications = (userId) => {
-  const eventSource = new EventSource(
-    `${productionUrl}/${userId}/notifications`
-  );
+  const eventSource = new EventSource(`${devUrl}/${userId}/notifications`);
   return eventSource;
 };
 

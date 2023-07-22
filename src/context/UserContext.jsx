@@ -165,11 +165,12 @@ export const UserProvider = ({ children }) => {
   const send = async (token, userId, notifSub) => {
     try {
       if (notifSub) {
+        console.log(userId);
         const serverSentSource = getNotifications(userId);
         getNotificationsAtStart(user.username, token)
           .then((res) => {
             const oldNotifs = res.data.notifs;
-            const sortedOldNotifs = oldNotifs.sort((a, b) => b.time - b.time);
+            const sortedOldNotifs = oldNotifs.sort((a, b) => b.time - a.time);
             setNotifications(sortedOldNotifs);
             setupNotifListener(serverSentSource);
           })
