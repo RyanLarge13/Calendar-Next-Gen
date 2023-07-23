@@ -44,38 +44,25 @@ export const subscribeToNotifications = async (req, res) => {
 const processNotifications = async (userId, res) => {
   console.log("Processing notifications");
   try {
-    const user = await prisma.user.findUnique({ where: { id: userId } });
-    if (!user)
-      return res
-        .status(401)
-        .json({ message: "Error finding user, please refresh" });
-    if (user) {
-      const subscription = user.notifSub;
-      const notifications = await prisma.notification.findMany({
-        where: {
-          sentNotification: false,
-          userId: userId,
-        },
-        take: 25,
+    const notifications = await prisma.notification.findMany({
+      where: {
+        sentNotification: false,
+        userId: userId,
+      },
+      take: 25,
+    });
+    const notificationIdsToUpdate = [];
+    for (const notification of notifications) {
+      if (new Date(notification.time) <= new Date()) {
+        sendSSEEventToClient(userId, notification);
+        notificationIdsToUpdate.push(notification.id);
+      }
+    }
+    if (notificationIdsToUpdate.length > 0) {
+      await prisma.notification.updateMany({
+        where: { id: { in: notificationIdsToUpdate } },
+        data: { sentNotification: true },
       });
-      const notificationIdsToUpdate = [];
-      for (const notification of notifications) {
-        if (new Date(notification.time) <= new Date()) {
-          sendSSEEventToClient(userId, notification);
-          const payload = JSON.stringify({
-            title: notification.notifData.title,
-            body: notification.notifData.notes,
-          });
-          sendNotification(payload, JSON.parse(subscription));
-          notificationIdsToUpdate.push(notification.id);
-        }
-      }
-      if (notificationIdsToUpdate.length > 0) {
-        await prisma.notification.updateMany({
-          where: { id: { in: notificationIdsToUpdate } },
-          data: { sentNotification: true },
-        });
-      }
     }
   } catch (error) {
     console.error("Error sending notifications:", error);
@@ -96,26 +83,21 @@ export const getNotifications = async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   const clientResponse = res;
   const id = req.params.userId;
-  // Check if the client with the requested ID already exists in connectedClients
   const existingClientIndex = connectedClients.findIndex(
     (client) => client.id === id
   );
   if (existingClientIndex !== -1) {
     const existingClient = connectedClients[existingClientIndex];
-    // Update the existing client's response object
     existingClient.response = clientResponse;
-    // Clean up the old cron job
     existingClient.job.stop();
-    // Start a new cron job with the updated response object
-    const newJob = cron.schedule("*/30 * * * * *", () => {
+    const newJob = cron.schedule("*/15 * * * * *", () => {
       processNotifications(id, clientResponse);
     });
     existingClient.job = newJob;
     newJob.start();
   } else {
-    // If the client doesn't exist, create a new client and add it to connectedClients
     const newClient = { id: id, response: clientResponse };
-    const newJob = cron.schedule("*/30 * * * * *", () => {
+    const newJob = cron.schedule("*/15 * * * * *", () => {
       processNotifications(id, clientResponse);
     });
     newClient.job = newJob;
@@ -126,10 +108,11 @@ export const getNotifications = async (req, res) => {
     console.log("Restating connection");
     setTimeout(() => {
       console.log("Closing connection");
-      // Clean up the old cron job if the client exists
       if (existingClientIndex !== -1) {
         const existingClient = connectedClients[existingClientIndex];
+        existingClient.response.end();
         existingClient.job.stop();
+        console.log(`Stopping SSE response for client ${existingClient.id}`);
       }
     }, 5000);
   });

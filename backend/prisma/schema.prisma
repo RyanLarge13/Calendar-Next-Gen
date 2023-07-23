@@ -59,6 +59,7 @@ model Notification {
   notifData Json
   User User @relation(fields: [userId], references: [id])
   sentNotification Boolean
+  sentWebPush Boolean
   userId String
 }
 
