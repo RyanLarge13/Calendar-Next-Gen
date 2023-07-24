@@ -153,7 +153,7 @@ export const getNotificationsAtStart = (username, token) => {
   return res;
 };
 
-export const requestAndSubscribe = async (token, userId) => {
+export const requestAndSubscribe = async (token) => {
   if ("serviceWorker" in navigator && "PushManager" in window) {
     const subscribeFunction = navigator.serviceWorker.ready.then(
       (registration) => {
@@ -189,8 +189,45 @@ export const requestAndSubscribe = async (token, userId) => {
   }
 };
 
+export const checkSubscription = () => {
+  if ("serviceWorker" in navigator && "PushManager" in window) {
+    const subscriptionCheck = navigator.serviceWorker.ready.then(
+      (registration) => {
+        return Notification.requestPermission().then((permission) => {
+          // If permission is granted, subscribe the user
+          if (permission === "granted") {
+            // Subscribe the user
+            return registration.pushManager.subscribe({
+              userVisibleOnly: true,
+              applicationServerKey: import.meta.env.VITE_VAPID_PUBLIC_KEY,
+            });
+          } else {
+            throw new Error("Permission denied for notifications");
+          }
+        });
+      }
+    );
+    return subscriptionCheck;
+  }
+};
+
+export const addSubscriptionToUser = (sub, token) => {
+  const response = Axios.post(
+    `${productionUrl}/add/subscription`,
+    { sub },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response;
+};
+
 export const getNotifications = (userId) => {
-  const eventSource = new EventSource(`${devUrl}/${userId}/notifications`);
+  const eventSource = new EventSource(
+    `${productionUrl}/${userId}/notifications`
+  );
   return eventSource;
 };
 

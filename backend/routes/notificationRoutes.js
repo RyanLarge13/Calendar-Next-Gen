@@ -6,6 +6,7 @@ import {
   getNotifications,
   getOldNotifications,
   updateNotification,
+  addSubscriptionToUser,
 } from "../controllers/notificationsController.js";
 
 const notifRouter = express.Router();
@@ -13,6 +14,7 @@ const notifRouter = express.Router();
 notifRouter.get("/:userId/notifications", getNotifications);
 notifRouter.get("/:username/notifs", auth, getOldNotifications);
 notifRouter.post("/subscribe/notifs", auth, subscribeToNotifications);
+notifRouter.post("/add/subscription", auth, addSubscriptionToUser);
 notifRouter.patch("/:username/update/notif", auth, updateNotification);
 notifRouter.delete("/notification/:notifId", auth, deleteNotification);
 

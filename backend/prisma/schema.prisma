@@ -15,7 +15,7 @@ model User {
   password String
   birthday DateTime?
   createAt DateTime @default(now())
-  notifSub String?
+  notifSub String[]
   events   Event[]
   reminders Reminder[]
   notifications Notification[]
@@ -54,11 +54,12 @@ model Notification {
   id String @unique @id @default(uuid())
   type String
   time String
-  read Boolean
+  read Boolean @default(false)
   readTime String?
   notifData Json
   User User @relation(fields: [userId], references: [id])
-  sentNotification Boolean
+  sentNotification Boolean @default(false)
+  sentWebPush Boolean @default(false)
   userId String
 }
 
