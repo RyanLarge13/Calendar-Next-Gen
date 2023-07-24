@@ -10,6 +10,8 @@ import {
   getAllLists,
   getNotifications,
   getNotificationsAtStart,
+  checkSubscription,
+  addSubscriptionToUser,
 } from "../utils/api";
 import IndexedDBManager from "../utils/indexDBApi";
 
@@ -104,11 +106,31 @@ export const UserProvider = ({ children }) => {
       getUserData(authToken)
         .then((res) => {
           setUser(res.data.user);
-          if (res.data.user.notifSub === null) {
+          if (res.data.user.notifSub.length < 1) {
             requestPermissonsAndSubscribe(authToken, res.data.user.id);
           }
-          if (res.data.user.notifSub !== null) {
-            send(authToken, res.data.user.id, res.data.user.notifSub);
+          if (res.data.user.notifSub.length > 0) {
+            checkSubscription().then((sub) => {
+              const contains = JSON.parse(res.data.user.notifSub).includes(sub);
+              if (contains) {
+                send(authToken, res.data.user.id);
+              }
+              if (!contains) {
+                addSubscriptionToUser(sub, authToken)
+                  .then((newUserRes) => {
+                    setUser(newUserRes.data.user);
+                    localStorage.setItem("authToken", newUserRes.data.token);
+                    localStorage.setItem(
+                      "user",
+                      JSON.stringify(newUserRes.data.user)
+                    );
+                    send(newUserRes.data.token, newUserRes.data.user.id);
+                  })
+                  .catch((err) => {
+                    console.log(`Error with adding new subscription: ${err}`);
+                  });
+              }
+            });
           }
           getEvents(res.data.user.username, authToken)
             .then((response) => {
@@ -148,13 +170,13 @@ export const UserProvider = ({ children }) => {
 
   const requestPermissonsAndSubscribe = async (token, userId) => {
     try {
-      requestAndSubscribe(token, userId)
+      requestAndSubscribe(token)
         .then((res) => res.json())
         .then((data) => {
           setUser(data.user);
           localStorage.setItem("authToken", data.token);
           localStorage.setItem("user", JSON.stringify(data.user));
-          send(data.token, data.user.id, data.user.notifSub);
+          send(data.token, data.user.id);
         })
         .catch((err) => console.log(err));
     } catch (err) {
@@ -162,22 +184,20 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  const send = async (token, userId, notifSub) => {
+  const send = async (token, userId) => {
     try {
-      if (notifSub) {
-        console.log(userId);
-        const serverSentSource = getNotifications(userId);
-        getNotificationsAtStart(user.username, token)
-          .then((res) => {
-            const oldNotifs = res.data.notifs;
-            const sortedOldNotifs = oldNotifs.sort((a, b) => b.time - a.time);
-            setNotifications(sortedOldNotifs);
-            setupNotifListener(serverSentSource);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      }
+      console.log(userId);
+      const serverSentSource = getNotifications(userId);
+      getNotificationsAtStart(user.username, token)
+        .then((res) => {
+          const oldNotifs = res.data.notifs;
+          const sortedOldNotifs = oldNotifs.sort((a, b) => b.time - a.time);
+          setNotifications(sortedOldNotifs);
+          setupNotifListener(serverSentSource);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     } catch (err) {
       console.log(err);
     }
@@ -217,7 +237,7 @@ export const UserProvider = ({ children }) => {
 
   const openIndexDB = () => {
     const request = indexedDB.open("myCalngDB", 1);
-    calngIndexDBManager = new IndexedDBManager(request);
+    const calngIndexDBManager = new IndexedDBManager(request);
     setLocalDB(calngIndexDBManager);
   };
 

@@ -13,14 +13,14 @@ export const subscribeToNotifications = async (req, res) => {
       where: {
         id: userId,
       },
-      data: { notifSub: JSON.stringify(subscription) },
+      data: { notifSub: { push: JSON.stringify(subscription) } },
     });
     if (updatedUser) {
       const payload = JSON.stringify({
         title: "Welcome!",
         body: "Thank you for subscribing to notifications with Calng!",
       });
-      sendNotification(payload, subscription);
+      sendNotification(payload, [subscription]);
       const newSignture = signToken(updatedUser);
       return res.status(200).json({
         message: "Subscription received successfully and user updated",
@@ -38,6 +38,33 @@ export const subscribeToNotifications = async (req, res) => {
     return res.status(401).json({
       message: `The server failed, I am terribly sorry for the inconveniece, please try to subscribe to notifications again by reloading the page. Error: ${err}`,
     });
+  }
+};
+
+export const addSubscriptionToUser = async (req, res) => {
+  const { id } = req.user;
+  const newSubscription = req.body;
+  const updatedUser = await prisma.user.update({
+    where: {
+      userId: id,
+    },
+    data: {
+      notifSub: { push: JSON.stringify(newSubscription) },
+    },
+  });
+  if (updatedUser) {
+    sendNotification(payload, [newSubscription]);
+    const newSignture = signToken(updatedUser);
+    return res.status(200).json({
+      message: "Subscription received successfully and user updated",
+      token: newSignture,
+      user: updatedUser,
+    });
+  }
+  if (!updatedUser) {
+    return res
+      .status(401)
+      .json({ message: "Failed to update user, subscription still saved" });
   }
 };
 
@@ -105,16 +132,13 @@ export const getNotifications = async (req, res) => {
     connectedClients.push(newClient);
   }
   req.on("close", () => {
-    console.log("Restating connection");
-    setTimeout(() => {
-      console.log("Closing connection");
-      if (existingClientIndex !== -1) {
-        const existingClient = connectedClients[existingClientIndex];
-        existingClient.response.end();
-        existingClient.job.stop();
-        console.log(`Stopping SSE response for client ${existingClient.id}`);
-      }
-    }, 5000);
+    console.log("Closing connection");
+    if (existingClientIndex !== -1) {
+      const existingClient = connectedClients[existingClientIndex];
+      existingClient.response.end();
+      existingClient.job.stop();
+      console.log(`Stopping SSE response for client ${existingClient.id}`);
+    }
   });
 };
 

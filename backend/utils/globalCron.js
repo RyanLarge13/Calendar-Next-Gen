@@ -1,10 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import { sendNotification } from "./notificationService.js";
-import cron from "node-cron";
 const prisma = new PrismaClient();
 
-export default processPushNotifications = async () => {
-  console.log("Starting global Web Push cron job");
+const processPushNotifications = async () => {
   try {
     const notificationIdsToUpdate = [];
     const usersWithNotificationSub = await prisma.user.findMany({
@@ -16,21 +14,21 @@ export default processPushNotifications = async () => {
       take: 1000,
     });
     for (const user of usersWithNotificationSub) {
-      const currentTime = new Date();
       const notifications = await prisma.notification.findMany({
         where: {
           userId: user.id,
+          sentWebPush: false,
         },
       });
       for (const notification of notifications) {
-      	if (new Date(notification.time) <= new Date()) {
-        const payload = JSON.stringify({
-          title: notification.notifData.title,
-          body: notification.notifData.notes,
-        });
-        sendNotification(payload, JSON.parse(user.notifSub))
-        notificationIdsToUpdate.push(notification.id);
-      	} 
+        if (new Date(notification.time) <= new Date()) {
+          const payload = JSON.stringify({
+            title: notification.notifData.title,
+            body: notification.notifData.notes,
+          });
+          sendNotification(payload, JSON.parse(user.notifSub));
+          notificationIdsToUpdate.push(notification.id);
+        }
       }
     }
     if (notificationIdsToUpdate.length > 0) {
@@ -43,3 +41,5 @@ export default processPushNotifications = async () => {
     console.error("Error sending notifications:", error);
   }
 };
+
+export default processPushNotifications;

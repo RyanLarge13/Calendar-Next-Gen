@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
+import cron from "node-cron";
 import userRouter from "./routes/userRoutes.js";
 import eventsRouter from "./routes/eventsRouter.js";
 import reminderRouter from "./routes/remindersRouter.js";
@@ -15,7 +16,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use("/", userRouter, eventsRouter, reminderRouter, notifRouter, listRouter);
-processPushNotifications()
+
+cron.schedule("*/15 * * * * *", () => {
+  processPushNotifications();
+});
 
 app.listen(PORT, () => {
   console.log(`Your app is listening on port ${PORT}`);
