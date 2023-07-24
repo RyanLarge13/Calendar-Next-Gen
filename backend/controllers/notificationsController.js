@@ -53,6 +53,10 @@ export const addSubscriptionToUser = async (req, res) => {
     },
   });
   if (updatedUser) {
+    const payload = JSON.stringify({
+      title: "New Device",
+      body: `Notifications will now be sent this device as well ${updatedUser.username}`,
+    });
     sendNotification(payload, [newSubscription]);
     const newSignture = signToken(updatedUser);
     return res.status(200).json({
