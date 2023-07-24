@@ -43,13 +43,13 @@ export const subscribeToNotifications = async (req, res) => {
 
 export const addSubscriptionToUser = async (req, res) => {
   const { id } = req.user;
-  const newSubscription = req.body;
+  const newSubscription = req.body.sub;
   const updatedUser = await prisma.user.update({
     where: {
       id: id,
     },
     data: {
-      notifSub: { push: JSON.stringify(newSubscription.sub) },
+      notifSub: { push: JSON.stringify(newSubscription) },
     },
   });
   if (updatedUser) {
