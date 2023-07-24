@@ -13,7 +13,7 @@ function sendNotification(payload, subscriptions) {
     throw new Error("Subscription not set");
   }
   if (subscriptions.length < 2) {
-    WebPush.sendNotification(subscriptions, payload).catch((error) => {
+    WebPush.sendNotification(subscriptions[0], payload).catch((error) => {
       console.error("Error sending notification:", error);
     });
   }
