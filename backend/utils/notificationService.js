@@ -9,6 +9,7 @@ WebPush.setVapidDetails(
 );
 
 function sendNotification(payload, subscriptions) {
+	console.log(subscriptions)
   if (!subscriptions) {
     throw new Error("Subscription not set");
   }
