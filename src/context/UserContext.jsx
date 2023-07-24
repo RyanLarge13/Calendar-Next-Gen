@@ -118,7 +118,7 @@ export const UserProvider = ({ children }) => {
           ) {
             console.log("Notifs");
             checkSubscription().then((sub) => {
-              const contains = JSON.parse(res.data.user.notifSub).includes(sub);
+              const contains = res.data.user.notifSub.includes(sub);
               if (contains) {
                 send(authToken, res.data.user.id);
               }
