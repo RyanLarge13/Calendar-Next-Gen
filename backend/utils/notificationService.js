@@ -20,7 +20,7 @@ function sendNotification(payload, subscriptions) {
   }
   if (subscriptions.length > 1) {
     subscriptions.forEach((sub) => {
-      WebPush.sendNotification(sub, payload).catch((error) => {
+      WebPush.sendNotification(JSON.parse(sub), payload).catch((error) => {
         console.error("Error sending notification:", error);
       });
     });
