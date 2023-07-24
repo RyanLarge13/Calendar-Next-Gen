@@ -34,7 +34,7 @@ const processPushNotifications = async () => {
             title: notification.notifData.title,
             body: notification.notifData.notes,
           });
-          sendNotification(payload, [JSON.parse(user.notifSub)]);
+          sendNotification(payload, [user.notifSub]);
           notificationIdsToUpdate.push(notification.id);
         }
       }

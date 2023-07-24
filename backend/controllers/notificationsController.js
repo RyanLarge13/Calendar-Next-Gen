@@ -147,15 +147,6 @@ export const getNotifications = async (req, res) => {
       existingClient.response.end();
       existingClient.job.stop();
       console.log(`Stopping SSE response for client ${existingClient.id}`);
-    } else {
-      // If there is no existing client, stop all cron jobs and close SSE connection
-      connectedClients.forEach((client) => {
-        client.response.end();
-        client.job.stop();
-        console.log(`Stopping SSE response for client ${client.id}`);
-      });
-      // Remove all connected clients from the array
-      connectedClients = [];
     }
   });
 };
