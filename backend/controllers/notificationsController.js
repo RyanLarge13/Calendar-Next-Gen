@@ -49,7 +49,7 @@ export const addSubscriptionToUser = async (req, res) => {
       id: id,
     },
     data: {
-      notifSub: { push: JSON.stringify(newSubscription) },
+      notifSub: { push: JSON.stringify(newSubscription.sub) },
     },
   });
   if (updatedUser) {
