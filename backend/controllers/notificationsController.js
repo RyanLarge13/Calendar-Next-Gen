@@ -110,6 +110,10 @@ export const getNotifications = async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   const clientResponse = res;
   const id = req.params.userId;
+  if (id === undefined || id === null) {
+    console.log("No id was passed through request");
+    return res.end();
+  }
   const existingClientIndex = connectedClients.findIndex(
     (client) => client.id === id
   );
@@ -121,14 +125,15 @@ export const getNotifications = async (req, res) => {
       processNotifications(id, clientResponse);
     });
     existingClient.job = newJob;
-    newJob.start();
-  } else {
+    existingClient.job.start();
+  }
+  if (existingClientIndex === -1) {
     const newClient = { id: id, response: clientResponse };
     const newJob = cron.schedule("*/15 * * * * *", () => {
       processNotifications(id, clientResponse);
     });
     newClient.job = newJob;
-    newJob.start();
+    newClient.job.start();
     connectedClients.push(newClient);
   }
   req.on("close", () => {
@@ -138,6 +143,15 @@ export const getNotifications = async (req, res) => {
       existingClient.response.end();
       existingClient.job.stop();
       console.log(`Stopping SSE response for client ${existingClient.id}`);
+    } else {
+      // If there is no existing client, stop all cron jobs and close SSE connection
+      connectedClients.forEach((client) => {
+        client.response.end();
+        client.job.stop();
+        console.log(`Stopping SSE response for client ${client.id}`);
+      });
+      // Remove all connected clients from the array
+      connectedClients = [];
     }
   });
 };
