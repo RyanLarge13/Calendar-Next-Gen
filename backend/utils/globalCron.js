@@ -3,7 +3,7 @@ import { sendNotification } from "./notificationService.js";
 const prisma = new PrismaClient();
 
 const processPushNotifications = async () => {
-	console.log("Processing global user notifications")
+  console.log("Processing global user notifications");
   try {
     const notificationIdsToUpdate = [];
     const usersWithNotificationSub = await prisma.user.findMany({
@@ -34,7 +34,7 @@ const processPushNotifications = async () => {
             title: notification.notifData.title,
             body: notification.notifData.notes,
           });
-          sendNotification(payload, JSON.parse(user.notifSub));
+          sendNotification(payload, [JSON.parse(user.notifSub)]);
           notificationIdsToUpdate.push(notification.id);
         }
       }
