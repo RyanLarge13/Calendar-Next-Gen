@@ -46,7 +46,7 @@ export const addSubscriptionToUser = async (req, res) => {
   const newSubscription = req.body;
   const updatedUser = await prisma.user.update({
     where: {
-      userId: id,
+      id: id,
     },
     data: {
       notifSub: { push: JSON.stringify(newSubscription) },
