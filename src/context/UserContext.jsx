@@ -106,10 +106,17 @@ export const UserProvider = ({ children }) => {
       getUserData(authToken)
         .then((res) => {
           setUser(res.data.user);
-          if (res.data.user.notifSub.length < 1) {
-            requestPermissonsAndSubscribe(authToken, res.data.user.id);
+          if (
+            res.data.user.notifSub?.length < 1 ||
+            res.data.user.notifSub === null
+          ) {
+            requestPermissonsAndSubscribe(authToken);
           }
-          if (res.data.user.notifSub.length > 0) {
+          if (
+            res.data.user.notifSub?.length > 0 &&
+            res.data.user.notifSub !== null
+          ) {
+            console.log("Notifs");
             checkSubscription().then((sub) => {
               const contains = JSON.parse(res.data.user.notifSub).includes(sub);
               if (contains) {
@@ -168,7 +175,7 @@ export const UserProvider = ({ children }) => {
     }
   }, [authToken]);
 
-  const requestPermissonsAndSubscribe = async (token, userId) => {
+  const requestPermissonsAndSubscribe = async (token) => {
     try {
       requestAndSubscribe(token)
         .then((res) => res.json())

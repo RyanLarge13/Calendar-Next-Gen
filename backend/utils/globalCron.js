@@ -7,8 +7,15 @@ const processPushNotifications = async () => {
     const notificationIdsToUpdate = [];
     const usersWithNotificationSub = await prisma.user.findMany({
       where: {
-        notifSub: {
-          not: null,
+        NOT: {
+          notifSub: {
+            equals: null,
+          },
+        },
+        NOT: {
+          notifSub: {
+            isEmpty: true,
+          },
         },
       },
       take: 1000,

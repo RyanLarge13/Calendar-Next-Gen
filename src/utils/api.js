@@ -207,13 +207,13 @@ export const checkSubscription = () => {
         });
       }
     );
+    return subscriptionCheck;
   }
-  return subscriptionCheck;
 };
 
 export const addSubscriptionToUser = (sub, token) => {
   const response = Axios.post(
-    `${devUrl}/add/subscription`,
+    `${productionUrl}/add/subscription`,
     { sub },
     {
       headers: {
@@ -225,7 +225,9 @@ export const addSubscriptionToUser = (sub, token) => {
 };
 
 export const getNotifications = (userId) => {
-  const eventSource = new EventSource(`${devUrl}/${userId}/notifications`);
+  const eventSource = new EventSource(
+    `${productionUrl}/${userId}/notifications`
+  );
   return eventSource;
 };
 
