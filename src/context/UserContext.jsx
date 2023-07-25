@@ -116,11 +116,12 @@ export const UserProvider = ({ children }) => {
             res.data.user.notifSub?.length > 0 &&
             res.data.user.notifSub !== null
           ) {
-            console.log("Notifs");
             checkSubscription().then((sub) => {
+              console.log(sub, res.data.user.notifSub);
               const userHasSub = res.data.user.notifSub.some(
                 (item) => item.endpoint === sub.endpoint
               );
+              console.log(userHasSub);
               if (userHasSub) {
                 send(authToken, res.data.user.id);
               }
