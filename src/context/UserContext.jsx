@@ -13,7 +13,6 @@ import {
   checkSubscription,
   addSubscriptionToUser,
 } from "../utils/api";
-import {areObjectsEqual} from "../utils/helpers.js"
 import IndexedDBManager from "../utils/indexDBApi";
 
 const UserContext = createContext({});
@@ -119,13 +118,13 @@ export const UserProvider = ({ children }) => {
           ) {
             console.log("Notifs");
             checkSubscription().then((sub) => {
-              const contains = res.data.user.notifSub.some((item) =>
-                areObjectsEqual(item, sub)
+              const userHasSub = res.data.user.notifSub.some(
+                (item) => item.endpoint === sub.endpoint
               );
-              if (contains) {
+              if (userHasSub) {
                 send(authToken, res.data.user.id);
               }
-              if (!contains) {
+              if (!userHasSub) {
                 addSubscriptionToUser(sub, authToken)
                   .then((newUserRes) => {
                     setUser(newUserRes.data.user);
