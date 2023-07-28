@@ -12,6 +12,7 @@ import {
   getNotificationsAtStart,
   checkSubscription,
   addSubscriptionToUser,
+  getGoogleCalendarEvents,
 } from "../utils/api";
 import IndexedDBManager from "../utils/indexDBApi";
 
@@ -23,6 +24,7 @@ export const UserProvider = ({ children }) => {
     localStorage.getItem("authToken") || false
   );
   const [events, setEvents] = useState([]);
+  const [googleEvetns, setGoogleEvents] = useState([]);
   const [lists, setLists] = useState([]);
   const [reminders, setReminders] = useState([]);
   const [localDB, setLocalDB] = useState(null);
@@ -84,6 +86,24 @@ export const UserProvider = ({ children }) => {
         .then((res) => {
           loginWithGoogle(res.data)
             .then((response) => {
+              const newNotif = {
+                show: true,
+                title: "Google Events",
+                text: "Would you like to import your google calendar events?",
+                color: "bg-sky-300",
+                actions: [
+                  {
+                    text: "close",
+                    func: () => setSystemNotif({ show: false }),
+                  },
+                  {
+                    text: "get events",
+                    func: () =>
+                      fetchGoogleEvents(response.data.token, googleToken),
+                  },
+                ],
+              };
+              setSystemNotif(newNotif);
               setUser(response.data.user);
               setAuthToken(response.data.token);
               localStorage.setItem("user", JSON.stringify(response.data.user));
@@ -175,6 +195,15 @@ export const UserProvider = ({ children }) => {
       openIndexDB();
     }
   }, [authToken]);
+
+  const fetchGoogleEvents = (authToken, googleToken) => {
+    setSystemNotif({ show: false });
+    getGoogleCalendarEvents(authToken, googleToken)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => console.log(err));
+  };
 
   const requestPermissonsAndSubscribe = async (token) => {
     try {

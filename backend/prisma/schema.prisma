@@ -20,16 +20,7 @@ events   Event[]
 reminders Reminder[]
 notifications Notification[]
 list List[]
-friends      User[]      @relation("Friendships", references: [id])
 }
-
-model Friendship {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  userA     User     @relation("FriendshipsA", fields: [userAId], references: [id])
-  userAId   String
-  userB     User     @relation("FriendshipsB", fields: [userBId], references: [id])
-  userBId   String}
 
 model Event {
 id String     @unique @id @default(uuid())

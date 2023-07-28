@@ -1,74 +1,69 @@
-import { useState } from "react";
-import { GoogleMap, LoadScript, Autocomplete } from "@react-google-maps/api";
+import React, { useState, useEffect } from "react";
 
 const SuggestCities = () => {
   const [selectedPlace, setSelectedPlace] = useState(null);
+  const [suggestions, setSuggestions] = useState([]);
+  const [map, setMap] = useState(null);
 
-  // Handle suggestion selection
   const handlePlaceSelect = (place) => {
     setSelectedPlace(place);
   };
 
+  useEffect(() => {
+    // Define the callback function to initialize the Autocomplete
+    const initAutocomplete = () => {
+      const input = document.getElementById("autocomplete-input");
+      const autocomplete = new window.google.maps.places.Autocomplete(input, {
+        types: ["(cities)", "establishment"],
+      });
+
+      autocomplete.addListener("place_changed", () => {
+        const place = autocomplete.getPlace();
+        if (place.name) {
+          handlePlaceSelect(place);
+        }
+      });
+    };
+
+    // Load the Google Maps JavaScript API script dynamically with the callback
+    const script = document.createElement("script");
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${
+      import.meta.env.VITE_GOOGLE_MAPS_API_KEY
+    }&libraries=places`;
+    script.onload = initAutocomplete;
+    document.head.appendChild(script);
+
+    return () => {
+      // Cleanup: Remove the Google Maps script when the component unmounts
+      document.head.removeChild(script);
+    };
+  }, []);
+
   return (
-    <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
-      <Autocomplete
-        onLoad={(autocomplete) => {
-          autocomplete.addListener("place_changed", () => {
-            const place = autocomplete.getPlace();
-            if (place.name) {
-              handlePlaceSelect(place);
-            }
-          });
-        }}
-        options={{ types: ["(cities)", "establishment"] }} // Filter by cities and businesses (establishments)
-        onPlaceChanged={() => {
-          // Get the predictions from the autocomplete service
-          const predictions = document.getElementsByClassName("pac-item");
-          const suggestionList = [];
-          for (let i = 0; i < predictions.length; i++) {
-            suggestionList.push(predictions[i].textContent);
-          }
-          setSuggestions(suggestionList);
-        }}
-      >
-        {({
-          getInputProps,
-          suggestions: autocompleteSuggestions,
-          getSuggestionItemProps,
-        }) => (
-          <div>
-            <input
-              {...getInputProps({
-                placeholder: "Type a city or business name",
-              })}
-            />
-            <div>
-              {autocompleteSuggestions.map((suggestion, index) => (
-                <div
-                  key={index}
-                  {...getSuggestionItemProps(suggestion)}
-                  style={{
-                    backgroundColor: suggestion.active ? "#e3e3e3" : "#fff",
-                    cursor: "pointer",
-                  }}
-                >
-                  {suggestion.description}
-                </div>
-              ))}
-            </div>
+    <div>
+      <input
+        id="autocomplete-input"
+        placeholder="Type a city or business name"
+      />
+      <div>
+        {suggestions.map((suggestion, index) => (
+          <div
+            key={index}
+            style={{
+              backgroundColor: suggestion.active ? "#e3e3e3" : "#fff",
+              cursor: "pointer",
+            }}
+          >
+            {suggestion.description}
           </div>
-        )}
-      </Autocomplete>
+        ))}
+      </div>
       {selectedPlace && (
-        <GoogleMap
-          mapContainerStyle={{ height: "400px", width: "100%" }}
-          center={selectedPlace.geometry.location}
-          zoom={14}
-        >
-          {/* Add any additional components or features to the map */}
-        </GoogleMap>
+        <div style={{ height: "400px", width: "100%" }} ref={setMap}>
+          {/* Map will be rendered here */}
+        </div>
       )}
-    </LoadScript>
+    </div>
   );
 };
 

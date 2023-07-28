@@ -59,6 +59,7 @@ const LoginLogout = () => {
   }, [notifications]);
 
   const loginGoogle = useGoogleLogin({
+    scope: "https://www.googleapis.com/auth/calendar.events.readonly",
     onSuccess: (res) => {
       setGoogleToken(res.access_token);
     },
@@ -116,7 +117,6 @@ const LoginLogout = () => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("events");
     localStorage.removeItem("reminders");
-    // localStorage.setItem("events", JSON.stringify(events));
     setAuthToken(false);
     setUser(false);
     setEvents([]);
