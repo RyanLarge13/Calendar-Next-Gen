@@ -17,7 +17,10 @@ self.addEventListener("push", (event) => {
       payload = { title: "Notification", body: event.data.text() };
     }
   } else {
-    payload = { title: "Notification", body: "Default notification message" };
+    payload = {
+      title: "were so sorry",
+      body: "An issue occurred sending the correct notification data, please refresh & try again",
+    };
   }
   const { title, body } = payload;
   event.waitUntil(
@@ -25,7 +28,7 @@ self.addEventListener("push", (event) => {
       body,
       icon: "./favicon.svg",
       badge: "./favicon.svg",
-      vibrate: [200, 100, 200],
+      vibrate: [100, 100, 100],
       actions: [{ action: "mark-as-read", title: "Mark as Read" }],
     })
   );
@@ -33,14 +36,13 @@ self.addEventListener("push", (event) => {
 
 self.addEventListener("notificationclick", (event) => {
   if (event.action === "mark-as-read") {
-  	return console.log("trying something new!")
-    fetch("https://yourapi.com/mark-as-read", {
+    fetch("https://calendar-next-gen-production.up.railway.app/mark-as-read", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        notificationId: event.notification.data.notificationId,
+        notificationId: event.notification.data.id,
       }),
     })
       .then((response) => {
@@ -52,6 +54,6 @@ self.addEventListener("notificationclick", (event) => {
       });
   } else {
     event.notification.close();
-    event.waitUntil(clients.openWindow("https://yourapp.com"));
+    event.waitUntil(clients.openWindow("https://www.calng.app"));
   }
 });

@@ -1,16 +1,18 @@
 import { useEffect, useRef, useState, useContext } from "react";
 import { motion } from "framer-motion";
 import { staticTimes } from "../constants.js";
+import DatesContext from "../context/DatesContext"
 import InteractiveContext from "../context/InteractiveContext";
 import Event from "./Event";
 
 const DayView = ({ todaysEvents, todaysReminders }) => {
   const { event, setEvent } = useContext(InteractiveContext);
+  const {string} = useContext(DatesContext)
   const [time, setTime] = useState(new Date().toLocaleTimeString());
   const [height, setheight] = useState(0);
   const [combinedArray, setCombinedArray] = useState([]);
-  const dayViewContainer = useRef(null);
   const [times, setTimes] = useState([]);
+  const dayViewContainer = useRef(null);
   let interval;
 
   useEffect(() => {
@@ -83,7 +85,8 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
   return (
     <div className="py-20">
       <div ref={dayViewContainer} className="text-sm min-h-[400vh] relative">
-        {todaysEvents.length > 0 ? (
+        {todaysEvents.length > 0 &&
+        new Date().toLocaleDateString() === string ? (
           <motion.div
             animate={{ top: height }}
             className="absolute right-0 z-[200] translate-y-[-50%]"

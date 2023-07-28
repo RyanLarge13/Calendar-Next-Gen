@@ -221,8 +221,8 @@ export const UserProvider = ({ children }) => {
       setNotifications((prev) => [notification, ...prev]);
       setSystemNotif({
         show: true,
-        title: event.data.type,
-        text: "",
+        title: notification.notifData.title,
+        text: notification.notifData.notes,
         color: "bg-purple-300",
         actions: [
           { text: "close", func: () => setSystemNotif({ show: false }) },

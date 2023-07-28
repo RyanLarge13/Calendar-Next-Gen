@@ -52,13 +52,16 @@ export const AddCircle = () => {
       >
         {show ? <BsXCircleFill /> : <BsFillCalendarPlusFill />}
       </motion.div>
-      <motion.div initial={{opacity: 0}} animate={show ? {opacity: 1} : {opacity: 0}} >
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={show ? { opacity: 1 } : { opacity: 0 }}
+      >
         <motion.div
           onClick={() => openModalAndSetType("task")}
           animate={
             show ? { x: -130, y: 5, scale: 1.25 } : { x: 0, y: 0, scale: 0 }
           }
-          className={`p-3 text-xs cursor-pointer rounded-full fixed z-[100] right-5 bottom-5 bg-gradient-to-r from-pink-300 to-violet-200 shadow-md`}
+          className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] right-5 bottom-5 bg-gradient-to-r from-pink-300 to-violet-200 shadow-md`}
         >
           <BsListTask />
         </motion.div>
