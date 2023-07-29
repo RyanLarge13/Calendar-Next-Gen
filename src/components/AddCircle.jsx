@@ -53,7 +53,7 @@ export const AddCircle = () => {
         {show ? <BsXCircleFill /> : <BsFillCalendarPlusFill />}
       </motion.div>
       <motion.div
-        initial={{ opacity: 0 }}
+        initial={{ opacity: 0}}
         animate={show ? { opacity: 1 } : { opacity: 0 }}
       >
         <motion.div

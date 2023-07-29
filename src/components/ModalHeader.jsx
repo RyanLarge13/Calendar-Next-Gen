@@ -33,7 +33,7 @@ const ModalHeader = ({ allDayEvents, event, setEvent }) => {
   }, [event, addNewEvent]);
 
   const deleteAnEvent = () => {
-    setConfirm({show:false, func:null });
+    setConfirm({ show: false, func: null });
     const authToken = localStorage.getItem("authToken");
     deleteEvent(user.username, event.id, authToken)
       .then((res) => {
@@ -53,7 +53,7 @@ const ModalHeader = ({ allDayEvents, event, setEvent }) => {
   return (
     <motion.div
       animate={event && !addNewEvent ? { left: 5 } : { left: "36%", x: x }}
-      className="bg-white z-[999] p-2 font-bold shadow-md fixed top-1 right-1 rounded-md"
+      className="bg-white isolate z-50 p-2 font-bold shadow-md fixed top-1 right-1 rounded-md"
     >
       <div className="flex justify-between items-center">
         <h2 className="bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent">
@@ -80,7 +80,9 @@ const ModalHeader = ({ allDayEvents, event, setEvent }) => {
                   <BsFillShareFill className="cursor-pointer" />
                   <BsFillPenFill className="cursor-pointer" />
                   <BsFillTrashFill
-                    onClick={() => setConfirm({show: true, func: deleteAnEvent})}
+                    onClick={() =>
+                      setConfirm({ show: true, func: deleteAnEvent })
+                    }
                     className="cursor-pointer"
                   />
                 </>
