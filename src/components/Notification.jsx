@@ -141,7 +141,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                     <p
                       onClick={(e) => {
                         e.stopPropagation();
-                        setDeleteId(() => notif.id);
+                        setDeleteId(notif.id);
                         setConfirm({ show: true, func: deleteNotif });
                       }}
                       className="border-b border-b-rose-300 cursor-pointer"

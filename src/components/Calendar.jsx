@@ -42,7 +42,7 @@ const Calendar = () => {
         theDay.toLocaleDateString()
     );
     setTodaysReminder(remindersToday);
-  }, [theDay, events]);
+  }, [theDay, events, reminders]);
 
   return (
     <main className="px-2 mt-20">

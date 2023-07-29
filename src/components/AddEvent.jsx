@@ -77,9 +77,9 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
             : splitStartTime[0]
         }:${splitStartTime[1]} ${splitStartTime[0] >= 12 ? "PM" : "AM"}`;
       };
+      setStartTime(true);
       setStartWhen(() => newStartTime);
       setStartTimeString(formattedDateString);
-      setStartTime(true);
     }
   }, [passedStartTime]);
 
@@ -170,7 +170,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
           </div>
           {location && (
             <div>
-              <motion.input
+             {/* <motion.input
                 initial={{ opacity: 0, y: 25 }}
                 animate={{ opacity: 1, y: 0 }}
                 placeholder="Location"
@@ -178,7 +178,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
                 type="text"
                 onChange={(e) => setLocationString(e.target.value)}
                 className="my-2 p-2 rounded-sm shadow-sm w-full focus:outline-gray-200"
-              />
+              /> */} 
               <SuggestCities />
             </div>
           )}
