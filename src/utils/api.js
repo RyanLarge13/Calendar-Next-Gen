@@ -58,7 +58,7 @@ export const loginWithPasswordAndUsername = async (credentials) => {
 
 export const getGoogleCalendarEvents = async (authToken, accessToken) => {
   const res = await Axios.get(
-    `${devUrl}/google/calendar/events/${accessToken}`,
+    `${productionUrl}/google/calendar/events/${accessToken}`,
     {
       headers: {
         Authorization: `Bearer ${authToken}`,

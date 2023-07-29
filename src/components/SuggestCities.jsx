@@ -1,76 +1,4 @@
-// import React, { useState, useEffect } from "react";
-//
-// const SuggestCities = () => {
-//   const [selectedPlace, setSelectedPlace] = useState(null);
-//   const [suggestions, setSuggestions] = useState([]);
-//   const [map, setMap] = useState(null);
-//
-//   const handlePlaceSelect = (place) => {
-//     setSelectedPlace(place);
-//   };
-//
-//   useEffect(() => {
-//     // Define the callback function to initialize the Autocomplete
-//     const initAutocomplete = () => {
-//       const input = document.getElementById("autocomplete-input");
-//       const autocomplete = new window.google.maps.places.Autocomplete(input, {
-//         types: ["(cities)", "establishment"],
-//       });
-//
-//       autocomplete.addListener("place_changed", () => {
-//         const place = autocomplete.getPlace();
-//         if (place.name) {
-//           handlePlaceSelect(place);
-//         }
-//       });
-//     };
-//
-//     // Load the Google Maps JavaScript API script dynamically with the callback
-//     const script = document.createElement("script");
-//     script.src = `https://maps.googleapis.com/maps/api/js?key=${
-//       import.meta.env.VITE_GOOGLE_MAPS_API_KEY
-//     }&libraries=places`;
-//     script.onload = initAutocomplete;
-//     document.head.appendChild(script);
-//
-//     return () => {
-//       // Cleanup: Remove the Google Maps script when the component unmounts
-//       document.head.removeChild(script);
-//     };
-//   }, []);
-//
-//   return (
-//     <div>
-//       <input
-//         id="autocomplete-input"
-//         placeholder="Type a city or business name"
-//       />
-//       <div>
-//         {suggestions.map((suggestion, index) => (
-//           <div
-//             key={index}
-//             style={{
-//               backgroundColor: suggestion.active ? "#e3e3e3" : "#fff",
-//               cursor: "pointer",
-//             }}
-//           >
-//             {suggestion.description}
-//           </div>
-//         ))}
-//       </div>
-//       {selectedPlace && (
-//         <div style={{ height: "400px", width: "100%" }} ref={setMap}>
-//           {/* Map will be rendered here */}
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-//
-// export default SuggestCities;
-//
-
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   GoogleMap,
   LoadScript,
@@ -79,10 +7,12 @@ import {
   useLoadScript,
 } from "@react-google-maps/api";
 import debounce from "lodash.debounce";
+import { motion } from "framer-motion";
 
-const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY; // Replace with your Google Maps API key
+const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+const libraries = ["places"];
 
-const SuggestCities = () => {
+const SuggestCities = ({ setLocationString }) => {
   const [inputValue, setInputValue] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [selectedPlace, setSelectedPlace] = useState(null);
@@ -149,6 +79,7 @@ const SuggestCities = () => {
               lng: place.geometry.location.lng(),
             },
           });
+          setLocationString(place.formatted_address);
         }
       });
     }
@@ -175,11 +106,18 @@ const SuggestCities = () => {
         />
       </Autocomplete>
       <div className="my-3">
-      {suggestions.map((place) => (
-        <div key={place.id} className="my-2 rounded-md p-2 shadow-sm" onClick={() => handleSelectPlace(place.id)}>
-          {place.name}
-        </div>
-      ))}
+        {suggestions.map((place) => (
+          <motion.div
+            whileHover={{ backgroundColor: "#eee" }}
+            key={place.id}
+            className={`${
+              inputValue === place.name ? "bg-cyan-200" : "bg-white"
+            } my-2 rounded-md p-2 shadow-sm cursor-pointer`}
+            onClick={() => handleSelectPlace(place.id)}
+          >
+            {place.name}
+          </motion.div>
+        ))}
       </div>
       {selectedPlace ? (
         <div>
@@ -195,7 +133,7 @@ const SuggestCities = () => {
 const MapComponent = ({ selectedPlace }) => {
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: apiKey,
-    libraries: ["places"],
+    libraries: libraries,
   });
 
   if (loadError) {
@@ -208,11 +146,16 @@ const MapComponent = ({ selectedPlace }) => {
 
   return (
     <GoogleMap
-      mapContainerStyle={{ width: "100%", height: "400px" }}
+      mapContainerStyle={{
+        width: "100%",
+        height: "400px",
+        borderRadius: "15px",
+        boxShadow: "0 10px 50px 0 #eee",
+      }}
       center={selectedPlace.coordinates}
       zoom={10}
     >
-      <Marker position={selectedPlace.coordinates} />
+      <Marker position={selectedPlace.coordinates} zIndex={900} />
     </GoogleMap>
   );
 };

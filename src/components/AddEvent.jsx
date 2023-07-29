@@ -15,7 +15,7 @@ import InteractiveContext from "../context/InteractiveContext";
 import Color from "./Color";
 import Toggle from "./Toggle";
 import TimeSetter from "./TimeSetter";
-import SuggestCities from "./SuggestCities"
+import SuggestCities from "./SuggestCities";
 
 const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
   const { setEvents, user, isOnline, setReminders } = useContext(UserContext);
@@ -170,16 +170,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
           </div>
           {location && (
             <div>
-             {/* <motion.input
-                initial={{ opacity: 0, y: 25 }}
-                animate={{ opacity: 1, y: 0 }}
-                placeholder="Location"
-                value={locationString}
-                type="text"
-                onChange={(e) => setLocationString(e.target.value)}
-                className="my-2 p-2 rounded-sm shadow-sm w-full focus:outline-gray-200"
-              /> */} 
-              <SuggestCities />
+              <SuggestCities setLocationString={setLocationString} />
             </div>
           )}
         </div>
