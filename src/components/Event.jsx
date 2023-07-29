@@ -159,7 +159,7 @@ const Event = ({ dayEvents }) => {
       onDragEnd={(e) => checkToClose(e)}
       initial={{ y: "100%" }}
       animate={open ? { y: 0 } : { y: "100%" }}
-      className={`fixed inset-3 top-[7%] rounded-md z-50 bg-white ${
+      className={`fixed inset-3 top-[7%] rounded-md z-40 isolate bg-white ${
         event.color === "bg-black" ? "text-white" : "text-black"
       }`}
     >

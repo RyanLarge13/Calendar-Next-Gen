@@ -189,6 +189,18 @@ export const updateNotification = async (req, res) => {
   }
 };
 
+export const markAsRead = async () => {
+	const notificationId = req.body.notificationId;
+	try {
+	await prisma.notification.update({
+		where: {id: notificationId}, 
+		data: {read: true} 
+	})
+	} catch (err) {
+		console.log(err)
+	}
+};
+
 export const deleteNotification = async (req, res) => {
   const notifId = req.params.notifId;
   const deletedNotif = await prisma.notification.delete({

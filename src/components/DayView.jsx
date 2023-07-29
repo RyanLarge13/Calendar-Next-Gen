@@ -1,16 +1,18 @@
 import { useEffect, useRef, useState, useContext } from "react";
 import { motion } from "framer-motion";
 import { staticTimes } from "../constants.js";
+import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
 import Event from "./Event";
 
 const DayView = ({ todaysEvents, todaysReminders }) => {
   const { event, setEvent } = useContext(InteractiveContext);
+  const { string } = useContext(DatesContext);
   const [time, setTime] = useState(new Date().toLocaleTimeString());
   const [height, setheight] = useState(0);
   const [combinedArray, setCombinedArray] = useState([]);
-  const dayViewContainer = useRef(null);
   const [times, setTimes] = useState([]);
+  const dayViewContainer = useRef(null);
   let interval;
 
   useEffect(() => {
@@ -49,7 +51,7 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
       const percentage = (timeInSeconds / (24 * 3600)) * 100;
       return (percentage * containerHeight) / 100;
     }
-    return 0; // Return 0 if dayViewContainer is not available
+    return 0;
   };
 
   const getTime = () => {
@@ -74,8 +76,12 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
   };
 
   const checkToSetTime = (e, staticString) => {
+    if (times.includes(staticString)) {
+      const newStrings = times.filter((time) => time !== staticString);
+      return setTimes(newStrings);
+    }
     const end = e.clientX;
-    if (end > window.innerWidth / 2) {
+    if (end > window.innerWidth / 1.5) {
       setTimes((prev) => [...prev, staticString]);
     }
   };
@@ -83,7 +89,8 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
   return (
     <div className="py-20">
       <div ref={dayViewContainer} className="text-sm min-h-[400vh] relative">
-        {todaysEvents.length > 0 ? (
+        {todaysEvents.length > 0 &&
+        new Date().toLocaleDateString() === string ? (
           <motion.div
             animate={{ top: height }}
             className="absolute right-0 z-[200] translate-y-[-50%]"
@@ -95,7 +102,7 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
             </div>
           </motion.div>
         ) : (
-          <p className="text-center">No Events Today</p>
+          <p className=""></p>
         )}
         <div>
           <div className="">
@@ -104,11 +111,16 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
                 drag="x"
                 dragConstraints={{ left: 0 }}
                 dragSnapToOrigin={true}
-                onDragEnd={(e) => checkToSetTime(e, staticTime.string)}
-                whileTap={{ backgroundColor: "#ddd" }}
+                onDragEnd={(e) => checkToSetTime(e, staticTime.string.trim())}
+                //whileHover={{ backgroundColor: "#ddd" }}
                 key={index}
-                style={{
-                  height: `${getHeight()}px`,
+                style={{height: `${getHeight()}px`}}
+                animate={{
+                  backgroundColor: `${
+                    times.includes(staticTime.string.trim())
+                      ? "#67e8f9"
+                      : "#fff"
+                  }`,
                 }}
                 className={`${index === 0 ? "border-b border-t" : "border-b"}`}
               >

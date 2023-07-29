@@ -8,66 +8,74 @@ datasource db {
 }
 
 model User {
-  id       String      @id @default(uuid())
-  avatarUrl String? 
-  username String
-  email    String @unique
-  password String
-  birthday DateTime?
-  createAt DateTime @default(now())
-  notifSub String[]
-  events   Event[]
-  reminders Reminder[]
+  id            String         @id @default(uuid())
+  avatarUrl     String?
+  username      String
+  email         String         @unique
+  password      String
+  birthday      DateTime?
+  createAt      DateTime       @default(now())
+  notifSub      String[]
+  events        Event[]
+  reminders     Reminder[]
   notifications Notification[]
-  list List[]
+  list          List[]
+  friends       Friend[]       @relation(name: "UserToFriends")
+}
+
+model Friend {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  user      User     @relation(name: "UserToFriends", fields: [userId], references: [id]) 
+  userId    String
 }
 
 model Event {
-  id       String     @unique @id @default(uuid())
-  kind String?
-  summary    String
-  description String?
-  location String?
-  date     String
-  reminders Json?
-  repeats Json?
+  id           String   @id @unique @default(uuid())
+  kind         String?
+  summary      String
+  description  String?
+  location     String?
+  date         String
+  reminders    Json?
+  repeats      Json?
   attatchments Json?
-  color    String
-  start Json
-  end Json
-  updated DateTime @updatedAt
-  created DateTime @default(now())
-  User     User     @relation(fields: [userId], references: [id])
-  userId   String
+  color        String
+  start        Json
+  end          Json
+  updated      DateTime @updatedAt
+  created      DateTime @default(now())
+  User         User     @relation(fields: [userId], references: [id])
+  userId       String
 }
 
 model Reminder {
-  id String @unique @id @default(uuid())
-  title String
-  notes String
-  time String
-  User User @relation(fields: [userId], references: [id])
+  id     String @id @unique @default(uuid())
+  title  String
+  notes  String
+  time   String
+  User   User   @relation(fields: [userId], references: [id])
   userId String
 }
 
 model Notification {
-  id String @unique @id @default(uuid())
-  type String
-  time String
-  read Boolean @default(false)
-  readTime String?
-  notifData Json
-  User User @relation(fields: [userId], references: [id])
+  id               String  @id @unique @default(uuid())
+  type             String
+  time             String
+  read             Boolean @default(false)
+  readTime         String?
+  notifData        Json
+  User             User    @relation(fields: [userId], references: [id])
   sentNotification Boolean @default(false)
-  sentWebPush Boolean @default(false)
-  userId String
+  sentWebPush      Boolean @default(false)
+  userId           String
 }
 
 model List {
-  id String @unique @id @default(uuid())
-  title String
-  items Json?
-  color String
-  User User @relation(fields: [userId], references: [id])
+  id     String @id @unique @default(uuid())
+  title  String
+  items  Json?
+  color  String
+  User   User   @relation(fields: [userId], references: [id])
   userId String
 }

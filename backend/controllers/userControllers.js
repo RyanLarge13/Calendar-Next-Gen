@@ -1,4 +1,6 @@
 import { PrismaClient } from "@prisma/client";
+import { google } from "googleapis";
+import { getOAuth2Client } from "../utils/helpers.js";
 import signToken from "../auth/signToken.js";
 import bcrypt from "bcryptjs";
 
@@ -121,5 +123,39 @@ export const loginWithPasswordUsername = async (req, res) => {
         createdAt: createdUser.createAt,
       },
     });
+  }
+};
+
+export const fetchGoogleCalendarEvents = async (req, res) => {
+  const credentials = {
+    client_id: process.env.GOOGLE_CLIENT_ID,
+    client_secret: process.env.GOOGLE_CLIENT_SECRET,
+    redirect_uris: [
+      "https://www.calng.app",
+      "http://localhost:5173",
+      "https://calendar-next-gen.vercel.app",
+      "https://calendar-next-gen-git-dev-ryanlarge13.vercel.app",
+    ],
+  };
+  const accessToken = req.params.accessToken;
+  const calendar = google.calendar({ version: "v3" });
+  try {
+    const authClient = getOAuth2Client(credentials, accessToken);
+    const calendarResponse = await calendar.events.list({
+      auth: authClient,
+      calendarId: "primary",
+      timeMin: new Date().toISOString(),
+      maxResults: 1000,
+      singleEvents: true,
+      orderBy: "startTime",
+    });
+
+    const events = calendarResponse.data.items;
+    res
+      .status(201)
+      .json({ message: "Successfully fetched google calendar events", events });
+  } catch (error) {
+    console.error("Error fetching calendar events:", error);
+    res.status(500).json({ error: "Failed to fetch calendar events" });
   }
 };

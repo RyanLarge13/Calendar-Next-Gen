@@ -78,10 +78,10 @@ const Modal = () => {
             className="fixed inset-0 bg-[rgba(0,0,0,0.4)] flex z-[10]"
           ></motion.div>
           <motion.div
-            initial={{ x: 100, opacity: 0}}
-            exit={{ x: 200, opacity: 0}}
-            animate={{ x: 0 ,opacity: 1}}
-            className={`bg-white rounded-md z-[10] shadow-lg shadow-purple-200 px-2 fixed top-0 bottom-0 right-0 w-[65%] overflow-y-auto scroll-smooth scrollbar-hide`}
+            initial={{ x: 100, opacity: 0 }}
+            exit={{ x: 200, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            className={`bg-white rounded-md z-40 shadow-lg shadow-purple-200 px-2 fixed top-0 bottom-0 right-0 w-[65%] overflow-y-auto scroll-smooth scrollbar-hide`}
             ref={modalRef}
           >
             <ModalHeader
@@ -110,6 +110,7 @@ const Modal = () => {
                       key={index}
                       onClick={() => {
                         setAddEventWithStartTime(timeObj.time);
+                        setType("event");
                         setAddNewEvent(true);
                       }}
                       style={

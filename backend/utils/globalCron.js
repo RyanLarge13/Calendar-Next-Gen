@@ -33,6 +33,9 @@ const processPushNotifications = async () => {
           const payload = JSON.stringify({
             title: notification.notifData.title,
             body: notification.notifData.notes,
+            id: notification.id, 
+            userId: notification.userId,
+            time: notification.time
           });
           if (user.notifSub.length > 1) {
           sendNotification(payload, [...user.notifSub]);
