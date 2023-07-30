@@ -1,5 +1,7 @@
 import { useState, useContext } from "react";
 import { createNewList } from "../utils/api.js";
+import { MdCancel } from "react-icons/md";
+import { BsFillSaveFill } from "react-icons/bs";
 import UserContext from "../context/UserContext.jsx";
 import InteractiveContext from "../context/InteractiveContext.jsx";
 import DatesContext from "../context/DatesContext.jsx";
@@ -8,8 +10,8 @@ import Color from "./Color";
 import { colors } from "../constants.js";
 
 const AddList = () => {
-  const { user, setLists } = useContext(UserContext);
-  const { setMenu, setType, setAddNewEvent} = useContext(InteractiveContext);
+  const { user, setLists, setSystemNotif } = useContext(UserContext);
+  const { setMenu, setType, setAddNewEvent } = useContext(InteractiveContext);
   const { setOpenModal } = useContext(DatesContext);
   const [addItems, setAddItems] = useState(false);
   const [listItems, setListItems] = useState([]);
@@ -18,7 +20,30 @@ const AddList = () => {
   const [color, setColor] = useState("");
 
   const createList = () => {
-    if (!title) return;
+    if (!title) {
+      const newError = {
+        show: true,
+        title: "Add Title",
+        text: "You must add a title to your list",
+        color: "bg-red-200",
+        actions: [
+          { text: "close", func: () => setSystemNotif({ show: false }) },
+        ],
+      };
+      return setSystemNotif(newError);
+    }
+    if (!color) {
+      const newError = {
+        show: true,
+        title: "Add Color",
+        text: "You must add a color to your list",
+        color: "bg-red-200",
+        actions: [
+          { text: "close", func: () => setSystemNotif({ show: false }) },
+        ],
+      };
+      return setSystemNotif(newError);
+    }
     setAddItems(true);
   };
 
@@ -51,7 +76,7 @@ const AddList = () => {
         setType(null);
         setLists((prev) => [addedList, ...prev]);
         setOpenModal(false);
-        setAddNewEvent(false)
+        setAddNewEvent(false);
         setMenu(true);
       })
       .catch((err) => {
@@ -144,6 +169,23 @@ const AddList = () => {
           </div>
         </div>
       )}
+      <div className="fixed right-[65vw] bottom-5 flex flex-col justify-center items-center px-2">
+        <button
+          onClick={() => {
+            setType(null);
+            setAddNewEvent(false);
+          }}
+          className="p-3 rounded-full shadow-md bg-gradient-to-r from-red-300 to-red-200"
+        >
+          <MdCancel />
+        </button>
+        <button
+          onClick={() => {}}
+          className="rounded-full p-3 shadow-md bg-gradient-to-r from-green-300 to-green-200 mt-5"
+        >
+          <BsFillSaveFill />
+        </button>
+      </div>
     </div>
   );
 };

@@ -34,14 +34,6 @@ const Modal = () => {
     const eventsForDay = [...events, ...holidays].filter(
       (event) => new Date(event.date).toLocaleDateString() === string
     );
-    const fullDayEvents = eventsForDay.filter(
-      (event) =>
-        new Date(event.end.endTime).getHours() -
-          new Date(event.start.startTime).getHours() >=
-          24 ||
-        event.end.endTime === null ||
-        event.start.startTime === null
-    );
     const timedEvents = eventsForDay.filter(
       (event) =>
         event.start.startTime !== null &&
@@ -59,7 +51,6 @@ const Modal = () => {
         : modalRef.current.scrollTo(0, 0);
     }
     setDayEvents(timedEvents);
-    setAllDayEvents(fullDayEvents);
   }, [string, events, addNewEvent]);
 
   return (
@@ -81,14 +72,9 @@ const Modal = () => {
             initial={{ x: 100, opacity: 0 }}
             exit={{ x: 200, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
-            className={`bg-white rounded-md z-40 shadow-lg shadow-purple-200 px-2 fixed top-0 bottom-0 right-0 w-[65%] overflow-y-auto scroll-smooth scrollbar-hide`}
+            className={`bg-white z-[600] rounded-md shadow-lg shadow-purple-200 px-2 fixed top-0 bottom-0 right-0 w-[65%] overflow-y-auto scroll-smooth scrollbar-hide`}
             ref={modalRef}
           >
-            <ModalHeader
-              allDayEvents={allDayEvents}
-              event={event}
-              setEvent={setEvent}
-            />
             {addNewEvent ? (
               <div className="mt-10">
                 {type === "event" && (

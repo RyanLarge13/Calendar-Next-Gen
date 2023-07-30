@@ -18,7 +18,8 @@ import TimeSetter from "./TimeSetter";
 import SuggestCities from "./SuggestCities";
 
 const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
-  const { setEvents, user, isOnline, setReminders } = useContext(UserContext);
+  const { setEvents, user, isOnline, setReminders, setSystemNotif } =
+    useContext(UserContext);
   const { setType } = useContext(InteractiveContext);
   const { string, setOpenModal } = useContext(DatesContext);
 
@@ -84,6 +85,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
   }, [passedStartTime]);
 
   const addEvent = () => {
+    if (!runChecks()) return;
     if (!isOnline) {
     }
     if (isOnline) {
@@ -131,6 +133,36 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
           console.log(err);
         });
     }
+  };
+
+  const runChecks = () => {
+    if (!summary) {
+      const newError = {
+        show: true,
+        title: "Add Title",
+        text: "You must add a title to your new event",
+        color: "bg-red-200",
+        actions: [
+          { text: "close", func: () => setSystemNotif({ show: false }) },
+        ],
+      };
+      setSystemNotif(newError);
+      return false;
+    }
+    if (!color) {
+      const newError = {
+        show: true,
+        title: "Add Color",
+        text: "You must add a color to your new event",
+        color: "bg-red-200",
+        actions: [
+          { text: "close", func: () => setSystemNotif({ show: false }) },
+        ],
+      };
+      setSystemNotif(newError);
+      return false;
+    }
+    return true;
   };
 
   return (

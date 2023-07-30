@@ -159,7 +159,7 @@ const Event = ({ dayEvents }) => {
       onDragEnd={(e) => checkToClose(e)}
       initial={{ y: "100%" }}
       animate={open ? { y: 0 } : { y: "100%" }}
-      className={`fixed inset-3 top-[7%] rounded-md z-40 isolate bg-white ${
+      className={`z-[901] fixed inset-3 top-[7%] rounded-md bg-white ${
         event.color === "bg-black" ? "text-white" : "text-black"
       }`}
     >
@@ -223,7 +223,12 @@ const Event = ({ dayEvents }) => {
                 <MdLocationPin />
                 <p>{event.location}</p>
               </div>
-              <div className="mr-5">
+              <div
+                className="mr-5"
+                onClick={() =>
+                  (window.location.href = `https://www.google.com/maps/dir/?api=1&destination=${event.location}`)
+                }
+              >
                 <FaExternalLinkAlt />
               </div>
             </>

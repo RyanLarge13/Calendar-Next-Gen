@@ -22,6 +22,7 @@ const LoginLogout = () => {
     setEvents,
     setReminders,
     setLists,
+    setSystemNotif,
   } = useContext(UserContext);
 
   const [regularLogin, setRegularLogin] = useState(false);
@@ -151,7 +152,22 @@ const LoginLogout = () => {
                 <div className="">
                   <div className="flex justify-between items-center bg-purple-100 rounded-md shadow-md p-2 mb-5">
                     <BiLogOutCircle
-                      onClick={() => logout()}
+                      onClick={() => {
+                        const newConfirmation = {
+                          show: true,
+                          title: "Logout",
+                          text: "Are you sure you want to logout?",
+                          color: "bg-purple-200",
+                          actions: [
+                            {
+                              text: "close",
+                              func: () => setSystemNotif({ show: false }),
+                            },
+                            { text: "logout", func: () => logout() },
+                          ],
+                        };
+                        setSystemNotif(newConfirmation)
+                      }}
                       className="text-xl abolute left-2 top-2 cursor-pointer"
                     />
                     <div

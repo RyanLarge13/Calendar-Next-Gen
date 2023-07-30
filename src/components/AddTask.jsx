@@ -1,7 +1,12 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { AiFillCloseCircle } from "react-icons/ai";
+import { MdCancel } from "react-icons/md";
+import { BsFillSaveFill } from "react-icons/bs";
+import InteractiveContext from "../context/InteractiveContext";
 
 const AddTask = () => {
+  const { setType, setAddNewEvent } = useContext(InteractiveContext);
+
   const [tasks, setTasks] = useState([]);
   const [checked, setChecked] = useState([]);
   const [title, setTitle] = useState("");
@@ -59,12 +64,35 @@ const AddTask = () => {
                   className="text-black"
                 />
                 <div className=" ml-5 w-full flex justify-between items-center">
-                  <p className={`${checked.includes(task) ? "line-through" : ""}`}>{task}</p>
+                  <p
+                    className={`${
+                      checked.includes(task) ? "line-through" : ""
+                    }`}
+                  >
+                    {task}
+                  </p>
                   <AiFillCloseCircle onClick={() => removeTask(task)} />
                 </div>
               </label>
             </div>
           ))}
+      </div>
+      <div className="fixed right-[65vw] bottom-5 flex flex-col justify-center items-center px-2">
+        <button
+          onClick={() => {
+            setType(null);
+            setAddNewEvent(false);
+          }}
+          className="p-3 rounded-full shadow-md bg-gradient-to-r from-red-300 to-red-200"
+        >
+          <MdCancel />
+        </button>
+        <button
+          onClick={() => {}}
+          className="rounded-full p-3 shadow-md bg-gradient-to-r from-green-300 to-green-200 mt-5"
+        >
+          <BsFillSaveFill />
+        </button>
       </div>
     </div>
   );

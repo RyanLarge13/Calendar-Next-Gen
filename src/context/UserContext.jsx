@@ -13,6 +13,7 @@ import {
   checkSubscription,
   addSubscriptionToUser,
   getGoogleCalendarEvents,
+  markAsRead
 } from "../utils/api";
 import IndexedDBManager from "../utils/indexDBApi";
 
@@ -255,6 +256,13 @@ export const UserProvider = ({ children }) => {
         color: "bg-purple-300",
         actions: [
           { text: "close", func: () => setSystemNotif({ show: false }) },
+          {
+            text: "mark as read",
+            func: () => {
+              setSystemNotif({ show: false });
+              markAsRead(notification.notifData.id)
+            },
+          },
           { text: "open", func: (customFunc) => customFunc() },
         ],
       });

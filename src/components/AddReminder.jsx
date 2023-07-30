@@ -10,7 +10,7 @@ import DatesContext from "../context/DatesContext";
 
 const AddReminder = () => {
   const { setMenu, setAddNewEvent, setType } = useContext(InteractiveContext);
-  const { setReminders } = useContext(UserContext);
+  const { setReminders, setSystemNotif } = useContext(UserContext);
   const { setOpenModal } = useContext(DatesContext);
 
   const [time, setTime] = useState(null);
@@ -20,6 +20,30 @@ const AddReminder = () => {
   const [addTime, setAddTime] = useState(false);
 
   const addAReminder = () => {
+    if (!time) {
+      const newError = {
+        show: true,
+        title: "Select A Time",
+        text: "Please select a time for your reminder",
+        color: "bg-red-200",
+        actions: [
+          { text: "close", func: () => setSystemNotif({ show: false }) },
+        ],
+      };
+      return setSystemNotif(newError);
+    }
+    if (!title) {
+    	const newError = {
+        show: true,
+        title: "Title",
+        text: "Please create at least a title for your new reminder",
+        color: "bg-red-200",
+        actions: [
+          { text: "close", func: () => setSystemNotif({ show: false }) },
+        ],
+      };
+      return setSystemNotif(newError);
+    }
     const token = localStorage.getItem("authToken");
     const newReminder = {
       title,
@@ -62,8 +86,9 @@ const AddReminder = () => {
       <div className="fixed right-[65vw] bottom-5 flex flex-col justify-center items-center px-2">
         <button
           onClick={() => {
-          setType(null)
-          setAddNewEvent(false)}} 
+            setType(null);
+            setAddNewEvent(false);
+          }}
           className="p-3 rounded-full shadow-md bg-gradient-to-r from-red-300 to-red-200"
         >
           <MdCancel />

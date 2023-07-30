@@ -249,6 +249,11 @@ export const updateNotification = (idArray, token, username) => {
   return res;
 };
 
+export const markAsRead = (notifId) => {
+	const res = Axios.post(`${productionUrl}/mark-as-read`, {notifId})
+	return res;
+}
+
 export const deleteNotification = (token, id) => {
   const res = Axios.delete(`${productionUrl}/notification/${id}`, {
     headers: {
