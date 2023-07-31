@@ -10,7 +10,7 @@ const MasonryView = () => {
 
   const [uniqueDates, setUniqueDates] = useState([]);
 
-  const closestDate = useRef(null);
+  const closestDateRef = useRef(null);
 
   const breakpointColumnsObj = {
     default: 3, // Number of columns by default
@@ -33,21 +33,23 @@ const MasonryView = () => {
     const closestDate = uniqueDatesArray.reduce((a, b) => {
       const dateA = new Date(a);
       const dateB = new Date(b);
-      return Math.abs(dateA - currentDate) < Math.abs(dateB - currentDate) ? a : b;
+      return Math.abs(dateA - currentDate) < Math.abs(dateB - currentDate)
+        ? a
+        : b;
     });
     // Update the closestDateRef with the ref to the element representing the closest date
     const element = document.getElementById(closestDate);
     if (element) {
-      closestDate.current = element;
+      closestDateRef.current = element;
     }
   }, [events, reminders]);
-  
+
   useEffect(() => {
     // Step 4: Scroll to the closest date element on component mount
     if (closestDateRef.current) {
       closestDateRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, []); 
+  }, []);
 
   const getHeight = (start, end) => {
     if (!start || !end) {
@@ -66,10 +68,11 @@ const MasonryView = () => {
   return (
     <div className="pb-10">
       {uniqueDates.map((dateString) => (
-        <div className="mt-5">
+        <div key={dateString} className="mt-5">
           <div
             className="rounded-md p-2 shadow-md flex justify-between items-center"
-            ref={closestDate}
+            id={dateString}
+            ref={closestDateRef}
           >
             <h2 className="bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent">
               {dateString}
@@ -85,6 +88,7 @@ const MasonryView = () => {
               (event) =>
                 event.date === dateString && (
                   <motion.div
+                    key={event.id}
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     style={{

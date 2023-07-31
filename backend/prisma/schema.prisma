@@ -22,6 +22,7 @@ reminders     Reminder[]
 notifications Notification[]
 list          List[]
 tasks Task[]
+kanbans Kanban[]
 friends       Friend[]       @relation(name: "UserToFriends")
 }
 
@@ -112,4 +113,6 @@ projectId String
 
 model BoardItems {
 id String @id @unique @default(uuid())
+Board Board @relation(fields: [boardId], references: [id])
+boardId String
 }
