@@ -7,6 +7,7 @@ import { loginWithPasswordAndUsername, updateNotification } from "../utils/api";
 import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
 import Notification from "./Notification";
+import Options from "./Options";
 
 const LoginLogout = () => {
   const { showLogin, setShowLogin, showNotifs, setShowNotifs } =
@@ -142,6 +143,7 @@ const LoginLogout = () => {
               }}
               className="fixed inset-0 bg-[rgba(0,0,0,0.4)] z-10"
             ></motion.div>
+            {user && <Options showLogin={showLogin} />}
             <motion.div
               initial={{ y: 100, opacity: 0 }}
               exit={{ y: 200, opacity: 0 }}
@@ -166,7 +168,7 @@ const LoginLogout = () => {
                             { text: "logout", func: () => logout() },
                           ],
                         };
-                        setSystemNotif(newConfirmation)
+                        setSystemNotif(newConfirmation);
                       }}
                       className="text-xl abolute left-2 top-2 cursor-pointer"
                     />
