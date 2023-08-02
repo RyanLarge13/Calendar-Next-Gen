@@ -14,9 +14,10 @@ const WeekView = () => {
     useContext(DatesContext);
 
   const [weeklyEvents, setWeeklyEvents] = useState([]);
+  const dateContainerRefs = useRef([]);
+  const containerWidth = useRef(null);
 
   const currentWeekday = new Date().getDay();
-  const containerWidth = useRef(null);
 
   useEffect(() => {
     const matchingEvents = currentWeek.map((weekDay) =>
@@ -26,6 +27,28 @@ const WeekView = () => {
     );
     setWeeklyEvents(matchingEvents);
   }, [currentWeek]);
+
+  useEffect(() => {
+    // Function to find the first event of the week and scroll to it
+    const scrollToFirstEvent = () => {
+      for (let index = 0; index < weeklyEvents.length; index++) {
+        const eventsForDate = weeklyEvents[index];
+        if (eventsForDate.length > 0) {
+          const firstEventElement =
+            dateContainerRefs.current[index]?.querySelector(".event-item");
+          if (firstEventElement) {
+            dateContainerRefs.current[index]?.scrollTo({
+              left: firstEventElement.offsetLeft,
+              behavior: "smooth",
+            });
+          }
+        }
+      }
+    };
+
+    // Scroll to the first event when weeklyEvents data updates
+    scrollToFirstEvent();
+  }, [weeklyEvents]);
 
   const calcDayEventWidth = (start, end) => {
     if (!start || !end) {
@@ -56,7 +79,11 @@ const WeekView = () => {
   return (
     <section className="relative flex flex-col justify-between items-start">
       {currentWeek.map((date, index) => (
-        <div key={index} className={`w-full border-r border-l rounded-t-lg`}>
+        <div
+          key={index}
+          ref={(ref) => (dateContainerRefs.current[index] = ref)}
+          className={`w-full border-r border-l rounded-t-lg`}
+        >
           <div
             className={`w-full flex justify-between items-center rounded-full shadow-md p-2 text-[14px] mb-1 ${
               date.getDay() === currentWeekday
@@ -104,7 +131,7 @@ const WeekView = () => {
                         )}px`,
                         left: fromLeft(new Date(weekEvent.start.startTime)),
                       }}
-                      className={`absolute top-5 bottom-2 rounded-md shadow-md p-2 ${weekEvent.color}`}
+                      className={`absolute top-5 bottom-2 event-item rounded-md shadow-md p-2 ${weekEvent.color}`}
                       onClick={() => setEvent(weekEvent)}
                     >
                       <p>{weekEvent.summary}</p>

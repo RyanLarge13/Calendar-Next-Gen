@@ -119,6 +119,7 @@ const LoginLogout = () => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("events");
     localStorage.removeItem("reminders");
+    setSystemNotif({show: false})
     setAuthToken(false);
     setUser(false);
     setEvents([]);

@@ -273,10 +273,9 @@ export const UserProvider = ({ children }) => {
             text: "mark as read",
             func: () => {
               setSystemNotif({ show: false });
-              markAsRead(notification.notifData.id);
+              markAsRead(notification.id);
             },
           },
-          { text: "open", func: (customFunc) => customFunc() },
         ],
       });
       console.log("Received notification:", notification);
