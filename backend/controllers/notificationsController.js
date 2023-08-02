@@ -189,7 +189,7 @@ export const updateNotification = async (req, res) => {
   }
 };
 
-export const markAsRead = async () => {
+export const markAsRead = async (req, res) => {
 	const notificationId = req.body.notificationId;
 	try {
 	await prisma.notification.update({

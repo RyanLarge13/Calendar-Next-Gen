@@ -10,7 +10,7 @@ import UserContext from "../context/UserContext";
 const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
   const { notifications, setNotifications, setSystemNotif } =
     useContext(UserContext);
-  const { setConfirm, showNotifs, setShowNotifs } =
+  const { setConfirm, showNotifs } =
     useContext(InteractiveContext);
 
   const [notifOpen, setNotifOpen] = useState("");

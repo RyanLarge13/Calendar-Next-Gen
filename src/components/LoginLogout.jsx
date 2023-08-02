@@ -143,7 +143,7 @@ const LoginLogout = () => {
               }}
               className="fixed inset-0 bg-[rgba(0,0,0,0.4)] z-10"
             ></motion.div>
-            {user && <Options showLogin={showLogin} />}
+            {/* {user && <Options showLogin={showLogin} />} */} 
             <motion.div
               initial={{ y: 100, opacity: 0 }}
               exit={{ y: 200, opacity: 0 }}
