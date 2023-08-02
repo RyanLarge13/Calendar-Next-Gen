@@ -6,7 +6,6 @@ export const InteractiveProvider = ({ children }) => {
   const [menu, setMenu] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [showNotifs, setShowNotifs] = useState(false);
-  const [confirm, setConfirm] = useState({ show: false, func: null });
   const [view, setView] = useState("month");
   const [addNewEvent, setAddNewEvent] = useState(false);
   const [type, setType] = useState(null);
@@ -18,7 +17,6 @@ export const InteractiveProvider = ({ children }) => {
       value={{
         menu,
         showLogin,
-        confirm,
         view,
         addNewEvent,
         type,
@@ -31,7 +29,6 @@ export const InteractiveProvider = ({ children }) => {
         setType,
         setAddNewEvent,
         setView,
-        setConfirm,
         setMenu,
         setShowLogin,
       }}

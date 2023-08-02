@@ -223,21 +223,19 @@ const Event = ({ dayEvents }) => {
               <div className="flex justify-between items-start">
                 <div>
                   <MdLocationPin />
-                  <p>{JSON.parse(event.location).string}</p>
+                  <p>{event.location.string}</p>
                 </div>
                 <div
                   className="mr-5"
                   onClick={() =>
-                    (window.location.href = `https://www.google.com/maps/dir/?api=1&destination=${event.location}`)
+                    (window.location.href = `https://www.google.com/maps/dir/?api=1&destination=${event.location.string}`)
                   }
                 >
                   <FaExternalLinkAlt />
                 </div>
               </div>
-              <div className="mt-10">
-                <GoogleMaps
-                  coordinates={JSON.parse(event.location).coordinates}
-                />
+              <div className="mt-5">
+                <GoogleMaps coordinates={event.location.coordinates} />
               </div>
             </div>
           ) : (
