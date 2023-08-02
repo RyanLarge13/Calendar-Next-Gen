@@ -8,8 +8,9 @@ import { FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";
 import { MdLocationPin } from "react-icons/md";
 import { FaExternalLinkAlt } from "react-icons/fa";
-import InteractiveContext from "../context/InteractiveContext";
 import { motion } from "framer-motion";
+import GoogleMaps from "./GoogleMaps";
+import InteractiveContext from "../context/InteractiveContext";
 
 const Event = ({ dayEvents }) => {
   const { event, setEvent } = useContext(InteractiveContext);
@@ -159,7 +160,7 @@ const Event = ({ dayEvents }) => {
       onDragEnd={(e) => checkToClose(e)}
       initial={{ y: "100%" }}
       animate={open ? { y: 0 } : { y: "100%" }}
-      className={`fixed inset-3 top-[7%] rounded-md z-40 isolate bg-white ${
+      className={`z-[901] fixed inset-3 top-[7%] rounded-md bg-white overflow-y-auto ${
         event.color === "bg-black" ? "text-white" : "text-black"
       }`}
     >
@@ -216,17 +217,29 @@ const Event = ({ dayEvents }) => {
             </div>
           </>
         )}
-        <div className="my-2 bg-white rounded-md shadow-md p-2 flex justify-between items-center">
+        <div className="my-2 bg-white rounded-md shadow-md p-2">
           {event.location ? (
-            <>
-              <div>
-                <MdLocationPin />
-                <p>{event.location}</p>
+            <div>
+              <div className="flex justify-between items-start">
+                <div>
+                  <MdLocationPin />
+                  <p>{JSON.parse(event.location).string}</p>
+                </div>
+                <div
+                  className="mr-5"
+                  onClick={() =>
+                    (window.location.href = `https://www.google.com/maps/dir/?api=1&destination=${event.location}`)
+                  }
+                >
+                  <FaExternalLinkAlt />
+                </div>
               </div>
-              <div className="mr-5">
-                <FaExternalLinkAlt />
+              <div className="mt-10">
+                <GoogleMaps
+                  coordinates={JSON.parse(event.location).coordinates}
+                />
               </div>
-            </>
+            </div>
           ) : (
             <p>No location provided</p>
           )}

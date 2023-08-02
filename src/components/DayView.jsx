@@ -7,7 +7,7 @@ import Event from "./Event";
 
 const DayView = ({ todaysEvents, todaysReminders }) => {
   const { event, setEvent } = useContext(InteractiveContext);
-  const { string } = useContext(DatesContext);
+  const { string, theDay } = useContext(DatesContext);
   const [time, setTime] = useState(new Date().toLocaleTimeString());
   const [height, setheight] = useState(0);
   const [combinedArray, setCombinedArray] = useState([]);
@@ -55,7 +55,6 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
   };
 
   const getTime = () => {
-    if (todaysEvents.length < 1) return;
     interval = setInterval(() => {
       const now = new Date();
       const percentageOfDay =
@@ -66,6 +65,9 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
       setheight(newPosition);
       setTime(now.toLocaleTimeString());
     }, 1000);
+    if (new Date().toLocaleDateString() === theDay.toLocaleDateString()) {
+      window.scrollTo(0, height);
+    }
   };
 
   const getHeight = () => {
@@ -89,8 +91,7 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
   return (
     <div className="py-20">
       <div ref={dayViewContainer} className="text-sm min-h-[400vh] relative">
-        {todaysEvents.length > 0 &&
-        new Date().toLocaleDateString() === string ? (
+        {new Date().toLocaleDateString() === theDay.toLocaleDateString() ? (
           <motion.div
             animate={{ top: height }}
             className="absolute right-0 z-[200] translate-y-[-50%]"
@@ -114,7 +115,7 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
                 onDragEnd={(e) => checkToSetTime(e, staticTime.string.trim())}
                 //whileHover={{ backgroundColor: "#ddd" }}
                 key={index}
-                style={{height: `${getHeight()}px`}}
+                style={{ height: `${getHeight()}px` }}
                 animate={{
                   backgroundColor: `${
                     times.includes(staticTime.string.trim())

@@ -7,6 +7,7 @@ import { loginWithPasswordAndUsername, updateNotification } from "../utils/api";
 import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
 import Notification from "./Notification";
+import Options from "./Options";
 
 const LoginLogout = () => {
   const { showLogin, setShowLogin, showNotifs, setShowNotifs } =
@@ -22,6 +23,7 @@ const LoginLogout = () => {
     setEvents,
     setReminders,
     setLists,
+    setSystemNotif,
   } = useContext(UserContext);
 
   const [regularLogin, setRegularLogin] = useState(false);
@@ -141,6 +143,7 @@ const LoginLogout = () => {
               }}
               className="fixed inset-0 bg-[rgba(0,0,0,0.4)] z-10"
             ></motion.div>
+            {user && <Options showLogin={showLogin} />}
             <motion.div
               initial={{ y: 100, opacity: 0 }}
               exit={{ y: 200, opacity: 0 }}
@@ -151,7 +154,22 @@ const LoginLogout = () => {
                 <div className="">
                   <div className="flex justify-between items-center bg-purple-100 rounded-md shadow-md p-2 mb-5">
                     <BiLogOutCircle
-                      onClick={() => logout()}
+                      onClick={() => {
+                        const newConfirmation = {
+                          show: true,
+                          title: "Logout",
+                          text: "Are you sure you want to logout?",
+                          color: "bg-purple-200",
+                          actions: [
+                            {
+                              text: "close",
+                              func: () => setSystemNotif({ show: false }),
+                            },
+                            { text: "logout", func: () => logout() },
+                          ],
+                        };
+                        setSystemNotif(newConfirmation);
+                      }}
                       className="text-xl abolute left-2 top-2 cursor-pointer"
                     />
                     <div

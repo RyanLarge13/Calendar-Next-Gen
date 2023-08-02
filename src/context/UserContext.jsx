@@ -13,6 +13,7 @@ import {
   checkSubscription,
   addSubscriptionToUser,
   getGoogleCalendarEvents,
+  markAsRead,
 } from "../utils/api";
 import IndexedDBManager from "../utils/indexDBApi";
 
@@ -25,6 +26,7 @@ export const UserProvider = ({ children }) => {
   );
   const [events, setEvents] = useState([]);
   const [googleEvetns, setGoogleEvents] = useState([]);
+  const [refresh, setRefresh] = useState(false);
   const [lists, setLists] = useState([]);
   const [reminders, setReminders] = useState([]);
   const [localDB, setLocalDB] = useState(null);
@@ -49,6 +51,7 @@ export const UserProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
+    let refreshTimeout;
     if (!isOnline) {
       const newNotif = {
         show: true,
@@ -60,10 +63,16 @@ export const UserProvider = ({ children }) => {
           { text: "refresh", func: () => window.location.reload() },
         ],
       };
+      refreshTimeout = setTimeout(() => {
+        setRefresh(true);
+      }, 600000);
       setSystemNotif(newNotif);
       setBackOnlineTrigger(true);
     }
     if (isOnline && backOnlineTrigger === true) {
+      if (!refresh) {
+        clearTimeout(refreshTimeout);
+      }
       // Logic to show notification when going back online
       const newNotif = {
         show: true,
@@ -76,6 +85,11 @@ export const UserProvider = ({ children }) => {
       };
       setSystemNotif(newNotif);
       setBackOnlineTrigger(false);
+      if (refresh) {
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
+      }
     }
   }, [isOnline]);
 
@@ -255,6 +269,13 @@ export const UserProvider = ({ children }) => {
         color: "bg-purple-300",
         actions: [
           { text: "close", func: () => setSystemNotif({ show: false }) },
+          {
+            text: "mark as read",
+            func: () => {
+              setSystemNotif({ show: false });
+              markAsRead(notification.notifData.id);
+            },
+          },
           { text: "open", func: (customFunc) => customFunc() },
         ],
       });

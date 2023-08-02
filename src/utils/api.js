@@ -105,7 +105,7 @@ export const deleteEvent = (username, eventId, token) => {
 };
 
 export const updateEvent = (event, token) => {
-  Axios.get(`${devUrl}/${username}/events`)
+  Axios.get(`${productionUrl}/${username}/events`)
     .then((res) => {
       console.log(res);
     })
@@ -246,6 +246,11 @@ export const updateNotification = (idArray, token, username) => {
       },
     }
   );
+  return res;
+};
+
+export const markAsRead = (notifId) => {
+  const res = Axios.post(`${productionUrl}/mark-as-read`, { notifId });
   return res;
 };
 

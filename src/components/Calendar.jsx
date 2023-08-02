@@ -3,12 +3,14 @@ import { Dna } from "react-loader-spinner";
 import { motion } from "framer-motion";
 import { calendar } from "../motion";
 import Modal from "./Modal";
+import ModalHeader from "./ModalHeader";
 import Menu from "./Menu";
 import Event from "./Event";
 import MonthView from "./MonthView";
 import DayView from "./DayView";
-import Confirm from "./Confirm";
 import WeekView from "./WeekView";
+import MasonryView from "./MasonryView";
+import AgendaView from "./AgendaView";
 import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext";
@@ -25,16 +27,32 @@ const Calendar = () => {
     openModal,
     diff,
     dateString,
+    string,
   } = useContext(DatesContext);
 
   const [todaysEvents, setTodaysEvents] = useState([]);
   const [todaysReminders, setTodaysReminder] = useState([]);
+  const [allDayEvents, setAllDayEvents] = useState([]);
 
   useEffect(() => {
     const eventsToday = [...events, ...holidays].filter(
       (item) =>
         new Date(item.date).toLocaleDateString() === theDay.toLocaleDateString()
     );
+    if (string) {
+      const eventsForDay = [...events, ...holidays].filter(
+        (event) => new Date(event.date).toLocaleDateString() === string
+      );
+      const fullDayEvents = eventsForDay.filter(
+        (event) =>
+          new Date(event.end.endTime).getHours() -
+            new Date(event.start.startTime).getHours() >=
+            24 ||
+          event.end.endTime === null ||
+          event.start.startTime === null
+      );
+      setAllDayEvents(fullDayEvents);
+    }
     setTodaysEvents(eventsToday);
     const remindersToday = reminders.filter(
       (reminder) =>
@@ -42,7 +60,7 @@ const Calendar = () => {
         theDay.toLocaleDateString()
     );
     setTodaysReminder(remindersToday);
-  }, [theDay, events, reminders]);
+  }, [theDay, events, reminders, string]);
 
   return (
     <main className="px-2 mt-20">
@@ -99,6 +117,8 @@ const Calendar = () => {
                   />
                 )}
                 {view === "week" && <WeekView />}
+                {view === "masonry" && <MasonryView />}
+                {view === "agenda" && <AgendaView />}
               </motion.div>
             </div>
           ) : (
@@ -113,9 +133,9 @@ const Calendar = () => {
             </div>
           )}
         </section>
+        {openModal && <ModalHeader allDayEvents={allDayEvents} />}
         <Modal />
         <Menu />
-        {confirm.show && confirm.func && <Confirm />}
         {event && <Event dayEvents={todaysEvents} />}
       </section>
     </main>

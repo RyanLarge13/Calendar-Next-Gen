@@ -53,62 +53,74 @@ export const AddCircle = () => {
         {show ? <BsXCircleFill /> : <BsFillCalendarPlusFill />}
       </motion.div>
       <motion.div
-        initial={{ opacity: 0}}
-        animate={show ? { opacity: 1 } : { opacity: 0 }}
+        onClick={() => openModalAndSetType("task")}
+        initial={{ opacity: 0 }}
+        animate={
+          show ? { x: -130, y: 5, scale: 1.25,opacity :1} : { x: 0, y: 0, scale: 0 }
+        }
+        className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] right-5 bottom-5 bg-gradient-to-r from-pink-300 to-violet-200 shadow-md`}
       >
-        <motion.div
-          onClick={() => openModalAndSetType("task")}
-          animate={
-            show ? { x: -130, y: 5, scale: 1.25 } : { x: 0, y: 0, scale: 0 }
-          }
-          className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] right-5 bottom-5 bg-gradient-to-r from-pink-300 to-violet-200 shadow-md`}
-        >
-          <BsListTask />
-        </motion.div>
-        <motion.div
-          onClick={() => openModalAndSetType("kanban")}
-          animate={
-            show
-              ? { x: -120, y: -50, scale: 1.25, transition: { delay: 0.1 } }
-              : { x: 0, y: 0, scale: 0 }
-          }
-          className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] right-5 bottom-5 bg-gradient-to-r from-lime-300 to-emerald-200 shadow-md`}
-        >
-          <BsFillClipboardDataFill />
-        </motion.div>
-        <motion.div
-          onClick={() => openModalAndSetType("reminder")}
-          animate={
-            show
-              ? { x: -95, y: -105, scale: 1.25, transition: { delay: 0.2 } }
-              : { x: 0, y: 0, scale: 0 }
-          }
-          className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] right-5 bottom-5 bg-gradient-to-r from-red-300 to-rose-200 shadow-md`}
-        >
-          <BsAlarmFill />
-        </motion.div>
-        <motion.div
-          onClick={() => openModalAndSetType("todo-list")}
-          animate={
-            show
-              ? { x: -55, y: -150, scale: 1.25, transition: { delay: 0.3 } }
-              : { x: 0, y: 0, scale: 0 }
-          }
-          className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] right-5 bottom-5 bg-gradient-to-r from-cyan-300 to-sky-200 shadow-md`}
-        >
-          <BsListCheck />
-        </motion.div>
-        <motion.div
-          onClick={() => openModalAndSetType("event")}
-          animate={
-            show
-              ? { x: 5, y: -170, scale: 1.25, transition: { delay: 0.4 } }
-              : { x: 0, y: 0, scale: 0 }
-          }
-          className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] right-5 bottom-5 bg-gradient-to-r from-orange-300 to-yellow-200 shadow-md`}
-        >
-          <BsFillCalendar2EventFill />
-        </motion.div>
+        <BsListTask />
+      </motion.div>
+      <motion.div
+        onClick={() => openModalAndSetType("kanban")}
+        initial={{ opacity: 0 }}
+        animate={
+          show
+            ? { x: -120, y: -50, scale: 1.25,opacity :1,transition: { delay: 0.1 } }
+            : { x: 0, y: 0, scale: 0 }
+        }
+        className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] right-5 bottom-5 bg-gradient-to-r from-lime-300 to-emerald-200 shadow-md`}
+      >
+        <BsFillClipboardDataFill />
+      </motion.div>
+      <motion.div
+        onClick={() => openModalAndSetType("reminder")}
+        initial={{ opacity: 0 }}
+        animate={
+          show
+            ? { x: -95, y: -105, scale: 1.25, opacity:1,transition: { delay: 0.2 } }
+            : { x: 0, y: 0, scale: 0 }
+        }
+        className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] right-5 bottom-5 bg-gradient-to-r from-red-300 to-rose-200 shadow-md`}
+      >
+        <BsAlarmFill />
+      </motion.div>
+      <motion.div
+        onClick={() => openModalAndSetType("todo-list")}
+        initial={{ opacity: 0 }}
+        animate={
+          show
+            ? {
+                x: -55,
+                y: -150,
+                scale: 1.25,
+                opacity: 1,
+                transition: { delay: 0.3 },
+              }
+            : { x: 0, y: 0, scale: 0 }
+        }
+        className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] right-5 bottom-5 bg-gradient-to-r from-cyan-300 to-sky-200 shadow-md`}
+      >
+        <BsListCheck />
+      </motion.div>
+      <motion.div
+        onClick={() => openModalAndSetType("event")}
+        initial={{ opacity: 0 }}
+        animate={
+          show
+            ? {
+                x: 5,
+                y: -170,
+                scale: 1.25,
+                opacity: 1,
+                transition: { delay: 0.4 },
+              }
+            : { x: 0, y: 0, scale: 0 }
+        }
+        className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] right-5 bottom-5 bg-gradient-to-r from-orange-300 to-yellow-200 shadow-md`}
+      >
+        <BsFillCalendar2EventFill />
       </motion.div>
     </>
   );

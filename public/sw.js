@@ -27,7 +27,7 @@ self.addEventListener("push", (event) => {
     self.registration.showNotification(title, {
       body,
       icon: "./favicon.svg",
-      badge: "./favicon.svg",
+      badge: "./badge.svg",
       vibrate: [100, 100, 100],
       actions: [{ action: "mark-as-read", title: "Mark as Read" }],
     })

@@ -18,7 +18,8 @@ import TimeSetter from "./TimeSetter";
 import SuggestCities from "./SuggestCities";
 
 const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
-  const { setEvents, user, isOnline, setReminders } = useContext(UserContext);
+  const { setEvents, user, isOnline, setReminders, setSystemNotif } =
+    useContext(UserContext);
   const { setType } = useContext(InteractiveContext);
   const { string, setOpenModal } = useContext(DatesContext);
 
@@ -28,7 +29,10 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
   const [color, setColor] = useState(null);
   // Location
   const [location, setLocation] = useState(false);
-  const [locationString, setLocationString] = useState("");
+  const [locationObject, setLocationObject] = useState({
+    string: "",
+    coordinates: null,
+  });
   // reminders
   const [reminder, setReminder] = useState(false);
   const [reminderTimeString, setReminderTimeString] = useState("");
@@ -84,6 +88,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
   }, [passedStartTime]);
 
   const addEvent = () => {
+    if (!runChecks()) return;
     if (!isOnline) {
     }
     if (isOnline) {
@@ -91,7 +96,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
         kind: "Event",
         summary,
         description,
-        location: location ? locationString : null,
+        location: location ? locationObject : null,
         date: string,
         reminders: {
           reminder,
@@ -133,6 +138,36 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
     }
   };
 
+  const runChecks = () => {
+    if (!summary) {
+      const newError = {
+        show: true,
+        title: "Add Title",
+        text: "You must add a title to your new event",
+        color: "bg-red-200",
+        actions: [
+          { text: "close", func: () => setSystemNotif({ show: false }) },
+        ],
+      };
+      setSystemNotif(newError);
+      return false;
+    }
+    if (!color) {
+      const newError = {
+        show: true,
+        title: "Add Color",
+        text: "You must add a color to your new event",
+        color: "bg-red-200",
+        actions: [
+          { text: "close", func: () => setSystemNotif({ show: false }) },
+        ],
+      };
+      setSystemNotif(newError);
+      return false;
+    }
+    return true;
+  };
+
   return (
     <div className="flex flex-col justify-center itemAddKanban">
       <div className="flex flex-wrap justify-center items-center my-10 mx-auto w-[80%]">
@@ -170,7 +205,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
           </div>
           {location && (
             <div>
-              <SuggestCities setLocationString={setLocationString} />
+              <SuggestCities setLocationObject={setLocationObject} />
             </div>
           )}
         </div>

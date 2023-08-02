@@ -12,13 +12,14 @@ import DatesContext from "../context/DatesContext";
 import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
 
-const ModalHeader = ({ allDayEvents, event, setEvent }) => {
+const ModalHeader = ({ allDayEvents }) => {
   const { string } = useContext(DatesContext);
-  const { user, events, setEvents, holidays } = useContext(UserContext);
-  const { confirm, setConfirm, addNewEvent } = useContext(InteractiveContext);
+  const { user, events, setEvents, holidays, setSystemNotif } =
+    useContext(UserContext);
+  const { addNewEvent, event, setEvent } = useContext(InteractiveContext);
 
   const [showAllDayEvents, setShowAllDayEvents] = useState(true);
-  const [x, setX] = useState("100%");
+  const [x, setX] = useState("110%");
 
   useEffect(() => {
     setTimeout(() => {
@@ -33,7 +34,6 @@ const ModalHeader = ({ allDayEvents, event, setEvent }) => {
   }, [event, addNewEvent]);
 
   const deleteAnEvent = () => {
-    setConfirm({ show: false, func: null });
     const authToken = localStorage.getItem("authToken");
     deleteEvent(user.username, event.id, authToken)
       .then((res) => {
@@ -52,8 +52,9 @@ const ModalHeader = ({ allDayEvents, event, setEvent }) => {
 
   return (
     <motion.div
-      animate={event && !addNewEvent ? { left: 5 } : { left: "36%", x: x }}
-      className="bg-white isolate z-50 p-2 font-bold shadow-md fixed top-1 right-1 rounded-md"
+      initial={{ x: "110%" }}
+      animate={event && !addNewEvent ? { left: 5, x: x} : { left: "36%", x: x }}
+      className="bg-white z-[902] p-2 font-bold shadow-md fixed top-1 right-1 rounded-md"
     >
       <div className="flex justify-between items-center">
         <h2 className="bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent">
@@ -80,9 +81,28 @@ const ModalHeader = ({ allDayEvents, event, setEvent }) => {
                   <BsFillShareFill className="cursor-pointer" />
                   <BsFillPenFill className="cursor-pointer" />
                   <BsFillTrashFill
-                    onClick={() =>
-                      setConfirm({ show: true, func: deleteAnEvent })
-                    }
+                    onClick={() => {
+                      const newConfirmation = {
+                        show: true,
+                        title: `Delete ${event.summary}`,
+                        text: "Are you sure you want to delete this event?",
+                        color: "bg-red-200",
+                        actions: [
+                          {
+                            text: "cancel",
+                            func: () => setSystemNotif({ show: false }),
+                          },
+                          {
+                            text: "delete",
+                            func: () => {
+                              setSystemNotif({ show: false });
+                              deleteAnEvent();
+                            },
+                          },
+                        ],
+                      };
+                      setSystemNotif(newConfirmation);
+                    }}
                     className="cursor-pointer"
                   />
                 </>

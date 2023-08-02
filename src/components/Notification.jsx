@@ -8,7 +8,8 @@ import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext";
 
 const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
-  const { notifications, setNotifications } = useContext(UserContext);
+  const { notifications, setNotifications, setSystemNotif } =
+    useContext(UserContext);
   const { setConfirm, showNotifs, setShowNotifs } =
     useContext(InteractiveContext);
 
@@ -40,11 +41,30 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
     if (type === "reminder") return <IoIosAlarm />;
   };
 
+  const initiateDeletion = (notifId) => {
+    setDeleteId(notifId);
+    const newConfirmation = {
+      show: true,
+      title: "Delete Notification",
+      text: "Are you sure you want to delete this notification?",
+      color: "bg-red-200",
+      actions: [
+        { text: "close", func: () => setSystemNotif({ show: false }) },
+        {
+          text: "delete",
+          func: () => {
+            deleteNotif();
+            setSystemNotif({ show: false });
+          },
+        },
+      ],
+    };
+  };
+
   const deleteNotif = () => {
-    setConfirm({ show: false, func: null });
     const token = localStorage.getItem("authToken");
     if (!token) return;
-    if (deleteId) {
+    if (deleteId !== null) {
       const newNotifs = notifications.filter((item) => item.id !== deleteId);
       setNotifications(newNotifs);
       deleteNotification(token, deleteId)
@@ -141,8 +161,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                     <p
                       onClick={(e) => {
                         e.stopPropagation();
-                        setDeleteId(notif.id);
-                        setConfirm({ show: true, func: deleteNotif });
+                        initiateDeletion(notif.id);
                       }}
                       className="border-b border-b-rose-300 cursor-pointer"
                     >
