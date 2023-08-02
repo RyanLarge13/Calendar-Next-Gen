@@ -1,18 +1,12 @@
 import { useState, useEffect } from "react";
-import {
-  GoogleMap,
-  LoadScript,
-  Marker,
-  Autocomplete,
-  useLoadScript,
-} from "@react-google-maps/api";
-import debounce from "lodash.debounce";
+import { Autocomplete } from "@react-google-maps/api";
 import { motion } from "framer-motion";
+import debounce from "lodash.debounce";
+import GoogleMaps from "./GoogleMaps";
 
 const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-const libraries = ["places"];
 
-const SuggestCities = ({ setLocationString }) => {
+const SuggestCities = ({ setLocationObject }) => {
   const [inputValue, setInputValue] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [selectedPlace, setSelectedPlace] = useState(null);
@@ -79,7 +73,13 @@ const SuggestCities = ({ setLocationString }) => {
               lng: place.geometry.location.lng(),
             },
           });
-          setLocationString(place.formatted_address);
+          setLocationObject({
+            string: place.formatted_address,
+            coordinates: {
+              lat: place.geometry.location.lat(),
+              lng: place.geometry.location.lng(),
+            },
+          });
         }
       });
     }
@@ -121,42 +121,12 @@ const SuggestCities = ({ setLocationString }) => {
       </div>
       {selectedPlace ? (
         <div>
-          <MapComponent selectedPlace={selectedPlace} />
+          <GoogleMaps coordinates={selectedPlace.coordinates} />
         </div>
       ) : (
         <div>No place selected</div>
       )}
     </div>
-  );
-};
-
-const MapComponent = ({ selectedPlace }) => {
-  const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: apiKey,
-    libraries: libraries,
-  });
-
-  if (loadError) {
-    return <div>Error loading Google Maps API</div>;
-  }
-
-  if (!isLoaded) {
-    return <div>Loading...</div>;
-  }
-
-  return (
-    <GoogleMap
-      mapContainerStyle={{
-        width: "100%",
-        height: "400px",
-        borderRadius: "15px",
-        boxShadow: "0 10px 50px 0 #eee",
-      }}
-      center={selectedPlace.coordinates}
-      zoom={10}
-    >
-      <Marker position={selectedPlace.coordinates} zIndex={900} />
-    </GoogleMap>
   );
 };
 

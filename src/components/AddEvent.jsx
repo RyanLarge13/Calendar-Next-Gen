@@ -29,7 +29,10 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
   const [color, setColor] = useState(null);
   // Location
   const [location, setLocation] = useState(false);
-  const [locationString, setLocationString] = useState("");
+  const [locationObject, setLocationObject] = useState({
+    string: "",
+    coordinates: null,
+  });
   // reminders
   const [reminder, setReminder] = useState(false);
   const [reminderTimeString, setReminderTimeString] = useState("");
@@ -93,7 +96,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
         kind: "Event",
         summary,
         description,
-        location: location ? locationString : null,
+        location: location ? locationObject : null,
         date: string,
         reminders: {
           reminder,
@@ -202,7 +205,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
           </div>
           {location && (
             <div>
-              <SuggestCities setLocationString={setLocationString} />
+              <SuggestCities setLocationObject={setLocationObject} />
             </div>
           )}
         </div>

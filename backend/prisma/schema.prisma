@@ -38,7 +38,7 @@ id String   @id @unique @default(uuid())
 kind String?
 summary String
 description String?
-location String?
+location Json?
 date String
 reminders Json?
 repeats Json?

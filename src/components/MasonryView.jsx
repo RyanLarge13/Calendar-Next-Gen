@@ -9,6 +9,7 @@ const MasonryView = () => {
   const { setEvent } = useContext(InteractiveContext);
 
   const [uniqueDates, setUniqueDates] = useState([]);
+  const [shouldScroll, setShouldScroll] = useState(false);
 
   const closestDateRef = useRef(null);
 
@@ -29,27 +30,46 @@ const MasonryView = () => {
     const uniqueDatesArray = Array.from(uniqueSet);
     setUniqueDates(uniqueDatesArray);
     //Find element with closest date
-    const currentDate = new Date();
-    const closestDate = uniqueDatesArray.reduce((a, b) => {
-      const dateA = new Date(a);
-      const dateB = new Date(b);
-      return Math.abs(dateA - currentDate) < Math.abs(dateB - currentDate)
-        ? a
-        : b;
-    });
-    // Update the closestDateRef with the ref to the element representing the closest date
-    const element = document.getElementById(closestDate);
-    if (element) {
-      closestDateRef.current = element;
-    }
+    // const currentDate = new Date();
+    // const closestDate = uniqueDatesArray.reduce((a, b) => {
+    //   const dateA = new Date(a);
+    //   const dateB = new Date(b);
+    //   return Math.abs(dateA - currentDate) < Math.abs(dateB - currentDate)
+    //     ? a
+    //     : b;
+    // });
+    // // Update the closestDateRef with the ref to the element representing the closest date
+    // const element = document.getElementById(closestDate);
+    // if (element) {
+    //   closestDateRef.current = element;
+    // }
   }, [events, reminders]);
 
   useEffect(() => {
+    if (uniqueDates.length > 0) {
+      const currentDate = new Date();
+      const closestDate = uniqueDates.reduce((a, b) => {
+        const dateA = new Date(a);
+        const dateB = new Date(b);
+        return Math.abs(dateA - currentDate) < Math.abs(dateB - currentDate)
+          ? a
+          : b;
+      });
+      // Update the closestDateRef with the ref to the element representing the closest date
+      const element = document.getElementById(closestDate);
+      if (element) {
+        closestDateRef.current = element;
+        setShouldScroll(true);
+      }
+    }
+  }, [uniqueDates]);
+
+  useEffect(() => {
     // Step 4: Scroll to the closest date element on component mount
-    if (closestDateRef.current) {
+    if (closestDateRef.current && shouldScroll) {
       closestDateRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, []);
+  }, [shouldScroll]);
 
   const getHeight = (start, end) => {
     if (!start || !end) {

@@ -81,7 +81,7 @@ export const getEvents = async (username, token) => {
 
 export const postEvent = (event, token) => {
   const res = Axios.post(
-    `${productionUrl}/new/event`,
+    `${devUrl}/new/event`,
     { event: event },
     {
       headers: {
@@ -250,9 +250,9 @@ export const updateNotification = (idArray, token, username) => {
 };
 
 export const markAsRead = (notifId) => {
-	const res = Axios.post(`${productionUrl}/mark-as-read`, {notifId})
-	return res;
-}
+  const res = Axios.post(`${productionUrl}/mark-as-read`, { notifId });
+  return res;
+};
 
 export const deleteNotification = (token, id) => {
   const res = Axios.delete(`${productionUrl}/notification/${id}`, {
