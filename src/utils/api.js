@@ -81,7 +81,7 @@ export const getEvents = async (username, token) => {
 
 export const postEvent = (event, token) => {
   const res = Axios.post(
-    `${devUrl}/new/event`,
+    `${productionUrl}/new/event`,
     { event: event },
     {
       headers: {
@@ -105,7 +105,7 @@ export const deleteEvent = (username, eventId, token) => {
 };
 
 export const updateEvent = (event, token) => {
-  Axios.get(`${devUrl}/${username}/events`)
+  Axios.get(`${productionUrl}/${username}/events`)
     .then((res) => {
       console.log(res);
     })
