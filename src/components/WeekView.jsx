@@ -37,10 +37,12 @@ const WeekView = () => {
           const firstEventElement =
             dateContainerRefs.current[index]?.querySelector(".event-item");
           if (firstEventElement) {
-            dateContainerRefs.current[index]?.scrollTo({
-              left: firstEventElement.offsetLeft,
-              behavior: "smooth",
-            });
+            setTimeout(() => {
+              dateContainerRefs.current[index]?.scrollTo({
+                left: firstEventElement.offsetLeft - 50,
+                behavior: "smooth",
+              });
+            }, 500);
           }
         }
       }
@@ -79,11 +81,7 @@ const WeekView = () => {
   return (
     <section className="relative flex flex-col justify-between items-start">
       {currentWeek.map((date, index) => (
-        <div
-          key={index}
-          ref={(ref) => (dateContainerRefs.current[index] = ref)}
-          className={`w-full border-r border-l rounded-t-lg`}
-        >
+        <div key={index} className={`w-full border-r border-l rounded-t-lg`}>
           <div
             className={`w-full flex justify-between items-center rounded-full shadow-md p-2 text-[14px] mb-1 ${
               date.getDay() === currentWeekday
@@ -109,7 +107,10 @@ const WeekView = () => {
             </div>
           </div>
           <div>
-            <div className="overflow-x-auto">
+            <div
+              ref={(ref) => (dateContainerRefs.current[index] = ref)}
+              className="overflow-x-auto"
+            >
               <div ref={containerWidth} className="flex relative w-[800vw]">
                 {staticTimes.map((time) => (
                   <motion.div
