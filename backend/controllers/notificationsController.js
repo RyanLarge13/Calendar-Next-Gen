@@ -191,6 +191,7 @@ export const updateNotification = async (req, res) => {
 
 export const markAsRead = async (req, res) => {
 	const notificationId = req.body.notificationId;
+	console.log(req.body)
 	try {
 	await prisma.notification.update({
 		where: {id: notificationId}, 
