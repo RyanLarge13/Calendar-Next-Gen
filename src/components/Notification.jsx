@@ -59,6 +59,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
         },
       ],
     };
+    setSystemNotif(newConfirmation)
   };
 
   const deleteNotif = () => {
