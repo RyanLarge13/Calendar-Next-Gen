@@ -10,11 +10,9 @@ import UserContext from "../context/UserContext";
 const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
   const { notifications, setNotifications, setSystemNotif } =
     useContext(UserContext);
-  const { setConfirm, showNotifs } =
-    useContext(InteractiveContext);
+  const { showNotifs } = useContext(InteractiveContext);
 
   const [notifOpen, setNotifOpen] = useState("");
-  const [deleteId, setDeleteId] = useState(null);
 
   const openNotif = (id, read) => {
     setNotifOpen((prev) => (prev === id ? "" : id));
@@ -42,7 +40,6 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
   };
 
   const initiateDeletion = (notifId) => {
-    setDeleteId(notifId);
     const newConfirmation = {
       show: true,
       title: "Delete Notification",
@@ -53,29 +50,27 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
         {
           text: "delete",
           func: () => {
-            deleteNotif();
+            deleteNotif(notifId);
             setSystemNotif({ show: false });
           },
         },
       ],
     };
-    setSystemNotif(newConfirmation)
+    setSystemNotif(newConfirmation);
   };
 
-  const deleteNotif = () => {
+  const deleteNotif = (notifId) => {
     const token = localStorage.getItem("authToken");
     if (!token) return;
-    if (deleteId !== null) {
-      const newNotifs = notifications.filter((item) => item.id !== deleteId);
-      setNotifications(newNotifs);
-      deleteNotification(token, deleteId)
-        .then((res) => {
-          setDeleteId(null);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
+    const newNotifs = notifications.filter((item) => item.id !== notifId);
+    setNotifications(newNotifs);
+    deleteNotification(token, notifId)
+      .then((res) => {
+        console.log(`Notification deleted: ${res.data}`);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
