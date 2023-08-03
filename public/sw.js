@@ -42,14 +42,14 @@ self.addEventListener("notificationclick", (event) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        notificationId: event.notification.data.id,
+        notifId: event.notification.data.id,
       }),
     })
       .then((response) => {
         event.notification.close();
-        // Handle the API response as needed
       })
       .catch((error) => {
+        event.notification.close();
         console.log(`Error marking notification as read: ${error}`);
       });
   } else {
