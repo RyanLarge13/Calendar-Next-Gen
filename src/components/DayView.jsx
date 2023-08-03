@@ -22,7 +22,9 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
       return dateA - dateB;
     });
     setCombinedArray(combined);
+    if (theDay.toLocaleDateString() === new Date().toLocaleDateString()) {
     getTime();
+    } 
     return () => clearInterval(interval);
   }, [todaysEvents, todaysReminders]);
 
