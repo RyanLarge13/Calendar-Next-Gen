@@ -6,9 +6,9 @@ import {
 } from "react-icons/bs";
 import { FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";
-import { MdLocationPin } from "react-icons/md";
+import { MdLocationPin, MdOutlineDragIndicator } from "react-icons/md";
 import { FaExternalLinkAlt } from "react-icons/fa";
-import { motion } from "framer-motion";
+import { motion, useDragControls } from "framer-motion";
 import GoogleMaps from "./GoogleMaps";
 import InteractiveContext from "../context/InteractiveContext";
 
@@ -164,6 +164,9 @@ const Event = ({ dayEvents }) => {
         event.color === "bg-black" ? "text-white" : "text-black"
       }`}
     >
+      <div className="p-3 bg-white rounded-md shadow-md flex justify-end items-center">
+        <MdOutlineDragIndicator />
+      </div>
       <div
         className={`w-full h-full rounded-md bg-opacity-20 p-3 ${event.color}`}
       >
