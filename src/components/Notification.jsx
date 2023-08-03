@@ -3,7 +3,7 @@ import { deleteNotification } from "../utils/api";
 import { formatTime } from "../utils/helpers";
 import { motion, AnimatePresence } from "framer-motion";
 import { IoIosAlarm } from "react-icons/io";
-import { MdSystemSecurityUpdateGood } from "react-icons/md";
+import { MdEventAvailable, MdSystemSecurityUpdateGood } from "react-icons/md";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext";
 
@@ -37,6 +37,16 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
 
   const getIcon = (type) => {
     if (type === "reminder") return <IoIosAlarm />;
+    if (type === "event") return <MdEventAvailable />;
+    if (type === "appointment") return;
+    if (type === "task") return;
+    if (type === "board") return;
+    if (type === "list") return;
+    if (type === "complete") return;
+    if (type === "begin") return;
+    if (type === "end") return;
+    if (type === "map") return;
+    if (type === "memory") return;
   };
 
   const initiateDeletion = (notifId) => {
