@@ -14,9 +14,10 @@ const WeekView = () => {
     useContext(DatesContext);
 
   const [weeklyEvents, setWeeklyEvents] = useState([]);
+  const dateContainerRefs = useRef([]);
+  const containerWidth = useRef(null);
 
   const currentWeekday = new Date().getDay();
-  const containerWidth = useRef(null);
 
   useEffect(() => {
     const matchingEvents = currentWeek.map((weekDay) =>
@@ -26,6 +27,30 @@ const WeekView = () => {
     );
     setWeeklyEvents(matchingEvents);
   }, [currentWeek]);
+
+  useEffect(() => {
+    // Function to find the first event of the week and scroll to it
+    const scrollToFirstEvent = () => {
+      for (let index = 0; index < weeklyEvents.length; index++) {
+        const eventsForDate = weeklyEvents[index];
+        if (eventsForDate.length > 0) {
+          const firstEventElement =
+            dateContainerRefs.current[index]?.querySelector(".event-item");
+          if (firstEventElement) {
+            setTimeout(() => {
+              dateContainerRefs.current[index]?.scrollTo({
+                left: firstEventElement.offsetLeft - 50,
+                behavior: "smooth",
+              });
+            }, 500);
+          }
+        }
+      }
+    };
+
+    // Scroll to the first event when weeklyEvents data updates
+    scrollToFirstEvent();
+  }, [weeklyEvents]);
 
   const calcDayEventWidth = (start, end) => {
     if (!start || !end) {
@@ -82,7 +107,10 @@ const WeekView = () => {
             </div>
           </div>
           <div>
-            <div className="overflow-x-auto">
+            <div
+              ref={(ref) => (dateContainerRefs.current[index] = ref)}
+              className="overflow-x-auto"
+            >
               <div ref={containerWidth} className="flex relative w-[800vw]">
                 {staticTimes.map((time) => (
                   <motion.div
@@ -104,7 +132,7 @@ const WeekView = () => {
                         )}px`,
                         left: fromLeft(new Date(weekEvent.start.startTime)),
                       }}
-                      className={`absolute top-5 bottom-2 rounded-md shadow-md p-2 ${weekEvent.color}`}
+                      className={`absolute top-5 bottom-2 event-item rounded-md shadow-md p-2 ${weekEvent.color}`}
                       onClick={() => setEvent(weekEvent)}
                     >
                       <p>{weekEvent.summary}</p>

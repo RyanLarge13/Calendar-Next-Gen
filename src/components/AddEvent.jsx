@@ -57,6 +57,8 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
   const [timeZone, setTimeZone] = useState(
     Intl.DateTimeFormat().resolvedOptions().timeZone
   );
+  // Friends shared with
+  const [includedFriends, setIncludedFriends] = useState([]);
 
   useEffect(() => {
     if (passedStartTime != null) {
@@ -335,9 +337,13 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
         </>
       )}
       <div className="mt-10 mb-20 flex justify-center items-center">
-        <label>
-          <RiGalleryUploadFill className="text-xl" />
-          <input type="file" className="w-0 h-0" />
+        <label className="bg-slate-300 p-5 w-full rounded-md flex justify-center items-center">
+          <RiGalleryUploadFill className="text-xl cursor-pointer" />
+          <input
+            type="file"
+            placeholder="png svg jpeg pdf word"
+            className="w-0 h-0"
+          />
         </label>
       </div>
       <div className="fixed right-[65vw] bottom-5 flex flex-col justify-center items-center px-2">

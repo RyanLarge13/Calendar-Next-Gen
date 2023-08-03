@@ -29,20 +29,6 @@ const MasonryView = () => {
     const uniqueSet = new Set(sortedDatesArray);
     const uniqueDatesArray = Array.from(uniqueSet);
     setUniqueDates(uniqueDatesArray);
-    //Find element with closest date
-    // const currentDate = new Date();
-    // const closestDate = uniqueDatesArray.reduce((a, b) => {
-    //   const dateA = new Date(a);
-    //   const dateB = new Date(b);
-    //   return Math.abs(dateA - currentDate) < Math.abs(dateB - currentDate)
-    //     ? a
-    //     : b;
-    // });
-    // // Update the closestDateRef with the ref to the element representing the closest date
-    // const element = document.getElementById(closestDate);
-    // if (element) {
-    //   closestDateRef.current = element;
-    // }
   }, [events, reminders]);
 
   useEffect(() => {
@@ -64,10 +50,26 @@ const MasonryView = () => {
     }
   }, [uniqueDates]);
 
+  // useEffect(() => {
+  //   // Step 4: Scroll to the closest date element on component mount
+  //   if (closestDateRef.current && shouldScroll) {
+  //     closestDateRef.current.scrollIntoView({
+  //       behavior: "smooth",
+  //       block: "start",
+  //     });
+  //   }
+  // }, [shouldScroll]);
+
   useEffect(() => {
     // Step 4: Scroll to the closest date element on component mount
     if (closestDateRef.current && shouldScroll) {
-      closestDateRef.current.scrollIntoView({ behavior: "smooth" });
+      const padding = 50; // Adjust the padding value as needed
+      const scrollOptions = {
+        behavior: "smooth",
+        left: 0,
+        top: closestDateRef.current.offsetTop - padding,
+      };
+      window.scrollTo(scrollOptions);
     }
   }, [shouldScroll]);
 

@@ -3,11 +3,10 @@ import { motion } from "framer-motion";
 import { staticTimes } from "../constants.js";
 import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
-import Event from "./Event";
 
 const DayView = ({ todaysEvents, todaysReminders }) => {
-  const { event, setEvent } = useContext(InteractiveContext);
-  const { string, theDay } = useContext(DatesContext);
+  const { setEvent } = useContext(InteractiveContext);
+  const { theDay } = useContext(DatesContext);
   const [time, setTime] = useState(new Date().toLocaleTimeString());
   const [height, setheight] = useState(0);
   const [combinedArray, setCombinedArray] = useState([]);
@@ -23,7 +22,9 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
       return dateA - dateB;
     });
     setCombinedArray(combined);
+    if (theDay.toLocaleDateString() === new Date().toLocaleDateString()) {
     getTime();
+    } 
     return () => clearInterval(interval);
   }, [todaysEvents, todaysReminders]);
 
@@ -62,6 +63,7 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
         (24 * 3600);
       const containerHeight = dayViewContainer.current.clientHeight;
       const newPosition = Math.floor(percentageOfDay * containerHeight);
+      window.scrollTo({ top: newPosition, behavior: "smooth" });
       setheight(newPosition);
       setTime(now.toLocaleTimeString());
     }, 1000);
