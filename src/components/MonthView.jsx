@@ -165,7 +165,7 @@ const MonthView = () => {
                   />
                 )
             )}
-          <div className="w-full overflow-y-hidden absolute inset-0 pt-8">
+          <div className="w-full absolute inset-0 pt-8">
             {[...events, ...holidays].map(
               (event) =>
                 new Date(event.date).toLocaleDateString() ===
