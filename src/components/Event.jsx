@@ -6,20 +6,22 @@ import {
 } from "react-icons/bs";
 import { FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";
-import { MdLocationPin } from "react-icons/md";
+import { MdLocationPin, MdOutlineDragIndicator } from "react-icons/md";
 import { FaExternalLinkAlt } from "react-icons/fa";
-import { motion } from "framer-motion";
+import { motion, useDragControls } from "framer-motion";
 import GoogleMaps from "./GoogleMaps";
 import InteractiveContext from "../context/InteractiveContext";
 
 const Event = ({ dayEvents }) => {
-  const { event, setEvent } = useContext(InteractiveContext);
+  const { event, setEvent, view} = useContext(InteractiveContext);
   const [open, setOpen] = useState(true);
   const [timeLeft, setTimeLeft] = useState(null);
   const [start, setStart] = useState(0);
   const [width, setWidth] = useState(0);
   const [timeInEvent, setTimeInEvent] = useState(0);
   const [index, setIndex] = useState(dayEvents.indexOf(event));
+
+  const controls = useDragControls();
 
   useEffect(() => {
     let interval;
@@ -141,9 +143,9 @@ const Event = ({ dayEvents }) => {
     }
   };
 
-  const checkToClose = (e) => {
-    const end = e.clientY;
-    if (end - start > window.innerHeight / 2.75) {
+  const checkToClose = (e, info) => {
+    const end = info.point.y;
+    if (end > window.innerHeight / 2) {
       setOpen(false);
       setTimeout(() => {
         setEvent(null);
@@ -151,19 +153,41 @@ const Event = ({ dayEvents }) => {
     }
   };
 
+  const startDrag = (e) => {
+    controls.start(e);
+  };
+
   return (
     <motion.div
       drag="y"
+      dragControls={controls}
       dragSnapToOrigin="true"
       dragConstraints={{ top: 0 }}
-      onDragStart={(e) => setStart(e.clientY)}
-      onDragEnd={(e) => checkToClose(e)}
+      dragListener={false}
+      onDragEnd={checkToClose}
       initial={{ y: "100%" }}
-      animate={open ? { y: 0 } : { y: "100%" }}
+      animate={open ? { y: 0 } : { y: "110%" }}
       className={`z-[901] fixed inset-3 top-[7%] rounded-md bg-white overflow-y-auto ${
         event.color === "bg-black" ? "text-white" : "text-black"
       }`}
     >
+      <div
+        onPointerDown={startDrag}
+        style={{ touchAction: "none" }}
+        className="p-3 sticky top-0 right-0 left-0 z-10 bg-white rounded-md shadow-md flex justify-between items-center"
+      >
+        <button
+          onClick={() => {
+            setOpen(false);
+            setTimeout(() => {
+              setEvent(false);
+            }, 500);
+          }}
+        >
+          done
+        </button>
+        <MdOutlineDragIndicator />
+      </div>
       <div
         className={`w-full h-full rounded-md bg-opacity-20 p-3 ${event.color}`}
       >

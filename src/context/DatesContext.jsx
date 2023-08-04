@@ -36,28 +36,16 @@ export const DatesProvider = ({ children }) => {
     setDt(updatedDate);
   }, [nav]);
 
-  useEffect(() => {
-    const difference = end - start;
-    setDiff(difference);
-  }, [end]);
-
-  const moveCalendar = (e) => {
-    if (open) return;
-    setEnd(e.touches[0].clientX);
-  };
-
-  const finish = () => {
-    if (diff < -120) {
-      setNav((prev) => prev + 1);
-    }
-    if (diff > 120) {
+  const finish = (e) => {
+    const end = e.clientX;
+    const diff = end - start;
+    if (diff > 175) {
       setNav((prev) => prev - 1);
     }
-    setTimeout(() => {
-      setStart(null);
-      setEnd(null);
-      setDiff(0);
-    }, 100);
+    if (diff < -175) {
+      setNav((prev) => prev + 1);
+    }
+    setStart(0);
   };
 
   useEffect(() => {
@@ -146,7 +134,6 @@ export const DatesProvider = ({ children }) => {
         setOpenModal,
         setString,
         setStart,
-        moveCalendar,
         finish,
         setOpen,
         setDay,

@@ -20,7 +20,6 @@ const Calendar = () => {
   const { menu, view, event } = useContext(InteractiveContext);
   const {
     setStart,
-    moveCalendar,
     finish,
     loading,
     theDay,
@@ -64,18 +63,7 @@ const Calendar = () => {
 
   return (
     <main className="px-2 mt-20">
-      <section
-        onTouchStart={(e) => {
-          if (!openModal && !menu && view === "month")
-            return setStart(e.touches[0].clientX);
-        }}
-        onTouchMove={(e) => {
-          if (!openModal && !menu && view === "month") return moveCalendar(e);
-        }}
-        onTouchEnd={() => {
-          if (!openModal && !menu && view === "month") return finish();
-        }}
-      >
+      <section>
         <div className="grid grid-cols-7 gap-2 justify-center items-center my-5">
           {view === "month" &&
             weekDays.map((day, index) => (
@@ -95,9 +83,17 @@ const Calendar = () => {
         </div>
         <section>
           {!loading ? (
-            <div
-              style={{ transform: `translateX(${diff}px)` }}
-              className="duration-100"
+            <motion.div
+              drag={view === "month" && "x"}
+              dragSnapToOrigin={true}
+              dragTransition={{ bounceStiffness: 100, bounceDamping: 10 }}
+              onDragStart={(e) => {
+                if (!openModal && !menu && view === "month")
+                  return setStart(e.clientX);
+              }}
+              onDragEnd={(e) => {
+                return finish(e);
+              }}
             >
               <motion.div
                 variants={calendar}
@@ -120,7 +116,7 @@ const Calendar = () => {
                 {view === "masonry" && <MasonryView />}
                 {view === "agenda" && <AgendaView />}
               </motion.div>
-            </div>
+            </motion.div>
           ) : (
             <div className="flex justify-center items-center">
               <Dna

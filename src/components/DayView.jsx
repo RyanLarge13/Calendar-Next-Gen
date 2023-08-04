@@ -23,8 +23,8 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
     });
     setCombinedArray(combined);
     if (theDay.toLocaleDateString() === new Date().toLocaleDateString()) {
-    getTime();
-    } 
+      getTime();
+    }
     return () => clearInterval(interval);
   }, [todaysEvents, todaysReminders]);
 
@@ -54,6 +54,10 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
     }
     return 0;
   };
+  
+  useEffect(() => {
+  	return window.scrollTo({top: height, behavior: "smooth"})
+  }, [height])
 
   const getTime = () => {
     interval = setInterval(() => {
@@ -63,13 +67,9 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
         (24 * 3600);
       const containerHeight = dayViewContainer.current.clientHeight;
       const newPosition = Math.floor(percentageOfDay * containerHeight);
-      window.scrollTo({ top: newPosition, behavior: "smooth" });
       setheight(newPosition);
       setTime(now.toLocaleTimeString());
     }, 1000);
-    if (new Date().toLocaleDateString() === theDay.toLocaleDateString()) {
-      window.scrollTo(0, height);
-    }
   };
 
   const getHeight = () => {
