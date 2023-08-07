@@ -34,7 +34,7 @@ userId String
 }
 
 model Event {
-id String   @id @unique @default(uuid())
+id String   @id @unique
 kind String?
 summary String
 description String?
@@ -42,7 +42,7 @@ location Json?
 date String
 reminders Json?
 repeats Json?
-attatchments Json?
+attatchments Attatchment[]
 color String
 start Json
 end Json
@@ -51,6 +51,16 @@ created DateTime @default(now())
 User User     @relation(fields: [userId], references: [id])
 userId String
 }
+
+model Attatchment {
+  id       Int      @id @default(uuid())
+  filename String
+  mimetype String
+  content  Bytes
+  Event Event @relation(fields: [eventId], references: [id]) 
+  eventId String 
+}
+
 
 model Reminder {
 id String @id @unique @default(uuid())

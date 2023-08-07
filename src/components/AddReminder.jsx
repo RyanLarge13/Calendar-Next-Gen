@@ -20,7 +20,7 @@ const AddReminder = () => {
   const [addTime, setAddTime] = useState(false);
 
   const addAReminder = () => {
-    if (!time) {
+    if (!time || !addTime) {
       const newError = {
         show: true,
         title: "Select A Time",
@@ -33,7 +33,7 @@ const AddReminder = () => {
       return setSystemNotif(newError);
     }
     if (!title) {
-    	const newError = {
+      const newError = {
         show: true,
         title: "Title",
         text: "Please create at least a title for your new reminder",
@@ -77,11 +77,25 @@ const AddReminder = () => {
           placeholder="Notes..."
           className="my-2 p-2 rounded-md shadow-md w-full"
         ></textarea>
-        <div className="my-2 flex justify-between items-center p-3 rounded-md shadow-md">
-          <p>Time</p>
-          <Toggle condition={addTime} setCondition={setAddTime} />
+        <div className="my-2 p-3 rounded-md shadow-md">
+          <div className="flex justify-between items-center">
+            <p>Time</p>
+            <Toggle condition={addTime} setCondition={setAddTime} />
+          </div>
+          {addTime && (
+            <div className="mt-2">
+              {!time ? (
+                <TimeSetter
+                  setDateTime={setTime}
+                  setDateTimeString={setTimeString}
+                  openTimeSetter={setAddTime}
+                />
+              ) : (
+                <p>{timeString}</p>
+              )}
+            </div>
+          )}
         </div>
-        {time && timeString && addTime && <p>{timeString}</p>}
       </div>
       <div className="fixed right-[65vw] bottom-5 flex flex-col justify-center items-center px-2">
         <button
@@ -100,9 +114,6 @@ const AddReminder = () => {
           <BsFillSaveFill />
         </button>
       </div>
-      {addTime && !time && !timeString && (
-        <TimeSetter setDateTime={setTime} setDateTimeString={setTimeString} />
-      )}
     </div>
   );
 };

@@ -7,7 +7,6 @@ export const DatesProvider = ({ children }) => {
   const [nav, setNav] = useState(0);
   const [dt, setDt] = useState(new Date());
   const [loading, setLoading] = useState(false);
-  const [start, setStart] = useState(null);
   const [end, setEnd] = useState(null);
   const [diff, setDiff] = useState(0);
   const [open, setOpen] = useState(false);
@@ -36,16 +35,15 @@ export const DatesProvider = ({ children }) => {
     setDt(updatedDate);
   }, [nav]);
 
-  const finish = (e) => {
-    const end = e.clientX;
-    const diff = end - start;
-    if (diff > 175) {
+  const finish = (e, info) => {
+    const dragDistance = info.offset.x;
+    const cancelThreshold = 175;
+
+    if (dragDistance > cancelThreshold) {
       setNav((prev) => prev - 1);
-    }
-    if (diff < -175) {
+    } else if (dragDistance < -cancelThreshold) {
       setNav((prev) => prev + 1);
     }
-    setStart(0);
   };
 
   useEffect(() => {
@@ -133,7 +131,6 @@ export const DatesProvider = ({ children }) => {
         setNav,
         setOpenModal,
         setString,
-        setStart,
         finish,
         setOpen,
         setDay,

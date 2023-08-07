@@ -5,6 +5,7 @@ const InteractiveContext = createContext({});
 export const InteractiveProvider = ({ children }) => {
   const [menu, setMenu] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
+  const [filters, setFilters] = useState(null);
   const [showNotifs, setShowNotifs] = useState(false);
   const [view, setView] = useState("month");
   const [addNewEvent, setAddNewEvent] = useState(false);
@@ -23,6 +24,8 @@ export const InteractiveProvider = ({ children }) => {
         showNotifs,
         listUpdate,
         event,
+        filters, 
+        setFilters, 
         setEvent,
         setListUpdate,
         setShowNotifs,

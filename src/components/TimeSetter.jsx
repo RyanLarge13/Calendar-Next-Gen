@@ -33,12 +33,14 @@ const TimeSetter = ({ setDateTime, setDateTimeString, openTimeSetter }) => {
     <motion.div
       initial={{ opacity: 0, bottom: "-100%" }}
       animate={{ opacity: 1, bottom: 0 }}
-      className="fixed right-0 bottom-0 left-0 w-full z-[150] isolate"
+      className="fixed right-0 bottom-0 left-0 w-full z-[150] isolate overflow-hidden rounded-t-md"
     >
       <StaticTimePicker
         value={value}
         onChange={(newValue) => setValue(newValue)}
         onAccept={(ISODate) => calcValues(ISODate)}
+        onClose={() => openTimeSetter(false)}
+        className=""
       />
     </motion.div>
   );

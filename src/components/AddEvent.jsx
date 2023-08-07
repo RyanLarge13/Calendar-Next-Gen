@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useContext } from "react";
 import { motion } from "framer-motion";
 import { colors } from "../constants";
 import { MdLocationPin, MdCancel } from "react-icons/md";
+import { AiFillCloseCircle } from "react-icons/ai";
 import { FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";
 import { RiGalleryUploadFill } from "react-icons/ri";
@@ -9,6 +10,7 @@ import { BsFillSaveFill } from "react-icons/bs";
 import { postEvent } from "../utils/api.js";
 import { repeatOptions } from "../constants";
 import { v4 as uuidv4 } from "uuid";
+import Masonry from "react-masonry-css";
 import DatesContext from "../context/DatesContext";
 import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
@@ -44,6 +46,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
   const [invalid, setInvalid] = useState(false);
   // attatchments
   const [attatchments, setAttachments] = useState([]);
+  const [preview, setPreview] = useState(null);
   // start times
   const [allDay, setAllDay] = useState(false);
   const [startTime, setStartTime] = useState(false);
@@ -59,6 +62,12 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
   );
   // Friends shared with
   const [includedFriends, setIncludedFriends] = useState([]);
+
+  const breakpointColumnsObj = {
+    default: 4, // Number of columns by default
+    1100: 3, // Number of columns on screens > 1100px
+    700: 2, // Number of columns on screens > 700px
+  };
 
   useEffect(() => {
     if (passedStartTime != null) {
@@ -112,7 +121,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
           interval: interval ? interval : 7,
           repeatId: uuidv4(),
         },
-        attatchments: [],
+        attatchments: attatchments.length > 0 ? attatchments : null,
         color: color ? color : "bg-white",
         start: {
           startTime: startTime ? (allDay ? null : startWhen) : null,
@@ -168,6 +177,16 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
       return false;
     }
     return true;
+  };
+
+  const handleFileChange = (event) => {
+    const newFiles = [...event.target.files];
+    setAttachments((prevFiles) => [...prevFiles, ...newFiles]);
+  };
+
+  const removeFile = (file) => {
+    const newFiles = attatchments.filter((attach) => attach.name !== file.name);
+    setAttachments(newFiles);
   };
 
   return (
@@ -246,7 +265,9 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
                       ? "times"
                       : howOften === "Monthly"
                       ? "months"
-                      : "years"
+                      : howOften === "Yearly"
+                      ? "years"
+                      : ""
                   }?`}
                   onChange={(e) => setInterval(Number(e.target.value) || "")}
                   onKeyUp={() => {
@@ -291,11 +312,11 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
       {!allDay && (
         <>
           <div className="my-3 flex justify-center items-center w-full">
-            <div
-              onClick={() => setStartTime(true)}
-              className="w-full mr-1 p-3 rounded-md shadow-md cursor-pointer"
-            >
-              <p>Start</p>
+            <div className="w-full mr-1 p-3 rounded-md shadow-md cursor-pointer">
+              <div className="flex justify-between items-center">
+                <p>Start</p>
+                <Toggle condition={startTime} setCondition={setStartTime} />
+              </div>
               {startTime && (
                 <div>
                   {!startWhen ? (
@@ -313,11 +334,11 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
               )}
             </div>
           </div>
-          <div
-            onClick={() => setEndTime(true)}
-            className="w-full mr-1 p-3 rounded-md shadow-md cursor-pointer"
-          >
-            <p>End</p>
+          <div className="w-full mr-1 p-3 rounded-md shadow-md cursor-pointer">
+            <div className="flex justify-between items-center">
+              <p>End</p>
+              <Toggle condition={endTime} setCondition={setEndTime} />
+            </div>
             {endTime && (
               <div>
                 {!endWhen ? (
@@ -336,11 +357,47 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
           </div>
         </>
       )}
-      <div className="mt-10 mb-20 flex justify-center items-center">
-        <label className="bg-slate-300 p-5 w-full rounded-md flex justify-center items-center">
+      <div className="mt-10 mb-20 flex flex-col justify-center items-center">
+        {attatchments.length > 0 && (
+          <Masonry
+            breakpointCols={breakpointColumnsObj}
+            className="my-masonry-grid-attachments"
+            columnClassName="my-masonry-grid_column-attachments"
+          >
+            {attatchments.map((attatchment) => (
+              <div>
+                {attatchment.type.startsWith("image/") ? (
+                  <div className="relative">
+                    <AiFillCloseCircle
+                      className="absolute top-[-5px] left-[-5px]"
+                      onClick={() => removeFile(attatchment)}
+                    />
+                    <img
+                      src={URL.createObjectURL(attatchment)}
+                      alt="preview"
+                      onClick={() =>
+                        setPreview(URL.createObjectURL(attatchment))
+                      }
+                      className="mt-3 rounded-sm shadow-sm"
+                    />
+                  </div>
+                ) : (
+                  <div className="text-xs p-3 rounded-md shadow-md bg-slate-100 mt-3">
+                    <p>{attatchment.name}</p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </Masonry>
+        )}
+        <label className="bg-slate-300 mt-10 p-5 w-full rounded-md flex flex-col justify-center items-center">
           <RiGalleryUploadFill className="text-xl cursor-pointer" />
+          {attatchments.length > 0 && <p className="text-xs">Add More</p>}
           <input
             type="file"
+            accept=".jpeg .png .svg .pdf .docx"
+            onChange={handleFileChange}
+            multiple
             placeholder="png svg jpeg pdf word"
             className="w-0 h-0"
           />

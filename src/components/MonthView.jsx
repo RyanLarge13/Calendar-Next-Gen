@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { calendarBlocks } from "../motion";
 import { holidays, weatherCodes } from "../constants";
 import { useContext, useEffect, useState } from "react";
+import { calendar } from "../motion";
 import DatesContext from "../context/DatesContext";
 import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
@@ -107,7 +108,12 @@ const MonthView = () => {
   };
 
   return (
-    <>
+    <motion.div
+      variants={calendar}
+      initial="hidden"
+      animate="show"
+      className="grid grid-cols-7 min-h-[50vh] h-[76vh] gap-1"
+    >
       {[...Array(paddingDays + daysInMonth)].map((abs, index) => (
         <motion.div
           variants={calendarBlocks}
@@ -117,7 +123,7 @@ const MonthView = () => {
           }
           key={index}
           style={getCellStyle(index)}
-          className={`relative w-full min-h-[12vh] max-h-[15vh] rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start gap-y-1 overflow-hidden cursor-pointer ${
+          className={`relative w-full rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start gap-y-1 overflow-hidden cursor-pointer ${
             index - paddingDays + 1 === day &&
             month === new Date().getMonth() &&
             year === new Date().getFullYear() &&
@@ -197,7 +203,7 @@ const MonthView = () => {
           </div>
         </motion.div>
       ))}
-    </>
+    </motion.div>
   );
 };
 

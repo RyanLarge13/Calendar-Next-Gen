@@ -186,11 +186,14 @@ const LoginLogout = () => {
                       <BsFillBellFill />
                     </div>
                   </div>
-                  <img
-                    src={user.avatarUrl}
-                    alt="user"
-                    className="w-[50px] h-[50px] rounded-full shadow-sm"
-                  />
+                  <div className="flex justify-start items-end">
+                    <img
+                      src={user.avatarUrl}
+                      alt="user"
+                      className="w-[50px] h-[50px] rounded-full shadow-sm mr-1"
+                    />
+                    <button className="text-xs font-semibold">Edit</button>
+                  </div>
                   <div className="text-xs font-bold mt-2">
                     <p>{user.username}</p>
                     <a href={`mailto:${user.email}`}>
