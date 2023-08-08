@@ -12,6 +12,7 @@ import { FaExternalLinkAlt } from "react-icons/fa";
 import { motion, useDragControls } from "framer-motion";
 import GoogleMaps from "./GoogleMaps";
 import InteractiveContext from "../context/InteractiveContext";
+import { fetchAttachments } from "../utils/api";
 
 const Event = ({ dayEvents }) => {
   const { event, setEvent, view } = useContext(InteractiveContext);
@@ -25,6 +26,9 @@ const Event = ({ dayEvents }) => {
   const controls = useDragControls();
 
   useEffect(() => {
+    // fetchAttachments(event.id)
+    //   .then((res) => console.log(res))
+    //   .catch((err) => console.log(err));
     let interval;
     let timeLeftInterval;
     let timeInLeft;
@@ -189,7 +193,9 @@ const Event = ({ dayEvents }) => {
         </button>
         <MdOutlineDragIndicator />
       </div>
-      <div className={`w-full min-h-full rounded-md bg-opacity-20 p-3 ${event.color}`}>
+      <div
+        className={`w-full min-h-full rounded-md bg-opacity-20 p-3 ${event.color}`}
+      >
         <div
           className={`p-2 rounded-md shadow-sm font-bold text-sm ${event.color}`}
         >

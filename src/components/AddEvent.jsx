@@ -181,7 +181,25 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
 
   const handleFileChange = (event) => {
     const newFiles = [...event.target.files];
-    setAttachments((prevFiles) => [...prevFiles, ...newFiles]);
+    newFiles.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const fileContent = new Uint8Array(reader.result);
+        // console.log(fileContent);
+        const newFile = {
+          img: URL.createObjectURL(file),
+          mimetype: file.type,
+          filename: file.name,
+          content: fileContent,
+        };
+        setAttachments((prevFiles) => [...prevFiles, newFile]);
+      };
+      reader.onerror = (error) => {
+        console.error("FileReader error:", error);
+      };
+      // console.log("Reading file:", file);
+      reader.readAsArrayBuffer(file);
+    });
   };
 
   const removeFile = (file) => {
@@ -365,25 +383,23 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
             columnClassName="my-masonry-grid_column-attachments"
           >
             {attachments.map((attachment) => (
-              <div key={attachment.name}>
-                {attachment.type.startsWith("image/") ? (
+              <div key={attachment.filename}>
+                {attachment.mimetype.startsWith("image/") ? (
                   <div className="relative">
                     <AiFillCloseCircle
                       className="absolute top-[-5px] left-[-5px]"
                       onClick={() => removeFile(attachment)}
                     />
                     <img
-                      src={URL.createObjectURL(attachment)}
+                      src={attachment.img}
                       alt="preview"
-                      onClick={() =>
-                        setPreview(URL.createObjectURL(attachment))
-                      }
+                      onClick={() => setPreview(attachment.img)}
                       className="mt-3 rounded-sm shadow-sm"
                     />
                   </div>
                 ) : (
                   <div className="text-xs p-3 rounded-md shadow-md bg-slate-100 mt-3">
-                    <p>{attachment.name}</p>
+                    <p>{attachment.filename}</p>
                   </div>
                 )}
               </div>

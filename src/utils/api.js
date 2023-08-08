@@ -79,9 +79,14 @@ export const getEvents = async (username, token) => {
   return res;
 };
 
+export const fetchAttachments = async (eventId) => {
+  const res = Axios.get(`${devUrl}/attachments/${eventId}`);
+  return res;
+};
+
 export const postEvent = (event, token) => {
   const res = Axios.post(
-    `${devUrl}/new/event`,
+    `${productionUrl}/new/event`,
     { event: event },
     {
       headers: {
