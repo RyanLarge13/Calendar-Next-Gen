@@ -44,8 +44,8 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
   const [howOften, setHowOften] = useState(false);
   const [interval, setInterval] = useState(7);
   const [invalid, setInvalid] = useState(false);
-  // attatchments
-  const [attatchments, setAttachments] = useState([]);
+  // attachments
+  const [attachments, setAttachments] = useState([]);
   const [preview, setPreview] = useState(null);
   // start times
   const [allDay, setAllDay] = useState(false);
@@ -121,7 +121,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
           interval: interval ? interval : 7,
           repeatId: uuidv4(),
         },
-        attatchments: attatchments.length > 0 ? attatchments : [],
+        attachments: attachments.length > 0 ? attachments : [],
         color: color ? color : "bg-white",
         start: {
           startTime: startTime ? (allDay ? null : startWhen) : null,
@@ -185,7 +185,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
   };
 
   const removeFile = (file) => {
-    const newFiles = attatchments.filter((attach) => attach.name !== file.name);
+    const newFiles = attachments.filter((attach) => attach.name !== file.name);
     setAttachments(newFiles);
   };
 
@@ -358,32 +358,32 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
         </>
       )}
       <div className="mt-10 mb-20 flex flex-col justify-center items-center">
-        {attatchments.length > 0 && (
+        {attachments.length > 0 && (
           <Masonry
             breakpointCols={breakpointColumnsObj}
             className="my-masonry-grid-attachments"
             columnClassName="my-masonry-grid_column-attachments"
           >
-            {attatchments.map((attatchment) => (
-              <div>
-                {attatchment.type.startsWith("image/") ? (
+            {attachments.map((attachment) => (
+              <div key={attachment.name}>
+                {attachment.type.startsWith("image/") ? (
                   <div className="relative">
                     <AiFillCloseCircle
                       className="absolute top-[-5px] left-[-5px]"
-                      onClick={() => removeFile(attatchment)}
+                      onClick={() => removeFile(attachment)}
                     />
                     <img
-                      src={URL.createObjectURL(attatchment)}
+                      src={URL.createObjectURL(attachment)}
                       alt="preview"
                       onClick={() =>
-                        setPreview(URL.createObjectURL(attatchment))
+                        setPreview(URL.createObjectURL(attachment))
                       }
                       className="mt-3 rounded-sm shadow-sm"
                     />
                   </div>
                 ) : (
                   <div className="text-xs p-3 rounded-md shadow-md bg-slate-100 mt-3">
-                    <p>{attatchment.name}</p>
+                    <p>{attachment.name}</p>
                   </div>
                 )}
               </div>
@@ -392,7 +392,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
         )}
         <label className="bg-slate-300 mt-10 p-5 w-full rounded-md flex flex-col justify-center items-center">
           <RiGalleryUploadFill className="text-xl cursor-pointer" />
-          {attatchments.length > 0 && <p className="text-xs">Add More</p>}
+          {attachments.length > 0 && <p className="text-xs">Add More</p>}
           <input
             type="file"
             accept=".jpeg .png .svg .pdf .docx"

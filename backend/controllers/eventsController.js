@@ -144,6 +144,27 @@ const createReminder = async (event) => {
   return reminder;
 };
 
+const createAttachments = async (attachments, newEventId) => {
+  try {
+    const createdAttachments = await Promise.all(
+      attachments.map(async (attachment) => {
+        const { filename, mimetype, content } = attachment;
+        return prisma.attachment.create({
+          data: {
+            filename,
+            mimetype,
+            content,
+            eventId: newEventId,
+          },
+        });
+      })
+    );
+    console.log("Attachments created:", createdAttachments);
+  } catch (err) {
+    console.log(`Error creating attachments: ${err}`);
+  }
+};
+
 export const addEvent = async (req, res) => {
   const newEvent = req.body.event;
   const user = req.user;
@@ -158,24 +179,7 @@ export const addEvent = async (req, res) => {
     reminder = await createReminder(newEvent);
   }
   if (newEvent.attachments.length > 0) {
-    try {
-      const createdAttachments = await Promise.all(
-        newEvent.attachments.map(async (attachment) => {
-          const { filename, mimetype, content } = attachment;
-          return prisma.attachment.create({
-            data: {
-              filename,
-              mimetype,
-              content,
-              eventId: newEventId,
-            },
-          });
-        })
-      );
-      console.log("Attachments created:", createdAttachments);
-    } catch (err) {
-      console.log(`Error creating attachments: ${err}`);
-    }
+    createAttachments(newEvent.attachments, newEventId);
   }
   const createdEvent = await prisma.event.create({
     data: { ...newEvent, id: newEventId },
@@ -212,6 +216,4 @@ export const deleteEvent = async (req, res) => {
   }
 };
 
-export const deleteManyEvents = () => {
-	
-}
+export const deleteManyEvents = () => {};

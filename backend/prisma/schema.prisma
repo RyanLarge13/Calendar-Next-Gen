@@ -44,7 +44,7 @@ location Json?
 date String
 reminders Json?
 repeats Json?
-attatchments Attatchment[]
+attachments Attachment[]
 color String
 start Json
 end Json
@@ -57,8 +57,8 @@ userId String
 @@index([userId], name: "userIdRefIndex")
 }
 
-model Attatchment {
-id Int      @id @default(uuid())
+model Attachment {
+id String      @id @default(uuid())
 filename String
 mimetype String
 content Bytes
