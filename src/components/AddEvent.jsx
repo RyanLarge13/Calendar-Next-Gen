@@ -190,7 +190,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
           img: URL.createObjectURL(file),
           mimetype: file.type,
           filename: file.name,
-          content: fileContent,
+          content: Array.from(fileContent),
         };
         setAttachments((prevFiles) => [...prevFiles, newFile]);
       };
