@@ -107,7 +107,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
         kind: "Event",
         summary,
         description,
-        location: location ? locationObject : null,
+        location: location ? locationObject : undefined,
         date: string,
         reminders: {
           reminder,
@@ -121,7 +121,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
           interval: interval ? interval : 7,
           repeatId: uuidv4(),
         },
-        attatchments: attatchments.length > 0 ? attatchments : null,
+        attatchments: attatchments.length > 0 ? attatchments : [],
         color: color ? color : "bg-white",
         start: {
           startTime: startTime ? (allDay ? null : startWhen) : null,
@@ -190,7 +190,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
   };
 
   return (
-    <div className="flex flex-col justify-center itemAddKanban">
+    <div className={`flex flex-col justify-center items-center`}>
       <div className="flex flex-wrap justify-center items-center my-10 mx-auto w-[80%]">
         {colors.map((item, index) => (
           <Color
@@ -318,7 +318,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
                 <Toggle condition={startTime} setCondition={setStartTime} />
               </div>
               {startTime && (
-                <div>
+                <div className="mt-2">
                   {!startWhen ? (
                     <TimeSetter
                       setDateTime={setStartWhen}
@@ -340,7 +340,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
               <Toggle condition={endTime} setCondition={setEndTime} />
             </div>
             {endTime && (
-              <div>
+              <div className="mt-2">
                 {!endWhen ? (
                   <TimeSetter
                     setDateTime={setEndWhen}

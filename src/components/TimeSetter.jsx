@@ -35,11 +35,23 @@ const TimeSetter = ({ setDateTime, setDateTimeString, openTimeSetter }) => {
       animate={{ opacity: 1, bottom: 0 }}
       className="fixed right-0 bottom-0 left-0 w-full z-[150] isolate overflow-hidden rounded-t-md"
     >
+      <div className="py-2 px-5 flex justify-between items-center bg-white">
+        <button onClick={() => openTimeSetter(false)}>close</button>
+        <button
+          onClick={() => {
+            setDateTime(null);
+            setDateTimeString("");
+            setValue(null);
+          }}
+        >
+          clear
+        </button>
+      </div>
       <StaticTimePicker
         value={value}
         onChange={(newValue) => setValue(newValue)}
         onAccept={(ISODate) => calcValues(ISODate)}
-        onClose={() => openTimeSetter(false)}
+        //onClose={() => openTimeSetter(false)}
         className=""
       />
     </motion.div>
