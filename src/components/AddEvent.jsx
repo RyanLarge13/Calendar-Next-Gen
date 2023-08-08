@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useContext } from "react";
 import { motion } from "framer-motion";
 import { colors } from "../constants";
 import { MdLocationPin, MdCancel } from "react-icons/md";
+import { AiFillCloseCircle } from "react-icons/ai";
 import { FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";
 import { RiGalleryUploadFill } from "react-icons/ri";
@@ -9,6 +10,7 @@ import { BsFillSaveFill } from "react-icons/bs";
 import { postEvent } from "../utils/api.js";
 import { repeatOptions } from "../constants";
 import { v4 as uuidv4 } from "uuid";
+import Masonry from "react-masonry-css";
 import DatesContext from "../context/DatesContext";
 import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
@@ -42,8 +44,9 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
   const [howOften, setHowOften] = useState(false);
   const [interval, setInterval] = useState(7);
   const [invalid, setInvalid] = useState(false);
-  // attatchments
-  const [attatchments, setAttachments] = useState([]);
+  // attachments
+  const [attachments, setAttachments] = useState([]);
+  const [preview, setPreview] = useState(null);
   // start times
   const [allDay, setAllDay] = useState(false);
   const [startTime, setStartTime] = useState(false);
@@ -59,6 +62,12 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
   );
   // Friends shared with
   const [includedFriends, setIncludedFriends] = useState([]);
+
+  const breakpointColumnsObj = {
+    default: 4, // Number of columns by default
+    1100: 3, // Number of columns on screens > 1100px
+    700: 2, // Number of columns on screens > 700px
+  };
 
   useEffect(() => {
     if (passedStartTime != null) {
@@ -98,7 +107,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
         kind: "Event",
         summary,
         description,
-        location: location ? locationObject : null,
+        location: location ? locationObject : undefined,
         date: string,
         reminders: {
           reminder,
@@ -112,7 +121,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
           interval: interval ? interval : 7,
           repeatId: uuidv4(),
         },
-        attatchments: [],
+        attachments: attachments.length > 0 ? attachments : [],
         color: color ? color : "bg-white",
         start: {
           startTime: startTime ? (allDay ? null : startWhen) : null,
@@ -170,8 +179,36 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
     return true;
   };
 
+  const handleFileChange = (event) => {
+    const newFiles = [...event.target.files];
+    newFiles.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const fileContent = new Uint8Array(reader.result);
+        // console.log(fileContent);
+        const newFile = {
+          img: URL.createObjectURL(file),
+          mimetype: file.type,
+          filename: file.name,
+          content: fileContent,
+        };
+        setAttachments((prevFiles) => [...prevFiles, newFile]);
+      };
+      reader.onerror = (error) => {
+        console.error("FileReader error:", error);
+      };
+      // console.log("Reading file:", file);
+      reader.readAsArrayBuffer(file);
+    });
+  };
+
+  const removeFile = (file) => {
+    const newFiles = attachments.filter((attach) => attach.name !== file.name);
+    setAttachments(newFiles);
+  };
+
   return (
-    <div className="flex flex-col justify-center itemAddKanban">
+    <div className={`flex flex-col justify-center items-center`}>
       <div className="flex flex-wrap justify-center items-center my-10 mx-auto w-[80%]">
         {colors.map((item, index) => (
           <Color
@@ -246,7 +283,9 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
                       ? "times"
                       : howOften === "Monthly"
                       ? "months"
-                      : "years"
+                      : howOften === "Yearly"
+                      ? "years"
+                      : ""
                   }?`}
                   onChange={(e) => setInterval(Number(e.target.value) || "")}
                   onKeyUp={() => {
@@ -291,13 +330,13 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
       {!allDay && (
         <>
           <div className="my-3 flex justify-center items-center w-full">
-            <div
-              onClick={() => setStartTime(true)}
-              className="w-full mr-1 p-3 rounded-md shadow-md cursor-pointer"
-            >
-              <p>Start</p>
+            <div className="w-full mr-1 p-3 rounded-md shadow-md cursor-pointer">
+              <div className="flex justify-between items-center">
+                <p>Start</p>
+                <Toggle condition={startTime} setCondition={setStartTime} />
+              </div>
               {startTime && (
-                <div>
+                <div className="mt-2">
                   {!startWhen ? (
                     <TimeSetter
                       setDateTime={setStartWhen}
@@ -313,13 +352,13 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
               )}
             </div>
           </div>
-          <div
-            onClick={() => setEndTime(true)}
-            className="w-full mr-1 p-3 rounded-md shadow-md cursor-pointer"
-          >
-            <p>End</p>
+          <div className="w-full mr-1 p-3 rounded-md shadow-md cursor-pointer">
+            <div className="flex justify-between items-center">
+              <p>End</p>
+              <Toggle condition={endTime} setCondition={setEndTime} />
+            </div>
             {endTime && (
-              <div>
+              <div className="mt-2">
                 {!endWhen ? (
                   <TimeSetter
                     setDateTime={setEndWhen}
@@ -336,11 +375,45 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
           </div>
         </>
       )}
-      <div className="mt-10 mb-20 flex justify-center items-center">
-        <label className="bg-slate-300 p-5 w-full rounded-md flex justify-center items-center">
+      <div className="mt-10 mb-20 flex flex-col justify-center items-center">
+        {attachments.length > 0 && (
+          <Masonry
+            breakpointCols={breakpointColumnsObj}
+            className="my-masonry-grid-attachments"
+            columnClassName="my-masonry-grid_column-attachments"
+          >
+            {attachments.map((attachment) => (
+              <div key={attachment.filename}>
+                {attachment.mimetype.startsWith("image/") ? (
+                  <div className="relative">
+                    <AiFillCloseCircle
+                      className="absolute top-[-5px] left-[-5px]"
+                      onClick={() => removeFile(attachment)}
+                    />
+                    <img
+                      src={attachment.img}
+                      alt="preview"
+                      onClick={() => setPreview(attachment.img)}
+                      className="mt-3 rounded-sm shadow-sm"
+                    />
+                  </div>
+                ) : (
+                  <div className="text-xs p-3 rounded-md shadow-md bg-slate-100 mt-3">
+                    <p>{attachment.filename}</p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </Masonry>
+        )}
+        <label className="bg-slate-300 mt-10 p-5 w-full rounded-md flex flex-col justify-center items-center">
           <RiGalleryUploadFill className="text-xl cursor-pointer" />
+          {attachments.length > 0 && <p className="text-xs">Add More</p>}
           <input
             type="file"
+            accept=".jpeg .png .svg .pdf .docx"
+            onChange={handleFileChange}
+            multiple
             placeholder="png svg jpeg pdf word"
             className="w-0 h-0"
           />

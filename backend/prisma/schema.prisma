@@ -20,21 +20,23 @@ notifSubCanceled String[]
 events        Event[]
 reminders     Reminder[]
 notifications Notification[]
-list          List[]
+lists         List[]
 tasks Task[]
 kanbans Kanban[]
 friends       Friend[]       @relation(name: "UserToFriends")
+
+@@index([id], name: "userIdIndex")
 }
 
 model Friend {
 id String   @id @default(uuid())
 createdAt DateTime @default(now())
-user User     @relation(name: "UserToFriends", fields: [userId], references: [id])
+User User     @relation(name: "UserToFriends", fields: [userId], references: [id])
 userId String
 }
 
 model Event {
-id String   @id @unique @default(uuid())
+id String   @id @unique
 kind String?
 summary String
 description String?
@@ -42,7 +44,7 @@ location Json?
 date String
 reminders Json?
 repeats Json?
-attatchments Json?
+attachments Attachment[]
 color String
 start Json
 end Json
@@ -50,13 +52,27 @@ updated DateTime @updatedAt
 created DateTime @default(now())
 User User     @relation(fields: [userId], references: [id])
 userId String
+
+@@index([id], name: "eventIdIndex")
+@@index([userId], name: "userIdRefIndex")
 }
+
+model Attachment {
+id String      @id @default(uuid())
+filename String
+mimetype String
+content Bytes
+Event Event @relation(fields: [eventId], references: [id])
+eventId String
+}
+
 
 model Reminder {
 id String @id @unique @default(uuid())
 title String
 notes String
 time String
+eventRefId String?
 User User   @relation(fields: [userId], references: [id])
 userId String
 }
@@ -68,6 +84,7 @@ time String
 read Boolean @default(false)
 readTime String?
 notifData Json
+reminderRefId String?
 User User    @relation(fields: [userId], references: [id])
 sentNotification Boolean @default(false)
 sentWebPush Boolean @default(false)
