@@ -149,11 +149,26 @@ const createAttachments = async (attachments, newEventId) => {
     const createdAttachments = await Promise.all(
       attachments.map(async (attachment) => {
         const { filename, mimetype, content } = attachment;
+        const array = new Uint8Array(content);
+        // const maxPosition = Math.max(...Object.keys(data).map(Number));
+
+        // // Initialize a Uint8Array with zeros
+        // const uint8Array = new Uint8Array(maxPosition + 1);
+
+        // // Populate the Uint8Array based on the key-value pairs
+        // for (const [position, value] of Object.entries(data)) {
+        //   uint8Array[Number(position)] = value;
+        // }
+
+        // // Convert the Uint8Array to a Buffer
+        // const buffer = Buffer.from(uint8Array);
+        return console.log(content);
+        const contentBytes = Buffer.from(array);
         return prisma.attachment.create({
           data: {
             filename,
             mimetype,
-            content,
+            content: contentBytes,
             eventId: newEventId,
           },
         });
@@ -178,13 +193,13 @@ export const addEvent = async (req, res) => {
   if (newEvent.reminders.reminder) {
     reminder = await createReminder(newEvent);
   }
-  if (newEvent.attachments.length > 0) {
-    createAttachments(newEvent.attachments, newEventId);
-  }
   const createdEvent = await prisma.event.create({
-    data: { ...newEvent, id: newEventId },
+    data: { ...newEvent, id: newEventId, attachments: undefined },
   });
   if (createdEvent) {
+    // if (newEvent.attachments.length > 0) {
+    //   createAttachments(newEvent.attachments, newEventId);
+    // }
     return res.json({
       message: "Successfully added new event",
       user: {
@@ -199,6 +214,12 @@ export const addEvent = async (req, res) => {
       reminders: reminder,
     });
   }
+};
+
+export const getAttachments = async (req, res) => {
+  const eventId = req.params.eventId;
+  const attachments = await prisma.attachment.findMany({ where: { eventId } });
+  res.status(201).json({ message: "Success", attachments: attachments });
 };
 
 export const deleteEvent = async (req, res) => {
