@@ -6,12 +6,15 @@ import {
   BsFillCalendarMonthFill,
   BsXCircleFill,
   BsColumnsGap,
+  BsSearch,
 } from "react-icons/bs";
+import { CgOptions } from "react-icons/cg";
 import { MdViewAgenda } from "react-icons/md";
+import { TbSwitch3 } from "react-icons/tb";
 import InteractiveContext from "../context/InteractiveContext";
 
 const Views = () => {
-  const { setView, showLogin } = useContext(InteractiveContext);
+  const { setView, setFilters, showLogin } = useContext(InteractiveContext);
 
   const [show, setShow] = useState(false);
 
@@ -36,7 +39,9 @@ const Views = () => {
       <motion.div
         initial={{ opacity: 0 }}
         animate={
-          show ? { x: 130, y: 5, scale: 1.25, opacity: 1} : { x: 0, y: 0, scale: 0 }
+          show
+            ? { x: 130, y: 5, scale: 1.25, opacity: 1 }
+            : { x: 0, y: 0, scale: 0 }
         }
         className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] left-5 bottom-5 bg-gradient-to-r from-pink-300 to-violet-200 shadow-md`}
         onClick={() => {
@@ -50,7 +55,13 @@ const Views = () => {
         initial={{ opacity: 0 }}
         animate={
           show
-            ? { x: 120, y: -50, scale: 1.25, opacity: 1, transition: { delay: 0.1 } }
+            ? {
+                x: 120,
+                y: -50,
+                scale: 1.25,
+                opacity: 1,
+                transition: { delay: 0.1 },
+              }
             : { x: 0, y: 0, scale: 0 }
         }
         className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] left-5 bottom-5 bg-gradient-to-r from-lime-300 to-emerald-200 shadow-md`}
@@ -65,7 +76,13 @@ const Views = () => {
         initial={{ opacity: 0 }}
         animate={
           show
-            ? { x: 95, y: -105, scale: 1.25, opacity:1, transition: { delay: 0.2 } }
+            ? {
+                x: 95,
+                y: -105,
+                scale: 1.25,
+                opacity: 1,
+                transition: { delay: 0.2 },
+              }
             : { x: 0, y: 0, scale: 0 }
         }
         className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] left-5 bottom-5 bg-gradient-to-r from-red-300 to-rose-200 shadow-md`}
@@ -80,7 +97,13 @@ const Views = () => {
         initial={{ opacity: 0 }}
         animate={
           show
-            ? { x: 55, y: -150, scale: 1.25, opacity: 1, transition: { delay: 0.3 } }
+            ? {
+                x: 55,
+                y: -150,
+                scale: 1.25,
+                opacity: 1,
+                transition: { delay: 0.3 },
+              }
             : { x: 0, y: 0, scale: 0 }
         }
         className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] left-5 bottom-5 bg-gradient-to-r from-cyan-300 to-sky-200 shadow-md`}
@@ -95,7 +118,13 @@ const Views = () => {
         initial={{ opacity: 0 }}
         animate={
           show
-            ? { x: -5, y: -170, scale: 1.25, opacity:1, transition: { delay: 0.4 } }
+            ? {
+                x: -5,
+                y: -170,
+                scale: 1.25,
+                opacity: 1,
+                transition: { delay: 0.4 },
+              }
             : { x: 0, y: 0, scale: 0 }
         }
         className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] left-5 bottom-5 bg-gradient-to-r from-orange-300 to-yellow-200 shadow-md`}
@@ -105,6 +134,69 @@ const Views = () => {
         }}
       >
         <BsFillCalendarWeekFill />
+      </motion.div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={
+          show
+            ? {
+                x: 10,
+                y: -110,
+                scale: 1.25,
+                opacity: 1,
+                transition: { delay: 0.5 },
+              }
+            : { x: 0, y: 0, scale: 0 }
+        }
+        className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] left-5 bottom-5 bg-gradient-to-r from-indigo-300 to-purple-200 shadow-md`}
+        onClick={() => {
+          setShow(false);
+          setFilters("search");
+        }}
+      >
+        <BsSearch />
+      </motion.div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={
+          show
+            ? {
+                x: 50,
+                y: -70,
+                scale: 1.25,
+                opacity: 1,
+                transition: { delay: 0.6 },
+              }
+            : { x: 0, y: 0, scale: 0 }
+        }
+        className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] left-5 bottom-5 bg-gradient-to-r from-white to-slate-200 shadow-md`}
+        onClick={() => {
+          setShow(false);
+          setView("week");
+        }}
+      >
+        <CgOptions />
+      </motion.div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={
+          show
+            ? {
+                x: 75,
+                y: -20,
+                scale: 1.25,
+                opacity: 1,
+                transition: { delay: 0.7 },
+              }
+            : { x: 0, y: 0, scale: 0 }
+        }
+        className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] left-5 bottom-5 bg-gradient-to-r from-teal-300 to-purple-200 shadow-md`}
+        onClick={() => {
+          setShow(false);
+          setView("week");
+        }}
+      >
+        <TbSwitch3 />
       </motion.div>
     </>
   );

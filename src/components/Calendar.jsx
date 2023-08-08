@@ -1,7 +1,6 @@
 import { useState, useContext, memo, useEffect } from "react";
-import { Dna } from "react-loader-spinner";
 import { motion } from "framer-motion";
-import { calendar } from "../motion";
+import { Dna } from "react-loader-spinner";
 import Modal from "./Modal";
 import ModalHeader from "./ModalHeader";
 import Menu from "./Menu";
@@ -19,7 +18,6 @@ const Calendar = () => {
   const { events, holidays, reminders, weekDays } = useContext(UserContext);
   const { menu, view, event } = useContext(InteractiveContext);
   const {
-    setStart,
     finish,
     loading,
     theDay,
@@ -87,24 +85,9 @@ const Calendar = () => {
               drag={view === "month" && "x"}
               dragSnapToOrigin={true}
               dragTransition={{ bounceStiffness: 100, bounceDamping: 10 }}
-              onDragStart={(e) => {
-                if (!openModal && !menu && view === "month")
-                  return setStart(e.clientX);
-              }}
-              onDragEnd={(e) => {
-                return finish(e);
-              }}
+              onDragEnd={(e, info) => finish(e, info)}
             >
-              <motion.div
-                variants={calendar}
-                initial="hidden"
-                animate="show"
-                className={`${
-                  view === "month"
-                    ? "grid grid-cols-7 gap-1 min-h-[76vh] overflow-hidden"
-                    : ""
-                }`}
-              >
+              <div>
                 {view === "month" && <MonthView />}
                 {view === "day" && (
                   <DayView
@@ -115,7 +98,7 @@ const Calendar = () => {
                 {view === "week" && <WeekView />}
                 {view === "masonry" && <MasonryView />}
                 {view === "agenda" && <AgendaView />}
-              </motion.div>
+              </div>
             </motion.div>
           ) : (
             <div className="flex justify-center items-center">

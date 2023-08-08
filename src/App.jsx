@@ -6,7 +6,8 @@ import { InteractiveProvider } from "./context/InteractiveContext";
 import { UserProvider } from "./context/UserContext";
 import Calendar from "./components/Calendar";
 import Header from "./components/Header";
-import SystemNotif from "./components/SystemNotif"
+import Search from "./components/Search"
+import SystemNotif from "./components/SystemNotif";
 import AddCircle from "./components/AddCircle";
 import Views from "./components/Views";
 
@@ -18,8 +19,9 @@ const App = () => {
           <DatesProvider>
             <InteractiveProvider>
               <Header />
+              <Search />
               <SystemNotif />
-              <div className="overflow-x-hidden w-full h-full">
+              <div className="overflow-x-hidden w-full">
                 <Calendar />
               </div>
               <AddCircle />

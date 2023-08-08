@@ -1,7 +1,8 @@
 import { PrismaClient } from "@prisma/client";
+import { v4 as uuidv4 } from "uuid";
 const prisma = new PrismaClient();
 
-const addMultipleEvents = async (newEvent, howOften) => {
+const addMultipleEvents = async (newEvent, newEventId, howOften) => {
   if (!howOften) return [];
   let interval = newEvent.repeats.interval;
   let day = new Date(newEvent.date).getDate();
@@ -17,6 +18,7 @@ const addMultipleEvents = async (newEvent, howOften) => {
       day === daysInMonth ? (day = 1) : (day += 1);
       const nextEvent = {
         ...newEvent,
+        id: newEventId,
         date: `${month}/${day}/${year}`,
         nextDate: `${month}/${day + 1}/${year}`,
       };
@@ -37,6 +39,7 @@ const addMultipleEvents = async (newEvent, howOften) => {
       day < diff && (day += 7);
       const nextEvent = {
         ...newEvent,
+        id: newEventId,
         date: `${month}/${day}/${year}`,
         nextDate: `${month}/${day + 7}/${year}`,
       };
@@ -57,6 +60,7 @@ const addMultipleEvents = async (newEvent, howOften) => {
       day < diff && (day += 14);
       const nextEvent = {
         ...newEvent,
+        id: newEventId,
         date: `${month}/${day}/${year}`,
         nextDate: `${month}/${day + 14}/${year}`,
       };
@@ -74,6 +78,7 @@ const addMultipleEvents = async (newEvent, howOften) => {
       month === 13 && (month = 1);
       const nextEvent = {
         ...newEvent,
+        id: newEventId,
         date: `${month}/${day}/${year}`,
         nextDate: `${month + 1}/${day}/${year}`,
       };
@@ -89,6 +94,7 @@ const addMultipleEvents = async (newEvent, howOften) => {
       year += 1;
       const nextEvent = {
         ...newEvent,
+        id: newEventId,
         date: `${month}/${day}/${year}`,
         nextDate: `${month}/${day}/${year + 1}`,
       };
@@ -138,19 +144,45 @@ const createReminder = async (event) => {
   return reminder;
 };
 
+const createAttachments = async (attachments, newEventId) => {
+  try {
+    const createdAttachments = await Promise.all(
+      attachments.map(async (attachment) => {
+        const { filename, mimetype, content } = attachment;
+        return prisma.attachment.create({
+          data: {
+            filename,
+            mimetype,
+            content,
+            eventId: newEventId,
+          },
+        });
+      })
+    );
+    console.log("Attachments created:", createdAttachments);
+  } catch (err) {
+    console.log(`Error creating attachments: ${err}`);
+  }
+};
+
 export const addEvent = async (req, res) => {
   const newEvent = req.body.event;
   const user = req.user;
+  const newEventId = uuidv4();
   let reminder;
   const repeatEvents = await addMultipleEvents(
     newEvent,
+    newEventId,
     newEvent.repeats.howOften
   );
   if (newEvent.reminders.reminder) {
     reminder = await createReminder(newEvent);
   }
+  if (newEvent.attachments.length > 0) {
+    createAttachments(newEvent.attachments, newEventId);
+  }
   const createdEvent = await prisma.event.create({
-    data: newEvent,
+    data: { ...newEvent, id: newEventId },
   });
   if (createdEvent) {
     return res.json({
@@ -183,3 +215,5 @@ export const deleteEvent = async (req, res) => {
     });
   }
 };
+
+export const deleteManyEvents = () => {};

@@ -1,4 +1,5 @@
 import { useState, useEffect, useContext } from "react";
+import { AiFillCloseCircle } from "react-icons/ai";
 import {
   BsFillArrowLeftCircleFill,
   BsFillArrowRightCircleFill,
@@ -13,7 +14,7 @@ import GoogleMaps from "./GoogleMaps";
 import InteractiveContext from "../context/InteractiveContext";
 
 const Event = ({ dayEvents }) => {
-  const { event, setEvent, view} = useContext(InteractiveContext);
+  const { event, setEvent, view } = useContext(InteractiveContext);
   const [open, setOpen] = useState(true);
   const [timeLeft, setTimeLeft] = useState(null);
   const [start, setStart] = useState(0);
@@ -174,7 +175,7 @@ const Event = ({ dayEvents }) => {
       <div
         onPointerDown={startDrag}
         style={{ touchAction: "none" }}
-        className="p-3 sticky top-0 right-0 left-0 z-10 bg-white rounded-md shadow-md flex justify-between items-center"
+        className="px-3 py-5 sticky top-0 right-0 left-0 z-20 bg-white rounded-md shadow-md flex justify-between items-center"
       >
         <button
           onClick={() => {
@@ -184,18 +185,18 @@ const Event = ({ dayEvents }) => {
             }, 500);
           }}
         >
-          done
+          <AiFillCloseCircle />
         </button>
         <MdOutlineDragIndicator />
       </div>
-      <div
-        className={`w-full h-full rounded-md bg-opacity-20 p-3 ${event.color}`}
-      >
-        <div className={`p-2 rounded-md shadow-sm font-bold ${event.color}`}>
-          <h1 className="text-lg">{event.summary}</h1>
+      <div className={`w-full min-h-full rounded-md bg-opacity-20 p-3 ${event.color}`}>
+        <div
+          className={`p-2 rounded-md shadow-sm font-bold text-sm ${event.color}`}
+        >
+          <h1>{event.summary}</h1>
         </div>
         <div
-          className={`p-2 mt-2 rounded-md shadow-sm font-bold ${event.color} bg-opacity-50`}
+          className={`p-2 mt-2 rounded-md shadow-sm font-bold ${event.color} bg-opacity-50 text-xs`}
         >
           <p>{event.description}</p>
         </div>
@@ -266,14 +267,14 @@ const Event = ({ dayEvents }) => {
             <p>No location provided</p>
           )}
         </div>
-        <div className="p-2 rounded-md shadow-md my-2 flex justify-between items-center bg-white">
+        <div className="p-2 rounded-md shadow-md my-2 flex justify-between items-start bg-white">
           {event.reminders.reminder ? (
             <>
               <div>
                 <IoIosAlarm />
                 <p>{new Date(event.reminders.when).toLocaleTimeString()}</p>
               </div>
-              <div className="mr-5">
+              <div>
                 <BsFillTrashFill />
               </div>
             </>
@@ -281,7 +282,7 @@ const Event = ({ dayEvents }) => {
             <p>No reminders set</p>
           )}
         </div>
-        <div className="bg-white rounded-md shadow-md p-2 my-2">
+        <div className="bg-white rounded-md shadow-md p-2 my-2 text-sm">
           {event.repeats.repeat ? (
             <div className="">
               <FiRepeat />
