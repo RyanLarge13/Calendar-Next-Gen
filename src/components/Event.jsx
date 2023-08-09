@@ -10,25 +10,40 @@ import { IoIosAlarm } from "react-icons/io";
 import { MdLocationPin, MdOutlineDragIndicator } from "react-icons/md";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import { motion, useDragControls } from "framer-motion";
+import { fetchAttachments } from "../utils/api";
 import GoogleMaps from "./GoogleMaps";
 import InteractiveContext from "../context/InteractiveContext";
-import { fetchAttachments } from "../utils/api";
+import Masonry from "react-masonry-css";
 
 const Event = ({ dayEvents }) => {
-  const { event, setEvent, view } = useContext(InteractiveContext);
+  const { event, setEvent } = useContext(InteractiveContext);
   const [open, setOpen] = useState(true);
   const [timeLeft, setTimeLeft] = useState(null);
-  const [start, setStart] = useState(0);
+  const [fetchedImages, setFetchedImages] = useState([]);
   const [width, setWidth] = useState(0);
   const [timeInEvent, setTimeInEvent] = useState(0);
   const [index, setIndex] = useState(dayEvents.indexOf(event));
 
   const controls = useDragControls();
 
+  const breakpointColumnsObj = {
+    default: 4, // Number of columns by default
+    1100: 3, // Number of columns on screens > 1100px
+    700: 2, // Number of columns on screens > 700px
+  };
+
   useEffect(() => {
-    // fetchAttachments(event.id)
-    //   .then((res) => console.log(res))
-    //   .catch((err) => console.log(err));
+    fetchAttachments(event.id)
+      .then((res) => {
+        res.data.attachments.forEach((file) => {
+          const blob = new Blob([new Uint8Array(file.content.data)], {
+            type: file.mimetype,
+          });
+          const url = URL.createObjectURL(blob);
+          setFetchedImages((prevUrls) => [...prevUrls, url]);
+        });
+      })
+      .catch((err) => console.log(err));
     let interval;
     let timeLeftInterval;
     let timeInLeft;
@@ -119,6 +134,7 @@ const Event = ({ dayEvents }) => {
       clearInterval(timeLeftInterval);
       clearInterval(interval);
       clearInterval(timeInLeft);
+      setFetchedImages([]);
     };
   }, [event]);
 
@@ -313,6 +329,22 @@ const Event = ({ dayEvents }) => {
             <p></p>
           )}
         </div>
+        {fetchedImages.length > 0 && (
+          <Masonry
+            breakpointCols={breakpointColumnsObj}
+            className="my-masonry-grid-attachments"
+            columnClassName="my-masonry-grid_column-attachments"
+          >
+            {fetchedImages.map((img) => (
+              <img
+                key={img}
+                src={img}
+                alt={"event attachment"}
+                className="mt-3 rounded-sm shadow-sm"
+              />
+            ))}
+          </Masonry>
+        )}
       </div>
     </motion.div>
   );

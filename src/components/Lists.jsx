@@ -30,15 +30,15 @@ const Lists = ({ showLists }) => {
 
   return (
     <motion.div
-      initial={{ height: "0px" }}
-      animate={
-        showLists
-          ? {
-              height: "95vh",
-              overflowY: "auto",
-            }
-          : { height: "0px", overflowY: "hidden" }
-      }
+      // initial={{ height: "0px" }}
+      // animate={
+      //   showLists
+      //     ? {
+      //         height: "95vh",
+      //         overflowY: "auto",
+      //       }
+      //     : { height: "0px", overflowY: "hidden" }
+      // }
       className="p-3"
     >
       {lists.map((list) => (

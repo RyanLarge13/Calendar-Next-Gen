@@ -83,15 +83,15 @@ const Reminders = ({ showReminders }) => {
 
   return (
     <motion.div
-      initial={{ height: "95vh" }}
-      animate={
-        showReminders
-          ? {
-              height: "95vh",
-              overflowY: "auto",
-            }
-          : { height: "0px", overflowY: "hidden" }
-      }
+      // initial={{ height: "95vh" }}
+      // animate={
+      //   showReminders
+      //     ? {
+      //         height: "95vh",
+      //         overflowY: "auto",
+      //       }
+      //     : { height: "0px", overflowY: "hidden" }
+      // }
       className="p-3"
     >
       <div>

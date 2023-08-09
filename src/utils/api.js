@@ -80,7 +80,7 @@ export const getEvents = async (username, token) => {
 };
 
 export const fetchAttachments = async (eventId) => {
-  const res = Axios.get(`${devUrl}/attachments/${eventId}`);
+  const res = Axios.get(`${productionUrl}/attachments/${eventId}`);
   return res;
 };
 

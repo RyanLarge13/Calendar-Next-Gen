@@ -62,7 +62,7 @@ id String      @id @default(uuid())
 filename String
 mimetype String
 content Bytes
-Event Event @relation(fields: [eventId], references: [id])
+Event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
 eventId String
 }
 
