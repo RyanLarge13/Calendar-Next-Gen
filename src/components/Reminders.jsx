@@ -5,7 +5,7 @@ import { deleteReminder } from "../utils/api.js";
 import { formatTime } from "../utils/helpers.js";
 import UserContext from "../context/UserContext.jsx";
 
-const Reminders = ({ showReminders }) => {
+const Reminders = () => {
   const { reminders, setReminders, user } = useContext(UserContext);
 
   const [selected, setSelected] = useState([]);

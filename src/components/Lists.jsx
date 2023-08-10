@@ -10,7 +10,7 @@ import {
 import { BiListMinus, BiListPlus } from "react-icons/bi";
 import UserContext from "../context/UserContext";
 
-const Lists = ({ showLists }) => {
+const Lists = () => {
   const { lists, setLists } = useContext(UserContext);
   const [addItems, setAddItems] = useState([]);
 
@@ -44,7 +44,7 @@ const Lists = ({ showLists }) => {
       {lists.map((list) => (
         <div
           key={list.id}
-          className={`my-5 ml-2 mr-10 p-3 rounded-md shadow-md ${list.color}`}
+          className={`my-5 mr-10 p-3 rounded-md shadow-md ${list.color}`}
         >
           <div className="mb-2 bg-white rounded-md shadow-md p-3 flex justify-between items-center">
             <p>{list.title}</p>

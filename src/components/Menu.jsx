@@ -1,8 +1,15 @@
 import { useState, useContext, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { RiArrowUpDownFill } from "react-icons/ri";
-import { AiOutlinePlus } from "react-icons/ai";
-import { BsListCheck } from "react-icons/bs";
+import { FaStickyNote } from "react-icons/fa";
+import { AiOutlinePlus, AiFillSchedule } from "react-icons/ai";
+import { HiUserGroup } from "react-icons/hi";
+import {
+  BsListCheck,
+  BsFillClipboardDataFill,
+  BsListTask,
+  BsFillCalendar2EventFill,
+} from "react-icons/bs";
 import { IoIosAlarm } from "react-icons/io";
 import Reminders from "./Reminders.jsx";
 import Lists from "./Lists.jsx";
@@ -16,8 +23,8 @@ const Menu = () => {
   const { menu, setAddNewEvent, setType, listUpdate, setListUpdate } =
     useContext(InteractiveContext);
   const { lists, setLists, user } = useContext(UserContext);
-  const [showReminders, setShowReminders] = useState(true);
-  const [showLists, setShowLists] = useState(true);
+  const [showCategory, setShowCategory] = useState(null);
+  const [timeOfDay, setTimeOfDay] = useState(null);
 
   useEffect(() => {
     if (listUpdate.length < 1) return;
@@ -26,6 +33,7 @@ const Menu = () => {
       updateClientLists();
       updateList(token, listUpdate)
         .then((res) => {
+          console.log(res);
           setListUpdate([]);
         })
         .catch((err) => {
@@ -33,6 +41,22 @@ const Menu = () => {
         });
     }
   }, [menu]);
+
+  useEffect(() => {
+    const hours = new Date().getHours();
+    if (hours < 12) {
+      setTimeOfDay("Good Morning");
+    }
+    if (hours >= 12 && hours <= 16) {
+      setTimeOfDay("Good Afternoon");
+    }
+    if (hours > 16 && hours <= 19) {
+      setTimeOfDay("Good Evening");
+    }
+    if (hours > 19) {
+      setTimeOfDay("Goodnight");
+    }
+  }, []);
 
   const updateClientLists = () => {
     const updatedLists = lists.map((list) => {
@@ -52,30 +76,81 @@ const Menu = () => {
       {menu && (
         <motion.div
           initial={{ x: "-100%", opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
+          animate={{
+            x: 0,
+            opacity: 1,
+          }}
           exit={{ x: "-100%", opacity: 0 }}
-          className="fixed inset-0 pt-20 pb-10 px-5 rounded-md bg-white shadow-md"
+          className="fixed inset-0 pt-20 pb-10 px-5 rounded-md bg-white shadow-md overflow-auto"
         >
-          <h1 className="text-4xl pb-2 font-semibold bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">
-            Goog Morning
-          </h1>
-          <p className="ml-5 bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent font-semibold">
-            {user.username}
-          </p>
-          <div className="grid grid-cols-2 gap-5 mt-10 place-items-center text-white text-4xl">
-            <div className="bg-gradient-to-r from-teal-200 to-teal-500 p-3 flex justify-center items-center w-full h-full rounded-md shadow-md">
+          <h1 className="text-4xl pb-2 font-semibold">{timeOfDay}</h1>
+          {user.username && (
+            <p className="ml-5 font-semibold">{user.username}</p>
+          )}
+          <div className="grid grid-cols-2 gap-5 mt-10 place-items-center text-4xl">
+            <motion.div
+              animate={
+                showCategory === "reminders" ? { scale: 1.025 } : { scale: 1 }
+              }
+              className="p-3 flex justify-center items-center w-full h-full rounded-md shadow-md relative h-40"
+              onClick={() => setShowCategory("reminders")}
+            >
               <IoIosAlarm />
-            </div>
-            <div className="bg-gradient-to-r from-teal-200 to-teal-500 p-3 flex justify-center items-center w-full h-full rounded-md shadow-md">
+              <div className="p-3 bg-purple-100 absolute bottom-0 right-0 left-0 rounded-md flex justify-center items-center">
+                <p className="text-xs">Reminders</p>
+              </div>
+            </motion.div>
+            <div className="p-3 flex justify-center items-center w-full h-full rounded-md shadow-md relative h-40" onClick={() => setShowCategory("lists")} >
               <BsListCheck />
+              <div
+                className="p-3 bg-purple-100 absolute bottom-0 right-0 left-0 rounded-md flex justify-center items-center"
+              >
+                <p className="text-xs">Lists</p>
+              </div>
             </div>
-            <div className="bg-gradient-to-r from-teal-200 to-teal-500 p-3 flex justify-center items-center w-full h-full rounded-md shadow-md">
-              <BsListCheck />
+            <div className="p-3 flex justify-center items-center w-full h-full rounded-md shadow-md relative h-40">
+              <BsListTask />
+              <div className="p-3 bg-purple-100 absolute bottom-0 right-0 left-0 rounded-md flex justify-center items-center">
+                <p className="text-xs">Tasks</p>
+              </div>
             </div>
-            <div className="bg-gradient-to-r from-teal-200 to-teal-500 p-3 flex justify-center items-center w-full h-full rounded-md shadow-md">
-              <BsListCheck />
+            <div className="p-3 flex justify-center items-center w-full h-full rounded-md shadow-md relative h-40">
+              <BsFillClipboardDataFill />
+              <div className="p-3 bg-purple-100 absolute bottom-0 right-0 left-0 rounded-md flex justify-center items-center">
+                <p className="text-xs">Kanban Boards</p>
+              </div>
+            </div>
+            <div className="p-3 flex justify-center items-center w-full h-full rounded-md shadow-md relative h-40">
+              <BsFillCalendar2EventFill />
+              <div className="p-3 bg-purple-100 absolute bottom-0 right-0 left-0 rounded-md flex justify-center items-center">
+                <p className="text-xs">Events</p>
+              </div>
+            </div>
+            <div className="p-3 flex justify-center items-center w-full h-full rounded-md shadow-md relative h-40">
+              <HiUserGroup />
+              <div className="p-3 bg-purple-100 absolute bottom-0 right-0 left-0 rounded-md flex justify-center items-center">
+                <p className="text-xs">Group Events</p>
+              </div>
+            </div>
+            <div className="p-3 flex justify-center items-center w-full h-full rounded-md shadow-md relative h-40">
+              <FaStickyNote />
+              <div className="p-3 bg-purple-100 absolute bottom-0 right-0 left-0 rounded-md flex justify-center items-center">
+                <p className="text-xs">Sticky Notes</p>
+              </div>
+            </div>
+            <div className="p-3 flex justify-center items-center w-full h-full rounded-md shadow-md relative h-40">
+              <AiFillSchedule />
+              <div className="p-3 bg-purple-100 absolute bottom-0 right-0 left-0 rounded-md flex justify-center items-center">
+                <p className="text-xs">Appointments</p>
+              </div>
             </div>
           </div>
+          {showCategory && (
+            <div className="mt-10">
+              {showCategory === "reminders" && <Reminders />}
+              {showCategory === "lists" && <Lists />}
+            </div>
+          )}
           {/* <div className="sticky top-0 right-0 left-0 z-10 bg-gradient-to-tr from-purple-200 to-fucsia-100 p-2 rounded-t-md shadow-md flex justify-between items-center">
             <IoIosAlarm className="text-lg" />
             <div className="flex">
