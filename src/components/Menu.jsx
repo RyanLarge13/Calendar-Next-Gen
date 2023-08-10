@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { RiArrowUpDownFill } from "react-icons/ri";
 import { FaStickyNote } from "react-icons/fa";
@@ -25,6 +25,8 @@ const Menu = () => {
   const { lists, setLists, user } = useContext(UserContext);
   const [showCategory, setShowCategory] = useState(null);
   const [timeOfDay, setTimeOfDay] = useState(null);
+
+  const infoRef = useRef(null);
 
   useEffect(() => {
     if (listUpdate.length < 1) return;
@@ -58,6 +60,14 @@ const Menu = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (showCategory !== null && infoRef.current) {
+      setTimeout(() => {
+        infoRef.current.scrollIntoView({ behavior: "smooth" });
+      }, 500);
+    }
+  }, [showCategory]);
+
   const updateClientLists = () => {
     const updatedLists = lists.map((list) => {
       const foundUpdate = listUpdate.find(
@@ -90,9 +100,9 @@ const Menu = () => {
           <div className="grid grid-cols-2 gap-5 mt-10 place-items-center text-4xl">
             <motion.div
               animate={
-                showCategory === "reminders" ? { scale: 1.025 } : { scale: 1 }
+                showCategory === "reminders" ? { scale: 1.1 } : { scale: 1 }
               }
-              className="p-3 flex justify-center items-center w-full h-full rounded-md shadow-md relative h-40"
+              className="p-3 flex justify-center items-center w-full h-full rounded-md shadow-md relative min-h-[150px] bg-gradient-to-tr from-lime-300 to-emerald-200"
               onClick={() => setShowCategory("reminders")}
             >
               <IoIosAlarm />
@@ -100,45 +110,59 @@ const Menu = () => {
                 <p className="text-xs">Reminders</p>
               </div>
             </motion.div>
-            <div className="p-3 flex justify-center items-center w-full h-full rounded-md shadow-md relative h-40" onClick={() => setShowCategory("lists")} >
+            <motion.div
+              animate={showCategory === "lists" ? { scale: 1.1 } : { scale: 1 }}
+              className="p-3 flex justify-center items-center w-full h-full rounded-md shadow-md relative min-h-[150px] bg-gradient-to-tr from-red-300 to-orange-300"
+              onClick={() => setShowCategory("lists")}
+            >
               <BsListCheck />
-              <div
-                className="p-3 bg-purple-100 absolute bottom-0 right-0 left-0 rounded-md flex justify-center items-center"
-              >
+              <div className="p-3 bg-purple-100 absolute bottom-0 right-0 left-0 rounded-md flex justify-center items-center">
                 <p className="text-xs">Lists</p>
               </div>
-            </div>
-            <div className="p-3 flex justify-center items-center w-full h-full rounded-md shadow-md relative h-40">
+            </motion.div>
+            <div
+              className="p-3 flex justify-center items-center w-full h-full rounded-md shadow-md relative min-h-[150px] bg-gradient-to-tr from-teal-300 to-cyan-300"
+              onClick={() => setShowCategory("tasks")}
+            >
               <BsListTask />
               <div className="p-3 bg-purple-100 absolute bottom-0 right-0 left-0 rounded-md flex justify-center items-center">
                 <p className="text-xs">Tasks</p>
               </div>
             </div>
-            <div className="p-3 flex justify-center items-center w-full h-full rounded-md shadow-md relative h-40">
+            <div
+              className="p-3 flex justify-center items-center w-full h-full rounded-md shadow-md relative min-h-[150px] bg-gradient-to-tr from-violet-300 to-purple-300"
+              onClick={() => setShowCategory("kanban")}
+            >
               <BsFillClipboardDataFill />
               <div className="p-3 bg-purple-100 absolute bottom-0 right-0 left-0 rounded-md flex justify-center items-center">
                 <p className="text-xs">Kanban Boards</p>
               </div>
             </div>
-            <div className="p-3 flex justify-center items-center w-full h-full rounded-md shadow-md relative h-40">
+            <div
+              className="p-3 flex justify-center items-center w-full h-full rounded-md shadow-md relative min-h-[150px] bg-gradient-to-tr from-white to-slate-300"
+              onClick={() => setShowCategory("events")}
+            >
               <BsFillCalendar2EventFill />
               <div className="p-3 bg-purple-100 absolute bottom-0 right-0 left-0 rounded-md flex justify-center items-center">
                 <p className="text-xs">Events</p>
               </div>
             </div>
-            <div className="p-3 flex justify-center items-center w-full h-full rounded-md shadow-md relative h-40">
+            <div
+              className="p-3 flex justify-center items-center w-full h-full rounded-md shadow-md relative min-h-[150px] bg-gradient-to-tr from-indigo-300 to-sky-300"
+              onClick={() => setShowCategory("groupevents")}
+            >
               <HiUserGroup />
               <div className="p-3 bg-purple-100 absolute bottom-0 right-0 left-0 rounded-md flex justify-center items-center">
                 <p className="text-xs">Group Events</p>
               </div>
             </div>
-            <div className="p-3 flex justify-center items-center w-full h-full rounded-md shadow-md relative h-40">
+            <div className="p-3 flex justify-center items-center w-full h-full rounded-md shadow-md relative min-h-[150px] bg-gradient-to-tr from-orange-300 to-yellow-300">
               <FaStickyNote />
               <div className="p-3 bg-purple-100 absolute bottom-0 right-0 left-0 rounded-md flex justify-center items-center">
                 <p className="text-xs">Sticky Notes</p>
               </div>
             </div>
-            <div className="p-3 flex justify-center items-center w-full h-full rounded-md shadow-md relative h-40">
+            <div className="p-3 flex justify-center items-center w-full h-full rounded-md shadow-md relative min-h-[150px] bg-gradient-to-tr from-pink-300 to-fuchsia-300">
               <AiFillSchedule />
               <div className="p-3 bg-purple-100 absolute bottom-0 right-0 left-0 rounded-md flex justify-center items-center">
                 <p className="text-xs">Appointments</p>
@@ -146,67 +170,11 @@ const Menu = () => {
             </div>
           </div>
           {showCategory && (
-            <div className="mt-10">
+            <div ref={infoRef} className="pt-10">
               {showCategory === "reminders" && <Reminders />}
               {showCategory === "lists" && <Lists />}
             </div>
           )}
-          {/* <div className="sticky top-0 right-0 left-0 z-10 bg-gradient-to-tr from-purple-200 to-fucsia-100 p-2 rounded-t-md shadow-md flex justify-between items-center">
-            <IoIosAlarm className="text-lg" />
-            <div className="flex">
-              <RiArrowUpDownFill
-                onClick={() => setShowReminders((prev) => !prev)}
-                className="font-bold text-lg cursor-pointer mr-3"
-              />
-              <AiOutlinePlus
-                onClick={() => {
-                  if (!string) {
-                    setString(new Date().toLocaleDateString());
-                  }
-                  setOpenModal(true);
-                  setAddNewEvent(true);
-                  setType("reminder");
-                }}
-                className="font-bold text-lg cursor-pointer"
-              />
-            </div>
-          </div> */}
-          {/* <Reminders showReminders={showReminders} /> */}
-          {/* <div className="sticky top-10 right-0 left-0 z-10 bg-gradient-to-tr from-purple-200 to-fucsia-100 p-2 rounded-t-md shadow-md flex justify-between items-center">
-            <BsListCheck className="text-lg" />
-            <div className="flex">
-              <RiArrowUpDownFill
-                className="font-bold text-lg cursor-pointer mr-3"
-                onClick={() => setShowLists((prev) => !prev)}
-              />
-              <AiOutlinePlus
-                className="font-bold text-lg cursor-pointer"
-                onClick={() => {
-                  if (!string) {
-                    setString(new Date().toLocaleDateString());
-                  }
-                  setOpenModal(true);
-                  setAddNewEvent(true);
-                  setType("todo-list");
-                }}
-              />
-            </div>
-          </div> */}
-          {/* <Lists showLists={showLists} /> */}
-          {/* <div
-            onClick={() => {}}
-            className="bg-gradient-to-tr from-purple-200 to-fucsia-100 p-2 rounded-t-md shadow-md flex justify-between items-center"
-          >
-            <RiArrowUpDownFill />
-            <p>Boards</p>
-          </div>
-          <div
-            onClick={() => {}}
-            className="bg-gradient-to-tr from-purple-200 to-fucsia-100 p-2 rounded-t-md shadow-md flex justify-between items-center"
-          >
-            <RiArrowUpDownFill />
-            <p>Tasks</p>
-          </div> */}
         </motion.div>
       )}
     </AnimatePresence>
