@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { motion } from "framer-motion";
-import { RiMenuUnfoldFill } from "react-icons/ri";
+import { RiMenuUnfoldFill, RiMenuFoldFill } from "react-icons/ri";
 import {
   BsFillArrowRightCircleFill,
   BsFillArrowLeftCircleFill,
@@ -15,7 +15,7 @@ const Header = () => {
   const { dt, setNav, theDay, setTheDay, currentWeek } =
     useContext(DatesContext);
   const { user } = useContext(UserContext);
-  const { setMenu, setShowLogin, view } = useContext(InteractiveContext);
+  const { menu, setMenu, setShowLogin, view } = useContext(InteractiveContext);
 
   const changeDay = (operand) => {
     if (operand === "minus") {
@@ -36,13 +36,20 @@ const Header = () => {
       animate={{ y: 0 }}
       className="fixed top-0 left-0 right-0 bg-white z-[1] flex justify-between p-5 mb-5 shadow-md"
     >
-      <RiMenuUnfoldFill
-        onClick={() => {
-          setShowLogin(false);
-          setMenu((prev) => !prev);
-        }}
-        className="cursor-pointer"
-      />
+      {menu ? (
+        <RiMenuFoldFill
+          onClick={() => setMenu(false)}
+          className="cursor-pointer"
+        />
+      ) : (
+        <RiMenuUnfoldFill
+          onClick={() => {
+            setShowLogin(false);
+            setMenu(true);
+          }}
+          className="cursor-pointer"
+        />
+      )}
       {view === "month" && (
         <div className="flex justify-center items-center">
           <BsFillArrowLeftCircleFill

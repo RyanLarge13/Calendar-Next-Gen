@@ -203,7 +203,9 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
   };
 
   const removeFile = (file) => {
-    const newFiles = attachments.filter((attach) => attach.name !== file.name);
+    const newFiles = attachments.filter(
+      (attach) => attach.filename !== file.filename
+    );
     setAttachments(newFiles);
   };
 

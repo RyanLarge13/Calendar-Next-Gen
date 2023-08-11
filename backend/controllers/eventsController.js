@@ -149,26 +149,18 @@ const createAttachments = async (attachments, newEventId) => {
     const createdAttachments = await Promise.all(
       attachments.map(async (attachment) => {
         const { filename, mimetype, content } = attachment;
-        const array = new Uint8Array(content);
-        // const maxPosition = Math.max(...Object.keys(data).map(Number));
-
-        // // Initialize a Uint8Array with zeros
-        // const uint8Array = new Uint8Array(maxPosition + 1);
-
-        // // Populate the Uint8Array based on the key-value pairs
-        // for (const [position, value] of Object.entries(data)) {
-        //   uint8Array[Number(position)] = value;
+        // const maxIndex = Math.max(...Object.keys(content).map(Number));
+        // const byteValues = new Uint8Array(maxIndex + 1);
+        // for (const index in content) {
+        //   byteValues[index] = content[index];
         // }
-
-        // // Convert the Uint8Array to a Buffer
-        // const buffer = Buffer.from(uint8Array);
-        return console.log(content);
-        const contentBytes = Buffer.from(array);
+        // const byteBuffer = Buffer.from(byteValues);
+        const byteBuffer = Buffer.from(Object.values(content));
         return prisma.attachment.create({
           data: {
             filename,
             mimetype,
-            content: contentBytes,
+            content: byteBuffer,
             eventId: newEventId,
           },
         });
@@ -197,9 +189,9 @@ export const addEvent = async (req, res) => {
     data: { ...newEvent, id: newEventId, attachments: undefined },
   });
   if (createdEvent) {
-    // if (newEvent.attachments.length > 0) {
-    //   createAttachments(newEvent.attachments, newEventId);
-    // }
+    if (newEvent.attachments.length > 0) {
+      createAttachments(newEvent.attachments, newEventId);
+    }
     return res.json({
       message: "Successfully added new event",
       user: {

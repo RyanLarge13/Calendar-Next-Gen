@@ -71,15 +71,17 @@ const ListItems = ({ addItems, listId, items }) => {
             className="bg-white bg-opacity-20 rounded-md shadow-md px-2 py-5 my-3 flex justify-between items-center cursor-grab relative"
           >
             <div>
-              <p className="absolute top-[-6px] left-[-6px] w-[15px] h-[15px] shadow-md flex justify-center items-center rounded-full bg-white">
+              <p className="absolute top-[-6px] left-[-6px] w-[15px] h-[15px] shadow-md flex justify-center items-center rounded-full bg-white text-xs">
                 {index + 1}
               </p>
-              <p className="mr-3">{listItem}</p>
+              <p className="mr-5 text-sm">{listItem}</p>
             </div>
-            <AiFillCloseCircle
-              onClick={() => removeItem(listItem)}
-              className="cursor-pointer text-lg"
-            />
+            <div>
+              <AiFillCloseCircle
+                onClick={() => removeItem(listItem)}
+                className="cursor-pointer text-lg"
+              />
+            </div>
           </Reorder.Item>
         ))}
       </Reorder.Group>
