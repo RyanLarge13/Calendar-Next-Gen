@@ -1,5 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-import { v4 as uuidv4 } from "uuid";
 const prisma = new PrismaClient();
 
 const addMultipleEvents = async (newEvent, newEventId, howOften) => {
@@ -144,17 +143,13 @@ const createReminder = async (event) => {
   return reminder;
 };
 
-const createAttachments = async (attachments, newEventId) => {
+export const createAttachments = async (req, res) => {
+  const newEventId = req.params.newEventId;
+  const { attachments } = req.body;
   try {
     const createdAttachments = await Promise.all(
       attachments.map(async (attachment) => {
         const { filename, mimetype, content } = attachment;
-        // const maxIndex = Math.max(...Object.keys(content).map(Number));
-        // const byteValues = new Uint8Array(maxIndex + 1);
-        // for (const index in content) {
-        //   byteValues[index] = content[index];
-        // }
-        // const byteBuffer = Buffer.from(byteValues);
         const byteBuffer = Buffer.from(Object.values(content));
         return prisma.attachment.create({
           data: {
@@ -166,8 +161,14 @@ const createAttachments = async (attachments, newEventId) => {
         });
       })
     );
-    console.log("Attachments created:", createdAttachments);
+    if (createdAttachments) {
+      res.status(201).json({
+        message: `Successfully created new attachments for event ${newEventId}`,
+      });
+      console.log("Attachments created:", createdAttachments);
+    }
   } catch (err) {
+    res.status(401).json({ message: `Error creating new attachments ${err}` });
     console.log(`Error creating attachments: ${err}`);
   }
 };
@@ -175,23 +176,18 @@ const createAttachments = async (attachments, newEventId) => {
 export const addEvent = async (req, res) => {
   const newEvent = req.body.event;
   const user = req.user;
-  const newEventId = uuidv4();
   let reminder;
   const repeatEvents = await addMultipleEvents(
     newEvent,
-    newEventId,
     newEvent.repeats.howOften
   );
   if (newEvent.reminders.reminder) {
     reminder = await createReminder(newEvent);
   }
   const createdEvent = await prisma.event.create({
-    data: { ...newEvent, id: newEventId, attachments: undefined },
+    data: { ...newEvent, id: newEvent.id },
   });
   if (createdEvent) {
-    if (newEvent.attachments.length > 0) {
-      createAttachments(newEvent.attachments, newEventId);
-    }
     return res.json({
       message: "Successfully added new event",
       user: {

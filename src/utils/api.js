@@ -86,13 +86,22 @@ export const fetchAttachments = async (eventId) => {
 
 export const postEvent = (event, token) => {
   const res = Axios.post(
-    `${productionUrl}/new/event`,
+    `${devUrl}/new/event`,
     { event: event },
     {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     }
+  );
+  return res;
+};
+
+export const createAttachments = (attachments, eventId, token) => {
+  const res = Axios.post(
+    `${devUrl}/new/attachments/${eventId}`,
+    { attachments },
+    { headers: { Authorization: `Bearer ${token}` } }
   );
   return res;
 };

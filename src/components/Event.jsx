@@ -44,6 +44,10 @@ const Event = ({ dayEvents }) => {
         });
       })
       .catch((err) => console.log(err));
+    return () => setFetchedImages([]);
+  }, []);
+
+  useEffect(() => {
     let interval;
     let timeLeftInterval;
     let timeInLeft;
@@ -134,7 +138,6 @@ const Event = ({ dayEvents }) => {
       clearInterval(timeLeftInterval);
       clearInterval(interval);
       clearInterval(timeInLeft);
-      setFetchedImages([]);
     };
   }, [event]);
 
