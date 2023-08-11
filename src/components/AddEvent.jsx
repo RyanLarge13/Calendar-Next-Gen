@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import { motion } from "framer-motion";
 import { colors } from "../constants";
 import { MdLocationPin, MdCancel } from "react-icons/md";
@@ -7,7 +7,7 @@ import { FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";
 import { RiGalleryUploadFill } from "react-icons/ri";
 import { BsFillSaveFill } from "react-icons/bs";
-import { postEvent } from "../utils/api.js";
+import { createAttachments, postEvent } from "../utils/api.js";
 import { repeatOptions } from "../constants";
 import { v4 as uuidv4 } from "uuid";
 import Masonry from "react-masonry-css";
@@ -99,11 +99,13 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
   }, [passedStartTime]);
 
   const addEvent = () => {
+    const newEventId = uuidv4();
     if (!runChecks()) return;
     if (!isOnline) {
     }
     if (isOnline) {
       const newEvent = {
+        id: newEventId,
         kind: "Event",
         summary,
         description,
@@ -121,7 +123,6 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
           interval: interval ? interval : 7,
           repeatId: uuidv4(),
         },
-        attachments: attachments.length > 0 ? attachments : [],
         color: color ? color : "bg-white",
         start: {
           startTime: startTime ? (allDay ? null : startWhen) : null,
@@ -142,6 +143,15 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
           setAddNewEvent(false);
           setType(null);
           setOpenModal(false);
+          if (attachments.length > 0) {
+            createAttachments(
+              attachments,
+              newEventId,
+              localStorage.getItem("authToken")
+            )
+              .then((res) => console.log(res))
+              .catch((err) => console.log(err));
+          }
         })
         .catch((err) => {
           console.log(err);

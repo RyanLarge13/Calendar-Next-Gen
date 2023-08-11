@@ -97,6 +97,15 @@ export const postEvent = (event, token) => {
   return res;
 };
 
+export const createAttachments = (attachments, eventId, token) => {
+  const res = Axios.post(
+    `${productionUrl}/new/attachments/${eventId}`,
+    { attachments },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return res;
+};
+
 export const deleteEvent = (username, eventId, token) => {
   const res = Axios.delete(
     `${productionUrl}/${username}/delete/event/${eventId}`,
