@@ -134,27 +134,25 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
         },
         userId: user.id,
       };
-      setEvents((prev) => [...prev, newEvent]);
-      setAddNewEvent(false);
-      setType(null);
-      setOpenModal(false);
       postEvent(newEvent, localStorage.getItem("authToken"))
         .then((res) => {
-          // setEvents((prev) => [...prev, ...res.data.event]);
+          setEvents((prev) => [...prev, ...res.data.event]);
           if (res.data.reminders) {
             setReminders((prev) => [...prev, res.data.reminders]);
           }
-          // setAddNewEvent(false);
-          //           setType(null);
-          //           setOpenModal(false);
+           setAddNewEvent(false);
+                    setType(null);
+                     setOpenModal(false);
           if (attachments.length > 0) {
-            createAttachments(
-              attachments,
-              newEventId,
-              localStorage.getItem("authToken")
-            )
-              .then((res) => console.log(res))
-              .catch((err) => console.log(err));
+            setTimeout(() => {
+              createAttachments(
+                attachments,
+                newEventId,
+                localStorage.getItem("authToken")
+              )
+                .then((res) => console.log(res))
+                .catch((err) => console.log(err));
+            }, 1000);
           }
         })
         .catch((err) => {
