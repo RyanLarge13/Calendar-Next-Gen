@@ -7,6 +7,11 @@
   font-family: "Lora", serif;
 }
 
+body {
+  padding-top: constant(safe-area-inset-top); /* iOS 11.0+ */
+  padding-top: env(safe-area-inset-top); /* iOS 11.2+ */
+}
+
 .google {
   background-image: linear-gradient(
     45deg,
