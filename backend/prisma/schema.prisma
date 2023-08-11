@@ -17,6 +17,7 @@ birthday      DateTime?
 createAt      DateTime       @default(now())
 notifSub      String[]
 notifSubCanceled String[]
+importedGoogleEvents Boolean @default(false)
 events        Event[]
 reminders     Reminder[]
 notifications Notification[]

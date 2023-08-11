@@ -1,12 +1,20 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { IoIosAlarm } from "react-icons/io";
+import { AiOutlinePlus } from "react-icons/ai";
+import { BiAlarmSnooze } from "react-icons/bi";
+import { BsFillPenFill } from "react-icons/bs";
 import { motion } from "framer-motion";
 import { deleteReminder } from "../utils/api.js";
 import { formatTime } from "../utils/helpers.js";
 import UserContext from "../context/UserContext.jsx";
+import DatesContext from "../context/DatesContext.jsx";
+import InteractiveContext from "../context/InteractiveContext.jsx";
+import { BsAlarmFill } from "react-icons/bs";
 
 const Reminders = () => {
   const { reminders, setReminders, user } = useContext(UserContext);
+  const { setType, setAddNewEvent } = useContext(InteractiveContext);
+  const { setOpenModal, setString } = useContext(DatesContext);
 
   const [selected, setSelected] = useState([]);
   const [selectable, setSelectable] = useState(false);
@@ -82,20 +90,26 @@ const Reminders = () => {
   };
 
   return (
-    <motion.div
-      // initial={{ height: "95vh" }}
-      // animate={
-      //   showReminders
-      //     ? {
-      //         height: "95vh",
-      //         overflowY: "auto",
-      //       }
-      //     : { height: "0px", overflowY: "hidden" }
-      // }
-      className="p-3"
-    >
+    <motion.div className="p-3">
+      <div className="sticky top-0 right-0 left-0 p-3 mb-5 w-full flex justify-between items-center gap-x-3 rounded-md shadow-md bg-white z-20">
+        <IoIosAlarm />
+        <AiOutlinePlus
+          onClick={() => {
+            setString(() => new Date().toLocaleDateString());
+            setOpenModal(true);
+            setAddNewEvent(true);
+            setType("reminder");
+          }}
+        />
+      </div>
+      {reminders.length < 1 && (
+        <div className="bg-gradient-to-tr from-lime-300 to-emerald-300 rounded-md p-3 shadow-md mb-5">
+          <h2 className="font-semibold">No Upcomming Reminders</h2>
+          <BiAlarmSnooze />
+        </div>
+      )}
       <div>
-        {reminders.map((reminder, index) => (
+        {reminders.map((reminder) => (
           <motion.div
             animate={
               selected.includes(reminder.id)
@@ -104,6 +118,7 @@ const Reminders = () => {
                     scaleY: 1.1,
                     opacity: 0.75,
                     boxShadow: "0 0.25em 0.25em 0 rgba(255,50,50,0.4)",
+                    backgroundColor: "#eee",
                   }
                 : { scale: 1, opacity: 1, boxShadow: "0 0.1em 0.5em 0 #eee" }
             }
@@ -122,10 +137,39 @@ const Reminders = () => {
             onPointerCancel={() => clearTimeout(timeout)}
           >
             <div className="z-50 pointer-events-none text-[9px]">
-              <p>{new Date(reminder.time).toLocaleDateString()}</p>
-              <p>{new Date(reminder.time).toLocaleTimeString()}</p>
-              <p>{formatTime(new Date(reminder.time))}</p>
-              <p>{reminder.title}</p>
+              <p className="font-semibold bg-white bg-opacity-70 p-2 rounded-md shadow-sm mb-2">
+                {new Date(reminder.time).toLocaleDateString("en-US", {
+                  weekday: "short",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </p>
+              <div className="pl-1">
+                <div className="flex justify-start gap-x-2 items-center">
+                  <div>
+                    <p className="font-semibold">
+                      @{" "}
+                      {new Date(reminder.time).toLocaleTimeString("en-US", {
+                        timeZoneName: "short",
+                      })}
+                    </p>
+                    <div className="flex justify-start gap-x-1 items-center">
+                      <BsAlarmFill />
+                      <p>{formatTime(new Date(reminder.time))}</p>
+                    </div>
+                  </div>
+                  <div className="p-2 ml-1 bg-white bg-opacity-75 rounded-md shadow-sm flex-1 cursor-pointer">
+                    <p className="text-lg mt-1">{reminder.title}</p>
+                  </div>
+                </div>
+              </div>
+              {reminder.notes && (
+                <div className="mt-2 p-2 rounded-md shadow-sm bg-white bg-opacity-75 flex justify-between items-center">
+                  <p>{reminder.notes}</p>
+                  <BsFillPenFill />
+                </div>
+              )}
             </div>
             {selected.includes(reminder.id) && (
               <motion.button

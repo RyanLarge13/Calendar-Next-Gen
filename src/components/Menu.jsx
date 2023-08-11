@@ -106,7 +106,11 @@ const Menu = () => {
               onClick={() => setShowCategory("reminders")}
             >
               <IoIosAlarm />
-              <div className="p-3 bg-purple-100 absolute bottom-0 right-0 left-0 rounded-md flex justify-center items-center">
+              <div
+                className={`p-3 ${
+                  showCategory === "reminders" ? "bg-purple-100" : "bg-white"
+                } absolute bottom-0 right-0 left-0 rounded-md flex justify-center items-center`}
+              >
                 <p className="text-xs">Reminders</p>
               </div>
             </motion.div>
@@ -116,7 +120,11 @@ const Menu = () => {
               onClick={() => setShowCategory("lists")}
             >
               <BsListCheck />
-              <div className="p-3 bg-purple-100 absolute bottom-0 right-0 left-0 rounded-md flex justify-center items-center">
+              <div
+                className={`p-3 ${
+                  showCategory === "lists" ? "bg-purple-100" : "bg-white"
+                } absolute bottom-0 right-0 left-0 rounded-md flex justify-center items-center`}
+              >
                 <p className="text-xs">Lists</p>
               </div>
             </motion.div>
@@ -125,7 +133,11 @@ const Menu = () => {
               onClick={() => setShowCategory("tasks")}
             >
               <BsListTask />
-              <div className="p-3 bg-purple-100 absolute bottom-0 right-0 left-0 rounded-md flex justify-center items-center">
+              <div
+                className={`p-3 ${
+                  showCategory === "tasks" ? "bg-purple-100" : "bg-white"
+                } absolute bottom-0 right-0 left-0 rounded-md flex justify-center items-center`}
+              >
                 <p className="text-xs">Tasks</p>
               </div>
             </div>
@@ -134,7 +146,11 @@ const Menu = () => {
               onClick={() => setShowCategory("kanban")}
             >
               <BsFillClipboardDataFill />
-              <div className="p-3 bg-purple-100 absolute bottom-0 right-0 left-0 rounded-md flex justify-center items-center">
+              <div
+                className={`p-3 ${
+                  showCategory === "kanban" ? "bg-purple-100" : "bg-white"
+                } absolute bottom-0 right-0 left-0 rounded-md flex justify-center items-center`}
+              >
                 <p className="text-xs">Kanban Boards</p>
               </div>
             </div>
@@ -143,7 +159,11 @@ const Menu = () => {
               onClick={() => setShowCategory("events")}
             >
               <BsFillCalendar2EventFill />
-              <div className="p-3 bg-purple-100 absolute bottom-0 right-0 left-0 rounded-md flex justify-center items-center">
+              <div
+                className={`p-3 ${
+                  showCategory === "events" ? "bg-purple-100" : "bg-white"
+                } absolute bottom-0 right-0 left-0 rounded-md flex justify-center items-center`}
+              >
                 <p className="text-xs">Events</p>
               </div>
             </div>
@@ -152,25 +172,43 @@ const Menu = () => {
               onClick={() => setShowCategory("groupevents")}
             >
               <HiUserGroup />
-              <div className="p-3 bg-purple-100 absolute bottom-0 right-0 left-0 rounded-md flex justify-center items-center">
+              <div
+                className={`p-3 ${
+                  showCategory === "groupevents" ? "bg-purple-100" : "bg-white"
+                } absolute bottom-0 right-0 left-0 rounded-md flex justify-center items-center`}
+              >
                 <p className="text-xs">Group Events</p>
               </div>
             </div>
-            <div className="p-3 flex justify-center items-center w-full h-full rounded-md shadow-md relative min-h-[150px] bg-gradient-to-tr from-orange-300 to-yellow-300">
+            <div
+              className="p-3 flex justify-center items-center w-full h-full rounded-md shadow-md relative min-h-[150px] bg-gradient-to-tr from-orange-300 to-yellow-300"
+              onClick={() => setShowCategory("stickynotes")}
+            >
               <FaStickyNote />
-              <div className="p-3 bg-purple-100 absolute bottom-0 right-0 left-0 rounded-md flex justify-center items-center">
+              <div
+                className={`p-3 ${
+                  showCategory === "stickynotes" ? "bg-purple-100" : "bg-white"
+                } absolute bottom-0 right-0 left-0 rounded-md flex justify-center items-center`}
+              >
                 <p className="text-xs">Sticky Notes</p>
               </div>
             </div>
-            <div className="p-3 flex justify-center items-center w-full h-full rounded-md shadow-md relative min-h-[150px] bg-gradient-to-tr from-pink-300 to-fuchsia-300">
+            <div
+              className="p-3 flex justify-center items-center w-full h-full rounded-md shadow-md relative min-h-[150px] bg-gradient-to-tr from-pink-300 to-fuchsia-300"
+              onClick={() => setShowCategory("appointment")}
+            >
               <AiFillSchedule />
-              <div className="p-3 bg-purple-100 absolute bottom-0 right-0 left-0 rounded-md flex justify-center items-center">
+              <div
+                className={`p-3 ${
+                  showCategory === "appointment" ? "bg-purple-100" : "bg-white"
+                } absolute bottom-0 right-0 left-0 rounded-md flex justify-center items-center`}
+              >
                 <p className="text-xs">Appointments</p>
               </div>
             </div>
           </div>
           {showCategory && (
-            <div ref={infoRef} className="pt-10">
+            <div ref={infoRef} className="pt-20">
               {showCategory === "reminders" && <Reminders />}
               {showCategory === "lists" && <Lists />}
             </div>

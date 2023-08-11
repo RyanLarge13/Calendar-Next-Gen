@@ -7,6 +7,8 @@ import {
   BsFillTrashFill,
   BsFillPenFill,
   BsFillShareFill,
+  BsListCheck,
+  BsTrashFill,
 } from "react-icons/bs";
 import { BiListMinus, BiListPlus } from "react-icons/bi";
 import UserContext from "../context/UserContext";
@@ -30,20 +32,13 @@ const Lists = () => {
   };
 
   return (
-    <motion.div
-      // initial={{ height: "0px" }}
-      // animate={
-      //   showLists
-      //     ? {
-      //         height: "95vh",
-      //         overflowY: "auto",
-      //       }
-      //     : { height: "0px", overflowY: "hidden" }
-      // }
-      className="p-3 relative"
-    >
-      <div className="sticky top-0 right-0 left-0 p-3 mb-5 w-full flex justify-end items-center gap-x-3 rounded-md shadow-md bg-purple-100 z-20">
-        <AiOutlinePlus />
+    <motion.div className="py-3 relative">
+      <div className="sticky top-0 right-0 left-0 p-3 mb-5 w-full flex justify-between items-center gap-x-3 rounded-md shadow-md bg-white z-20">
+        <BsListCheck />
+        <div className="flex gap-x-3">
+          <BsTrashFill />
+          <AiOutlinePlus />
+        </div>
       </div>
       {lists.map((list) => (
         <div
@@ -51,8 +46,8 @@ const Lists = () => {
           className={`my-5 mr-10 p-3 rounded-md shadow-md ${list.color}`}
         >
           <div className="mb-2 bg-white rounded-md shadow-md p-3 flex justify-between items-center">
-            <p className="font-semibold">{list.title}</p>
-            <div className="flex gap-x-3">
+            <p className="font-semibold mr-2">{list.title}</p>
+            <div className="flex gap-x-3 text-sm">
               {!addItems.includes(list.id) ? (
                 <BiListPlus
                   onClick={() => setAddItems((prev) => [...prev, list.id])}
