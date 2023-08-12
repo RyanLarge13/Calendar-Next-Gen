@@ -114,7 +114,7 @@ const AddList = () => {
           </div>
           <button
             onClick={() => createList()}
-            className="rounded-md shadow-md py-2 w-[95%] bg-gradient-to-tr from-lime-300 to-emerald-200 absolute bottom-5 left-[2%]"
+            className="rounded-md shadow-md py-2 w-[95%] bg-gradient-to-tr from-lime-300 to-emerald-200 absolute bottom-5 left-[2%] text-xs underline"
           >
             Create
           </button>
@@ -137,7 +137,7 @@ const AddList = () => {
           <button
             onClick={() => addItemsToList()}
             type="text"
-            className="my-5 py-1 w-full rounded-md shadow-md bg-gradient-to-tr from-lime-300 to-green-200"
+            className="my-5 py-2 w-full rounded-md shadow-md bg-gradient-to-tr from-lime-300 to-green-200 text-xs underline"
           >
             Add
           </button>
@@ -156,36 +156,19 @@ const AddList = () => {
           <div className="flex flex-col fixed bottom-5 w-[60%]">
             <button
               onClick={() => setAddItems(false)}
-              className="mb-1 mt-5 py-1 w-full rounded-md shadow-md bg-gradient-to-tr from-rose-300 to-amber-200"
+              className="mb-1 mt-5 py-2 w-full rounded-md shadow-md bg-gradient-to-tr from-rose-300 to-amber-200 text-xs underline"
             >
               Go Back
             </button>
             <button
               onClick={() => addListToDB()}
-              className="my-1 py-1 w-full rounded-md shadow-md bg-gradient-to-tr from-lime-300 to-green-200"
+              className="my-1 py-2 w-full rounded-md shadow-md bg-gradient-to-tr from-lime-300 to-green-200 text-xs underline"
             >
               Complete List
             </button>
           </div>
         </div>
       )}
-      <div className="fixed right-[65vw] bottom-5 flex flex-col justify-center items-center px-2">
-        <button
-          onClick={() => {
-            setType(null);
-            setAddNewEvent(false);
-          }}
-          className="p-3 rounded-full shadow-md bg-gradient-to-r from-red-300 to-red-200"
-        >
-          <MdCancel />
-        </button>
-        <button
-          onClick={() => {}}
-          className="rounded-full p-3 shadow-md bg-gradient-to-r from-green-300 to-green-200 mt-5"
-        >
-          <BsFillSaveFill />
-        </button>
-      </div>
     </div>
   );
 };

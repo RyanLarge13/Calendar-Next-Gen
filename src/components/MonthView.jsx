@@ -27,13 +27,13 @@ const MonthView = () => {
 
   const [weatherData, setWeatherData] = useState([]);
 
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition((position) => {
-      const long = position.coords.longitude;
-      const lat = position.coords.latitude;
-      getInfo(long, lat);
-    });
-  }, []);
+  // useEffect(() => {
+  //   navigator.geolocation.getCurrentPosition((position) => {
+  //     const long = position.coords.longitude;
+  //     const lat = position.coords.latitude;
+  //     getInfo(long, lat);
+  //   });
+  // }, []);
 
   const getCellStyle = (index) => {
     const currentDate = new Date();
@@ -43,7 +43,10 @@ const MonthView = () => {
       targetDate.getFullYear() === currentDate.getFullYear();
     if (
       isSameMonthAndYear &&
-      (rowDays.includes(index) || columnDays.includes(index))
+      rowDays.includes(index)
+      //   (
+      //   rowDays.includes(index) || columnDays.includes(index)
+      // )
     ) {
       return { backgroundColor: "rgba(0, 0, 0, 0.1)" };
     } else {
@@ -51,45 +54,45 @@ const MonthView = () => {
     }
   };
 
-  // Function to get the first day of the current week
-  function getFirstDayOfWeek() {
-    const currentDate = new Date();
-    const firstDayOfWeek = new Date(currentDate);
-    const dayOfWeek = currentDate.getDay();
-    const diff = currentDate.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
-    firstDayOfWeek.setDate(diff);
-    return firstDayOfWeek.toISOString().split("T")[0];
-  }
+  // // Function to get the first day of the current week
+  // function getFirstDayOfWeek() {
+  //   const currentDate = new Date();
+  //   const firstDayOfWeek = new Date(currentDate);
+  //   const dayOfWeek = currentDate.getDay();
+  //   const diff = currentDate.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+  //   firstDayOfWeek.setDate(diff);
+  //   return firstDayOfWeek.toISOString().split("T")[0];
+  // }
 
-  // Function to get the last day of the current week
-  function getLastDayOfWeek() {
-    const currentDate = new Date();
-    const lastDayOfWeek = new Date(currentDate);
-    const dayOfWeek = currentDate.getDay();
-    const diff =
-      currentDate.getDate() - dayOfWeek + 7 - (dayOfWeek === 0 ? 7 : 0);
-    lastDayOfWeek.setDate(diff);
-    return lastDayOfWeek.toISOString().split("T")[0];
-  }
+  // // Function to get the last day of the current week
+  // function getLastDayOfWeek() {
+  //   const currentDate = new Date();
+  //   const lastDayOfWeek = new Date(currentDate);
+  //   const dayOfWeek = currentDate.getDay();
+  //   const diff =
+  //     currentDate.getDate() - dayOfWeek + 7 - (dayOfWeek === 0 ? 7 : 0);
+  //   lastDayOfWeek.setDate(diff);
+  //   return lastDayOfWeek.toISOString().split("T")[0];
+  // }
 
-  const getInfo = (long, lat) => {
-    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const firstDayOfWeek = getFirstDayOfWeek();
-    const lastDayOfWeek = getLastDayOfWeek();
-    Axios.get(
-      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${long}&daily=weathercode&temperature_unit=fahrenheit&start_date=${firstDayOfWeek}&end_date=${lastDayOfWeek}&timezone=${timeZone}`
-    )
-      .then((res) => {
-        const data = [
-          {
-            codes: res.data.daily.weathercode,
-            dates: res.data.daily.time,
-          },
-        ];
-        setWeatherData(data);
-      })
-      .catch((err) => console.log(err));
-  };
+  // const getInfo = (long, lat) => {
+  //   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  //   const firstDayOfWeek = getFirstDayOfWeek();
+  //   const lastDayOfWeek = getLastDayOfWeek();
+  //   Axios.get(
+  //     `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${long}&daily=weathercode&temperature_unit=fahrenheit&start_date=${firstDayOfWeek}&end_date=${lastDayOfWeek}&timezone=${timeZone}`
+  //   )
+  //     .then((res) => {
+  //       const data = [
+  //         {
+  //           codes: res.data.daily.weathercode,
+  //           dates: res.data.daily.time,
+  //         },
+  //       ];
+  //       setWeatherData(data);
+  //     })
+  //     .catch((err) => console.log(err));
+  // };
 
   const getIcon = (weatherCode) => {
     for (const aCode of weatherCodes) {
@@ -140,7 +143,7 @@ const MonthView = () => {
           >
             <p>{index >= paddingDays && index - paddingDays + 1}</p>
           </div>
-          {weatherData.length > 0 &&
+          {/* {weatherData.length > 0 &&
             weatherData[0].dates.map(
               (time, i) =>
                 new Date(time).toLocaleDateString() ===
@@ -170,7 +173,7 @@ const MonthView = () => {
                     className="absolute top-0 left-0 rounded-md shadow-sm flex justify-center items-center w-[15px] h-[15px] bg-purple-200"
                   />
                 )
-            )}
+            )} */}
           <div className="w-full absolute inset-0 pt-8">
             {[...events, ...holidays].map(
               (event) =>

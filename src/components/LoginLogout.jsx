@@ -152,7 +152,7 @@ const LoginLogout = () => {
             >
               {user ? (
                 <div className="">
-                  <div className="flex justify-between items-center bg-purple-100 rounded-md shadow-md p-2 mb-5">
+                  <div className="flex justify-between items-center bg-cyan-100 rounded-md shadow-md p-2 mb-5">
                     <BiLogOutCircle
                       onClick={() => {
                         const newConfirmation = {
