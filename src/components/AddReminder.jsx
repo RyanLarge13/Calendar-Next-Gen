@@ -99,7 +99,7 @@ const AddReminder = () => {
       </div>
       <div className="flex flex-col w-full gap-y-5 mb-5 mt-10 text-center text-xs font-semibold">
         <button
-          onClick={() => addReminder()}
+          onClick={() => addAReminder()}
           className="px-3 py-2 rounded-md shadow-md bg-gradient-to-r from-lime-200 to-green-200 underline"
         >
           save
