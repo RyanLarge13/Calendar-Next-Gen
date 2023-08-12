@@ -17,15 +17,8 @@ import UserContext from "../context/UserContext";
 const Calendar = () => {
   const { events, holidays, reminders, weekDays } = useContext(UserContext);
   const { menu, view, event } = useContext(InteractiveContext);
-  const {
-    finish,
-    loading,
-    theDay,
-    openModal,
-    diff,
-    dateString,
-    string,
-  } = useContext(DatesContext);
+  const { finish, loading, theDay, openModal, diff, dateString, string } =
+    useContext(DatesContext);
 
   const [todaysEvents, setTodaysEvents] = useState([]);
   const [todaysReminders, setTodaysReminder] = useState([]);
@@ -71,7 +64,7 @@ const Calendar = () => {
                   index === new Date().getDay() &&
                   new Date(dateString).getMonth() === new Date().getMonth() &&
                   new Date(dateString).getYear() === new Date().getYear()
-                    ? "bg-gradient-to-r from-cyan-300 to-cyan-500 bg-clip-text text-transparent font-semibold border-b-2 rounded-md"
+                    ? "bg-cyan-400 bg-clip-text text-transparent font-semibold border-b-2 rounded-md"
                     : ""
                 } mx-2 text-center`}
               >
@@ -102,13 +95,13 @@ const Calendar = () => {
             </motion.div>
           ) : (
             <div className="flex justify-center items-center">
-              <Dna
+              {/* <Dna
                 visible={loading}
                 height="80"
                 width="80"
                 ariaLabel="dna-loading"
                 wrapperClass="dna-wrapper"
-              />
+              /> */}
             </div>
           )}
         </section>

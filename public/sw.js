@@ -38,12 +38,16 @@ self.addEventListener("push", (event) => {
       icon: "./favicon.svg",
       badge: "./badge.svg",
       vibrate: [100, 100, 100],
-      actions: [{ action: "mark-as-read", title: "Mark as Read" }],
+      actions: [
+        { action: "delete-notif", title: "Delete" },
+        { action: "mark-as-read", title: "Mark as Read" },
+        { action: "remind-me-later", title: "Resend +1h" },
+      ],
     })
   );
 });
 
-self.addEventListener("notificationclick", (event) => {
+self.addEventListener("notificationclick", (event, payload) => {
   if (event.action === "mark-as-read") {
     fetch("https://calendar-next-gen-production.up.railway.app/mark-as-read", {
       method: "POST",
@@ -51,7 +55,7 @@ self.addEventListener("notificationclick", (event) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        notifId: event.notification.data.id,
+        notifId: payload.id,
       }),
     })
       .then((response) => {
@@ -61,7 +65,47 @@ self.addEventListener("notificationclick", (event) => {
         event.notification.close();
         console.log(`Error marking notification as read: ${error}`);
       });
-  } else {
+  }
+  if (event.action === "delete-notif") {
+    fetch(
+      `https://calendar-next-gen-production.up.railway.app/delete-notif/notification/${payload.id}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          notifId: payload.id,
+        }),
+      }
+    )
+      .then((response) => {
+        event.notification.close();
+      })
+      .catch((error) => {
+        event.notification.close();
+        console.log(`Error marking notification as read: ${error}`);
+      });
+  } 
+  if (event.action === "remind-me-later") {
+  	const reminderDelayInMinutes = 60;
+  const delayInMillis = reminderDelayInMinutes * 60 * 1000;
+  setTimeout(() => {
+    self.registration.showNotification(payload.title, {
+      body: payload.body,
+      icon: "./favicon.svg",
+      badge: "./badge.svg",
+      vibrate: [100, 100, 100],
+      actions: [
+        { action: "delete-notif", title: "Delete" },
+        { action: "mark-as-read", title: "Mark as Read" },
+        { action: "remind-me-later", title: "Resend +1h" },
+      ],
+    });
+  }, delayInMillis);
+  event.notification.close();
+  }
+  else {
     event.notification.close();
     event.waitUntil(clients.openWindow("https://www.calng.app"));
   }

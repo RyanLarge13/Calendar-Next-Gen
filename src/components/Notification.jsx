@@ -90,7 +90,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
           initial={{ y: "-100%", opacity: 0 }}
           exit={{ y: "-100%", opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="py-3 px-5 rounded-b-md fixed top-0 right-0 left-0 z-20 max-h-[60vh] overflow-y-auto bg-purple-100"
+          className="py-3 px-5 rounded-b-md fixed top-0 right-0 left-0 z-20 max-h-[60vh] overflow-y-auto bg-cyan-100"
         >
           {notifications.length < 1 ? (
             <div className="flex flex-col items-center justify-center w-full">

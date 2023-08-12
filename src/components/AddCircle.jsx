@@ -42,16 +42,16 @@ export const AddCircle = () => {
   return (
     <>
       <motion.div
-        initial={{ bottom: 20, right: 20 }}
-        animate={
-          type === null ? { bottom: 20, right: 20 } : { bottom: 80, left: 20 }
-        }
+        // initial={{ bottom: 20, right: 20 }}
+        // animate={
+        //   type === null ? { bottom: 20, right: 20 } : { bottom: 80, left: 20 }
+        // }
         onClick={() => setShow((prev) => !prev)}
         className={`fixed w-[40px] h-[40px] z-[700] ${
-          showLogin
+          showLogin || type !== null
             ? "opacity-0 pointer-events-none"
             : "opacity-100 pointer-events-auto"
-        } p-3 rounded-full cursor-pointer flex justify-center items-center bg-gradient-to-tr from-lime-200 to-yellow-100 shadow-md`}
+        } p-3 rounded-full cursor-pointer flex justify-center items-center bg-gradient-to-tr right-5 bottom-5 from-lime-200 to-yellow-100 shadow-md`}
       >
         {show ? <BsXCircleFill /> : <BsFillCalendarPlusFill />}
       </motion.div>

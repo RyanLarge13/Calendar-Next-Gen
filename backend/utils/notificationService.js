@@ -1,6 +1,6 @@
-// notificationService.js
-
 import WebPush from "web-push";
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 
 WebPush.setVapidDetails(
   "mailto:ryanlarge@ryanlarge.dev",
@@ -8,7 +8,7 @@ WebPush.setVapidDetails(
   process.env.VAPID_PRIVATE_KEY
 );
 
-function sendNotification(payload, subscriptions) {
+function sendNotification(payload, subscriptions, userId) {
   console.log(subscriptions);
   if (!subscriptions) {
     throw new Error("Subscription not set");
@@ -22,6 +22,31 @@ function sendNotification(payload, subscriptions) {
     subscriptions.forEach((sub) => {
       WebPush.sendNotification(JSON.parse(sub), payload).catch((error) => {
         console.error("Error sending notification:", error);
+        if (error.statusCode === 410) {
+          const endpoint = subscription.endpoint;
+          prisma.user
+            .update({
+              where: { id: userId },
+              data: {
+                notifSub: {
+                  set: {
+                    endpoint: {
+                      delete: endpoint,
+                    },
+                  },
+                },
+              },
+            })
+            .then((updatedUser) => {
+              console.log(
+                `Subscription with endpoint ${endpoint} has been deleted.`
+              );
+            })
+            .catch((updateError) => {
+              console.error("Error updating user:", updateError);
+              // Handle the update error as needed.
+            });
+        }
       });
     });
   }

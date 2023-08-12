@@ -144,13 +144,15 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
           setType(null);
           setOpenModal(false);
           if (attachments.length > 0) {
-            createAttachments(
-              attachments,
-              newEventId,
-              localStorage.getItem("authToken")
-            )
-              .then((res) => console.log(res))
-              .catch((err) => console.log(err));
+            setTimeout(() => {
+              createAttachments(
+                attachments,
+                newEventId,
+                localStorage.getItem("authToken")
+              )
+                .then((res) => console.log(res))
+                .catch((err) => console.log(err));
+            }, 1000);
           }
         })
         .catch((err) => {
@@ -220,7 +222,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
   };
 
   return (
-    <div className={`flex flex-col justify-center items-center`}>
+    <div className={`flex flex-col justify-center items-center pb-20`}>
       <div className="flex flex-wrap justify-center items-center my-10 mx-auto w-[80%]">
         {colors.map((item, index) => (
           <Color
@@ -387,7 +389,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
           </div>
         </>
       )}
-      <div className="mt-10 mb-20 flex flex-col justify-center items-center">
+      <div className="mt-10 mb-20 flex w-full flex-col justify-center items-center">
         {attachments.length > 0 && (
           <Masonry
             breakpointCols={breakpointColumnsObj}
@@ -420,7 +422,11 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
         )}
         <label className="bg-slate-300 mt-10 p-5 w-full rounded-md flex flex-col justify-center items-center">
           <RiGalleryUploadFill className="text-xl cursor-pointer" />
-          {attachments.length > 0 && <p className="text-xs">Add More</p>}
+          {attachments.length > 0 ? (
+            <p className="text-xs">Add More</p>
+          ) : (
+            <p className="text-[10px]">.jpeg .png .svg .pdf .docx</p>
+          )}
           <input
             type="file"
             accept=".jpeg .png .svg .pdf .docx"
@@ -431,21 +437,21 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
           />
         </label>
       </div>
-      <div className="fixed right-[65vw] bottom-5 flex flex-col justify-center items-center px-2">
+      <div className=" flex flex-col w-full gap-y-5 mb-5 text-center text-xs font-semibold">
+        <button
+          onClick={() => addEvent()}
+          className="px-3 py-2 rounded-md shadow-md bg-gradient-to-r from-lime-200 to-green-200 underline"
+        >
+          save
+        </button>
         <button
           onClick={() => {
             setType(null);
             setAddNewEvent(false);
           }}
-          className="p-3 rounded-full shadow-md bg-gradient-to-r from-red-300 to-red-200"
+          className="px-3 py-2 rounded-md shadow-md bg-gradient-to-tr from-red-200 to-rose-200 underline"
         >
-          <MdCancel />
-        </button>
-        <button
-          onClick={() => addEvent()}
-          className="rounded-full p-3 shadow-md bg-gradient-to-r from-green-300 to-green-200 mt-5"
-        >
-          <BsFillSaveFill />
+          cancel
         </button>
       </div>
     </div>

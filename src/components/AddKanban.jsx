@@ -27,7 +27,7 @@ const AddKanban = () => {
           { text: "close", func: () => setSystemNotif({ show: false }) },
         ],
       };
-      return setSystemNotif(newError)
+      return setSystemNotif(newError);
     }
     if (!selectedColor) {
       const newError = {
@@ -69,21 +69,21 @@ const AddKanban = () => {
           ></div>
         ))}
       </div>
-      <div className="fixed right-[65vw] bottom-5 flex flex-col justify-center items-center px-2">
+      <div className="flex flex-col w-full gap-y-5 mb-5 mt-10 text-center text-xs font-semibold">
+        <button
+          onClick={() => saveKanban()}
+          className="px-3 py-2 rounded-md shadow-md bg-gradient-to-r from-lime-200 to-green-200 underline"
+        >
+          save
+        </button>
         <button
           onClick={() => {
             setType(null);
             setAddNewEvent(false);
           }}
-          className="p-3 rounded-full shadow-md bg-gradient-to-r from-red-300 to-red-200"
+          className="px-3 py-2 rounded-md shadow-md bg-gradient-to-tr from-red-200 to-rose-200 underline"
         >
-          <MdCancel />
-        </button>
-        <button
-          onClick={() => saveKanban()}
-          className="rounded-full p-3 shadow-md bg-gradient-to-r from-green-300 to-green-200 mt-5"
-        >
-          <BsFillSaveFill />
+          cancel
         </button>
       </div>
     </div>
