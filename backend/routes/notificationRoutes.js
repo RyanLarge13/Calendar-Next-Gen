@@ -19,5 +19,6 @@ notifRouter.post("/add/subscription", auth, addSubscriptionToUser)
 notifRouter.post("/mark-as-read", markAsRead)
 notifRouter.patch("/:username/update/notif", auth, updateNotification);
 notifRouter.delete("/notification/:notifId", auth, deleteNotification);
+notifRouter.delete("/delete-notif/notification/:notifId", deleteNotification);
 
 export default notifRouter;
