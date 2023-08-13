@@ -26,7 +26,7 @@ const Options = ({ setOption }) => {
           <p>Calendar</p>
           <AiFillCalendar />
         </div>
-        <div className="my-2 p-2 flex justify-between items-center rounded-md shadow-sm">
+        <div className="my-2 p-2 flex justify-between items-center rounded-md shadow-sm" onClick={() => setOption("settings")}>
           <p>Settings</p>
           <FaCogs />
         </div>

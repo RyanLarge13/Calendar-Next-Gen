@@ -8,6 +8,7 @@ import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
 import Notification from "./Notification";
 import Options from "./Options";
+import Settings from "./Settings"
 import Connections from "./Connections";
 
 const LoginLogout = () => {
@@ -133,6 +134,7 @@ const LoginLogout = () => {
   return (
     <>
       {option === "connections" && <Connections />}
+      {option === "settings" && <Settings />}
       <Notification idsToUpdate={idsToUpdate} setIdsToUpdate={setIdsToUpdate} />
       <AnimatePresence>
         {showLogin && (
