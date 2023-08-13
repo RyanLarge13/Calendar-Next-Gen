@@ -26,7 +26,7 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
-    }, 
+    },
     {
       "src": "android/android-launchericon-512-512.png",
       "sizes": "512x512",
@@ -35,23 +35,28 @@
     }
   ],
   "dir": "ltr",
-  "display_override": [
-    "window-controls-overlay",
-    "standalone"
-  ],
-  "categories": [
-    "business",
-    "lifestyle",
-    "productivity",
-    "utilities"
-  ],
-  "share_target": {
-    "method": "GET",
-    "action": "https://calng.app",
-    "params": {
+  "display_override": ["window-controls-overlay", "standalone"],
+  "categories": ["business", "lifestyle", "productivity", "utilities"],
+  "actions": [
+    {
+      "action": "share",
       "title": "Calng",
-      "text": "Get productive!",
-      "url": "https://calng.app"
+      "icons": [
+        {
+          "src": "android/android-launchericon-192-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ],
+      "share_target": {
+        "action": "send",
+        "method": "GET",
+        "params": {
+          "title": "Calng",
+          "text": "Get productive!",
+          "url": "https://calng.app"
+        }
+      }
     }
-  }
+  ]
 }

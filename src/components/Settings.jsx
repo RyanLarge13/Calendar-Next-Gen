@@ -1,5 +1,9 @@
 const Settings = () => {
-  return <div className="inset-0 z-[900] bg-white"></div>
+  return (
+    <div className="fixed inset-0 bg-white z-50">
+      <p>Settings</p>
+    </div>
+  );
 };
 
 export default Settings;
