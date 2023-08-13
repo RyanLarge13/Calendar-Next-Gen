@@ -94,13 +94,25 @@ const MonthView = () => {
   //     .catch((err) => console.log(err));
   // };
 
-  const getIcon = (weatherCode) => {
-    for (const aCode of weatherCodes) {
-      if (aCode.codes.includes(weatherCode)) {
-        return aCode.icon;
-      }
+  // const getIcon = (weatherCode) => {
+  //     for (const aCode of weatherCodes) {
+  //       if (aCode.codes.includes(weatherCode)) {
+  //         return aCode.icon;
+  //       }
+  //     }
+  //     return null;
+  //   };
+
+  const getWidthAndZ = (start, end) => {
+    if (!start || !end) {
+      return "w-[13vw]";
     }
-    return null;
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    const timeDifference = endDate - startDate;
+    const daysDifference = timeDifference / (1000 * 3600 * 24);
+    console.log(daysDifference,endDate)
+    return `w-[${Math.abs(daysDifference * 14)}vw] z-10`;
   };
 
   const addEvent = (date) => {
@@ -191,7 +203,12 @@ const MonthView = () => {
                         stiffness: 200,
                       },
                     }}
-                    className={`rounded-lg ${event.color} shadow-md p-1 w-[95%] my-1 mx-auto`}
+                    className={`rounded-lg ${
+                      event.color
+                    } shadow-md p-1 my-1 mx-auto fixed  ${getWidthAndZ(
+                      event.start.startTime,
+                      event.end.endTime
+                    )}`}
                   >
                     <p
                       className={`whitespace-nowrap text-xs overflow-hidden ${
