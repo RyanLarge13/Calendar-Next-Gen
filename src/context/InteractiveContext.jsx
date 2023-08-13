@@ -12,6 +12,7 @@ export const InteractiveProvider = ({ children }) => {
   const [type, setType] = useState(null);
   const [listUpdate, setListUpdate] = useState([]);
   const [event, setEvent] = useState(null);
+  const [showCategory, setShowCategory] = useState(null);
 
   return (
     <InteractiveContext.Provider
@@ -24,8 +25,10 @@ export const InteractiveProvider = ({ children }) => {
         showNotifs,
         listUpdate,
         event,
-        filters, 
-        setFilters, 
+        filters,
+        showCategory,
+        setShowCategory,
+        setFilters,
         setEvent,
         setListUpdate,
         setShowNotifs,

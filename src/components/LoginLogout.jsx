@@ -8,6 +8,7 @@ import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
 import Notification from "./Notification";
 import Options from "./Options";
+import Connections from "./Connections";
 
 const LoginLogout = () => {
   const { showLogin, setShowLogin, showNotifs, setShowNotifs } =
@@ -35,6 +36,7 @@ const LoginLogout = () => {
   const [validPassword, setValidPassword] = useState(null);
   const [unReadLength, setUnReadLength] = useState(0);
   const [idsToUpdate, setIdsToUpdate] = useState([]);
+  const [option, setOption] = useState(null);
 
   useEffect(() => {
     if (idsToUpdate.length > 0) {
@@ -130,6 +132,7 @@ const LoginLogout = () => {
 
   return (
     <>
+      {option === "connections" && <Connections />}
       <Notification idsToUpdate={idsToUpdate} setIdsToUpdate={setIdsToUpdate} />
       <AnimatePresence>
         {showLogin && (
@@ -151,7 +154,7 @@ const LoginLogout = () => {
               className="p-3 fixed bottom-0 left-0 right-0 rounded-md shadow-md bg-white z-10"
             >
               {user ? (
-                <div className="">
+                <div>
                   <div className="flex justify-between items-center bg-cyan-100 rounded-md shadow-md p-2 mb-5">
                     <BiLogOutCircle
                       onClick={() => {
@@ -200,7 +203,7 @@ const LoginLogout = () => {
                       <p>{user.email}</p>
                     </a>
                   </div>
-                  <Options />
+                  <Options setOption={setOption} />
                 </div>
               ) : (
                 <div className="">

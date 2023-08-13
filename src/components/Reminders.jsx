@@ -91,7 +91,7 @@ const Reminders = () => {
 
   return (
     <motion.div className="p-3">
-      <div className="sticky top-0 right-0 left-0 p-3 mb-5 w-full flex justify-between items-center gap-x-3 rounded-md shadow-md bg-white z-20">
+      {/* <div className="sticky top-1 right-0 left-0 p-3 mb-5 w-full flex justify-between items-center gap-x-3 rounded-md shadow-md bg-white z-20">
         <IoIosAlarm />
         <AiOutlinePlus
           onClick={() => {
@@ -101,7 +101,7 @@ const Reminders = () => {
             setType("reminder");
           }}
         />
-      </div>
+      </div> */}
       {reminders.length < 1 && (
         <div className="rounded-md p-3 shadow-md mb-5">
           <h2 className="font-semibold">No Upcomming Reminders</h2>
