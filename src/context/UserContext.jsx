@@ -184,7 +184,7 @@ export const UserProvider = ({ children }) => {
           getReminders(res.data.user.username, authToken)
             .then((response) => {
               const sortedReminders = response.data.reminders.sort(
-                (a, b) => b.time - a.time
+                (a, b) => new Date(a.time) - new Date(b.time)
               );
               setReminders(sortedReminders);
             })
