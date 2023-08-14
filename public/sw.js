@@ -38,6 +38,7 @@ self.addEventListener("push", (event) => {
       icon: "./favicon.svg",
       badge: "./badge.svg",
       vibrate: [100, 100, 100],
+      tag: "reminder", 
       actions: [
         { action: "delete-notif", title: "Delete" },
         { action: "mark-as-read", title: "Mark as Read" },
@@ -105,6 +106,21 @@ self.addEventListener("notificationclick", (event, payload) => {
     );
   }
 });
+
+self.addEventListener("message", (event) => {
+  if (event.data.command === "closeNotifications") {
+    closeOpenNotifications();
+  }
+});
+
+const closeOpenNotifications = () => {
+  // Get a list of open notifications
+  self.registration.getNotifications().then((notifications) => {
+    notifications.forEach((notification) => {
+      notification.close();
+    });
+  });
+};
 
 //backgorun and periodic sync
 self.addEventListener("sync", (event) => {
