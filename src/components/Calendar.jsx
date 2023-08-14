@@ -1,9 +1,10 @@
-import { useState, useContext, memo, useEffect } from "react";
+import { useState, useContext, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Dna } from "react-loader-spinner";
 import Modal from "./Modal";
 import ModalHeader from "./ModalHeader";
 import Menu from "./Menu";
+import LoginLogout from "./LoginLogout";
 import Event from "./Event";
 import MonthView from "./MonthView";
 import DayView from "./DayView";
@@ -108,10 +109,11 @@ const Calendar = () => {
         {openModal && <ModalHeader allDayEvents={allDayEvents} />}
         <Modal />
         <Menu />
+        <LoginLogout />
         {event && <Event dayEvents={todaysEvents} />}
       </section>
     </main>
   );
 };
 
-export default memo(Calendar);
+export default Calendar;

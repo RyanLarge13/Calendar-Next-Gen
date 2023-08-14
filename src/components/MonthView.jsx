@@ -103,17 +103,21 @@ const MonthView = () => {
   //     return null;
   //   };
 
-  const getWidthAndZ = (start, end) => {
-    if (!start || !end) {
-      return "w-[13vw]";
-    }
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-    const timeDifference = endDate - startDate;
-    const daysDifference = timeDifference / (1000 * 3600 * 24);
-    console.log(daysDifference,endDate)
-    return `w-[${Math.abs(daysDifference * 14)}vw] z-10`;
-  };
+  // const getWidthAndZ = (start, end) => {
+  //   if (!start || !end) {
+  //     return 13;
+  //   }
+  //   const startDate = new Date(start);
+  //   const endDate = new Date(end);
+  //   const timeDifference = endDate - startDate;
+  //   const daysDifference =
+  //     (Math.floor(timeDifference / (1000 * 3600 * 24)) + 1) * 13;
+  //   // console.log(daysDifference);
+  //   if (daysDifference === 0) {
+  //     return 13;
+  //   }
+  //   return daysDifference;
+  // };
 
   const addEvent = (date) => {
     setMenu(false);
@@ -138,7 +142,7 @@ const MonthView = () => {
           }
           key={index}
           style={getCellStyle(index)}
-          className={`relative w-full rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start gap-y-1 overflow-hidden cursor-pointer ${
+          className={`relative w-full rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start gap-y-1 cursor-pointer ${
             index - paddingDays + 1 === day &&
             month === new Date().getMonth() &&
             year === new Date().getFullYear() &&
@@ -186,7 +190,7 @@ const MonthView = () => {
                   />
                 )
             )} */}
-          <div className="w-full absolute inset-0 pt-8">
+          <div className="w-full absolute inset-0 pt-8 overflow-y-clip">
             {[...events, ...holidays].map(
               (event) =>
                 new Date(event.date).toLocaleDateString() ===
@@ -203,12 +207,14 @@ const MonthView = () => {
                         stiffness: 200,
                       },
                     }}
-                    className={`rounded-lg ${
-                      event.color
-                    } shadow-md p-1 my-1 mx-auto fixed  ${getWidthAndZ(
-                      event.start.startTime,
-                      event.end.endTime
-                    )}`}
+                    // style={{
+                    //   width: `${getWidthAndZ(
+                    //     event.start?.startTime,
+                    //     event.end?.endTime
+                    //   )}vw`,
+                    // }}
+                    // className={`rounded-lg ${event.color} z-10 left-1 shadow-md p-1 my-1 mx-auto sticky`}
+                    className={`rounded-lg ${event.color} z-10 left-1 shadow-md p-1 my-1 mx-auto`}
                   >
                     <p
                       className={`whitespace-nowrap text-xs overflow-hidden ${

@@ -6,7 +6,6 @@ import {
   BsFillArrowLeftCircleFill,
   BsThreeDotsVertical,
 } from "react-icons/bs";
-import LoginLogout from "./LoginLogout";
 import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
 import DatesContext from "../context/DatesContext";
@@ -123,7 +122,6 @@ const Header = () => {
               />
             )}
           </div>
-          <LoginLogout />
         </motion.header>
       )}
     </>

@@ -1,8 +1,7 @@
-import { useState, useContext, useRef, useEffect } from "react";
+import { useState, useContext, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Reminders from "./Reminders.jsx";
 import Lists from "./Lists.jsx";
-import MenuNavigation from "./MenuNavigation.jsx";
 import InteractiveContext from "../context/InteractiveContext";
 import { updateList } from "../utils/api.js";
 import UserContext from "../context/UserContext.jsx";
@@ -69,7 +68,7 @@ const Menu = () => {
             opacity: 1,
           }}
           exit={{ x: "-100%", opacity: 0 }}
-          className="fixed inset-0 pt-40 pb-10 px-5 rounded-md bg-white shadow-md overflow-auto"
+          className="fixed inset-0 pt-40 z-10 pb-10 px-5 rounded-md bg-white shadow-md overflow-auto"
         >
           {showCategory === null && (
             <AnimatePresence>
