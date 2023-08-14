@@ -10,14 +10,20 @@ import { BsFillCalendarDayFill } from "react-icons/bs";
 const WeekView = () => {
   const { events, holidays } = useContext(UserContext);
   const { setEvent, setAddNewEvent, setType } = useContext(InteractiveContext);
-  const { currentWeek, setCurrentWeek, string, setString, setOpenModal } =
-    useContext(DatesContext);
+  const {
+    currentWeek,
+    setCurrentWeek,
+    string,
+    setString,
+    setOpenModal,
+    dateObj,
+  } = useContext(DatesContext);
 
   const [weeklyEvents, setWeeklyEvents] = useState([]);
   const dateContainerRefs = useRef([]);
   const containerWidth = useRef(null);
 
-  const currentWeekday = new Date().getDay();
+  const currentWeekday = dateObj.getDay();
 
   useEffect(() => {
     const matchingEvents = currentWeek.map((weekDay) =>

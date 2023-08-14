@@ -2,14 +2,16 @@ import { useState, useContext, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Reminders from "./Reminders.jsx";
 import Lists from "./Lists.jsx";
-import InteractiveContext from "../context/InteractiveContext";
 import { updateList } from "../utils/api.js";
+import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext.jsx";
+import DatesContext from "../context/DatesContext.jsx";
 
 const Menu = () => {
   const { menu, listUpdate, setListUpdate, showCategory } =
     useContext(InteractiveContext);
   const { lists, setLists, user } = useContext(UserContext);
+  const { dateObj } = useContext(DatesContext);
 
   const [timeOfDay, setTimeOfDay] = useState(null);
 
@@ -30,7 +32,7 @@ const Menu = () => {
   }, [menu]);
 
   useEffect(() => {
-    const hours = new Date().getHours();
+    const hours = dateObj.getHours();
     if (hours < 12) {
       setTimeOfDay("Good Morning");
     }

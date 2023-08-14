@@ -36,7 +36,7 @@ const Header = () => {
         <MenuNavigation />
       ) : (
         <motion.header
-          initial={{ y: -200 }}
+          initial={{ y: "-100%" }}
           animate={{ y: 0 }}
           className="fixed top-0 left-0 right-0 bg-white z-[1] flex justify-between p-5 mb-5 shadow-md"
         >

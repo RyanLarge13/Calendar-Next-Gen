@@ -3,10 +3,12 @@ import { motion } from "framer-motion";
 import Masonry from "react-masonry-css";
 import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
+import DatesContext from "../context/DatesContext";
 
 const MasonryView = () => {
   const { events, holidays, reminders } = useContext(UserContext);
   const { setEvent } = useContext(InteractiveContext);
+  const { dateObj } = useContext(DatesContext);
 
   const [uniqueDates, setUniqueDates] = useState([]);
   const [shouldScroll, setShouldScroll] = useState(false);
@@ -33,13 +35,10 @@ const MasonryView = () => {
 
   useEffect(() => {
     if (uniqueDates.length > 0) {
-      const currentDate = new Date();
       const closestDate = uniqueDates.reduce((a, b) => {
         const dateA = new Date(a);
         const dateB = new Date(b);
-        return Math.abs(dateA - currentDate) < Math.abs(dateB - currentDate)
-          ? a
-          : b;
+        return Math.abs(dateA - dateObj) < Math.abs(dateB - dateObj) ? a : b;
       });
       // Update the closestDateRef with the ref to the element representing the closest date
       const element = document.getElementById(closestDate);
@@ -49,16 +48,6 @@ const MasonryView = () => {
       }
     }
   }, [uniqueDates]);
-
-  // useEffect(() => {
-  //   // Step 4: Scroll to the closest date element on component mount
-  //   if (closestDateRef.current && shouldScroll) {
-  //     closestDateRef.current.scrollIntoView({
-  //       behavior: "smooth",
-  //       block: "start",
-  //     });
-  //   }
-  // }, [shouldScroll]);
 
   useEffect(() => {
     // Step 4: Scroll to the closest date element on component mount
