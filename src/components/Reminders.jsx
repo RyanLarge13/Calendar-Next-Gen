@@ -1,6 +1,4 @@
-import { useState, useContext, useEffect } from "react";
-import { IoIosAlarm } from "react-icons/io";
-import { AiOutlinePlus } from "react-icons/ai";
+import { useState, useContext } from "react";
 import { BiAlarmSnooze } from "react-icons/bi";
 import { BsFillPenFill } from "react-icons/bs";
 import { motion } from "framer-motion";
@@ -8,27 +6,23 @@ import { deleteReminder } from "../utils/api.js";
 import { formatTime } from "../utils/helpers.js";
 import UserContext from "../context/UserContext.jsx";
 import DatesContext from "../context/DatesContext.jsx";
-import InteractiveContext from "../context/InteractiveContext.jsx";
 import { BsAlarmFill } from "react-icons/bs";
 
 const Reminders = () => {
   const { reminders, setReminders, user } = useContext(UserContext);
-  const { setType, setAddNewEvent } = useContext(InteractiveContext);
-  const { setOpenModal, setString } = useContext(DatesContext);
+  const { dateObj } = useContext(DatesContext);
 
   const [selected, setSelected] = useState([]);
   const [selectable, setSelectable] = useState(false);
   let timeout;
 
   const calcWidth = (time) => {
-    if (
-      new Date(time).toLocaleDateString() !== new Date().toLocaleDateString()
-    ) {
+    if (new Date(time).toLocaleDateString() !== dateObj.toLocaleDateString()) {
       return 0;
     }
-    const nowMinutes = new Date().getMinutes();
+    const nowMinutes = dateObj.getMinutes();
     const reminderMinutes = new Date(time).getMinutes();
-    const nowHours = new Date().getHours() * 60;
+    const nowHours = dateObj.getHours() * 60;
     const reminderHours = new Date(time).getHours() * 60;
     const reminderTime = reminderMinutes + reminderHours;
     const now = nowMinutes + nowHours;
@@ -91,7 +85,7 @@ const Reminders = () => {
 
   return (
     <motion.div className="p-3">
-      <div className="sticky top-0 right-0 left-0 p-3 mb-5 w-full flex justify-between items-center gap-x-3 rounded-md shadow-md bg-white z-20">
+      {/* <div className="sticky top-1 right-0 left-0 p-3 mb-5 w-full flex justify-between items-center gap-x-3 rounded-md shadow-md bg-white z-20">
         <IoIosAlarm />
         <AiOutlinePlus
           onClick={() => {
@@ -101,7 +95,7 @@ const Reminders = () => {
             setType("reminder");
           }}
         />
-      </div>
+      </div> */}
       {reminders.length < 1 && (
         <div className="rounded-md p-3 shadow-md mb-5">
           <h2 className="font-semibold">No Upcomming Reminders</h2>
@@ -124,10 +118,10 @@ const Reminders = () => {
             }
             key={reminder.id}
             className={`${
-              new Date(reminder.time) < new Date()
+              new Date(reminder.time) < dateObj
                 ? "bg-teal-200"
                 : new Date(reminder.time).toLocaleDateString() ===
-                  new Date().toLocaleDateString()
+                  dateObj.toLocaleDateString()
                 ? ""
                 : "bg-slate-200"
             } p-2 relative rounded-md my-5`}

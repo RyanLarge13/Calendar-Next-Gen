@@ -1,7 +1,5 @@
 import { useState, useContext } from "react";
 import { addReminder } from "../utils/api";
-import { MdCancel } from "react-icons/md";
-import { BsFillSaveFill } from "react-icons/bs";
 import Toggle from "./Toggle";
 import TimeSetter from "./TimeSetter";
 import InteractiveContext from "../context/InteractiveContext";

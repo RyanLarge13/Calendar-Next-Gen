@@ -6,8 +6,8 @@ import { calendar } from "../motion";
 import DatesContext from "../context/DatesContext";
 import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
-import Axios from "axios";
-import { Sunny, Cloudy, Windy, Stormy, Rainy, Foggy } from "../assets";
+// import Axios from "axios";
+// import { Sunny, Cloudy, Windy, Stormy, Rainy, Foggy } from "../assets";
 
 const MonthView = () => {
   const { events } = useContext(UserContext);
@@ -19,14 +19,17 @@ const MonthView = () => {
     year,
     day,
     rowDays,
-    columnDays,
     dateString,
     setOpenModal,
     setString,
+    dateObj,
   } = useContext(DatesContext);
 
-  const [weatherData, setWeatherData] = useState([]);
+  // const [weatherData, setWeatherData] = useState([]);
+  const [selected, setSelected] = useState([]);
+  // const [selectable, setSelectable] = useState(false);
 
+  let timeout;
   // useEffect(() => {
   //   navigator.geolocation.getCurrentPosition((position) => {
   //     const long = position.coords.longitude;
@@ -36,11 +39,10 @@ const MonthView = () => {
   // }, []);
 
   const getCellStyle = (index) => {
-    const currentDate = new Date();
     const targetDate = new Date(dateString);
     const isSameMonthAndYear =
-      targetDate.getMonth() === currentDate.getMonth() &&
-      targetDate.getFullYear() === currentDate.getFullYear();
+      targetDate.getMonth() === dateObj.getMonth() &&
+      targetDate.getFullYear() === dateObj.getFullYear();
     if (
       isSameMonthAndYear &&
       rowDays.includes(index)
@@ -94,16 +96,73 @@ const MonthView = () => {
   //     .catch((err) => console.log(err));
   // };
 
-  const getIcon = (weatherCode) => {
-    for (const aCode of weatherCodes) {
-      if (aCode.codes.includes(weatherCode)) {
-        return aCode.icon;
-      }
-    }
-    return null;
+  // const getIcon = (weatherCode) => {
+  //     for (const aCode of weatherCodes) {
+  //       if (aCode.codes.includes(weatherCode)) {
+  //         return aCode.icon;
+  //       }
+  //     }
+  //     return null;
+  //   };
+
+  // const getWidthAndZ = (start, end) => {
+  //   if (!start || !end) {
+  //     return 13;
+  //   }
+  //   const startDate = new Date(start);
+  //   const endDate = new Date(end);
+  //   const timeDifference = endDate - startDate;
+  //   const daysDifference =
+  //     (Math.floor(timeDifference / (1000 * 3600 * 24)) + 1) * 13;
+  //   // console.log(daysDifference);
+  //   if (daysDifference === 0) {
+  //     return 13;
+  //   }
+  //   return daysDifference;
+  // };
+
+  const getEventsForDate = (targetDate) => {
+    return [...events, ...holidays].filter(
+      (event) => new Date(event.date).toLocaleDateString() === targetDate
+    );
   };
 
-  const addEvent = (date) => {
+  // const startSelect = (index) => {
+  //   timeout = setTimeout(() => {
+  //     setSelectable(true);
+  //     const includes = selected.includes(index);
+  //     if (includes) {
+  //       const newSelected = selected.filter((item) => item !== index);
+  //       setSelected(newSelected);
+  //     }
+  //     if (!includes) {
+  //       setSelected((prev) => [...prev, index]);
+  //     }
+  //   }, 1250);
+  // };
+
+  // const checkIfSelectable = () => {
+  //   if (selectable) {
+  //     return;
+  //   }
+  //   if (!selectable) {
+  //     clearTimeout(timeout);
+  //     setSelectable(false);
+  //   }
+  // };
+
+  const addEvent = (date, index) => {
+    // if (selectable) {
+    //   const includes = selected.includes(index);
+    //   if (includes) {
+    //     const newSelected = selected.filter((item) => item !== index);
+    //     setSelected(newSelected);
+    //   }
+    //   if (!includes) {
+    //     setSelected((prev) => [...prev, index]);
+    //   }
+    //   return;
+    // }
     setMenu(false);
     setShowLogin(false);
     setOpenModal(true);
@@ -117,33 +176,40 @@ const MonthView = () => {
       animate="show"
       className="grid grid-cols-7 min-h-[50vh] h-[76vh] gap-1"
     >
-      {[...Array(paddingDays + daysInMonth)].map((abs, index) => (
-        <motion.div
-          variants={calendarBlocks}
-          onClick={() =>
-            index >= paddingDays &&
-            addEvent(`${month + 1}/${index - paddingDays + 1}/${year}`)
-          }
-          key={index}
-          style={getCellStyle(index)}
-          className={`relative w-full rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start gap-y-1 overflow-hidden cursor-pointer ${
-            index - paddingDays + 1 === day &&
-            month === new Date().getMonth() &&
-            year === new Date().getFullYear() &&
-            "shadow-cyan-400 shadow-md"
-          }`}
-        >
-          <div
-            className={`text-center text-sm my-1 ${
-              index - paddingDays + 1 === day &&
-              month === new Date().getMonth() &&
-              year === new Date().getFullYear() &&
-              "w-[25px] h-[25px] rounded-full bg-cyan-100 shadow-sm"
+      {[...Array(paddingDays + daysInMonth)].map((abs, index) => {
+        const isCurrentDate =
+          index - paddingDays + 1 === day &&
+          month === dateObj.getMonth() &&
+          year === dateObj.getFullYear();
+        const dateStr = `${month + 1}/${index - paddingDays + 1}/${year}`;
+        const eventsForDate = getEventsForDate(dateStr);
+
+        return (
+          <motion.div
+            variants={calendarBlocks}
+            onClick={() =>
+              index >= paddingDays &&
+              addEvent(`${month + 1}/${index - paddingDays + 1}/${year}`, index)
+            }
+            // onPointerDown={() => startSelect(index)}
+            // onPointerUp={() => checkIfSelectable()}
+            key={index}
+            style={getCellStyle(index)}
+            className={`relative w-full rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start gap-y-1 cursor-pointer ${
+              isCurrentDate && "shadow-cyan-400 shadow-md"
             }`}
           >
-            <p>{index >= paddingDays && index - paddingDays + 1}</p>
-          </div>
-          {/* {weatherData.length > 0 &&
+            <div
+              className={`text-center text-sm my-1 ${
+                index - paddingDays + 1 === day &&
+                month === dateObj.getMonth() &&
+                year === dateObj.getFullYear() &&
+                "w-[25px] h-[25px] rounded-full bg-cyan-100 shadow-sm"
+              }`}
+            >
+              <p>{index >= paddingDays && index - paddingDays + 1}</p>
+            </div>
+            {/* {weatherData.length > 0 &&
             weatherData[0].dates.map(
               (time, i) =>
                 new Date(time).toLocaleDateString() ===
@@ -174,38 +240,48 @@ const MonthView = () => {
                   />
                 )
             )} */}
-          <div className="w-full absolute inset-0 pt-8">
-            {[...events, ...holidays].map(
-              (event) =>
-                new Date(event.date).toLocaleDateString() ===
-                  `${month + 1}/${index - paddingDays + 1}/${year}` && (
-                  <motion.div
-                    key={event.id}
-                    initial={{ opacity: 0, y: -50 }}
-                    animate={{
-                      opacity: 1,
-                      y: 0,
-                      transition: {
-                        delay: 0.8,
-                        type: "spring",
-                        stiffness: 200,
-                      },
-                    }}
-                    className={`rounded-lg ${event.color} shadow-md p-1 w-[95%] my-1 mx-auto`}
+            <div
+              className={`w-full absolute inset-0 pt-8 overflow-y-clip ${
+                selected.includes(index)
+                  ? "bg-cyan-100 bg-opacity-50"
+                  : "bg-transparent"
+              }`}
+            >
+              {eventsForDate.map((event) => (
+                <motion.div
+                  key={event.id}
+                  initial={{ opacity: 0, y: -50 }}
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                    transition: {
+                      delay: 0.5,
+                      type: "spring",
+                      stiffness: 200,
+                    },
+                  }}
+                  // style={{
+                  //   width: `${getWidthAndZ(
+                  //     event.start?.startTime,
+                  //     event.end?.endTime
+                  //   )}vw`,
+                  // }}
+                  // className={`rounded-lg ${event.color} z-10 left-1 shadow-md p-1 my-1 mx-auto sticky`}
+                  className={`rounded-lg ${event.color} z-10 left-1 shadow-md p-1 my-1 mx-auto`}
+                >
+                  <p
+                    className={`whitespace-nowrap text-xs overflow-hidden ${
+                      event.color === "bg-black" ? "text-white" : "text-black"
+                    }`}
                   >
-                    <p
-                      className={`whitespace-nowrap text-xs overflow-hidden ${
-                        event.color === "bg-black" ? "text-white" : "text-black"
-                      }`}
-                    >
-                      {event.summary}
-                    </p>
-                  </motion.div>
-                )
-            )}
-          </div>
-        </motion.div>
-      ))}
+                    {event.summary}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        );
+      })}
     </motion.div>
   );
 };

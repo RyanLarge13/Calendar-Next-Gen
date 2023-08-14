@@ -14,18 +14,17 @@ import AddTask from "./AddTask";
 
 const Modal = () => {
   const { events, holidays } = useContext(UserContext);
-  const { string, setOpenModal, openModal } = useContext(DatesContext);
-  const { addNewEvent, setAddNewEvent, type, setType, event, setEvent } =
+  const { string, setOpenModal, openModal, dateObj } = useContext(DatesContext);
+  const { addNewEvent, setAddNewEvent, type, setType } =
     useContext(InteractiveContext);
 
   const [dayEvents, setDayEvents] = useState([]);
-  const [allDayEvents, setAllDayEvents] = useState([]);
   const [addEventWithStartTime, setAddEventWithStartTime] = useState(null);
   const modalRef = useRef(0);
 
   useEffect(() => {
-    if (string === new Date().toLocaleDateString()) {
-      const todaysHours = new Date().getHours();
+    if (string === dateObj.toLocaleDateString()) {
+      const todaysHours = dateObj.getHours();
       !addNewEvent
         ? modalRef.current.scrollTo(0, todaysHours * 237)
         : modalRef.current.scrollTo(0, 0);
@@ -42,7 +41,7 @@ const Modal = () => {
           new Date(event.start.startTime).getHours() <=
           23
     );
-    if (string !== new Date().toLocaleDateString() && timedEvents.length > 0) {
+    if (string !== dateObj.toLocaleDateString() && timedEvents.length > 0) {
       const firstEventHour = new Date(
         timedEvents[0]?.start?.startTime
       ).getHours();

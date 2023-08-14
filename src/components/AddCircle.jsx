@@ -11,16 +11,22 @@ import {
   BsXCircleFill,
   BsFillClipboardDataFill,
   BsListTask,
+  BsFillShareFill,
+  BsFillTrashFill,
+  BsSearch,
 } from "react-icons/bs";
+import { BiCategoryAlt } from "react-icons/bi";
+import { IoIosAddCircle } from "react-icons/io";
 import InteractiveContext from "../context/InteractiveContext";
 import DatesContext from "../context/DatesContext";
 
 export const AddCircle = () => {
-  const { setAddNewEvent, setMenu, type, setType, showLogin } =
+  const { setAddNewEvent, setMenu, type, setType, showLogin, menu } =
     useContext(InteractiveContext);
-  const { setOpenModal, setString, string } = useContext(DatesContext);
+  const { setOpenModal, setString, string, dateObj } = useContext(DatesContext);
 
   const [show, setShow] = useState(false);
+  const [showMenuBtns, setShowMenuBtns] = useState(false);
 
   useEffect(() => {
     if (showLogin) {
@@ -30,7 +36,7 @@ export const AddCircle = () => {
 
   const openModalAndSetType = (type) => {
     if (!string) {
-      setString(new Date().toLocaleDateString());
+      setString(dateObj.toLocaleDateString());
     }
     setShow(false);
     setType(type);
@@ -41,20 +47,75 @@ export const AddCircle = () => {
 
   return (
     <>
-      <motion.div
-        // initial={{ bottom: 20, right: 20 }}
-        // animate={
-        //   type === null ? { bottom: 20, right: 20 } : { bottom: 80, left: 20 }
-        // }
-        onClick={() => setShow((prev) => !prev)}
-        className={`fixed w-[40px] h-[40px] z-[700] ${
-          showLogin || type !== null
-            ? "opacity-0 pointer-events-none"
-            : "opacity-100 pointer-events-auto"
-        } p-3 rounded-full cursor-pointer flex justify-center items-center bg-gradient-to-tr right-5 bottom-5 from-lime-200 to-yellow-100 shadow-md`}
-      >
-        {show ? <BsXCircleFill /> : <BsFillCalendarPlusFill />}
-      </motion.div>
+      {menu ? (
+        <>
+          <div
+            onClick={() => setShowMenuBtns((prev) => !prev)}
+            className="fixed w-[40px] h-[40px] z-[700] p-3 rounded-full cursor-pointer flex justify-center items-center bg-gradient-to-tr right-5 bottom-5 from-lime-200 to-yellow-100 shadow-md"
+          >
+            <BiCategoryAlt />
+          </div>
+          <motion.div
+            onClick={() => {}}
+            initial={{ opacity: 0 }}
+            animate={
+              showMenuBtns
+                ? { x: -75, y: -45, scale: 1.25, opacity: 1 }
+                : { x: 0, y: 0, scale: 0 }
+            }
+            className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] right-5 bottom-5 bg-gradient-to-r from-pink-300 to-violet-200 shadow-md`}
+          >
+            <IoIosAddCircle />
+          </motion.div>
+          <motion.div
+            onClick={() => {}}
+            initial={{ opacity: 0 }}
+            animate={
+              showMenuBtns
+                ? { x: -40, y: -90, scale: 1.25, opacity: 1 }
+                : { x: 0, y: 0, scale: 0 }
+            }
+            className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] right-5 bottom-5 bg-gradient-to-r from-pink-300 to-violet-200 shadow-md`}
+          >
+            <BsFillTrashFill />
+          </motion.div>
+          <motion.div
+            onClick={() => {}}
+            initial={{ opacity: 0 }}
+            animate={
+              showMenuBtns
+                ? { x: 5, y: -120, scale: 1.25, opacity: 1 }
+                : { x: 0, y: 0, scale: 0 }
+            }
+            className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] right-5 bottom-5 bg-gradient-to-r from-pink-300 to-violet-200 shadow-md`}
+          >
+            <BsFillShareFill />
+          </motion.div>
+          <motion.div
+            onClick={() => {}}
+            initial={{ opacity: 0 }}
+            animate={
+              showMenuBtns
+                ? { x: -90, y: 5, scale: 1.25, opacity: 1 }
+                : { x: 0, y: 0, scale: 0 }
+            }
+            className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] right-5 bottom-5 bg-gradient-to-r from-pink-300 to-violet-200 shadow-md`}
+          >
+            <BsSearch />
+          </motion.div>
+        </>
+      ) : (
+        <motion.div
+          onClick={() => setShow((prev) => !prev)}
+          className={`fixed w-[40px] h-[40px] z-[700] ${
+            showLogin || type !== null
+              ? "opacity-0 pointer-events-none"
+              : "opacity-100 pointer-events-auto"
+          } p-3 rounded-full cursor-pointer flex justify-center items-center bg-gradient-to-tr right-5 bottom-5 from-lime-200 to-yellow-100 shadow-md`}
+        >
+          {show ? <BsXCircleFill /> : <BsFillCalendarPlusFill />}
+        </motion.div>
+      )}
       <motion.div
         onClick={() => openModalAndSetType("task")}
         initial={{ opacity: 0 }}

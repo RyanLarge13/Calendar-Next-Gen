@@ -4,11 +4,10 @@ import { weekDays } from "../constants";
 const DatesContext = createContext({});
 
 export const DatesProvider = ({ children }) => {
+  const dateObj = new Date();
   const [nav, setNav] = useState(0);
   const [dt, setDt] = useState(new Date());
   const [loading, setLoading] = useState(false);
-  const [end, setEnd] = useState(null);
-  const [diff, setDiff] = useState(0);
   const [open, setOpen] = useState(false);
   const [day, setDay] = useState(new Date().getDate());
   const [month, setMonth] = useState(dt.getMonth());
@@ -70,37 +69,22 @@ export const DatesProvider = ({ children }) => {
   useEffect(() => {
     setPaddingDays(weekDays.indexOf(dateString.split(", ")[0]));
     setLoading(false);
-    const day = new Date().getDate();
-    const dayOfWeek = new Date().getDay();
+    const day = dateObj.getDate();
+    const dayOfWeek = dateObj.getDay();
     const end = day + (6 - dayOfWeek) + paddingDays - 1;
     const start = day - dayOfWeek + paddingDays - 1;
     let rowDays = [];
     for (let i = start; i <= end; i++) {
       rowDays.push(i);
     }
-    let column = new Date().getDay();
-    let columnDays = [];
-    for (let i = column; i < 40; i++) {
-      if (
-        i === column ||
-        i === column + 7 ||
-        i === column + 14 ||
-        i === column + 21 ||
-        i === column + 28 ||
-        i === column + 35
-      ) {
-        columnDays.push(i);
-      }
-    }
-    setColumnDays(columnDays);
     setRowDays(rowDays);
   }, [dateString, paddingDays]);
 
   useEffect(() => {
-    const today = new Date();
-    const currentDay = today.getDay();
-    const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - currentDay);
+    // const today = new Date();
+    const currentDay = dateObj.getDay();
+    const startOfWeek = new Date(dateObj);
+    startOfWeek.setDate(dateObj.getDate() - currentDay);
 
     const week = [];
     for (let i = 0; i < 7; i++) {
@@ -123,7 +107,6 @@ export const DatesProvider = ({ children }) => {
         day,
         string,
         openModal,
-        diff,
         theDay,
         currentWeek,
         setCurrentWeek,
@@ -136,7 +119,7 @@ export const DatesProvider = ({ children }) => {
         setDay,
         dateString,
         rowDays,
-        columnDays,
+        dateObj,
       }}
     >
       {children}

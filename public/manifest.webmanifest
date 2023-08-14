@@ -7,7 +7,7 @@
   "lang": "en",
   "scope": "/",
   "description": "A next generation calendar application built for the orginized and busy",
-  "orientation": "natural",
+  "orientation": "portrait",
   "theme_color": "#ffffff",
   "serviceworker": "/sw.js",
   "icons": [
@@ -25,7 +25,38 @@
       "src": "android/android-launchericon-512-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "android/android-launchericon-512-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "dir": "ltr",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "categories": ["business", "lifestyle", "productivity", "utilities"],
+  "actions": [
+    {
+      "action": "share",
+      "title": "Calng",
+      "icons": [
+        {
+          "src": "android/android-launchericon-192-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ],
+      "share_target": {
+        "action": "send",
+        "method": "GET",
+        "params": {
+          "title": "Calng",
+          "text": "Get productive!",
+          "url": "https://calng.app"
+        }
+      }
     }
   ]
 }

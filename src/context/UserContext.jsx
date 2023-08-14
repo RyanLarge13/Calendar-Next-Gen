@@ -184,7 +184,7 @@ export const UserProvider = ({ children }) => {
           getReminders(res.data.user.username, authToken)
             .then((response) => {
               const sortedReminders = response.data.reminders.sort(
-                (a, b) => b.time - a.time
+                (a, b) => new Date(a.time) - new Date(b.time)
               );
               setReminders(sortedReminders);
             })
@@ -202,6 +202,7 @@ export const UserProvider = ({ children }) => {
         .catch((err) => {
           console.log(err);
         });
+      registerServiceWorkerSync();
     }
     if (!authToken && user) {
       localStorage.removeItem("authToken");
@@ -296,6 +297,18 @@ export const UserProvider = ({ children }) => {
     const request = indexedDB.open("myCalngDB", 1);
     const calngIndexDBManager = new IndexedDBManager(request);
     setLocalDB(calngIndexDBManager);
+  };
+
+  const registerServiceWorkerSync = () => {
+    navigator.serviceWorker.ready.then((registration) => {
+      if ("periodicSync" in registration) {
+        registration.periodicSync.register({
+          tag: "periodic-sync",
+          minInterval: 24 * 60 * 60 * 1000, // Minimum interval in milliseconds
+        });
+      }
+      return registration.sync.register("background-sync");
+    });
   };
 
   return (

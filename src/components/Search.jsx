@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useContext } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BsSearch } from "react-icons/bs";
 import InteractiveContext from "../context/InteractiveContext";

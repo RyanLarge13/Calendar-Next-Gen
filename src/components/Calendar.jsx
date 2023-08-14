@@ -1,9 +1,10 @@
-import { useState, useContext, memo, useEffect } from "react";
+import { useState, useContext, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Dna } from "react-loader-spinner";
 import Modal from "./Modal";
 import ModalHeader from "./ModalHeader";
 import Menu from "./Menu";
+import LoginLogout from "./LoginLogout";
 import Event from "./Event";
 import MonthView from "./MonthView";
 import DayView from "./DayView";
@@ -17,8 +18,16 @@ import UserContext from "../context/UserContext";
 const Calendar = () => {
   const { events, holidays, reminders, weekDays } = useContext(UserContext);
   const { menu, view, event } = useContext(InteractiveContext);
-  const { finish, loading, theDay, openModal, diff, dateString, string } =
-    useContext(DatesContext);
+  const {
+    finish,
+    loading,
+    theDay,
+    openModal,
+    diff,
+    dateString,
+    string,
+    dateObj,
+  } = useContext(DatesContext);
 
   const [todaysEvents, setTodaysEvents] = useState([]);
   const [todaysReminders, setTodaysReminder] = useState([]);
@@ -62,8 +71,8 @@ const Calendar = () => {
                 key={day}
                 className={`${
                   index === new Date().getDay() &&
-                  new Date(dateString).getMonth() === new Date().getMonth() &&
-                  new Date(dateString).getYear() === new Date().getYear()
+                  new Date(dateString).getMonth() === dateObj.getMonth() &&
+                  new Date(dateString).getYear() === dateObj.getYear()
                     ? "bg-cyan-400 bg-clip-text text-transparent font-semibold border-b-2 rounded-md"
                     : ""
                 } mx-2 text-center`}
@@ -94,24 +103,17 @@ const Calendar = () => {
               </div>
             </motion.div>
           ) : (
-            <div className="flex justify-center items-center">
-              {/* <Dna
-                visible={loading}
-                height="80"
-                width="80"
-                ariaLabel="dna-loading"
-                wrapperClass="dna-wrapper"
-              /> */}
-            </div>
+            <></>
           )}
         </section>
         {openModal && <ModalHeader allDayEvents={allDayEvents} />}
         <Modal />
         <Menu />
+        <LoginLogout />
         {event && <Event dayEvents={todaysEvents} />}
       </section>
     </main>
   );
 };
 
-export default memo(Calendar);
+export default Calendar;

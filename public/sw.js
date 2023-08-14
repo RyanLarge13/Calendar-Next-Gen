@@ -41,13 +41,13 @@ self.addEventListener("push", (event) => {
       actions: [
         { action: "delete-notif", title: "Delete" },
         { action: "mark-as-read", title: "Mark as Read" },
-        { action: "remind-me-later", title: "Resend +1h" },
       ],
     })
   );
 });
 
 self.addEventListener("notificationclick", (event, payload) => {
+  console.log(event, payload);
   if (event.action === "mark-as-read") {
     fetch("https://calendar-next-gen-production.up.railway.app/mark-as-read", {
       method: "POST",
@@ -86,27 +86,39 @@ self.addEventListener("notificationclick", (event, payload) => {
         event.notification.close();
         console.log(`Error marking notification as read: ${error}`);
       });
-  } 
-  if (event.action === "remind-me-later") {
-  	const reminderDelayInMinutes = 60;
-  const delayInMillis = reminderDelayInMinutes * 60 * 1000;
-  setTimeout(() => {
-    self.registration.showNotification(payload.title, {
-      body: payload.body,
-      icon: "./favicon.svg",
-      badge: "./badge.svg",
-      vibrate: [100, 100, 100],
-      actions: [
-        { action: "delete-notif", title: "Delete" },
-        { action: "mark-as-read", title: "Mark as Read" },
-        { action: "remind-me-later", title: "Resend +1h" },
-      ],
-    });
-  }, delayInMillis);
-  event.notification.close();
-  }
-  else {
+  } else {
     event.notification.close();
-    event.waitUntil(clients.openWindow("https://www.calng.app"));
+    event.waitUntil(
+      clients
+        .matchAll({
+          type: "window",
+          includeUncontrolled: true,
+        })
+        .then((clientList) => {
+          for (const client of clientList) {
+            if (client.url === "https://www.calng.app") {
+              return client.focus();
+            }
+          }
+          return clients.openWindow("https://www.calng.app");
+        })
+    );
   }
 });
+
+//backgorun and periodic sync
+self.addEventListener("sync", (event) => {
+  if (event.tag === "background-sync") {
+    event.waitUntil(backgroundSync()); // Call your sync function
+  }
+});
+
+self.addEventListener("periodicsync", (event) => {
+  if (event.tag === "periodic-sync") {
+    event.waitUntil(periodicSync()); // Call your periodic sync function
+  }
+});
+
+const backgroundSync = () => {};
+
+const periodicSync = () => {};

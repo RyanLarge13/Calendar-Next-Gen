@@ -33,13 +33,13 @@ const Lists = () => {
 
   return (
     <motion.div className="py-3 relative">
-      <div className="sticky top-0 right-0 left-0 p-3 mb-5 w-full flex justify-between items-center gap-x-3 rounded-md shadow-md bg-white z-20">
+      {/* <div className="sticky top-1 right-0 left-0 p-3 mb-5 w-full flex justify-between items-center gap-x-3 rounded-md shadow-md bg-white z-20">
         <BsListCheck />
         <div className="flex gap-x-3">
           <BsTrashFill />
           <AiOutlinePlus />
         </div>
-      </div>
+      </div> */}
       {lists.map((list) => (
         <div
           key={list.id}

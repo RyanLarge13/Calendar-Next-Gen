@@ -12,11 +12,13 @@ import { FaExternalLinkAlt } from "react-icons/fa";
 import { motion, useDragControls } from "framer-motion";
 import { fetchAttachments } from "../utils/api";
 import GoogleMaps from "./GoogleMaps";
-import InteractiveContext from "../context/InteractiveContext";
 import Masonry from "react-masonry-css";
+import InteractiveContext from "../context/InteractiveContext";
+import DatesContext from "../context/DatesContext";
 
 const Event = ({ dayEvents }) => {
   const { event, setEvent } = useContext(InteractiveContext);
+  const { dateObj } = useContext(DatesContext);
   const [open, setOpen] = useState(true);
   const [timeLeft, setTimeLeft] = useState(null);
   const [fetchedImages, setFetchedImages] = useState([]);
@@ -57,9 +59,9 @@ const Event = ({ dayEvents }) => {
         new Date().toLocaleDateString()
     ) {
       const startHourMinutes = new Date(event.start.startTime).getHours() * 60;
-      const nowHourMinutes = new Date().getHours() * 60;
+      const nowHourMinutes = dateObj.getHours() * 60;
       const startMinutes = new Date(event.start.startTime).getMinutes();
-      const nowMinutes = new Date().getMinutes();
+      const nowMinutes = dateObj.getMinutes();
       const totalMinutesToStart = startHourMinutes + startMinutes;
       timeLeftInterval = setInterval(() => {
         checkTimeLeft();
@@ -80,8 +82,8 @@ const Event = ({ dayEvents }) => {
     }
 
     const calcTimeIn = () => {
-      const currentHours = new Date().getHours();
-      const currentMinutes = new Date().getMinutes();
+      const currentHours = dateObj.getHours();
+      const currentMinutes = dateObj.getMinutes();
       const startHours = new Date(event.start.startTime).getHours();
       const startMinutes = new Date(event.start.startTime).getMinutes();
       const endHours = new Date(event.end.endTime).getHours();
@@ -107,9 +109,9 @@ const Event = ({ dayEvents }) => {
       const startHours = new Date(event.start.startTime).getHours();
       const startMinutes = new Date(event.start.startTime).getMinutes();
       const startSeconds = new Date(event.start.startTime).getSeconds();
-      const currentHours = new Date().getHours();
-      const currentMinutes = new Date().getMinutes();
-      const currentSeconds = new Date().getSeconds();
+      const currentHours = dateObj.getHours();
+      const currentMinutes = dateObj.getMinutes();
+      const currentSeconds = dateObj.getSeconds();
       const hoursLeft = startHours - currentHours;
       const minutesLeft = (currentMinutes - (startMinutes + 60)) * -1;
       const secondsLeft = (currentSeconds - (startSeconds + 60)) * -1;
@@ -120,8 +122,8 @@ const Event = ({ dayEvents }) => {
     };
 
     const calcTime = (start) => {
-      const currentHourMinutes = new Date().getHours() * 60;
-      const currentMinutes = new Date().getMinutes();
+      const currentHourMinutes = dateObj.getHours() * 60;
+      const currentMinutes = dateObj.getMinutes();
       const now = currentMinutes + currentHourMinutes;
       const first = start - now;
       const decimal = first / start;

@@ -1,9 +1,9 @@
-const Settings = () => {
+const Connections = () => {
   return (
     <div className="fixed inset-0 bg-white z-50">
-      <p>Settings</p>
+      <p>Connections</p>
     </div>
   );
 };
 
-export default Settings;
+export default Connections;
