@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { deleteNotification } from "../utils/api";
 import { formatTime } from "../utils/helpers";
 import { motion, AnimatePresence } from "framer-motion";
@@ -13,6 +13,16 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
   const { showNotifs } = useContext(InteractiveContext);
 
   const [notifOpen, setNotifOpen] = useState("");
+  
+  useEffect(() => {
+  	const hasUnread = notifications.some((notif) => !notif.read)
+  	if (!hasUnread) return 
+  	if (hasUnread) {
+if (navigator.serviceWorker.controller) {
+  navigator.serviceWorker.controller.postMessage({ command: 'closeNotifications' });
+}
+  	}
+  }, [])
 
   const openNotif = (id, read) => {
     setNotifOpen((prev) => (prev === id ? "" : id));
