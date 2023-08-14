@@ -38,7 +38,6 @@ self.addEventListener("push", (event) => {
       icon: "./favicon.svg",
       badge: "./badge.svg",
       vibrate: [100, 100, 100],
-      tag: "reminder", 
       actions: [
         { action: "delete-notif", title: "Delete" },
         { action: "mark-as-read", title: "Mark as Read" },
