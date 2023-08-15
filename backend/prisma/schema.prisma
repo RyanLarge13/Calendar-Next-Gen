@@ -99,6 +99,7 @@ items Json?
 color String
 User User   @relation(fields: [userId], references: [id])
 userId String
+updatedAt DateTime @updatedAt
 }
 
 model Task {
