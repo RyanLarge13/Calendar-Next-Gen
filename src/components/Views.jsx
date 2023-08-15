@@ -1,21 +1,28 @@
 import { useState, useContext, useEffect } from "react";
 import { motion } from "framer-motion";
+import { AiFillSchedule } from "react-icons/ai";
 import {
   BsFillCalendarWeekFill,
   BsFillCalendarDayFill,
   BsFillCalendarMonthFill,
   BsXCircleFill,
   BsColumnsGap,
+  BsListTask,
+  BsAlarmFill,
+  BsListCheck,
   BsSearch,
+  BsFillClipboardDataFill,
   BsFillCalendar2EventFill,
 } from "react-icons/bs";
 import { CgOptions } from "react-icons/cg";
+import { FaStickyNote } from "react-icons/fa";
+import { HiUserGroup } from "react-icons/hi";
 import { MdViewAgenda } from "react-icons/md";
 import { TbSwitch3 } from "react-icons/tb";
 import InteractiveContext from "../context/InteractiveContext";
 
 const Views = () => {
-  const { setView, setFilters, showLogin, menu, setMenu } =
+  const { setView, setFilters, showLogin, menu, setMenu, showCategory } =
     useContext(InteractiveContext);
 
   const [show, setShow] = useState(false);
@@ -33,7 +40,31 @@ const Views = () => {
           onClick={() => setMenu(false)}
           className="fixed cursor-pointer bottom-5 left-5 z-[700] p-3 rounded-full flex justify-center items-center bg-gradient-to-tr from-lime-200 to-yellow-100 shadow-md"
         >
-          <BsFillCalendar2EventFill className="text-md" />
+          <div>
+            {showCategory === null && (
+              <BsFillCalendar2EventFill className="text-md" />
+            )}
+            {showCategory === "events" && (
+              <BsFillCalendar2EventFill className="text-md" />
+            )}
+            {showCategory === "reminders" && (
+              <BsAlarmFill className="text-md" />
+            )}
+            {showCategory === "lists" && <BsListCheck className="text-md" />}
+            {showCategory === "tasks" && <BsListTask className="text-md" />}
+            {showCategory === "kanban" && (
+              <BsFillClipboardDataFill className="text-md" />
+            )}
+            {showCategory === "stickynotes" && (
+              <FaStickyNote className="text-md" />
+            )}
+            {showCategory === "appointment" && (
+              <AiFillSchedule className="text-md" />
+            )}
+            {showCategory === "groupevents" && (
+              <HiUserGroup className="text-md" />
+            )}
+          </div>
         </div>
       ) : (
         <div

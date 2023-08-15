@@ -1,15 +1,15 @@
 import { useState, useEffect, useContext } from "react";
 import { motion } from "framer-motion";
 import { colors } from "../constants";
-import { MdLocationPin, MdCancel } from "react-icons/md";
+import { MdLocationPin } from "react-icons/md";
 import { AiFillCloseCircle } from "react-icons/ai";
 import { FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";
 import { RiGalleryUploadFill } from "react-icons/ri";
-import { BsFillSaveFill } from "react-icons/bs";
 import { createAttachments, postEvent } from "../utils/api.js";
 import { repeatOptions } from "../constants";
 import { v4 as uuidv4 } from "uuid";
+import Compressor from "compressorjs";
 import Masonry from "react-masonry-css";
 import DatesContext from "../context/DatesContext";
 import UserContext from "../context/UserContext";
@@ -195,22 +195,41 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
     const newFiles = [...event.target.files];
     newFiles.forEach((file) => {
       const reader = new FileReader();
-      reader.onload = () => {
-        const fileContent = new Uint8Array(reader.result);
-        // console.log(fileContent);
-        const newFile = {
-          img: URL.createObjectURL(file),
-          mimetype: file.type,
-          filename: file.name,
-          content: fileContent,
-        };
-        setAttachments((prevFiles) => [...prevFiles, newFile]);
+      reader.onload = async () => {
+        try {
+          const compressedFile = await compressImage(file);
+          const compressedArrayBuffer = await compressedFile.arrayBuffer();
+          const compressedFileContent = new Uint8Array(compressedArrayBuffer);
+          const newFile = {
+            img: URL.createObjectURL(compressedFile),
+            mimetype: file.type,
+            filename: file.name,
+            content: compressedFileContent,
+          };
+          setAttachments((prevFiles) => [...prevFiles, newFile]);
+        } catch (err) {
+          console.log(`Error compressing image: ${err}`);
+        }
       };
       reader.onerror = (error) => {
         console.error("FileReader error:", error);
       };
       // console.log("Reading file:", file);
       reader.readAsArrayBuffer(file);
+    });
+  };
+
+  const compressImage = (file) => {
+    return new Promise((resolve, reject) => {
+      new Compressor(file, {
+        quality: 0.6, // Adjust the quality value as needed (0.0 to 1.0)
+        success: (compressedFile) => {
+          resolve(compressedFile);
+        },
+        error: (error) => {
+          reject(error);
+        },
+      });
     });
   };
 

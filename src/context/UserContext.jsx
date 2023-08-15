@@ -284,11 +284,16 @@ export const UserProvider = ({ children }) => {
     serverSentSource.addEventListener("error", (error) => {
       console.error("SSE error:", error);
       if (error.eventPhase === EventSource.CLOSED) {
-        console.log("SSE connection closed.");
+        console.log("SSE connection closed. Attempting reconnection");
         setTimeout(() => {
           const source = getNotifications(user.id);
           setupNotifListener(source);
         }, 3000);
+      }
+    });
+    window.addEventListener("beforeunload", () => {
+      if (serverSentSource !== null) {
+        serverSentSource.close(); // Close the SSE connection before unloading the window
       }
     });
   };
