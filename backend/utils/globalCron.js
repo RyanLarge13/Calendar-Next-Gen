@@ -33,16 +33,19 @@ const processPushNotifications = async () => {
           const payload = JSON.stringify({
             title: notification.notifData.title,
             body: notification.notifData.notes,
-            id: notification.id, 
-            userId: notification.userId,
-            time: notification.time
+            data: {
+              id: notification.id,
+              userId: notification.userId,
+              time: notification.time,
+              notifType: notification.type,
+            },
           });
           if (user.notifSub.length > 1) {
-          sendNotification(payload, [...user.notifSub]);
-          } 
+            sendNotification(payload, [...user.notifSub]);
+          }
           if (user.notifSub.length < 2) {
-          sendNotification(payload, [JSON.parse(...user.notifSub)], user.id);
-          } 
+            sendNotification(payload, [JSON.parse(...user.notifSub)], user.id);
+          }
           notificationIdsToUpdate.push(notification.id);
         }
       }
