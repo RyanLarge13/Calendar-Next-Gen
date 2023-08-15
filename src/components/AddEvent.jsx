@@ -191,11 +191,9 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
     return true;
   };
 
-  const handleFileChange = (event) => {
+  const handleFileChange = async (event) => {
     const newFiles = [...event.target.files];
-    newFiles.forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = async () => {
+    for (const file of newFiles) {
         try {
           const compressedFile = await compressImage(file);
           const compressedArrayBuffer = await compressedFile.arrayBuffer();
@@ -210,13 +208,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
         } catch (err) {
           console.log(`Error compressing image: ${err}`);
         }
-      };
-      reader.onerror = (error) => {
-        console.error("FileReader error:", error);
-      };
-      // console.log("Reading file:", file);
-      reader.readAsArrayBuffer(file);
-    });
+    };
   };
 
   const compressImage = (file) => {

@@ -37,9 +37,9 @@ const ModalHeader = ({ allDayEvents }) => {
     const authToken = localStorage.getItem("authToken");
     deleteEvent(user.username, event.id, authToken)
       .then((res) => {
-        const storedEvents = JSON.parse(localStorage.getItem("events")) || [];
-        const newStore = storedEvents.filter((e) => e.id !== res.data.eventId);
-        localStorage.setItem("events", JSON.stringify(newStore));
+        //const storedEvents = JSON.parse(localStorage.getItem("events")) || [];
+        // const newStore = storedEvents.filter((e) => e.id !== res.data.eventId);
+        // localStorage.setItem("events", JSON.stringify(newStore));
         const filteredEvents = events.filter((e) => e.id !== res.data.eventId);
         setEvent(null);
         setEvents(filteredEvents);
@@ -53,7 +53,9 @@ const ModalHeader = ({ allDayEvents }) => {
   return (
     <motion.div
       initial={{ x: "110%" }}
-      animate={event && !addNewEvent ? { left: 5, x: x} : { left: "36%", x: x }}
+      animate={
+        event && !addNewEvent ? { left: 5, x: x } : { left: "36%", x: x }
+      }
       className="bg-white z-[902] p-2 font-bold shadow-md fixed top-1 right-1 rounded-md"
     >
       <div className="flex justify-between items-center">
