@@ -105,21 +105,23 @@ const MonthView = () => {
   //     return null;
   //   };
 
-  // const getWidthAndZ = (start, end) => {
-  //   if (!start || !end) {
-  //     return 13;
-  //   }
-  //   const startDate = new Date(start);
-  //   const endDate = new Date(end);
-  //   const timeDifference = endDate - startDate;
-  //   const daysDifference =
-  //     (Math.floor(timeDifference / (1000 * 3600 * 24)) + 1) * 13;
-  //   // console.log(daysDifference);
-  //   if (daysDifference === 0) {
-  //     return 13;
-  //   }
-  //   return daysDifference;
-  // };
+  const getWidthAndZ = (start, end) => {
+    if (!start || !end) {
+      return 12;
+    }
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    const timeDifference = endDate - startDate;
+    const daysDifference =
+      (Math.floor(timeDifference / (1000 * 3600 * 24)) + 1) * 12;
+    const days = Math.floor(timeDifference / (1000 * 3600 * 24));
+    //console.log(daysDifference);
+    if (daysDifference > 12) {
+      const extra = days * 2;
+      return daysDifference + extra;
+    }
+    return daysDifference;
+  };
 
   const getEventsForDate = (targetDate) => {
     return [...events, ...holidays].filter(
@@ -247,7 +249,7 @@ const MonthView = () => {
                   : "bg-transparent"
               }`}
             >
-              {eventsForDate.map((event) => (
+              {eventsForDate.map((event, eventIndex) => (
                 <motion.div
                   key={event.id}
                   initial={{ opacity: 0, y: -50 }}
@@ -260,14 +262,16 @@ const MonthView = () => {
                       stiffness: 200,
                     },
                   }}
-                  // style={{
-                  //   width: `${getWidthAndZ(
-                  //     event.start?.startTime,
-                  //     event.end?.endTime
-                  //   )}vw`,
-                  // }}
+                  style={{
+                    width: `${getWidthAndZ(
+                      event.start?.startTime,
+                      event.end?.endTime
+                    )}vw`,
+                  }}
                   // className={`rounded-lg ${event.color} z-10 left-1 shadow-md p-1 my-1 mx-auto sticky`}
-                  className={`rounded-lg ${event.color} z-10 left-1 shadow-md p-1 my-1 mx-auto`}
+                  className={`rounded-lg ${event.color} sticky top-[${
+                    eventIndex * 15
+                  }px] z-10 left-1 shadow-md p-1 my-1 mx-auto`}
                 >
                   <p
                     className={`whitespace-nowrap text-xs overflow-hidden ${
