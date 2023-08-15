@@ -13,16 +13,18 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
   const { showNotifs } = useContext(InteractiveContext);
 
   const [notifOpen, setNotifOpen] = useState("");
-  
+
   useEffect(() => {
-  	const hasUnread = notifications.some((notif) => !notif.read)
-  	if (!hasUnread) return 
-  	if (hasUnread) {
-if (navigator.serviceWorker.controller) {
-  navigator.serviceWorker.controller.postMessage({ command: 'closeNotifications' });
-}
-  	}
-  }, [])
+    const hasUnread = notifications.some((notif) => !notif.read);
+    if (!hasUnread) return;
+    if (hasUnread) {
+      if (navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({
+          command: "closeNotifications",
+        });
+      }
+    }
+  }, []);
 
   const openNotif = (id, read) => {
     setNotifOpen((prev) => (prev === id ? "" : id));
@@ -100,7 +102,7 @@ if (navigator.serviceWorker.controller) {
           initial={{ y: "-100%", opacity: 0 }}
           exit={{ y: "-100%", opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="py-3 px-5 rounded-b-md fixed top-0 right-0 left-0 z-20 max-h-[60vh] overflow-y-auto bg-cyan-100"
+          className="py-3 px-5 rounded-b-md shadow-md fixed top-0 bottom-0 right-0 left-0 z-20 max-h-[75vh] overflow-y-auto bg-cyan-100"
         >
           {notifications.length < 1 ? (
             <div className="flex flex-col items-center justify-center w-full">
