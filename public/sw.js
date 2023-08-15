@@ -31,23 +31,24 @@ self.addEventListener("push", (event) => {
       body: "An issue occurred sending the correct notification data, please refresh & try again",
     };
   }
-  const { title, body } = payload;
+  const { title, body, data } = payload;
   event.waitUntil(
     self.registration.showNotification(title, {
       body,
+      data,
       icon: "./favicon.svg",
       badge: "./badge.svg",
       vibrate: [100, 100, 100],
       actions: [
-        { action: "delete-notif", title: "Delete" },
-        { action: "mark-as-read", title: "Mark as Read" },
+        { action: "delete-notif", title: "Delete", type: "button" },
+        { action: "mark-as-read", title: "Mark as Read", type: "button" },
       ],
     })
   );
 });
 
-self.addEventListener("notificationclick", (event, payload) => {
-  console.log(event, payload);
+self.addEventListener("notificationclick", (event) => {
+  const notifId = event.notification.data.id;
   if (event.action === "mark-as-read") {
     fetch("https://calendar-next-gen-production.up.railway.app/mark-as-read", {
       method: "POST",
@@ -55,7 +56,7 @@ self.addEventListener("notificationclick", (event, payload) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        notifId: payload.id,
+        notifId: notifId,
       }),
     })
       .then((response) => {
@@ -68,14 +69,14 @@ self.addEventListener("notificationclick", (event, payload) => {
   }
   if (event.action === "delete-notif") {
     fetch(
-      `https://calendar-next-gen-production.up.railway.app/delete-notif/notification/${payload.id}`,
+      `https://calendar-next-gen-production.up.railway.app/delete-notif/notification/${notifId}`,
       {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          notifId: payload.id,
+          notifId: notifId,
         }),
       }
     )
