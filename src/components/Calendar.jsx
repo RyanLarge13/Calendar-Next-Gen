@@ -23,7 +23,6 @@ const Calendar = () => {
     loading,
     theDay,
     openModal,
-    diff,
     dateString,
     string,
     dateObj,

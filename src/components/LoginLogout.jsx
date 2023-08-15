@@ -133,7 +133,7 @@ const LoginLogout = () => {
 
   return (
     <>
-      {option === "connections" && <Connections />}
+      {option === "connections" && <Connections setOption={setOption} />}
       {option === "settings" && <Settings />}
       <Notification idsToUpdate={idsToUpdate} setIdsToUpdate={setIdsToUpdate} />
       <AnimatePresence>

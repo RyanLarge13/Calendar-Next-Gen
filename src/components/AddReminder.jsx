@@ -7,8 +7,8 @@ import UserContext from "../context/UserContext";
 import DatesContext from "../context/DatesContext";
 
 const AddReminder = () => {
-  const { setMenu, setAddNewEvent, setType } = useContext(InteractiveContext);
-  const { setReminders, setSystemNotif } = useContext(UserContext);
+  const { setMenu, setAddNewEvent, setType, setShowCategory} = useContext(InteractiveContext);
+  const { reminders, setReminders, setSystemNotif } = useContext(UserContext);
   const { setOpenModal } = useContext(DatesContext);
 
   const [time, setTime] = useState(null);
@@ -53,8 +53,12 @@ const AddReminder = () => {
         setOpenModal(false);
         setAddNewEvent(false);
         setType(null);
-        setReminders((prev) => [...prev, res.data.reminder]);
+        const sortedReminders = [...reminders, res.data.reminder].sort(
+          (a, b) => new Date(a.time) - new Date(b.time)
+        );
+        setReminders(sortedReminders);
         setMenu(true);
+        setShowCategory("reminders");
       })
       .catch((err) => console.log(err));
   };

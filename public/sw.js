@@ -48,6 +48,7 @@ self.addEventListener("push", (event) => {
 });
 
 self.addEventListener("notificationclick", (event) => {
+	event.preventDefault()
   const notifId = event.notification.data.id;
   if (event.action === "mark-as-read") {
     fetch("https://calendar-next-gen-production.up.railway.app/mark-as-read", {
