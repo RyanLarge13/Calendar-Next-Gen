@@ -8,7 +8,7 @@ import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
 
 const MonthView = () => {
-  const { events } = useContext(UserContext);
+  const { events, setEvents } = useContext(UserContext);
   const { setMenu, setShowLogin } = useContext(InteractiveContext);
   const {
     paddingDays,
@@ -24,12 +24,11 @@ const MonthView = () => {
   } = useContext(DatesContext);
 
   const [selected, setSelected] = useState([]);
+  const [spanEvents, setSpanEvents] = useState([]);
+  const [longPressActive, setLongPressActive] = useState(false);
+  const [longPressTimeout, setLongPressTimeout] = useState(null);
 
   const targetDate = new Date(dateString);
-
-  // useEffect(() => {
-  //   console.log("Rendering");
-  // }, []);
 
   const getCellStyle = (index) => {
     const isSameMonthAndYear =
@@ -37,15 +36,48 @@ const MonthView = () => {
       targetDate.getFullYear() === dateObj.getFullYear();
     if (isSameMonthAndYear && rowDays.includes(index)) {
       return { backgroundColor: "rgba(0, 0, 0, 0.1)" };
+    }
+    if (selected.includes(index)) {
+      return { backgroundColor: "#cffaf" };
     } else {
       return { backgroundColor: "#fff" };
     }
   };
 
   const getEventsForDate = (targetDate) => {
-    return [...events, ...holidays].filter(
+    return [...events, ...holidays, ...spanEvents].filter(
       (event) => event.date === targetDate
     );
+  };
+
+  const handleDayLongPress = (index) => {
+    setLongPressActive(true);
+    setLongPressTimeout(
+      setTimeout(() => {
+        setSelected((prevSelected) => [...prevSelected, index]);
+        clearTimeout(longPressTimeout);
+      }, 1)
+    );
+  };
+
+  const handleDayRelease = () => {
+    setLongPressActive(false);
+    clearTimeout(longPressTimeout);
+  };
+
+  const handleDayClick = (index) => {
+    if (longPressActive && selected.includes(index)) {
+      setSelected((prevSelected) =>
+        prevSelected.filter((dayIndex) => dayIndex !== index)
+      );
+      if (selected.length === 1) setLongPressActive(false);
+    }
+    if (longPressActive && !selected.includes(index)) {
+      setSelected((prevSelected) => [...prevSelected, index]);
+    }
+    if (!longPressActive) {
+      addEvent(`${month + 1}/${index - paddingDays + 1}/${year}`, index);
+    }
   };
 
   const addEvent = (date, index) => {
@@ -73,12 +105,11 @@ const MonthView = () => {
         return (
           <motion.div
             variants={calendarBlocks}
-            onClick={() =>
-              index >= paddingDays &&
-              addEvent(`${month + 1}/${index - paddingDays + 1}/${year}`, index)
-            }
-            // onPointerDown={() => startSelect(index)}
-            // onPointerUp={() => checkIfSelectable()}
+            onContextMenu={(e) => {
+              e.preventDefault();
+              handleDayLongPress(index);
+            }}
+            onClick={() => handleDayClick(index)}
             key={index}
             style={getCellStyle(index)}
             className={`relative w-full rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start gap-y-1 cursor-pointer ${
@@ -102,10 +133,10 @@ const MonthView = () => {
                   : "bg-transparent"
               }`}
             >
-              {eventsForDate.map((event) => (
+              {eventsForDate.map((event, eventIndex) => (
                 <motion.div
-                  key={event.id}
-                  initial={{ opacity: 0, y: -50 }}
+                  key={eventIndex}
+                  initial={{ opacity: 0, y: -7.5 }}
                   animate={{
                     opacity: 1,
                     y: 0,
@@ -115,7 +146,7 @@ const MonthView = () => {
                       stiffness: 200,
                     },
                   }}
-                  className={`rounded-lg ${event.color} shadow-md p-1 my-1 mx-auto`}
+                  className={`sticky z-10 rounded-lg ${event.color} shadow-md p-1 my-1 mx-auto`}
                 >
                   <p
                     className={`whitespace-nowrap text-xs overflow-hidden ${
