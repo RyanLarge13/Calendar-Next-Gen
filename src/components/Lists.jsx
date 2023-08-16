@@ -18,6 +18,7 @@ const Lists = () => {
   const [addItems, setAddItems] = useState([]);
 
   const deleteEntireList = (listId) => {
+  	setSystemNotif({show: false})
     const token = localStorage.getItem("authToken");
     if (!token) return;
     const newListOfLists = lists.filter((item) => item.id !== listId);
