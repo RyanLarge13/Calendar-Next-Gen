@@ -18,7 +18,7 @@ import DatesContext from "../context/DatesContext";
 
 const Event = ({ dayEvents }) => {
   const { event, setEvent } = useContext(InteractiveContext);
-  const { dateObj } = useContext(DatesContext);
+  const { dateObj, setString } = useContext(DatesContext);
   const [open, setOpen] = useState(true);
   const [timeLeft, setTimeLeft] = useState(null);
   const [fetchedImages, setFetchedImages] = useState([]);
@@ -35,6 +35,7 @@ const Event = ({ dayEvents }) => {
   };
 
   useEffect(() => {
+    //setString(new Date(event.date).toLocaleDateString());
     fetchAttachments(event.id)
       .then((res) => {
         res.data.attachments.forEach((file) => {
@@ -59,9 +60,9 @@ const Event = ({ dayEvents }) => {
         new Date().toLocaleDateString()
     ) {
       const startHourMinutes = new Date(event.start.startTime).getHours() * 60;
-      const nowHourMinutes = dateObj.getHours() * 60;
+      const nowHourMinutes = new Date().getHours() * 60;
       const startMinutes = new Date(event.start.startTime).getMinutes();
-      const nowMinutes = dateObj.getMinutes();
+      const nowMinutes = new Date().getMinutes();
       const totalMinutesToStart = startHourMinutes + startMinutes;
       timeLeftInterval = setInterval(() => {
         checkTimeLeft();
@@ -82,8 +83,8 @@ const Event = ({ dayEvents }) => {
     }
 
     const calcTimeIn = () => {
-      const currentHours = dateObj.getHours();
-      const currentMinutes = dateObj.getMinutes();
+      const currentHours = new Date().getHours();
+      const currentMinutes = new Date().getMinutes();
       const startHours = new Date(event.start.startTime).getHours();
       const startMinutes = new Date(event.start.startTime).getMinutes();
       const endHours = new Date(event.end.endTime).getHours();
@@ -109,9 +110,9 @@ const Event = ({ dayEvents }) => {
       const startHours = new Date(event.start.startTime).getHours();
       const startMinutes = new Date(event.start.startTime).getMinutes();
       const startSeconds = new Date(event.start.startTime).getSeconds();
-      const currentHours = dateObj.getHours();
-      const currentMinutes = dateObj.getMinutes();
-      const currentSeconds = dateObj.getSeconds();
+      const currentHours = new Date().getHours();
+      const currentMinutes = new Date().getMinutes();
+      const currentSeconds = new Date().getSeconds();
       const hoursLeft = startHours - currentHours;
       const minutesLeft = (currentMinutes - (startMinutes + 60)) * -1;
       const secondsLeft = (currentSeconds - (startSeconds + 60)) * -1;
@@ -122,8 +123,8 @@ const Event = ({ dayEvents }) => {
     };
 
     const calcTime = (start) => {
-      const currentHourMinutes = dateObj.getHours() * 60;
-      const currentMinutes = dateObj.getMinutes();
+      const currentHourMinutes = new Date().getHours() * 60;
+      const currentMinutes = new Date().getMinutes();
       const now = currentMinutes + currentHourMinutes;
       const first = start - now;
       const decimal = first / start;

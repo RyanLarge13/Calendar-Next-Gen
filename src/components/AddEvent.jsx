@@ -39,6 +39,10 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
   const [reminder, setReminder] = useState(false);
   const [reminderTimeString, setReminderTimeString] = useState("");
   const [when, setWhen] = useState(null);
+  const [extraReminders, setExtraReminders] = useState([]);
+  const [addAnotherReminder, setAddAnotherReminder] = useState(false);
+  const [anotherReminderWhen, setAnotherReminderWhen] = useState(null);
+  const [anotherReminderString, setAnotherReminderString] = useState("");
   // repeats
   const [repeat, setRepeat] = useState(false);
   const [howOften, setHowOften] = useState(false);
@@ -191,32 +195,24 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
     return true;
   };
 
-  const handleFileChange = (event) => {
+  const handleFileChange = async (event) => {
     const newFiles = [...event.target.files];
-    newFiles.forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = async () => {
-        try {
-          const compressedFile = await compressImage(file);
-          const compressedArrayBuffer = await compressedFile.arrayBuffer();
-          const compressedFileContent = new Uint8Array(compressedArrayBuffer);
-          const newFile = {
-            img: URL.createObjectURL(compressedFile),
-            mimetype: file.type,
-            filename: file.name,
-            content: compressedFileContent,
-          };
-          setAttachments((prevFiles) => [...prevFiles, newFile]);
-        } catch (err) {
-          console.log(`Error compressing image: ${err}`);
-        }
-      };
-      reader.onerror = (error) => {
-        console.error("FileReader error:", error);
-      };
-      // console.log("Reading file:", file);
-      reader.readAsArrayBuffer(file);
-    });
+    for (const file of newFiles) {
+      try {
+        const compressedFile = await compressImage(file);
+        const compressedArrayBuffer = await compressedFile.arrayBuffer();
+        const compressedFileContent = new Uint8Array(compressedArrayBuffer);
+        const newFile = {
+          img: URL.createObjectURL(compressedFile),
+          mimetype: file.type,
+          filename: file.name,
+          content: compressedFileContent,
+        };
+        setAttachments((prevFiles) => [...prevFiles, newFile]);
+      } catch (err) {
+        console.log(`Error compressing image: ${err}`);
+      }
+    }
   };
 
   const compressImage = (file) => {
@@ -348,7 +344,29 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
                   openTimeSetter={setReminder}
                 />
               ) : (
-                <p>{reminderTimeString}</p>
+                <>
+                  <p className={`${color} rounded-md shadow-sm px-2 py-1 mt-3`}>
+                    {reminderTimeString}
+                  </p>
+                  <div className="mt-3">
+                    <button
+                      className="py-1 px-3 rounded-md shadow-md bg-cyan-100"
+                      onClick={() => setAddAnotherReminder(true)}
+                    >
+                      Add Another
+                    </button>
+                    {addAnotherReminder &&
+                      (!anotherReminderWhen ? (
+                        <TimeSetter
+                          setDateTime={setAnotherReminderWhen}
+                          setDateTimeString={setAnotherReminderString}
+                          openTimeSetter={setAddAnotherReminder}
+                        />
+                      ) : (
+                        <p>{anotherReminderString}</p>
+                      ))}
+                  </div>
+                </>
               )}
             </div>
           )}

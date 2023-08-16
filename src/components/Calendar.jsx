@@ -18,15 +18,8 @@ import UserContext from "../context/UserContext";
 const Calendar = () => {
   const { events, holidays, reminders, weekDays } = useContext(UserContext);
   const { menu, view, event } = useContext(InteractiveContext);
-  const {
-    finish,
-    loading,
-    theDay,
-    openModal,
-    dateString,
-    string,
-    dateObj,
-  } = useContext(DatesContext);
+  const { finish, loading, theDay, openModal, dateString, string, dateObj } =
+    useContext(DatesContext);
 
   const [todaysEvents, setTodaysEvents] = useState([]);
   const [todaysReminders, setTodaysReminder] = useState([]);

@@ -29,6 +29,7 @@ export const UserProvider = ({ children }) => {
   const [refresh, setRefresh] = useState(false);
   const [lists, setLists] = useState([]);
   const [reminders, setReminders] = useState([]);
+  const [friends, setFriends] = useState([]);
   const [localDB, setLocalDB] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [systemNotif, setSystemNotif] = useState({ show: false });
@@ -245,7 +246,7 @@ export const UserProvider = ({ children }) => {
           const oldNotifs = res.data.notifs;
           const sortedOldNotifs = oldNotifs.sort((a, b) => b.time - a.time);
           setNotifications(sortedOldNotifs);
-          setupNotifListener(serverSentSource);
+          setupNotifListener(serverSentSource, userId);
         })
         .catch((err) => {
           console.log(err);
@@ -255,7 +256,7 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  const setupNotifListener = (serverSentSource) => {
+  const setupNotifListener = (serverSentSource, userId) => {
     console.log("Set up and listening for notifications");
     serverSentSource.addEventListener("open", () => {
       console.log("Open");
@@ -273,6 +274,13 @@ export const UserProvider = ({ children }) => {
           {
             text: "mark as read",
             func: () => {
+              const updatedNotifs = notifications.map((notif) => {
+                if (notif.id === notification.id) {
+                  return { ...notif, read: true };
+                }
+                return notif;
+              });
+              setNotifications(updatedNotifs);
               setSystemNotif({ show: false });
               markAsRead(notification.id);
             },
@@ -283,13 +291,13 @@ export const UserProvider = ({ children }) => {
     });
     serverSentSource.addEventListener("error", (error) => {
       console.error("SSE error:", error);
-      if (error.eventPhase === EventSource.CLOSED) {
-        console.log("SSE connection closed. Attempting reconnection");
-        setTimeout(() => {
-          const source = getNotifications(user.id);
-          setupNotifListener(source);
-        }, 3000);
-      }
+      // if (error.eventPhase === EventSource.CLOSED) {
+      //         console.log("SSE connection closed. Attempting reconnection");
+      //         setTimeout(() => {
+      //           const source = getNotifications(userId);
+      //           setupNotifListener(source);
+      //         }, 3000);
+      //       }
     });
     window.addEventListener("beforeunload", () => {
       if (serverSentSource !== null) {
@@ -330,6 +338,8 @@ export const UserProvider = ({ children }) => {
         lists,
         notifications,
         systemNotif,
+        friends, 
+        setFriends, 
         setSystemNotif,
         setNotifications,
         setLists,
