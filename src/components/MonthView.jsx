@@ -45,9 +45,17 @@ const MonthView = () => {
   };
 
   const getEventsForDate = (targetDate) => {
-    return [...events, ...holidays, ...spanEvents].filter(
-      (event) => event.date === targetDate
-    );
+    return [...events, ...holidays].filter(
+      (event) => {
+      	const start = new Date(event.start.startTime)
+      	const end = new Date(event.end.endTime);
+      	if (start && end) {
+      	if (start <= targetDate && end > targetDate)  {
+      		
+      	}
+      	} 
+      	return event.date === targetDate
+   });
   };
 
   const handleDayLongPress = (index) => {
