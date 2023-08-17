@@ -243,6 +243,15 @@ export const addSubscriptionToUser = (sub, token) => {
   return response;
 };
 
+export const createNotification = (newNotif, token) => {
+  const res = Axios.post(
+    `${productionUrl}/new/notification`,
+    { notification: newNotif },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return res;
+};
+
 export const getNotifications = (userId) => {
   const eventSource = new EventSource(
     `${productionUrl}/${userId}/notifications`

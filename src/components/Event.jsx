@@ -36,17 +36,19 @@ const Event = ({ dayEvents }) => {
 
   useEffect(() => {
     //setString(new Date(event.date).toLocaleDateString());
-    fetchAttachments(event.id)
-      .then((res) => {
-        res.data.attachments.forEach((file) => {
-          const blob = new Blob([new Uint8Array(file.content.data)], {
-            type: file.mimetype,
+    if (event.attachments > 0) {
+      fetchAttachments(event.id)
+        .then((res) => {
+          res.data.attachments.forEach((file) => {
+            const blob = new Blob([new Uint8Array(file.content.data)], {
+              type: file.mimetype,
+            });
+            const url = URL.createObjectURL(blob);
+            setFetchedImages((prevUrls) => [...prevUrls, url]);
           });
-          const url = URL.createObjectURL(blob);
-          setFetchedImages((prevUrls) => [...prevUrls, url]);
-        });
-      })
-      .catch((err) => console.log(err));
+        })
+        .catch((err) => console.log(err));
+    }
     return () => setFetchedImages([]);
   }, []);
 

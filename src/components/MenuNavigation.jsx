@@ -23,10 +23,10 @@ const MenuNavigation = () => {
     >
       <div
         className={`p-5 w-full flex flex-col items-center justify-center rounded-md ${
-          showCategory === "reminders" ? "bg-cyan-100" : "bg-white"
+          showCategory === "reminder" ? "bg-cyan-100" : "bg-white"
         }`}
         onClick={() =>
-          setShowCategory((prev) => (prev === "reminders" ? null : "reminders"))
+          setShowCategory((prev) => (prev === "reminder" ? null : "reminder"))
         }
       >
         <IoIosAlarm />
@@ -34,10 +34,10 @@ const MenuNavigation = () => {
       </div>
       <div
         className={`p-5 w-full flex flex-col items-center justify-center rounded-md ${
-          showCategory === "lists" ? "bg-cyan-100" : "bg-white"
+          showCategory === "todo-list" ? "bg-cyan-100" : "bg-white"
         }`}
         onClick={() =>
-          setShowCategory((prev) => (prev === "lists" ? null : "lists"))
+          setShowCategory((prev) => (prev === "todo-list" ? null : "todo-list"))
         }
       >
         <BsListCheck />
@@ -45,10 +45,10 @@ const MenuNavigation = () => {
       </div>
       <div
         className={`p-5 w-full flex flex-col items-center justify-center rounded-md ${
-          showCategory === "tasks" ? "bg-cyan-100" : "bg-white"
+          showCategory === "task" ? "bg-cyan-100" : "bg-white"
         }`}
         onClick={() =>
-          setShowCategory((prev) => (prev !== "tasks" ? "tasks" : null))
+          setShowCategory((prev) => (prev !== "task" ? "task" : null))
         }
       >
         <BsListTask />
@@ -67,10 +67,10 @@ const MenuNavigation = () => {
       </div>
       <div
         className={`p-5 w-full flex flex-col items-center justify-center rounded-md ${
-          showCategory === "events" ? "bg-cyan-100" : "bg-white"
+          showCategory === "event" ? "bg-cyan-100" : "bg-white"
         }`}
         onClick={() =>
-          setShowCategory((prev) => (prev !== "events" ? "events" : null))
+          setShowCategory((prev) => (prev !== "event" ? "event" : null))
         }
       >
         <BsFillCalendar2EventFill />
@@ -78,11 +78,11 @@ const MenuNavigation = () => {
       </div>
       <div
         className={`p-5 w-full flex flex-col items-center justify-center rounded-md ${
-          showCategory === "groupevents" ? "bg-cyan-100" : "bg-white"
+          showCategory === "groupevent" ? "bg-cyan-100" : "bg-white"
         }`}
         onClick={() =>
           setShowCategory((prev) =>
-            prev !== "groupevents" ? "groupevents" : null
+            prev !== "groupevent" ? "groupevent" : null
           )
         }
       >
@@ -91,11 +91,11 @@ const MenuNavigation = () => {
       </div>
       <div
         className={`p-5 w-full flex flex-col items-center justify-center rounded-md ${
-          showCategory === "stickynotes" ? "bg-cyan-100" : "bg-white"
+          showCategory === "stickynote" ? "bg-cyan-100" : "bg-white"
         }`}
         onClick={() =>
           setShowCategory((prev) =>
-            prev !== "stickynotes" ? "stickynotes" : null
+            prev !== "stickynote" ? "stickynote" : null
           )
         }
       >

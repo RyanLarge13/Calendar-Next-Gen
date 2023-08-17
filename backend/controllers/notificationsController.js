@@ -174,6 +174,23 @@ export const getOldNotifications = async (req, res) => {
   }
 };
 
+export const createNotifcation = async (req, res) => {
+	const notification = req.body;
+	try {
+	const newNotif = await prisma.notification.create({
+    data: notification,
+  });
+  if (newNotif) {
+  	res.status(201).json({message: "Successfully created your new notification", notification: newNotif})
+  }
+  if (!newNotif) {
+  	res.status(401).json({message: "Failed to create a new Notification, please refresh and try again"})
+  }
+	} catch (err) {
+		return res.status(401).json({message: `Server error, please refresh and try again: ${err}`})
+	}
+}
+
 export const updateNotification = async (req, res) => {
   const ids = req.body.notifs;
   const userId = req.user.id;

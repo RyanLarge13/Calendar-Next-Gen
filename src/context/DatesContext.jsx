@@ -8,7 +8,6 @@ export const DatesProvider = ({ children }) => {
   const [nav, setNav] = useState(0);
   const [dt, setDt] = useState(new Date());
   const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
   const [day, setDay] = useState(new Date().getDate());
   const [month, setMonth] = useState(dt.getMonth());
   const [year, setYear] = useState(dt.getFullYear());
@@ -24,7 +23,6 @@ export const DatesProvider = ({ children }) => {
   const [string, setString] = useState("");
   const [theDay, setTheDay] = useState(new Date());
   const [rowDays, setRowDays] = useState([]);
-  const [columnDays, setColumnDays] = useState([]);
   const [currentWeek, setCurrentWeek] = useState([]);
 
   useEffect(() => {
@@ -68,30 +66,27 @@ export const DatesProvider = ({ children }) => {
 
   useEffect(() => {
     setPaddingDays(weekDays.indexOf(dateString.split(", ")[0]));
+  }, [dateString]);
+
+  useEffect(() => {
     setLoading(false);
     const day = dateObj.getDate();
     const dayOfWeek = dateObj.getDay();
-    const end = day + (6 - dayOfWeek) + paddingDays - 1;
     const start = day - dayOfWeek + paddingDays - 1;
-    let rowDays = [];
-    for (let i = start; i <= end; i++) {
-      rowDays.push(i);
-    }
-    setRowDays(rowDays);
-  }, [dateString, paddingDays]);
+    const end = start + 6;
+    setRowDays(Array.from({ length: 7 }, (_, i) => start + i));
+  }, [paddingDays]);
 
   useEffect(() => {
-    // const today = new Date();
     const currentDay = dateObj.getDay();
     const startOfWeek = new Date(dateObj);
     startOfWeek.setDate(dateObj.getDate() - currentDay);
 
-    const week = [];
-    for (let i = 0; i < 7; i++) {
+    const week = Array.from({ length: 7 }, (_, i) => {
       const day = new Date(startOfWeek);
       day.setDate(startOfWeek.getDate() + i);
-      week.push(day);
-    }
+      return day;
+    });
     setCurrentWeek(week);
   }, []);
 
@@ -109,13 +104,12 @@ export const DatesProvider = ({ children }) => {
         openModal,
         theDay,
         currentWeek,
+        setNav,
         setCurrentWeek,
         setTheDay,
-        setNav,
         setOpenModal,
         setString,
         finish,
-        setOpen,
         setDay,
         dateString,
         rowDays,

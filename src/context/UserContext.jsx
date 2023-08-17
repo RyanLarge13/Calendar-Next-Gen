@@ -59,6 +59,7 @@ export const UserProvider = ({ children }) => {
         title: "Network",
         text: "You are offline",
         color: "bg-red-300",
+        hasCancel: true,
         actions: [
           { text: "close", func: () => setSystemNotif({ show: false }) },
           { text: "refresh", func: () => window.location.reload() },
@@ -80,6 +81,7 @@ export const UserProvider = ({ children }) => {
         title: "Network",
         text: "You are back online",
         color: "bg-green-300",
+        hasCancel: true,
         actions: [
           { text: "close", func: () => setSystemNotif({ show: false }) },
         ],
@@ -106,6 +108,7 @@ export const UserProvider = ({ children }) => {
                 title: "Google Events",
                 text: "Would you like to import your google calendar events?",
                 color: "bg-sky-300",
+                hasCancel: true,
                 actions: [
                   {
                     text: "close",
@@ -239,7 +242,6 @@ export const UserProvider = ({ children }) => {
 
   const send = async (token, userId) => {
     try {
-      console.log(userId);
       const serverSentSource = getNotifications(userId);
       getNotificationsAtStart(user.username, token)
         .then((res) => {
@@ -259,7 +261,7 @@ export const UserProvider = ({ children }) => {
   const setupNotifListener = (serverSentSource, userId) => {
     console.log("Set up and listening for notifications");
     serverSentSource.addEventListener("open", () => {
-      console.log("Open");
+      console.log("SSE connection open");
     });
     serverSentSource.addEventListener("message", (event) => {
       const notification = JSON.parse(event.data);
@@ -269,6 +271,7 @@ export const UserProvider = ({ children }) => {
         title: notification.notifData.title,
         text: notification.notifData.notes,
         color: "bg-purple-300",
+        hasCancel: true,
         actions: [
           { text: "close", func: () => setSystemNotif({ show: false }) },
           {
@@ -291,6 +294,7 @@ export const UserProvider = ({ children }) => {
     });
     serverSentSource.addEventListener("error", (error) => {
       console.error("SSE error:", error);
+      serverSentSource.close();
       // if (error.eventPhase === EventSource.CLOSED) {
       //         console.log("SSE connection closed. Attempting reconnection");
       //         setTimeout(() => {
@@ -338,8 +342,8 @@ export const UserProvider = ({ children }) => {
         lists,
         notifications,
         systemNotif,
-        friends, 
-        setFriends, 
+        friends,
+        setFriends,
         setSystemNotif,
         setNotifications,
         setLists,

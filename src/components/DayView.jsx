@@ -69,7 +69,7 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
       const containerHeight = dayViewContainer.current.clientHeight;
       const newPosition = Math.floor(percentageOfDay * containerHeight);
       setheight(newPosition);
-      setTime(dateObj.toLocaleTimeString());
+      setTime(new Date().toLocaleTimeString());
     }, 1000);
   };
 

@@ -1,5 +1,6 @@
 import { useState, useContext } from "react";
 import { createNewList } from "../utils/api.js";
+import { v4 as uuidv4 } from "uuid";
 import { MdCancel } from "react-icons/md";
 import { BsFillSaveFill } from "react-icons/bs";
 import UserContext from "../context/UserContext.jsx";
@@ -18,6 +19,7 @@ const AddList = () => {
   const [itemTitle, setItemTitle] = useState("");
   const [title, setTitle] = useState("");
   const [color, setColor] = useState("");
+  let increment = 0;
 
   const createList = () => {
     if (!title) {
@@ -26,6 +28,7 @@ const AddList = () => {
         title: "Add Title",
         text: "You must add a title to your list",
         color: "bg-red-200",
+        hasCancel: false,
         actions: [
           { text: "close", func: () => setSystemNotif({ show: false }) },
         ],
@@ -38,6 +41,7 @@ const AddList = () => {
         title: "Add Color",
         text: "You must add a color to your list",
         color: "bg-red-200",
+        hasCancel: false,
         actions: [
           { text: "close", func: () => setSystemNotif({ show: false }) },
         ],
@@ -48,15 +52,46 @@ const AddList = () => {
   };
 
   const addItemsToList = () => {
-    if (!itemTitle) return;
+    if (!itemTitle) {
+      const newNotif = {
+        show: true,
+        title: "No Items",
+        text: "Please add items",
+        color: "bg-red-200",
+        hasCancel: false,
+        actions: [
+          { text: "close", func: () => setSystemNotif({ show: false }) },
+        ],
+      };
+      return setSystemNotif(newNotif);
+    }
+    const newOrderIndex = listItems.length;
     if (itemTitle.includes(",")) {
       const eachItem = itemTitle.split(",");
-      eachItem.forEach((item) =>
-        setListItems((prev) => [...prev, item.trim()])
-      );
+      eachItem.forEach((item, index) => {
+        setListItems((prev) => [
+          ...prev,
+          {
+            id: uuidv4(),
+            text: item.trim(),
+            orderIndex: newOrderIndex + index + increment,
+            complete: false,
+          },
+        ]);
+        increment += eachItem.length;
+      });
     }
     if (!itemTitle.includes(",")) {
-      setListItems((prev) => [...prev, itemTitle.trim()]);
+      setListItems((prev) => [
+        ...prev,
+        {
+          id: uuidv4(),
+          text: itemTitle.trim(),
+          orderIndex: newOrderIndex + increment,
+          complete: false,
+        },
+      ]);
+      increment++;
     }
     setItemTitle("");
   };
@@ -143,12 +178,12 @@ const AddList = () => {
           </button>
           <div className="text-left mb-40">
             {listItems.length > 0 &&
-              listItems.map((item, index) => (
+              listItems.map((item) => (
                 <div
-                  key={index}
+                  key={item.id}
                   className="p-3 border-b border-b-slate-300 flex justify-between items-center"
                 >
-                  <p>{item}</p>
+                  <p>{item.text}</p>
                   <AiFillCloseCircle onClick={() => removeItem(item)} />
                 </div>
               ))}
