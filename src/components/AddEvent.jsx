@@ -2,7 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import { motion } from "framer-motion";
 import { colors } from "../constants";
 import { MdLocationPin } from "react-icons/md";
-import { AiFillCloseCircle } from "react-icons/ai";
+import { AiFillCloseCircle, AiFillInfoCircle} from "react-icons/ai";
 import { FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";
 import { RiGalleryUploadFill } from "react-icons/ri";
@@ -43,6 +43,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
   const [addAnotherReminder, setAddAnotherReminder] = useState(false);
   const [anotherReminderWhen, setAnotherReminderWhen] = useState(null);
   const [anotherReminderString, setAnotherReminderString] = useState("");
+  const [onlyNotify, setOnlyNotify] = useState(false)
   // repeats
   const [repeat, setRepeat] = useState(false);
   const [howOften, setHowOften] = useState(false);
@@ -348,6 +349,15 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
                 />
               ) : (
                 <>
+                  <div className="w-full p-3 rounded-md shadow-md">
+                    <div className="flex justify-between items-center">
+                    <div className="flex justify-center items-center">
+                    <AiFillInfoCircle className="mr-2"/>
+                      <p>Only notify</p>
+                      </div>
+                      <Toggle condition={onlyNotify} setCondition={setOnlyNotify} />
+                    </div>
+                  </div>
                   <p className={`${color} rounded-md shadow-sm px-2 py-1 mt-3`}>
                     {reminderTimeString}
                   </p>

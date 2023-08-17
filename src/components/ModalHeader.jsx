@@ -53,6 +53,22 @@ const ModalHeader = ({ allDayEvents }) => {
       .catch((err) => console.log(err));
   };
 
+  const switchDays = (e, info) => {
+    const dragDistance = info.offset.x;
+    const cancelThreshold = 75;
+    const currentDate = new Date(string); // Use the 'string' state value as the initial date
+    const newDate = new Date(currentDate); // Create a new date object to modify
+    if (dragDistance > cancelThreshold) {
+      // subtract a day
+      newDate.setDate(currentDate.getDate() - 1);
+    }
+    if (dragDistance < -cancelThreshold) {
+      // add a day
+      newDate.setDate(currentDate.getDate() + 1);
+    }
+    setString(newDate.toLocaleDateString());
+  };
+
   return (
     <motion.div
       initial={{ x: "110%" }}
@@ -62,9 +78,16 @@ const ModalHeader = ({ allDayEvents }) => {
       className="bg-white z-[902] p-2 font-bold shadow-md fixed top-1 right-1 rounded-md"
     >
       <div className="flex justify-between items-center">
-        <h2 className="bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent">
+        <motion.h2
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          drag="x"
+          dragSnapToOrigin={true}
+          onDragEnd={switchDays}
+          className="bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent"
+        >
           {string}
-        </h2>
+        </motion.h2>
         <div className="flex gap-x-3">
           {allDayEvents.length > 0 && (
             <div>
