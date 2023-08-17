@@ -89,7 +89,7 @@ const Menu = () => {
           )}
           {showCategory && (
             <div className="">
-              {showCategory === "reminders" && (
+              {showCategory === "reminder" && (
                 <AnimatePresence>
                   <motion.div
                     initial={{ x: "-100%", opacity: 0 }}
@@ -100,7 +100,7 @@ const Menu = () => {
                   </motion.div>
                 </AnimatePresence>
               )}
-              {showCategory === "lists" && (
+              {showCategory === "todo-list" && (
                 <AnimatePresence>
                   <motion.div
                     initial={{ x: "-100%", opacity: 0 }}

@@ -18,12 +18,21 @@ import {
 import { BiCategoryAlt } from "react-icons/bi";
 import { IoIosAddCircle } from "react-icons/io";
 import InteractiveContext from "../context/InteractiveContext";
+import UserContext from "../context/UserContext";
 import DatesContext from "../context/DatesContext";
 
 export const AddCircle = () => {
-  const { setAddNewEvent, setMenu, type, setType, showLogin, menu } =
-    useContext(InteractiveContext);
+  const {
+    setAddNewEvent,
+    setMenu,
+    type,
+    setType,
+    showLogin,
+    menu,
+    showCategory,
+  } = useContext(InteractiveContext);
   const { setOpenModal, setString, string, dateObj } = useContext(DatesContext);
+  const { setSystemNotif } = useContext(UserContext);
 
   const [show, setShow] = useState(false);
   const [showMenuBtns, setShowMenuBtns] = useState(false);
@@ -45,6 +54,26 @@ export const AddCircle = () => {
     setAddNewEvent(true);
   };
 
+  const prepareDelete = (type) => {
+    const newNotif = {
+      show: true,
+      title: `Delete All ${type}s`,
+      text: `Are you sure you want to delete all of your ${type}s? Your data will be lost forever`,
+      color: "bg-red-500",
+      hasCancel: true,
+      actions: [
+        {
+          text: "CLOSE",
+          func: () => {
+            setSystemNotif({ show: false });
+          },
+        },
+        { text: "Delete All Lists", func: () => {} },
+      ],
+    };
+    setSystemNotif(newNotif);
+  };
+
   return (
     <>
       {menu ? (
@@ -56,7 +85,7 @@ export const AddCircle = () => {
             <BiCategoryAlt />
           </div>
           <motion.div
-            onClick={() => {}}
+            onClick={() => openModalAndSetType(showCategory)}
             initial={{ opacity: 0 }}
             animate={
               showMenuBtns
@@ -68,7 +97,7 @@ export const AddCircle = () => {
             <IoIosAddCircle />
           </motion.div>
           <motion.div
-            onClick={() => {}}
+            onClick={() => prepareDelete(showCategory)}
             initial={{ opacity: 0 }}
             animate={
               showMenuBtns

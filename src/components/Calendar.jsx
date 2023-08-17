@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Dna } from "react-loader-spinner";
 import Modal from "./Modal";
 import ModalHeader from "./ModalHeader";
@@ -17,7 +17,7 @@ import UserContext from "../context/UserContext";
 
 const Calendar = () => {
   const { events, holidays, reminders, weekDays } = useContext(UserContext);
-  const { menu, view, event } = useContext(InteractiveContext);
+  const { view, event } = useContext(InteractiveContext);
   const { finish, loading, theDay, openModal, dateString, string, dateObj } =
     useContext(DatesContext);
 
@@ -98,8 +98,10 @@ const Calendar = () => {
             <></>
           )}
         </section>
-        {openModal && <ModalHeader allDayEvents={allDayEvents} />}
-        <Modal />
+        {openModal || event ? (
+          <ModalHeader allDayEvents={allDayEvents} />
+        ) : null}
+        <AnimatePresence>{openModal && <Modal />}</AnimatePresence>
         <Menu />
         <LoginLogout />
         {event && <Event dayEvents={todaysEvents} />}

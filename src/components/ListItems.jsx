@@ -64,6 +64,24 @@ const ListItems = ({ addItems, listId, items }) => {
     setNewItemText("");
   };
 
+  const updateOrderIndexes = (newIndexes) => {
+    setIndexes(newIndexes);
+    // Update the orderIndex values of the items based on the new indexes
+    const updatedItems = newIndexes.map((item, newIndex) => ({
+      ...item,
+      orderIndex: newIndex + 1,
+    }));
+    // Check if the listId exists in the listUpdate array
+    const containsListId = listUpdate.some((list) => list.listId === listId);
+    // Update the listUpdate context with the new reordered list
+    const updatedListUpdate = containsListId
+      ? listUpdate.map((list) =>
+          list.listId === listId ? { ...list, listItems: updatedItems } : list
+        )
+      : [...listUpdate, { listId, listItems: updatedItems }];
+    setListUpdate(updatedListUpdate);
+  };
+
   return (
     <>
       {addItems.includes(listId) && (
@@ -80,7 +98,7 @@ const ListItems = ({ addItems, listId, items }) => {
           />
         </div>
       )}
-      <Reorder.Group axis="y" values={indexes} onReorder={setIndexes}>
+      <Reorder.Group axis="y" values={indexes} onReorder={updateOrderIndexes}>
         {indexes?.map((listItem, index) => (
           <Reorder.Item
             whileDrag={{
@@ -96,7 +114,7 @@ const ListItems = ({ addItems, listId, items }) => {
               <p className="absolute top-[-6px] left-[-6px] w-[15px] h-[15px] shadow-md flex justify-center items-center rounded-full bg-white text-xs">
                 {index + 1}
               </p>
-              <p className="mr-5 text-sm">{listItem}</p>
+              <p className="mr-5 text-sm">{listItem.text}</p>
             </div>
             <div>
               <AiFillCloseCircle

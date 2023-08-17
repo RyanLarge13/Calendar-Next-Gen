@@ -7,7 +7,8 @@ import UserContext from "../context/UserContext";
 import DatesContext from "../context/DatesContext";
 
 const AddReminder = () => {
-  const { setMenu, setAddNewEvent, setType, setShowCategory} = useContext(InteractiveContext);
+  const { setMenu, setAddNewEvent, setType, setShowCategory } =
+    useContext(InteractiveContext);
   const { reminders, setReminders, setSystemNotif } = useContext(UserContext);
   const { setOpenModal } = useContext(DatesContext);
 
@@ -24,6 +25,7 @@ const AddReminder = () => {
         title: "Select A Time",
         text: "Please select a time for your reminder",
         color: "bg-red-200",
+        hasCancel: false,
         actions: [
           { text: "close", func: () => setSystemNotif({ show: false }) },
         ],
@@ -36,6 +38,7 @@ const AddReminder = () => {
         title: "Title",
         text: "Please create at least a title for your new reminder",
         color: "bg-red-200",
+        hasCancel: false,
         actions: [
           { text: "close", func: () => setSystemNotif({ show: false }) },
         ],

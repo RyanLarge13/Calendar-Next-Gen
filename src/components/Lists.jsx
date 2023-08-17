@@ -2,13 +2,10 @@ import { useContext, useState } from "react";
 import ListItems from "./ListItems";
 import { deleteList } from "../utils/api";
 import { motion } from "framer-motion";
-import { AiOutlinePlus } from "react-icons/ai";
 import {
   BsFillTrashFill,
   BsFillPenFill,
   BsFillShareFill,
-  BsListCheck,
-  BsTrashFill,
 } from "react-icons/bs";
 import { BiListMinus, BiListPlus } from "react-icons/bi";
 import UserContext from "../context/UserContext";
@@ -33,19 +30,12 @@ const Lists = () => {
   };
 
   const sortItems = (items) => {
-    const newSort = items.sort((a, b) => b.orderIndex - a.orderIndex);
+    const newSort = items.sort((a, b) => a.orderIndex - b.orderIndex);
     return newSort;
   };
 
   return (
     <motion.div className="py-3 relative">
-      {/* <div className="sticky top-1 right-0 left-0 p-3 mb-5 w-full flex justify-between items-center gap-x-3 rounded-md shadow-md bg-white z-20">
-        <BsListCheck />
-        <div className="flex gap-x-3">
-          <BsTrashFill />
-          <AiOutlinePlus />
-        </div>
-      </div> */}
       {lists.map((list) => (
         <div
           key={list.id}
@@ -77,6 +67,7 @@ const Lists = () => {
                     title: "Delete List",
                     text: `Are you sure you want to delete this list ${list.title}?`,
                     color: "bg-red-300",
+                    hasCancel: true,
                     actions: [
                       {
                         text: "cancel",

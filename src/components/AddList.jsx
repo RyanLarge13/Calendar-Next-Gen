@@ -28,6 +28,7 @@ const AddList = () => {
         title: "Add Title",
         text: "You must add a title to your list",
         color: "bg-red-200",
+        hasCancel: false,
         actions: [
           { text: "close", func: () => setSystemNotif({ show: false }) },
         ],
@@ -40,6 +41,7 @@ const AddList = () => {
         title: "Add Color",
         text: "You must add a color to your list",
         color: "bg-red-200",
+        hasCancel: false,
         actions: [
           { text: "close", func: () => setSystemNotif({ show: false }) },
         ],
@@ -50,19 +52,33 @@ const AddList = () => {
   };
 
   const addItemsToList = () => {
-    if (!itemTitle) return;
+    if (!itemTitle) {
+      const newNotif = {
+        show: true,
+        title: "No Items",
+        text: "Please add items",
+        color: "bg-red-200",
+        hasCancel: false,
+        actions: [
+          { text: "close", func: () => setSystemNotif({ show: false }) },
+        ],
+      };
+      return setSystemNotif(newNotif);
+    }
+    const newOrderIndex = listItems.length;
     if (itemTitle.includes(",")) {
       const eachItem = itemTitle.split(",");
-      eachItem.forEach((item) => {
+      eachItem.forEach((item, index) => {
         setListItems((prev) => [
           ...prev,
           {
             id: uuidv4(),
             text: item.trim(),
-            orderIndex: increment++,
+            orderIndex: newOrderIndex + index + increment,
             complete: false,
           },
         ]);
+        increment += eachItem.length;
       });
     }
     if (!itemTitle.includes(",")) {
@@ -71,10 +87,11 @@ const AddList = () => {
         {
           id: uuidv4(),
           text: itemTitle.trim(),
-          orderIndex: increment++,
+          orderIndex: newOrderIndex + increment,
           complete: false,
         },
       ]);
+      increment++;
     }
     setItemTitle("");
   };

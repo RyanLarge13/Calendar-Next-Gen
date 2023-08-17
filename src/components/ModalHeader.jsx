@@ -13,7 +13,7 @@ import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
 
 const ModalHeader = ({ allDayEvents }) => {
-  const { string } = useContext(DatesContext);
+  const { string, setString } = useContext(DatesContext);
   const { user, events, setEvents, holidays, setSystemNotif } =
     useContext(UserContext);
   const { addNewEvent, event, setEvent } = useContext(InteractiveContext);
@@ -28,6 +28,9 @@ const ModalHeader = ({ allDayEvents }) => {
   }, []);
 
   useEffect(() => {
+    if (event) {
+      setString(event.date);
+    }
     event || addNewEvent
       ? setShowAllDayEvents(false)
       : setShowAllDayEvents(true);
@@ -89,6 +92,7 @@ const ModalHeader = ({ allDayEvents }) => {
                         title: `Delete ${event.summary}`,
                         text: "Are you sure you want to delete this event?",
                         color: "bg-red-200",
+                        hasCancel: true,
                         actions: [
                           {
                             text: "cancel",

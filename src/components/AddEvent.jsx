@@ -115,6 +115,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
         description,
         location: location ? locationObject : undefined,
         date: string,
+        attachments: attachments.length,
         reminders: {
           reminder,
           reminderTimeString: reminder ? reminderTimeString : null,
@@ -172,6 +173,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
         title: "Add Title",
         text: "You must add a title to your new event",
         color: "bg-red-200",
+        hasCancel: false,
         actions: [
           { text: "close", func: () => setSystemNotif({ show: false }) },
         ],
@@ -185,6 +187,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
         title: "Add Color",
         text: "You must add a color to your new event",
         color: "bg-red-200",
+        hasCancel: false,
         actions: [
           { text: "close", func: () => setSystemNotif({ show: false }) },
         ],

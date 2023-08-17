@@ -24,7 +24,6 @@ const MonthView = () => {
   } = useContext(DatesContext);
 
   const [selected, setSelected] = useState([]);
-  const [spanEvents, setSpanEvents] = useState([]);
   const [longPressActive, setLongPressActive] = useState(false);
   const [longPressTimeout, setLongPressTimeout] = useState(null);
 
@@ -46,15 +45,7 @@ const MonthView = () => {
 
   const getEventsForDate = (targetDate) => {
     return [...events, ...holidays].filter(
-      (event) =>
-        //	const start = new Date(event.start.startTime)
-        //	const end = new Date(event.end.endTime);
-        //	if (start && end) {
-        //	if (start <= targetDate && end > targetDate)  {
-
-        // 	}
-        // 	}
-        event.date === targetDate
+      (event) => event.date === targetDate
     );
   };
 
@@ -66,11 +57,6 @@ const MonthView = () => {
         clearTimeout(longPressTimeout);
       }, 1)
     );
-  };
-
-  const handleDayRelease = () => {
-    setLongPressActive(false);
-    clearTimeout(longPressTimeout);
   };
 
   const handleDayClick = (index) => {
@@ -102,7 +88,7 @@ const MonthView = () => {
       animate="show"
       className="grid grid-cols-7 min-h-[50vh] h-[76vh] gap-1"
     >
-      {[...Array(paddingDays + daysInMonth)].map((abs, index) => {
+      {[...Array(paddingDays + daysInMonth)].map((_, index) => {
         const isCurrentDate =
           index - paddingDays + 1 === day &&
           month === dateObj.getMonth() &&

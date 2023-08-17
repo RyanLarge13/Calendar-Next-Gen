@@ -1,7 +1,5 @@
 import { useState, useContext } from "react";
 import { colors } from "../constants.js";
-import { MdCancel } from "react-icons/md";
-import { BsFillSaveFill } from "react-icons/bs";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext";
 
@@ -23,6 +21,7 @@ const AddKanban = () => {
         color: "bg-red-200",
         title: "Project Title",
         text: "Please add a title for your new Kanban project",
+        hasCancel: false,
         actions: [
           { text: "close", func: () => setSystemNotif({ show: false }) },
         ],
@@ -35,6 +34,7 @@ const AddKanban = () => {
         color: "bg-red-200",
         title: "Project Color",
         text: "Please select a color for your new Kanban project",
+        hasCancel: false,
         actions: [
           { text: "close", func: () => setSystemNotif({ show: false }) },
         ],
