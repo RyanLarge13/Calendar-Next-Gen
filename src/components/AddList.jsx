@@ -1,5 +1,6 @@
 import { useState, useContext } from "react";
 import { createNewList } from "../utils/api.js";
+import { v4 as uuidv4 } from "uuid";
 import { MdCancel } from "react-icons/md";
 import { BsFillSaveFill } from "react-icons/bs";
 import UserContext from "../context/UserContext.jsx";
@@ -18,6 +19,7 @@ const AddList = () => {
   const [itemTitle, setItemTitle] = useState("");
   const [title, setTitle] = useState("");
   const [color, setColor] = useState("");
+  let increment = 0;
 
   const createList = () => {
     if (!title) {
@@ -51,12 +53,28 @@ const AddList = () => {
     if (!itemTitle) return;
     if (itemTitle.includes(",")) {
       const eachItem = itemTitle.split(",");
-      eachItem.forEach((item) =>
-        setListItems((prev) => [...prev, item.trim()])
-      );
+      eachItem.forEach((item) => {
+        setListItems((prev) => [
+          ...prev,
+          {
+            id: uuidv4(),
+            text: item.trim(),
+            orderIndex: increment++,
+            complete: false,
+          },
+        ]);
+      });
     }
     if (!itemTitle.includes(",")) {
-      setListItems((prev) => [...prev, itemTitle.trim()]);
+      setListItems((prev) => [
+        ...prev,
+        {
+          id: uuidv4(),
+          text: itemTitle.trim(),
+          orderIndex: increment++,
+          complete: false,
+        },
+      ]);
     }
     setItemTitle("");
   };
@@ -143,12 +161,12 @@ const AddList = () => {
           </button>
           <div className="text-left mb-40">
             {listItems.length > 0 &&
-              listItems.map((item, index) => (
+              listItems.map((item) => (
                 <div
-                  key={index}
+                  key={item.id}
                   className="p-3 border-b border-b-slate-300 flex justify-between items-center"
                 >
-                  <p>{item}</p>
+                  <p>{item.text}</p>
                   <AiFillCloseCircle onClick={() => removeItem(item)} />
                 </div>
               ))}

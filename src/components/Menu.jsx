@@ -20,7 +20,7 @@ const Menu = () => {
     if (listUpdate.length > 0) {
       const token = localStorage.getItem("authToken");
       updateClientLists();
-      updateList(token, listUpdate)
+      updateList(token, [...listUpdate])
         .then((res) => {
           console.log(res);
           setListUpdate([]);

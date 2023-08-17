@@ -1,15 +1,18 @@
 import { useContext, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import { AiFillCloseCircle, AiFillPlusCircle } from "react-icons/ai";
 import { Reorder } from "framer-motion";
 import InteractiveContext from "../context/InteractiveContext";
+import UserContext from "../context/UserContext";
 
 const ListItems = ({ addItems, listId, items }) => {
   const { listUpdate, setListUpdate } = useContext(InteractiveContext);
+  const { setSystemNotif } = useContext(UserContext);
   const [indexes, setIndexes] = useState(items);
   const [newItemText, setNewItemText] = useState("");
 
   const removeItem = (item) => {
-    const newList = indexes.filter((i) => i !== item);
+    const newList = indexes.filter((i) => i.id !== item.id);
     setIndexes(newList);
     const contains = listUpdate.find((li) => li.listId === listId);
     if (contains) {
@@ -25,9 +28,27 @@ const ListItems = ({ addItems, listId, items }) => {
   };
 
   const addNewItem = () => {
+    if (!newItemText) {
+      const newNotif = {
+        show: true,
+        title: "No Item",
+        text: "Please type in the list item you'd like to create",
+        color: "bg-red-200",
+        actions: [
+          { text: "close", func: () => setSystemNotif({ show: false }) },
+        ],
+      };
+      return setSystemNotif(newNotif);
+    }
     if (newItemText) {
-      setIndexes((prev) => [...prev, newItemText]);
-      setNewItemText("");
+      const newItem = {
+        id: uuidv4(),
+        text: newItemText,
+        orderIndex: items.length + 1,
+        complete: false,
+      };
+      const newList = [...indexes, newItem];
+      setIndexes(newList);
       const contains = listUpdate.find((li) => li.listId === listId);
       if (contains) {
         listUpdate[listUpdate.indexOf(contains)].listItems = newList;
@@ -35,11 +56,12 @@ const ListItems = ({ addItems, listId, items }) => {
       if (!contains) {
         const newObj = {
           listId: listId,
-          listItems: [...items, newItemText],
+          listItems: [...items, newItem],
         };
         setListUpdate((prev) => [...prev, newObj]);
       }
     }
+    setNewItemText("");
   };
 
   return (
@@ -66,7 +88,7 @@ const ListItems = ({ addItems, listId, items }) => {
               backgroundColor: "rgba(255,255,255,1)",
               cursor: "grabbing",
             }}
-            key={listItem}
+            key={listItem.id}
             value={listItem}
             className="bg-white bg-opacity-20 rounded-md shadow-md px-2 py-5 my-3 flex justify-between items-center cursor-grab relative"
           >

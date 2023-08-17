@@ -45,15 +45,16 @@ const MonthView = () => {
   };
 
   const getEventsForDate = (targetDate) => {
-    return [...events, ...holidays].filter((event) => 
-      //	const start = new Date(event.start.startTime)
-      //	const end = new Date(event.end.endTime);
-      //	if (start && end) {
-      //	if (start <= targetDate && end > targetDate)  {
+    return [...events, ...holidays].filter(
+      (event) =>
+        //	const start = new Date(event.start.startTime)
+        //	const end = new Date(event.end.endTime);
+        //	if (start && end) {
+        //	if (start <= targetDate && end > targetDate)  {
 
-      // 	}
-      // 	}
-       event.date === targetDate
+        // 	}
+        // 	}
+        event.date === targetDate
     );
   };
 
@@ -140,26 +141,16 @@ const MonthView = () => {
                   : "bg-transparent"
               }`}
             >
-              {eventsForDate.map((event, eventIndex) => (
+              {eventsForDate.map((event) => (
                 <motion.div
-                  key={eventIndex}
-                  initial={{ opacity: 0, y: -7.5 }}
+                  key={event.id}
+                  initial={{ opacity: 0 }}
                   animate={{
                     opacity: 1,
-                    y: 0,
-                    transition: {
-                      delay: 0.5,
-                      type: "spring",
-                      stiffness: 200,
-                    },
                   }}
-                  className={`sticky z-10 rounded-lg ${event.color} shadow-md p-1 my-1 mx-auto`}
+                  className={`rounded-lg ${event.color} shadow-md p-1 my-1 mx-auto`}
                 >
-                  <p
-                    className={`whitespace-nowrap text-xs overflow-hidden ${
-                      event.color === "bg-black" ? "text-white" : "text-black"
-                    }`}
-                  >
+                  <p className="whitespace-nowrap text-xs overflow-hidden">
                     {event.summary}
                   </p>
                 </motion.div>

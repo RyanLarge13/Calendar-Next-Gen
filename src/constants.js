@@ -14,7 +14,6 @@ export const colors = [
   { color: "bg-amber-300" },
   { color: "bg-fuchsia-300" },
   { color: "bg-slate-300" },
-  { color: "bg-black" },
   { color: "bg-cyan-300" },
   { color: "bg-sky-300" },
   { color: "bg-purple-300" },

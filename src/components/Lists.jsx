@@ -18,7 +18,7 @@ const Lists = () => {
   const [addItems, setAddItems] = useState([]);
 
   const deleteEntireList = (listId) => {
-  	setSystemNotif({show: false})
+    setSystemNotif({ show: false });
     const token = localStorage.getItem("authToken");
     if (!token) return;
     const newListOfLists = lists.filter((item) => item.id !== listId);
@@ -30,6 +30,11 @@ const Lists = () => {
       .catch((err) => {
         console.log(err);
       });
+  };
+
+  const sortItems = (items) => {
+    const newSort = items.sort((a, b) => b.orderIndex - a.orderIndex);
+    return newSort;
   };
 
   return (
@@ -85,7 +90,11 @@ const Lists = () => {
               />
             </div>
           </div>
-          <ListItems addItems={addItems} listId={list.id} items={list?.items} />
+          <ListItems
+            addItems={addItems}
+            listId={list.id}
+            items={sortItems(list?.items)}
+          />
         </div>
       ))}
     </motion.div>
