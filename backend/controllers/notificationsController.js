@@ -174,7 +174,7 @@ export const getOldNotifications = async (req, res) => {
   }
 };
 
-export const createNotifcation = async (req, res) => {
+export const createNotification = async (req, res) => {
 	const notification = req.body;
 	try {
 	const newNotif = await prisma.notification.create({
