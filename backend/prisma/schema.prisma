@@ -43,14 +43,14 @@ summary String
 description String?
 location Json?
 date String
-attatchments Int @default(0)
+attatchmentLength Int @default(0)
 reminders Json?
 repeats Json?
 attachments Attachment[]
 color String
 start Json
 end Json
-updated DateTime @updatedAt
+updated DateTime @updatedAt @default(now())
 created DateTime @default(now())
 User User     @relation(fields: [userId], references: [id])
 userId String
@@ -100,7 +100,7 @@ items Json?
 color String
 User User   @relation(fields: [userId], references: [id])
 userId String
-updatedAt DateTime @updatedAt
+updatedAt DateTime @updatedAt @default(now())
 }
 
 model Task {
