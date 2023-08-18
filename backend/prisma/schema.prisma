@@ -43,7 +43,7 @@ summary String
 description String?
 location Json?
 date String
-attatchmentLength Int @default(0)
+attachmentLength Int @default(0)
 reminders Json?
 repeats Json?
 attachments Attachment[]
