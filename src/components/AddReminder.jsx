@@ -74,26 +74,29 @@ const AddReminder = () => {
       return createNotification(newNotification, token)
         .then((res) => {
           const notif = res.data.notification;
+          const time = new Date(notif.time);
           const newNotif = {
             show: true,
             title: "Notification Created",
             text: `New Notification created to ${
-              notif.title
-            } we will reminder you on ${new Date(notif.time).toLocaleDateString(
-              "en-US",
-              {
-                weekday: "short",
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              }
-            )}`,
+              notif.notifData.title
+            } we will reminder you on ${time.toLocaleDateString("en-US", {
+              weekday: "short",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })} @${time.toLocaleTimeString("en-US", {
+              timeZoneName: "short",
+            })}`,
             color: "bg-cyan-100",
             hasCancel: false,
             action: [
               { text: "close", func: () => setSystemNotif({ show: false }) },
             ],
           };
+          setOpenModal(false);
+          setAddNewEvent(false);
+          setType(null);
           return setSystemNotif(newNotif);
         })
         .catch((err) => console.log(err));

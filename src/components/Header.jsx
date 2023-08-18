@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { motion } from "framer-motion";
-import { RiMenuUnfoldFill, RiMenuFoldFill } from "react-icons/ri";
+import { RiMenuUnfoldFill } from "react-icons/ri";
 import {
   BsFillArrowRightCircleFill,
   BsFillArrowLeftCircleFill,
@@ -36,8 +36,8 @@ const Header = () => {
         <MenuNavigation />
       ) : (
         <motion.header
-          initial={{ y: "-100%" }}
-          animate={{ y: 0 }}
+          initial={{ y: "-100%", opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
           className="fixed top-0 left-0 right-0 bg-white z-[1] flex justify-between p-5 mb-5 shadow-md"
         >
           <RiMenuUnfoldFill
