@@ -36,7 +36,7 @@ const Event = ({ dayEvents }) => {
 
   useEffect(() => {
     //setString(new Date(event.date).toLocaleDateString());
-    if (event.attachments > 0) {
+    if (event.attachmentLength > 0) {
       fetchAttachments(event.id)
         .then((res) => {
           res.data.attachments.forEach((file) => {
