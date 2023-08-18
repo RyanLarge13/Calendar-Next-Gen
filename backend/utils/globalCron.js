@@ -41,10 +41,10 @@ const processPushNotifications = async () => {
             },
           });
           if (user.notifSub.length > 1) {
-            sendNotification(payload, [...user.notifSub]);
+            sendNotification(payload, [...user.notifSub], user.id);
           }
           if (user.notifSub.length < 2) {
-            sendNotification(payload, [JSON.parse(...user.notifSub)], user.id);
+            sendNotification(payload, [JSON.parse(...user.notifSub)]);
           }
           notificationIdsToUpdate.push(notification.id);
         }

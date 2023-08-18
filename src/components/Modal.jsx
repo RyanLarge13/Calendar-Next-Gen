@@ -10,6 +10,7 @@ import AddReminder from "./AddReminder";
 import AddList from "./AddList";
 import AddKanban from "./AddKanban";
 import AddTask from "./AddTask";
+import AddSticky from "./AddSticky"
 
 const Modal = () => {
   const { events, holidays } = useContext(UserContext);
@@ -83,6 +84,7 @@ const Modal = () => {
             {type === "todo-list" && <AddList />}
             {type === "kanban" && <AddKanban />}
             {type === "task" && <AddTask />}
+            {type === "stickynote" && <AddSticky />}
           </div>
         ) : (
           <div className="w-full pl-20">

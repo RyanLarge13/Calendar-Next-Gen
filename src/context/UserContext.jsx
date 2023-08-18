@@ -277,13 +277,13 @@ export const UserProvider = ({ children }) => {
           {
             text: "mark as read",
             func: () => {
-              const updatedNotifs = notifications.map((notif) => {
-                if (notif.id === notification.id) {
-                  return { ...notif, read: true };
-                }
-                return notif;
-              });
-              setNotifications(updatedNotifs);
+              const updatedNotifications = notifications.map((notif) =>
+      notif.id === notification.id ? { ...notif, read: true } : notif
+    );
+    const sortedNotifications = updatedNotifications.sort(
+      (a, b) => b.time - a.time
+    );
+              setNotifications(sortedNotifications);
               setSystemNotif({ show: false });
               markAsRead(notification.id);
             },
@@ -295,13 +295,6 @@ export const UserProvider = ({ children }) => {
     serverSentSource.addEventListener("error", (error) => {
       console.error("SSE error:", error);
       serverSentSource.close();
-      // if (error.eventPhase === EventSource.CLOSED) {
-      //         console.log("SSE connection closed. Attempting reconnection");
-      //         setTimeout(() => {
-      //           const source = getNotifications(userId);
-      //           setupNotifListener(source);
-      //         }, 3000);
-      //       }
     });
     window.addEventListener("beforeunload", () => {
       if (serverSentSource !== null) {
