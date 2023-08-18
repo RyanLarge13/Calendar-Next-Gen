@@ -142,6 +142,7 @@ export const getNotifications = async (req, res) => {
   }
   req.on("close", () => {
     console.log("Closing connection");
+    res.end();
     if (existingClientIndex !== -1) {
       const existingClient = connectedClients[existingClientIndex];
       existingClient.response.end();
@@ -175,21 +176,33 @@ export const getOldNotifications = async (req, res) => {
 };
 
 export const createNotification = async (req, res) => {
-	const notification = req.body;
-	try {
-	const newNotif = await prisma.notification.create({
-    data: notification,
-  });
-  if (newNotif) {
-  	res.status(201).json({message: "Successfully created your new notification", notification: newNotif})
+  const notification = req.body;
+  try {
+    const newNotif = await prisma.notification.create({
+      data: notification,
+    });
+    if (newNotif) {
+      res
+        .status(201)
+        .json({
+          message: "Successfully created your new notification",
+          notification: newNotif,
+        });
+    }
+    if (!newNotif) {
+      res
+        .status(401)
+        .json({
+          message:
+            "Failed to create a new Notification, please refresh and try again",
+        });
+    }
+  } catch (err) {
+    return res
+      .status(401)
+      .json({ message: `Server error, please refresh and try again: ${err}` });
   }
-  if (!newNotif) {
-  	res.status(401).json({message: "Failed to create a new Notification, please refresh and try again"})
-  }
-	} catch (err) {
-		return res.status(401).json({message: `Server error, please refresh and try again: ${err}`})
-	}
-}
+};
 
 export const updateNotification = async (req, res) => {
   const ids = req.body.notifs;
@@ -207,16 +220,16 @@ export const updateNotification = async (req, res) => {
 };
 
 export const markAsRead = async (req, res) => {
-	const {notifId} = req.body;
-	console.log(req.body)
-	try {
-	await prisma.notification.update({
-		where: {id: notifId}, 
-		data: {read: true} 
-	})
-	} catch (err) {
-		console.log(err)
-	}
+  const { notifId } = req.body;
+  console.log(req.body);
+  try {
+    await prisma.notification.update({
+      where: { id: notifId },
+      data: { read: true },
+    });
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 export const deleteNotification = async (req, res) => {
