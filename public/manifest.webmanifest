@@ -10,6 +10,33 @@
   "orientation": "portrait",
   "theme_color": "#ffffff",
   "serviceworker": "/sw.js",
+  "prefer_related_applications": false,
+  "dir": "ltr",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "categories": ["business", "lifestyle", "productivity", "utilities"],
+  "handle_links": "auto",
+  "id": "4a53c2ea-6b81-4c19-b77a-eeb013af1f8a",
+  "edge_side_panel.preferred_width": {
+    "preferred_width": 100
+  },
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
+  "scope_extensions": [{ "origin": "*calng.app" }],
+  "screenshots": [
+    {
+      "src": "/screenshots/calng-mobile.png",
+      "sizes": "509x802",
+      "type": "image/jpg",
+      "platform": "wide"
+    },
+    {
+      "src": "/screenshots/calng-desktop.png",
+      "sizes": "1369x799",
+      "type": "image/jpg",
+      "platform": "wide"
+    }
+  ],
   "icons": [
     {
       "src": "android/android-launchericon-192-192.png",
@@ -34,9 +61,26 @@
       "purpose": "maskable"
     }
   ],
-  "dir": "ltr",
-  "display_override": ["window-controls-overlay", "standalone"],
-  "categories": ["business", "lifestyle", "productivity", "utilities"],
+  "shortcuts": [
+    {
+      "name": "Create Event",
+      "url": "/",
+      "description": "Create a new event for today"
+    },
+    {
+      "name": "Create Reminder",
+      "url": "/",
+      "description": "Create a new reminder for today"
+    }
+  ],
+  "share_target": {
+    "action": "/",
+    "method": "POST",
+    "params": {
+      "title": "Share Event",
+      "url": "/"
+    }
+  },
   "actions": [
     {
       "action": "share",
@@ -57,6 +101,37 @@
           "url": "https://calng.app"
         }
       }
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "/open-pdf",
+      "accept": {
+        "application/pdf": [".pdf"]
+      },
+      "icons": [
+        {
+          "src": "pdf-icon.png",
+          "sizes": "256x256",
+          "type": "image/png"
+        }
+      ],
+      "launch_type": "single-client"
+    },
+    {
+      "action": "/show-model",
+      "accept": {
+        "application/sla": ".stl",
+        "application/octet-stream": ".fbx"
+      },
+      "icons": [
+        {
+          "src": "3d-printer-icon.png",
+          "sizes": "256x256",
+          "type": "image/png"
+        }
+      ],
+      "launch_type": "multiple-clients"
     }
   ]
 }

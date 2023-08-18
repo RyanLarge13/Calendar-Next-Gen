@@ -23,7 +23,7 @@ function sendNotification(payload, subscriptions, userId) {
       WebPush.sendNotification(JSON.parse(sub), payload).catch((error) => {
         console.error("Error sending notification:", error);
         if (error.statusCode === 410) {
-          const endpoint = subscription.endpoint;
+          const endpoint = sub.endpoint;
           prisma.user
             .update({
               where: { id: userId },
