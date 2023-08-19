@@ -112,6 +112,8 @@ export const getNotifications = async (req, res) => {
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
   res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   const clientResponse = res;
   const id = req.params.userId;
   if (id === undefined || id === null) {
