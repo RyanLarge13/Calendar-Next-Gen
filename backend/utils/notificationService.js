@@ -20,37 +20,35 @@ const sendNotification = (payload, subscriptions, userId) => {
   }
   if (subscriptions.length > 1) {
     subscriptions.forEach((sub) => {
-      WebPush.sendNotification(JSON.parse(sub), payload).catch((error) => {
-        console.error("Error sending notification:", error);
-        if (error.statusCode === 410) {
-          const parsedSub = JSON.parse(sub)
-          const endpoint = parsedSub.endpoint
-          prisma.user
-            .update({
+      WebPush.sendNotification(JSON.parse(sub), payload).catch(
+        async (error) => {
+          console.error("Error sending notification:", error);
+          if (error.statusCode === 410) {
+            const parsedSub = JSON.parse(sub);
+            const endpointToDelete = parsedSub.endpoint;
+            const user = await prisma.user.findUnique({
+              where: { id: userId },
+            });
+            const updatedNotifSub = user.notifSub
+              .map((subscription) => JSON.parse(subscription))
+              .filter(
+                (parsedSubscription) =>
+                  parsedSubscription.endpoint !== endpointToDelete
+              );
+            const updatedNotifSubStringified = updatedNotifSub.map(
+              (subscription) => JSON.stringify(subscription)
+            );
+            await prisma.user.update({
               where: { id: userId },
               data: {
-                notifSub: {
-                  set: {
-                    endpoint: {
-                      delete: endpoint,
-                    },
-                  },
-                },
+                notifSub: updatedNotifSubStringified,
               },
-            })
-            .then((updatedUser) => {
-              console.log(
-                `Subscription with endpoint ${endpoint} has been deleted.`
-              );
-            })
-            .catch((updateError) => {
-              console.error("Error updating user:", updateError);
-              // Handle the update error as needed.
             });
+          }
         }
-      });
+      );
     });
   }
-}
+};
 
 export { sendNotification };

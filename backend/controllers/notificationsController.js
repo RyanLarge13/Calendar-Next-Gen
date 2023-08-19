@@ -131,7 +131,6 @@ export const getNotifications = async (req, res) => {
     });
     existingClient.job = newJob;
     existingClient.job.start();
-    console.log(existingClient);
   }
   if (existingClientIndex === -1) {
     console.log("New client attempting connection");
@@ -142,7 +141,6 @@ export const getNotifications = async (req, res) => {
     newClient.job = newJob;
     newClient.job.start();
     connectedClients.push(newClient);
-    console.log(newClient);
   }
   req.on("close", () => {
     console.log("Closing connection");
@@ -153,10 +151,7 @@ export const getNotifications = async (req, res) => {
       existingClient.job.stop();
       console.log(`Stopping SSE response for client ${existingClient.id}`);
     } else {
-      console.log(
-        "No exsisting client but req.on close event fired",
-        connectedClients
-      );
+      console.log("No exsisting client but req.on close event fired");
     }
   });
 };
