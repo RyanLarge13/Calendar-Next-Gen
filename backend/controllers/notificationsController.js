@@ -112,6 +112,8 @@ export const getNotifications = async (req, res) => {
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
   res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   const clientResponse = res;
   const id = req.params.userId;
   if (id === undefined || id === null) {
@@ -122,8 +124,8 @@ export const getNotifications = async (req, res) => {
     (client) => client.id === id
   );
   if (existingClientIndex !== -1) {
-    console.log("User is attempting reconnection");
     const existingClient = connectedClients[existingClientIndex];
+    console.log(`User is attempting reconnection with user id: ${existingClient.id}`);
     existingClient.response = clientResponse;
     existingClient.job.stop();
     const newJob = cron.schedule("*/15 * * * * *", () => {
