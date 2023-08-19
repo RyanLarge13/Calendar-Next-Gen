@@ -48,7 +48,7 @@ const ListItems = ({ addItems, listId, items }) => {
         orderIndex: items.length + 1,
         complete: false,
       };
-      const newList = [...indexes, newItem];
+      const newList = [newItem, ...indexes];
       setIndexes(newList);
       const contains = listUpdate.find((li) => li.listId === listId);
       if (contains) {
@@ -57,7 +57,7 @@ const ListItems = ({ addItems, listId, items }) => {
       if (!contains) {
         const newObj = {
           listId: listId,
-          listItems: [...items, newItem],
+          listItems: [newItem, ...items],
         };
         setListUpdate((prev) => [...prev, newObj]);
       }

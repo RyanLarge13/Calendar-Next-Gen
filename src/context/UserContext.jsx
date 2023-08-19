@@ -298,9 +298,6 @@ export const UserProvider = ({ children }) => {
     serverSentSource.addEventListener("error", (error) => {
       console.error("SSE error:", error);
       serverSentSource.close();
-    });
-    serverSentSource.addEventListener("close", (event) => {
-      console.log(`SSE connection closed: ${event}`);
       setTimeout(() => {
         console.log("Attempting SSE reconnection...");
         const newConnection = getNotifications(userId);
