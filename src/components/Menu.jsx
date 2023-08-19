@@ -22,7 +22,21 @@ const Menu = () => {
       updateClientLists();
       updateList(token, [...listUpdate])
         .then((res) => {
-          console.log(res);
+          const lastUpdatedId = listUpdate[listUpdate.length - 1].listId;
+          const listIndex = lists.findIndex(
+            (list) => list.id === lastUpdatedId
+          );
+          if (listIndex !== -1) {
+            // Remove the list from its current position
+            const updatedLists = [...lists];
+            const movedList = updatedLists.splice(listIndex, 1)[0];
+
+            // Add the list back to the front of the array
+            updatedLists.unshift(movedList);
+
+            // Update the state with the new order
+            setLists(updatedLists);
+          }
           setListUpdate([]);
         })
         .catch((err) => {

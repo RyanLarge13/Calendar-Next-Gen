@@ -34,6 +34,7 @@ const ListItems = ({ addItems, listId, items }) => {
         title: "No Item",
         text: "Please type in the list item you'd like to create",
         color: "bg-red-200",
+        hasCancel: false,
         actions: [
           { text: "close", func: () => setSystemNotif({ show: false }) },
         ],

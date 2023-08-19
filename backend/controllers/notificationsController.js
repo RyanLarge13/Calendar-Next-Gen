@@ -122,6 +122,7 @@ export const getNotifications = async (req, res) => {
     (client) => client.id === id
   );
   if (existingClientIndex !== -1) {
+    console.log("User is attempting reconnection");
     const existingClient = connectedClients[existingClientIndex];
     existingClient.response = clientResponse;
     existingClient.job.stop();
@@ -130,8 +131,10 @@ export const getNotifications = async (req, res) => {
     });
     existingClient.job = newJob;
     existingClient.job.start();
+    console.log(existingClient);
   }
   if (existingClientIndex === -1) {
+    console.log("New client attempting connection");
     const newClient = { id: id, response: clientResponse };
     const newJob = cron.schedule("*/15 * * * * *", () => {
       processNotifications(id, clientResponse);
@@ -139,6 +142,7 @@ export const getNotifications = async (req, res) => {
     newClient.job = newJob;
     newClient.job.start();
     connectedClients.push(newClient);
+    console.log(newClient);
   }
   req.on("close", () => {
     console.log("Closing connection");
@@ -148,6 +152,11 @@ export const getNotifications = async (req, res) => {
       existingClient.response.end();
       existingClient.job.stop();
       console.log(`Stopping SSE response for client ${existingClient.id}`);
+    } else {
+      console.log(
+        "No exsisting client but req.on close event fired",
+        connectedClients
+      );
     }
   });
 };

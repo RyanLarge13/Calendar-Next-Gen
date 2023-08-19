@@ -197,7 +197,10 @@ export const UserProvider = ({ children }) => {
             });
           getAllLists(authToken, res.data.user.username)
             .then((response) => {
-              setLists(response.data.lists);
+              const sortedLists = response.data.lists.sort(
+                (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+              );
+              setLists(sortedLists);
             })
             .catch((err) => {
               console.log(err);
