@@ -89,9 +89,10 @@ const AddReminder = () => {
               timeZoneName: "short",
             })}`,
             color: "bg-cyan-100",
-            hasCancel: false,
+            hasCancel: true,
             action: [
               { text: "close", func: () => setSystemNotif({ show: false }) },
+              {text: "delete notification", func: () => {}}
             ],
           };
           setOpenModal(false);

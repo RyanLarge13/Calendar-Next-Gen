@@ -80,6 +80,7 @@ const Calendar = () => {
               dragSnapToOrigin={true}
               dragTransition={{ bounceStiffness: 100, bounceDamping: 10 }}
               onDragEnd={(e, info) => finish(e, info)}
+              className="will-change-transform"
             >
               <div>
                 {view === "month" && <MonthView />}

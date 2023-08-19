@@ -71,6 +71,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
       title: "Delete Notification",
       text: "Are you sure you want to delete this notification?",
       color: "bg-red-200",
+      hasCancel: true, 
       actions: [
         { text: "close", func: () => setSystemNotif({ show: false }) },
         {

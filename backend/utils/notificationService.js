@@ -8,7 +8,7 @@ WebPush.setVapidDetails(
   process.env.VAPID_PRIVATE_KEY
 );
 
-function sendNotification(payload, subscriptions, userId) {
+const sendNotification = (payload, subscriptions, userId) => {
   console.log(subscriptions);
   if (!subscriptions) {
     throw new Error("Subscription not set");
@@ -23,7 +23,8 @@ function sendNotification(payload, subscriptions, userId) {
       WebPush.sendNotification(JSON.parse(sub), payload).catch((error) => {
         console.error("Error sending notification:", error);
         if (error.statusCode === 410) {
-          const endpoint = sub.endpoint;
+          const parsedSub = JSON.parse(sub)
+          const endpoint = parsedSub.endpoint
           prisma.user
             .update({
               where: { id: userId },

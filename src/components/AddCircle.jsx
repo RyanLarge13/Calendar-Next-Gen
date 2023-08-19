@@ -250,6 +250,7 @@ export const AddCircle = () => {
         <AiFillSchedule />
       </motion.div>
       <motion.div
+        onClick={() => openModalAndSetType("stickynote")}
         initial={{ opacity: 0 }}
         animate={
           show
@@ -263,9 +264,6 @@ export const AddCircle = () => {
             : { x: 0, y: 0, scale: 0 }
         }
         className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] right-5 bottom-5 bg-gradient-to-r from-white to-slate-200 shadow-md`}
-        onClick={() => {
-          setShow(false);
-        }}
       >
         <FaStickyNote />
       </motion.div>

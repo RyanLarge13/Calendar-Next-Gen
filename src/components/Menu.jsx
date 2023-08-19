@@ -22,7 +22,21 @@ const Menu = () => {
       updateClientLists();
       updateList(token, [...listUpdate])
         .then((res) => {
-          console.log(res);
+          const lastUpdatedId = listUpdate[listUpdate.length - 1].listId;
+          const listIndex = lists.findIndex(
+            (list) => list.id === lastUpdatedId
+          );
+          if (listIndex !== -1) {
+            // Remove the list from its current position
+            const updatedLists = [...lists];
+            const movedList = updatedLists.splice(listIndex, 1)[0];
+
+            // Add the list back to the front of the array
+            updatedLists.unshift(movedList);
+
+            // Update the state with the new order
+            setLists(updatedLists);
+          }
           setListUpdate([]);
         })
         .catch((err) => {
@@ -64,19 +78,16 @@ const Menu = () => {
     <AnimatePresence>
       {menu && (
         <motion.div
-          initial={{ x: "-100%", opacity: 0 }}
-          animate={{
-            x: 0,
-            opacity: 1,
-          }}
-          exit={{ x: "-100%", opacity: 0 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
           className="fixed inset-0 pt-40 z-10 pb-10 px-5 rounded-md bg-white shadow-md overflow-auto"
         >
           {showCategory === null && (
             <AnimatePresence>
               <motion.div
-                initial={{ x: "-100%", opacity: 0 }}
-                exit={{ x: "-100%", opacity: 0 }}
+                initial={{ x: "-10%", opacity: 0 }}
+                exit={{ x: "-10%", opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 className="pt-10"
               >
@@ -92,8 +103,8 @@ const Menu = () => {
               {showCategory === "reminder" && (
                 <AnimatePresence>
                   <motion.div
-                    initial={{ x: "-100%", opacity: 0 }}
-                    exit={{ x: "-100%", opacity: 0 }}
+                    initial={{ x: "-10%", opacity: 0 }}
+                    exit={{ x: "-10%", opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                   >
                     <Reminders />
@@ -103,8 +114,8 @@ const Menu = () => {
               {showCategory === "todo-list" && (
                 <AnimatePresence>
                   <motion.div
-                    initial={{ x: "-100%", opacity: 0 }}
-                    exit={{ x: "-100%", opacity: 0 }}
+                    initial={{ x: "-10%", opacity: 0 }}
+                    exit={{ x: "-10%", opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                   >
                     <Lists />
