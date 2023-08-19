@@ -124,8 +124,8 @@ export const getNotifications = async (req, res) => {
     (client) => client.id === id
   );
   if (existingClientIndex !== -1) {
-    console.log("User is attempting reconnection");
     const existingClient = connectedClients[existingClientIndex];
+    console.log(`User is attempting reconnection with user id: ${existingClient.id}`);
     existingClient.response = clientResponse;
     existingClient.job.stop();
     const newJob = cron.schedule("*/15 * * * * *", () => {
