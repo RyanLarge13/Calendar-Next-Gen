@@ -241,8 +241,15 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
   };
 
   return (
-    <div className={`flex flex-col justify-center items-center pb-20`}>
-      <div className="flex flex-wrap justify-center items-center my-10 mx-auto w-[80%]">
+    <div>
+      <input
+        type="text"
+        placeholder="Title"
+        value={summary}
+        onChange={(e) => setSummary(e.target.value)}
+        className={`p-2 text-4xl mt-10 mb-5 w-full outline-none bg-opacity-30 duration-200`}
+      />
+      <div className="flex flex-wrap justify-center items-center my-5 mx-auto">
         {colors.map((item, index) => (
           <Color
             key={index}
@@ -253,12 +260,6 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
           />
         ))}
       </div>
-      <input
-        placeholder="New Event"
-        value={summary}
-        onChange={(e) => setSummary(e.target.value)}
-        className={`p-2 mt-10 mb-5 w-full text-center rounded-md shadow-md ${color} outline-none bg-opacity-30 duration-200`}
-      />
       <textarea
         name="description"
         placeholder="Description"
@@ -267,10 +268,10 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
         id="description"
         cols="30"
         rows="10"
-        className="p-3 w-full focus:outline-none rounded-md shadow-md"
+        className="p-2 mt-5 w-full focus:outline-none focus:shadow-sm"
       ></textarea>
       <div className="mt-10 w-full">
-        <div className="w-full p-3 rounded-md shadow-md">
+        <div className="w-full p-3 border-b">
           <div className="flex justify-between items-center">
             <MdLocationPin />
             <Toggle condition={location} setCondition={setLocation} />
@@ -281,7 +282,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
             </div>
           )}
         </div>
-        <div className="w-full p-3 my-5 rounded-md shadow-md">
+        <div className="w-full p-3 my-5 border-b">
           <div className="flex justify-between items-center">
             <FiRepeat />
             <Toggle condition={repeat} setCondition={setRepeat} />
@@ -334,7 +335,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
             </motion.div>
           )}
         </div>
-        <div className="w-full p-3 rounded-md shadow-md">
+        <div className="w-full p-3 border-b">
           <div className="flex justify-between items-center">
             <IoIosAlarm />
             <Toggle condition={reminder} setCondition={setReminder} />
@@ -349,7 +350,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
                 />
               ) : (
                 <>
-                  <div className="w-full p-3 rounded-md shadow-md">
+                  <div className="mt-5">
                     <div className="flex justify-between items-center">
                       <div className="flex justify-center items-center">
                         <AiFillInfoCircle className="mr-2" />
@@ -388,7 +389,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
           )}
         </div>
       </div>
-      <div className="w-full p-3 mt-5 rounded-md shadow-md">
+      <div className="w-full p-3 mt-5 border-b">
         <div className="flex justify-between items-center">
           <p>All Day Event</p>
           <Toggle condition={allDay} setCondition={setAllDay} />
@@ -397,7 +398,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
       {!allDay && (
         <>
           <div className="my-3 flex justify-center items-center w-full">
-            <div className="w-full mr-1 p-3 rounded-md shadow-md cursor-pointer">
+            <div className="w-full mr-1 p-3 border-b cursor-pointer">
               <div className="flex justify-between items-center">
                 <p>Start</p>
                 <Toggle condition={startTime} setCondition={setStartTime} />
@@ -419,7 +420,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
               )}
             </div>
           </div>
-          <div className="w-full mr-1 p-3 rounded-md shadow-md cursor-pointer">
+          <div className="w-full mr-1 p-3 border-b cursor-pointer">
             <div className="flex justify-between items-center">
               <p>End</p>
               <Toggle condition={endTime} setCondition={setEndTime} />

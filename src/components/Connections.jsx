@@ -25,6 +25,7 @@ const Connections = ({ setOption }) => {
       dragSnapToOrigin={true}
       onDragEnd={finish}
       initial={{ opacity: 0, y: 50 }}
+      exit={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       className="fixed inset-0 bg-white z-50 p-5"
     >

@@ -133,8 +133,10 @@ const LoginLogout = () => {
 
   return (
     <>
-      {option === "connections" && <Connections setOption={setOption} />}
-      {option === "settings" && <Settings />}
+      <AnimatePresence>
+        {option === "connections" && <Connections setOption={setOption} />}
+        {option === "settings" && <Settings  setOption={setOption} />}
+      </AnimatePresence>
       <Notification idsToUpdate={idsToUpdate} setIdsToUpdate={setIdsToUpdate} />
       <AnimatePresence>
         {showLogin && (
@@ -167,6 +169,7 @@ const LoginLogout = () => {
                           title: "Logout",
                           text: "Are you sure you want to logout?",
                           color: "bg-purple-200",
+                          hasCancel: false,
                           actions: [
                             {
                               text: "close",

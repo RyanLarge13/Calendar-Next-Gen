@@ -92,7 +92,7 @@ const AddReminder = () => {
             hasCancel: true,
             action: [
               { text: "close", func: () => setSystemNotif({ show: false }) },
-              {text: "delete notification", func: () => {}}
+              { text: "delete notification", func: () => {} },
             ],
           };
           setOpenModal(false);
@@ -118,54 +118,51 @@ const AddReminder = () => {
   };
 
   return (
-    <div className="p-2 pt-10">
-      <h2 className="text-center">New Reminder</h2>
-      <div className="mt-10 w-full">
-        <input
-          placeholder="New Reminder"
-          className="p-2 rounded-md shadow-md w-full"
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        <textarea
-          onChange={(e) => setNotes(e.target.value)}
-          cols="30"
-          rows="10"
-          placeholder="Notes..."
-          className="my-2 p-2 rounded-md shadow-md w-full"
-        ></textarea>
-        <div className="my-2 p-3 rounded-md shadow-md">
-          <div className="flex justify-between items-center">
-            <p>Time</p>
-            <Toggle condition={addTime} setCondition={setAddTime} />
-          </div>
-          {addTime && (
-            <div className="mt-2">
-              {!time ? (
-                <TimeSetter
-                  setDateTime={setTime}
-                  setDateTimeString={setTimeString}
-                  openTimeSetter={setAddTime}
-                />
-              ) : (
-                <p>{timeString}</p>
-              )}
-            </div>
-          )}
+    <div>
+      <input
+        placeholder="Title"
+        className="p-2 text-4xl w-full focus:outline-none my-5"
+        onChange={(e) => setTitle(e.target.value)}
+      />
+      <textarea
+        onChange={(e) => setNotes(e.target.value)}
+        cols="30"
+        rows="10"
+        placeholder="Notes..."
+        className="my-5 w-full p-2 focus:outline-none focus:shadow-sm"
+      ></textarea>
+      <div className="my-2 p-3 border-b">
+        <div className="flex justify-between items-center">
+          <p>Time</p>
+          <Toggle condition={addTime} setCondition={setAddTime} />
         </div>
-        <div className="my-2 p-3 rounded-md shadow-md">
-          <div className="flex justify-between items-center">
-            <div className="flex justify-center items-center">
-              <AiFillInfoCircle className="mr-2" />
-              <p>Only notify</p>
-            </div>
-            <Toggle condition={onlyNotify} setCondition={setOnlyNotify} />
+        {addTime && (
+          <div className="mt-2">
+            {!time ? (
+              <TimeSetter
+                setDateTime={setTime}
+                setDateTimeString={setTimeString}
+                openTimeSetter={setAddTime}
+              />
+            ) : (
+              <p>{timeString}</p>
+            )}
           </div>
+        )}
+      </div>
+      <div className="my-2 p-3 border-b">
+        <div className="flex justify-between items-center">
+          <div className="flex justify-center items-center">
+            <AiFillInfoCircle className="mr-2" />
+            <p>Only notify</p>
+          </div>
+          <Toggle condition={onlyNotify} setCondition={setOnlyNotify} />
         </div>
       </div>
-      <div className="flex flex-col w-full gap-y-5 mb-5 mt-10 text-center text-xs font-semibold">
+      <div className="absolute bottom-4 right-4 left-4 text-xs font-semibold">
         <button
           onClick={() => addAReminder()}
-          className="px-3 py-2 rounded-md shadow-md bg-gradient-to-r from-lime-200 to-green-200 underline"
+          className="px-3 py-2 rounded-md shadow-md bg-gradient-to-r from-lime-200 to-green-200 underline w-full"
         >
           save
         </button>
@@ -174,7 +171,7 @@ const AddReminder = () => {
             setType(null);
             setAddNewEvent(false);
           }}
-          className="px-3 py-2 rounded-md shadow-md bg-gradient-to-tr from-red-200 to-rose-200 underline"
+          className="px-3 py-2 mt-3 w-full rounded-md shadow-md bg-gradient-to-tr from-red-200 to-rose-200 underline"
         >
           cancel
         </button>

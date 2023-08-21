@@ -125,16 +125,15 @@ const AddList = () => {
   };
 
   return (
-    <div className="mt-20 text-center">
+    <div>
       {!addItems ? (
         <div>
-          <h2 className="text-lg">Create a list</h2>
           <input
             type="text"
             value={title}
             placeholder="Title"
             onChange={(e) => setTitle(e.target.value)}
-            className={`w-full p-2 rounded-md shadow-md my-5 bg-opacity-80 ${color}`}
+            className={`w-full p-2 text-4xl my-5 bg-opacity-80 focus:outline-none`}
           />
           <div className="flex flex-wrap items-center justify-center px-5 my-10">
             {colors.map((item, index) => (
@@ -147,21 +146,27 @@ const AddList = () => {
               />
             ))}
           </div>
-          <button
-            onClick={() => createList()}
-            className="rounded-md shadow-md py-2 w-[95%] bg-gradient-to-tr from-lime-300 to-emerald-200 absolute bottom-5 left-[2%] text-xs underline"
-          >
-            Create
-          </button>
+          <div className="absolute bottom-4 right-4 left-4">
+            <button
+              onClick={() => createList()}
+              className="rounded-md shadow-md py-2 w-full bg-gradient-to-tr from-lime-300 to-emerald-200 text-xs underline"
+            >
+              create
+            </button>
+            <button
+              onClick={() => {
+                setType(null);
+                setAddNewEvent(false);
+              }}
+              className="px-3 w-full text-xs mt-3 py-2 rounded-md shadow-md bg-gradient-to-tr from-red-200 to-rose-200 underline"
+            >
+              cancel
+            </button>
+          </div>
         </div>
       ) : (
-        <div>
-          <p className="text-lg mb-3">{title}</p>
-          <p className="text-xs text-left">
-            Tip: if you want to add multiple items at a time, just seperate each
-            item with a comma! <br />
-            ex: 'Milk, Eggs, Cereal'
-          </p>
+        <div className="pt-5">
+          <p className="text-4xl p-2">{title}</p>
           <input
             type="text"
             value={itemTitle}
