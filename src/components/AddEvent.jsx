@@ -244,7 +244,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
     <div>
       <input
         type="text"
-        placeholder="Title"
+        placeholder="Event"
         value={summary}
         onChange={(e) => setSummary(e.target.value)}
         className={`p-2 text-4xl mt-10 mb-5 w-full outline-none bg-opacity-30 duration-200`}

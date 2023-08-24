@@ -9,7 +9,7 @@ const AddKanban = () => {
   const { setSystemNotif } = useContext(UserContext);
 
   const [title, setTitle] = useState("");
-  const [selectedColor, setSelectedColor] = useState("");
+  const [color, setColor] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -29,7 +29,7 @@ const AddKanban = () => {
       };
       return setSystemNotif(newError);
     }
-    if (!selectedColor) {
+    if (!color) {
       const newError = {
         show: true,
         color: "bg-red-200",
@@ -49,19 +49,19 @@ const AddKanban = () => {
       <form onSubmit={handleSubmit}>
         <input
           type="text"
-          placeholder="Title"
+          placeholder="Kanban"
           value={title}
-          className={`${selectedColor} p-2 w-full focus:outline-none text-4xl bg-opacity-30 mt-5`}
+          className={`p-2 w-full focus:outline-none text-4xl bg-opacity-30 mt-5`}
           onChange={(e) => setTitle(e.target.value)}
         />
       </form>
-      <div className="flex flex-wrap justify-center items-center gap-1">
-        {colors.map((color, index) => (
+      <div className="flex flex-wrap justify-center items-center my-5">
+        {colors.map((item, index) => (
           <Color
             key={index}
-            string={color.color}
+            string={item.color}
             color={color}
-            selectColor={setSelectedColor}
+            setColor={setColor}
             index={index}
           />
         ))}

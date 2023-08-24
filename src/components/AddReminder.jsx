@@ -120,7 +120,7 @@ const AddReminder = () => {
   return (
     <div>
       <input
-        placeholder="Title"
+        placeholder="Reminder"
         className="p-2 text-4xl w-full focus:outline-none my-5"
         onChange={(e) => setTitle(e.target.value)}
       />

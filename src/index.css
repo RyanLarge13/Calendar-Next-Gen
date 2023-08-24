@@ -12,6 +12,34 @@ body {
   padding-top: env(safe-area-inset-top); /* iOS 11.2+ */
 }
 
+/* Markdown for sticky notes */
+.markdown h1 {
+  font-size: 2em;
+  font-weight: bold;
+}
+
+.markdown h2 {
+  font-size: 2em;
+  font-weight: bold;
+}
+
+.markdown p {
+}
+
+.markdown img {
+  border-radius: 20px;
+}
+
+.markdown ol {
+  list-style-type: decimal;
+  padding-left: 1.5em;
+}
+
+.markdown ul {
+  list-style-type: circle;
+  padding-left: 1.5em;
+}
+
 .google {
   background-image: linear-gradient(
     45deg,

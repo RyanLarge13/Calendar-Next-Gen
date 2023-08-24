@@ -217,16 +217,12 @@ const Event = ({ dayEvents }) => {
         </button>
         <MdOutlineDragIndicator />
       </div>
-      <div
-        className={`w-full min-h-full rounded-md bg-opacity-20 p-3 ${event.color}`}
-      >
-        <div
-          className={`p-2 rounded-md shadow-sm font-bold text-sm ${event.color}`}
-        >
+      <div className={`w-full rounded-md bg-opacity-20 p-3 ${event.color}`}>
+        <div className={`p-2 rounded-md shadow-sm font-bold ${event.color}`}>
           <h1>{event.summary}</h1>
         </div>
         <div
-          className={`p-2 mt-2 rounded-md shadow-sm font-bold ${event.color} bg-opacity-50 text-xs`}
+          className={`p-2 mt-2 rounded-md shadow-sm font-bold ${event.color} bg-opacity-50`}
         >
           <p>{event.description}</p>
         </div>
@@ -312,7 +308,7 @@ const Event = ({ dayEvents }) => {
             <p>No reminders set</p>
           )}
         </div>
-        <div className="bg-white rounded-md shadow-md p-2 my-2 text-sm">
+        <div className="bg-white rounded-md shadow-md p-2 my-2">
           {event.repeats.repeat ? (
             <div className="">
               <FiRepeat />

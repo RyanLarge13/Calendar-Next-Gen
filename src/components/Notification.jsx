@@ -116,14 +116,14 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
     <AnimatePresence>
       {showNotifs && (
         <motion.div
-          initial={{ y: "-100%", opacity: 0 }}
+          initial={{ y: -50, opacity: 0 }}
           drag="y"
           dragSnapToOrigin={true}
           dragControls={controls}
           dragListener={false}
           dragConstraints={{ bottom: 0 }}
           onDragEnd={checkToClose}
-          exit={{ y: "-100%", opacity: 0 }}
+          exit={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           className="pt-3 pb-10 px-5 rounded-b-md shadow-md fixed top-0 bottom-0 right-0 left-0 z-20 max-h-[75vh] overflow-y-auto bg-cyan-100"
         >

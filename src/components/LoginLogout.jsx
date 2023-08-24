@@ -152,8 +152,8 @@ const LoginLogout = () => {
               className="fixed inset-0 bg-[rgba(0,0,0,0.4)] z-10"
             ></motion.div>
             <motion.div
-              initial={{ y: 100, opacity: 0 }}
-              exit={{ y: 200, opacity: 0 }}
+              initial={{ y: 50, opacity: 0 }}
+              exit={{ y: 50, opacity: 0 }}
               animate={
                 showNotifs ? { y: "85%", opacity: 1 } : { y: 0, opacity: 1 }
               }

@@ -131,11 +131,11 @@ const AddList = () => {
           <input
             type="text"
             value={title}
-            placeholder="Title"
+            placeholder="List"
             onChange={(e) => setTitle(e.target.value)}
             className={`w-full p-2 text-4xl my-5 bg-opacity-80 focus:outline-none`}
           />
-          <div className="flex flex-wrap items-center justify-center px-5 my-10">
+          <div className="flex flex-wrap items-center justify-center my-5">
             {colors.map((item, index) => (
               <Color
                 key={index}
@@ -172,7 +172,7 @@ const AddList = () => {
             value={itemTitle}
             placeholder="Add new items!!"
             onChange={(e) => setItemTitle(e.target.value)}
-            className="mt-5 rounded-md shadow-md px-3 py-1 w-full"
+            className="mt-5 text-lg px-3 py-1 w-full focus:outline-none focus:shadow-sm"
           />
           <button
             onClick={() => addItemsToList()}
