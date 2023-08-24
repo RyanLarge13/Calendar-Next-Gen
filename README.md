@@ -19,6 +19,9 @@
 
 <p><b>Creating new Calendar content is meant to be as simple and as straightforward as possible. The UI/UX is build with the idea in mind that managing your day should be done with ease with as few clicks as possible & keep you organized.</b></p>
 
+<img src="./public/screenshots/calng-desktop.png" alt="screenshot-desktop" /><br/>
+<img src="./public/screenshots/calng-mobile.png" alt="screenshot-mobil" /><br/>
+
 ## Table Of Contents
 
 - <a href="#design">Design</a>

@@ -8,6 +8,7 @@ import Calendar from "./components/Calendar";
 import Header from "./components/Header";
 import Search from "./components/Search";
 import SystemNotif from "./components/SystemNotif";
+import Stickies from "./components/Stickies"
 import AddCircle from "./components/AddCircle";
 import Views from "./components/Views";
 
@@ -21,6 +22,7 @@ const App = () => {
               <Header />
               <Search />
               <SystemNotif />
+              <Stickies />
               <div className="overflow-hidden w-full h-full">
                 <Calendar />
               </div>
