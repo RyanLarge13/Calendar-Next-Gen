@@ -25,6 +25,7 @@ const Event = ({ dayEvents }) => {
   const [width, setWidth] = useState(0);
   const [timeInEvent, setTimeInEvent] = useState(0);
   const [index, setIndex] = useState(dayEvents.indexOf(event));
+  const [imagesLoading, setImagesLoading] = useState(false);
 
   const controls = useDragControls();
 
@@ -35,8 +36,8 @@ const Event = ({ dayEvents }) => {
   };
 
   useEffect(() => {
-    //setString(new Date(event.date).toLocaleDateString());
     if (event.attachmentLength > 0) {
+      setImagesLoading(true);
       fetchAttachments(event.id)
         .then((res) => {
           res.data.attachments.forEach((file) => {
@@ -45,6 +46,7 @@ const Event = ({ dayEvents }) => {
             });
             const url = URL.createObjectURL(blob);
             setFetchedImages((prevUrls) => [...prevUrls, url]);
+            setImagesLoading(false);
           });
         })
         .catch((err) => console.log(err));
@@ -196,9 +198,7 @@ const Event = ({ dayEvents }) => {
       onDragEnd={checkToClose}
       initial={{ y: "100%" }}
       animate={open ? { y: 0 } : { y: "110%" }}
-      className={`z-[901] fixed inset-3 top-[7%] rounded-md bg-white overflow-y-auto ${
-        event.color === "bg-black" ? "text-white" : "text-black"
-      }`}
+      className="z-[901] fixed inset-3 top-[7%] rounded-md bg-white overflow-y-auto"
     >
       <div
         onPointerDown={startDrag}
@@ -217,17 +217,17 @@ const Event = ({ dayEvents }) => {
         </button>
         <MdOutlineDragIndicator />
       </div>
-      <div className={`w-full rounded-md bg-opacity-20 p-3 ${event.color}`}>
+      <div className={`rounded-md bg-opacity-20 p-3 ${event.color}`}>
         <div className={`p-2 rounded-md shadow-sm font-bold ${event.color}`}>
-          <h1>{event.summary}</h1>
+          <h1 className="text-[20px]">{event.summary}</h1>
         </div>
         <div
           className={`p-2 mt-2 rounded-md shadow-sm font-bold ${event.color} bg-opacity-50`}
         >
-          <p>{event.description}</p>
+          <p className="text-[14px]">{event.description}</p>
         </div>
         {event.start.startTime && (
-          <>
+          <div>
             <div className="relative mt-2 py-2 px-3 rounded-3xl shadow-sm flex w-full justify-between items-center bg-white">
               <motion.div
                 animate={{
@@ -266,7 +266,7 @@ const Event = ({ dayEvents }) => {
                 {new Date(event.end.endTime).toLocaleTimeString()}
               </p>
             </div>
-          </>
+          </div>
         )}
         <div className="my-2 bg-white rounded-md shadow-md p-2">
           {event.location ? (
@@ -290,12 +290,12 @@ const Event = ({ dayEvents }) => {
               </div>
             </div>
           ) : (
-            <p>No location provided</p>
+            <p className="text-[14px]">No location provided</p>
           )}
         </div>
         <div className="p-2 rounded-md shadow-md my-2 flex justify-between items-start bg-white">
           {event.reminders.reminder ? (
-            <>
+            <div>
               <div>
                 <IoIosAlarm />
                 <p>{new Date(event.reminders.when).toLocaleTimeString()}</p>
@@ -303,9 +303,9 @@ const Event = ({ dayEvents }) => {
               <div>
                 <BsFillTrashFill />
               </div>
-            </>
+            </div>
           ) : (
-            <p>No reminders set</p>
+            <p className="text-[14px]">No reminders set</p>
           )}
         </div>
         <div className="bg-white rounded-md shadow-md p-2 my-2">
@@ -315,39 +315,40 @@ const Event = ({ dayEvents }) => {
               <p>{event.repeats.howOften}</p>
             </div>
           ) : (
-            <div>
-              <p>No repeated events</p>
-            </div>
+            <p className="text-[14px]">No repeated events</p>
           )}
         </div>
-        {/*<div className="flex-1 bg-white rounded-md shadow-md my-2 h-full overflow-y-auto p-2"></div>*/}
         <div className="sticky top-[50%] right-2 left-2 py-2 flex justify-between items-center text-xl">
           {index > 0 ? (
             <BsFillArrowLeftCircleFill onClick={() => getPreviousEvent()} />
           ) : (
-            <p></p>
+            null
           )}
           {index < dayEvents.length - 1 ? (
             <BsFillArrowRightCircleFill onClick={() => getNextEvent()} />
           ) : (
-            <p></p>
+            null
           )}
         </div>
-        {fetchedImages.length > 0 && (
-          <Masonry
-            breakpointCols={breakpointColumnsObj}
-            className="my-masonry-grid-attachments"
-            columnClassName="my-masonry-grid_column-attachments"
-          >
-            {fetchedImages.map((img) => (
-              <img
-                key={img}
-                src={img}
-                alt={"event attachment"}
-                className="mt-3 rounded-sm shadow-sm"
-              />
-            ))}
-          </Masonry>
+        {imagesLoading ? (
+          <p>Loading {event.attachmentLength} images...</p>
+        ) : (
+          fetchedImages.length > 0 && (
+            <Masonry
+              breakpointCols={breakpointColumnsObj}
+              className="my-masonry-grid-attachments"
+              columnClassName="my-masonry-grid_column-attachments"
+            >
+              {fetchedImages.map((img) => (
+                <img
+                  key={img}
+                  src={img}
+                  alt={"event attachment"}
+                  className="mt-3 rounded-sm shadow-sm"
+                />
+              ))}
+            </Masonry>
+          )
         )}
       </div>
     </motion.div>

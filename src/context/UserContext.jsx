@@ -8,6 +8,7 @@ import {
   getReminders,
   requestAndSubscribe,
   getAllLists,
+  getAllTasks, 
   getNotifications,
   getNotificationsAtStart,
   checkSubscription,
@@ -29,7 +30,8 @@ export const UserProvider = ({ children }) => {
   const [refresh, setRefresh] = useState(false);
   const [lists, setLists] = useState([]);
   const [reminders, setReminders] = useState([]);
-  const [stickies, setStickies] = useState([])
+  const [stickies, setStickies] = useState([]);
+  const [userTasks, setUserTasks] = useState([]);
   const [friends, setFriends] = useState([]);
   const [localDB, setLocalDB] = useState(null);
   const [notifications, setNotifications] = useState([]);
@@ -210,6 +212,13 @@ export const UserProvider = ({ children }) => {
         .catch((err) => {
           console.log(err);
         });
+      getAllTasks(authToken)
+        .then((response) => {
+          setUserTasks(response.data.tasks);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
       registerServiceWorkerSync();
     }
     if (!authToken && user) {
@@ -345,8 +354,10 @@ export const UserProvider = ({ children }) => {
         notifications,
         systemNotif,
         friends,
-        stickies, 
-        setStickies, 
+        stickies,
+        userTasks,
+        setUserTasks,
+        setStickies,
         setFriends,
         setSystemNotif,
         setNotifications,
