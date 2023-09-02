@@ -99,7 +99,7 @@ const Reminders = () => {
       {reminders.length < 1 && (
         <div>
           <div className="rounded-md p-3 shadow-md my-5">
-            <h2 className="font-semibold">No Upcomming Reminders</h2>
+            <h2 className="font-semibold mb-2">No Upcomming Reminders</h2>
             <BiAlarmSnooze />
           </div>
         </div>
