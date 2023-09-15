@@ -1,10 +1,11 @@
-import { useContext } from "react";
+import {useState, useContext } from "react";
 import { motion } from "framer-motion";
 import { IoIosAddCircle } from "react-icons/io";
 import UserContext from "../context/UserContext";
 
 const Connections = ({ setOption }) => {
   const { user, friends, setFriends } = useContext(UserContext);
+  const [pick, setPick] = useState(false)
 
   const finish = (e, info) => {
     const dragDistance = info.offset.y;
@@ -38,10 +39,20 @@ const Connections = ({ setOption }) => {
           ) : (
             <div className="p-5 flex flex-col justify-center items-center bg-cyan-100 shadow-md rounded-md">
               <p>No friends</p>
-              <button className="flex flex-col justify-center items-center mt-3 py-1 px-3 rounded-md shadow-md bg-white">
+              <button
+                type="button"
+                className="flex flex-col justify-center items-center mt-3 py-1 px-3 rounded-md shadow-md bg-white"
+                onClick={() => setPick(true)} 
+              >
                 <p>Create Connection</p>
                 <IoIosAddCircle />
               </button>
+              {pick && (
+                <motion.div className="my-3 rounded-md shadow-md bg-white flex justify-center items-center">
+                  <button>QR Code</button>
+                  <button>Email</button>
+                </motion.div>
+              )}
             </div>
           )}
         </div>

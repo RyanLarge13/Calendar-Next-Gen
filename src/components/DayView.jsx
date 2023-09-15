@@ -154,8 +154,12 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
                 item.start ? "z-[10]" : "z-[50]"
               } absolute right-5 left-20 bg-opacity-70 p-2 rounded-md shadow-md`}
             >
-              <p className="font-bold">{item.summary || item.title}</p>
-              <p className="mr-5 text-sm">{item.description || item.notes}</p>
+              <p className="font-bold bg-white bg-opacity-50 p-2 rounded-md">
+                {item.summary || item.title}
+              </p>
+              <p className="mr-5 text-sm bg-white bg-opacity-30 rounded-md p-2 w-full mt-2">
+                {item.description || item.notes}
+              </p>
             </div>
           ))}
         </div>

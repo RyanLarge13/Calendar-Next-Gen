@@ -332,3 +332,20 @@ export const deleteList = (token, listId) => {
   });
   return res;
 };
+
+//Tasks
+export const getAllTasks = (token) => {
+  const res = Axios.get(`${productionUrl}/all/tasks`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res
+};
+
+export const createTask = (token, task) => {
+  const res = Axios.post(
+    `${productionUrl}/new/tasks`,
+    { task },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return res;
+};

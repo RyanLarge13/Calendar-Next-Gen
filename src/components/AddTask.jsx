@@ -1,35 +1,74 @@
 import { useState, useContext } from "react";
+import { v4 as uuidv4 } from "uuid";
 import { AiFillCloseCircle } from "react-icons/ai";
 import { MdCancel } from "react-icons/md";
 import { BsFillSaveFill } from "react-icons/bs";
+import { createTask } from "../utils/api.js";
 import InteractiveContext from "../context/InteractiveContext";
+import DatesContext from "../context/DatesContext";
+import UserContext from "../context/UserContext";
 
 const AddTask = () => {
   const { setType, setAddNewEvent } = useContext(InteractiveContext);
+  const { string } = useContext(DatesContext);
+  const { user, setUserTasks } = useContext(UserContext);
 
   const [tasks, setTasks] = useState([]);
-  const [checked, setChecked] = useState([]);
   const [title, setTitle] = useState("");
 
   const addTask = (e) => {
     e.preventDefault();
-    setTasks((prev) => [...prev, title]);
+    const newTask = {
+      id: uuidv4(),
+      text: title,
+      complete: false,
+    };
+    setTasks((prev) => [...prev, newTask]);
     setTitle("");
   };
 
-  const removeTask = (aTask) => {
-    const newTaskList = tasks.filter((tsk) => tsk !== aTask);
+  const removeTask = (taskId) => {
+    const newTaskList = tasks.filter((tsk) => tsk.id !== taskId);
     setTasks(newTaskList);
   };
 
-  const handleChecked = (e, task) => {
+  const handleChecked = (e, taskId) => {
     if (e.target.checked) {
-      setChecked((prev) => [...prev, task]);
+      const updatedTasks = tasks.map((tsk) => {
+        if (tsk.id === taskId) {
+          return { ...tsk, complete: true };
+        }
+        return tsk;
+      });
+      setTasks(updatedTasks);
     }
     if (!e.target.checked) {
-      const newList = checked.filter((check) => check !== task);
-      setChecked(newList);
+      const updatedTasks = tasks.map((tsk) => {
+        if (tsk.id === taskId) {
+          return { ...tsk, complete: false };
+        }
+        return tsk;
+      });
+      setTasks(updatedTasks);
     }
+  };
+
+  const addTasks = () => {
+    const token = localStorage.getItem("authToken");
+    const newTaskSet = {
+      date: string,
+      tasks,
+      completed: false,
+      completedDate: "",
+      userId: user.id,
+    };
+    createTask(token, newTaskSet)
+      .then((res) => {
+        setUserTasks((prev) => [...prev, res.data.tasks]);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
@@ -55,22 +94,24 @@ const AddTask = () => {
             <div key={index} className="p-3 py-4 border-b border-b-slate-300">
               <label htmlFor={task} className="flex">
                 <input
-                  onChange={(e) => handleChecked(e, task)}
+                  onChange={(e) => handleChecked(e, task.id)}
                   type="checkbox"
-                  value={task}
-                  id={task}
-                  name={task}
+                  value={task.text}
                   className="text-black"
                 />
                 <div className=" ml-5 w-full flex justify-between items-center">
                   <p
                     className={`${
-                      checked.includes(task) ? "line-through" : ""
-                    }`}
+                      task.complete === true
+                        ? "line-through text-slate-400"
+                        : ""
+                    } mr-2`}
                   >
-                    {task}
+                    {task.text}
                   </p>
-                  <AiFillCloseCircle onClick={() => removeTask(task)} />
+                  <div>
+                    <AiFillCloseCircle onClick={() => removeTask(task.id)} />
+                  </div>
                 </div>
               </label>
             </div>
