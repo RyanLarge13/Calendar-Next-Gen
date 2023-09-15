@@ -16,7 +16,7 @@ const PORT = process.env.PORT || 8080;
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: "500mb" }));
-app.use("/", userRouter, eventsRouter, reminderRouter, notifRouter, listsRouter, taskRouter);
+app.use("/", userRouter, eventsRouter, reminderRouter, notifRouter, listRouter, taskRouter);
 
 cron.schedule("*/15 * * * * *", () => {
   processPushNotifications();
