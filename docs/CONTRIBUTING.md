@@ -16,7 +16,7 @@ Before you start, please take a moment to review the following guidelines.
 
 ## Code of Conduct
 
-Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md). We expect all contributors to adhere to this code to maintain a respectful and inclusive environment for everyone.
+Please read and follow our [Code of Conduct](../CODE_OF_CONDUCT.md). We expect all contributors to adhere to this code to maintain a respectful and inclusive environment for everyone.
 
 ## How Can I Contribute?
 
@@ -51,7 +51,7 @@ If you want to set up the project locally for development or testing, follow the
 
 ## License
 
-By contributing to this project, you agree that your contributions will be licensed under the [project's license](LICENSE.md).
+By contributing to this project, you agree that your contributions will be licensed under the [project's license](../LICENSE.md).
 
 ---
 
