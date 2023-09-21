@@ -15,7 +15,8 @@ const Header = () => {
   const { dt, setNav, theDay, setTheDay, currentWeek } =
     useContext(DatesContext);
   const { user } = useContext(UserContext);
-  const { menu, setMenu, setShowLogin, view } = useContext(InteractiveContext);
+  const { menu, setShowDatePicker, setMenu, setShowLogin, view } =
+    useContext(InteractiveContext);
 
   const changeDay = (operand) => {
     if (operand === "minus") {
@@ -53,13 +54,14 @@ const Header = () => {
                 onClick={() => setNav((prev) => prev - 1)}
                 className="text-xl cursor-pointer"
               />
-              <motion.p
+              <motion.h1
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className="mx-5"
+                onClick={() => setShowDatePicker(true)}
               >{`${dt.toLocaleString("default", {
                 month: "long",
-              })} ${dt.getFullYear()}`}</motion.p>
+              })} ${dt.getFullYear()}`}</motion.h1>
               <BsFillArrowRightCircleFill
                 onClick={() => setNav((prev) => prev + 1)}
                 className="text-xl cursor-pointer"
@@ -72,13 +74,13 @@ const Header = () => {
                 onClick={() => changeDay("minus")}
                 className="text-xl cursor-pointer"
               />
-              <p className="mx-5">
+              <h1 className="mx-5">
                 {theDay.toLocaleDateString("en-us", {
                   month: "short",
                   day: "numeric",
                   year: "numeric",
                 })}
-              </p>
+              </h1>
               <BsFillArrowRightCircleFill
                 onClick={() => changeDay("plus")}
                 className="text-xl cursor-pointer"
@@ -91,10 +93,10 @@ const Header = () => {
                 onClick={() => {}}
                 className="text-xl cursor-pointer"
               />
-              <p className="mx-5 text-[12px]">
+              <h1 className="mx-5 text-[12px]">
                 {currentWeek[0].toLocaleDateString()} -{" "}
                 {currentWeek[currentWeek.length - 1].toLocaleDateString()}
-              </p>
+              </h1>
               <BsFillArrowRightCircleFill
                 onClick={() => {}}
                 className="text-xl cursor-pointer"

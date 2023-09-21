@@ -25,6 +25,7 @@
     "googleapis": "^123.0.0",
     "jsonwebtoken": "^9.0.0",
     "node-cron": "^3.0.2",
+    "nodemailer": "^6.9.5",
     "redis": "^4.6.7",
     "uuid": "^9.0.0",
     "web-push": "^3.6.1"

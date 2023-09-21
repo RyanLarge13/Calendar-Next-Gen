@@ -8,6 +8,7 @@ import {
   BsFillShareFill,
 } from "react-icons/bs";
 import { BiListMinus, BiListPlus } from "react-icons/bi";
+import { IoIosAddCircle } from "react-icons/io";
 import UserContext from "../context/UserContext";
 
 const Lists = () => {
@@ -36,6 +37,23 @@ const Lists = () => {
 
   return (
     <motion.div className="py-3 relative">
+      {lists.length < 1 && (
+        <div>
+          <div className="rounded-md p-3 shadow-md my-5 flex justify-between items-center">
+            <div>
+              <h2 className="font-semibold mb-2">
+                You have no lists to complete
+              </h2>
+              <BiListPlus />
+            </div>
+            <div
+              className="text-2xl p-2" //onClick={() => openModalAndSetType()}
+            >
+              <IoIosAddCircle />
+            </div>
+          </div>
+        </div>
+      )}
       {lists.map((list) => (
         <div
           key={list.id}

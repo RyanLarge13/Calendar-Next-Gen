@@ -2,6 +2,7 @@ import { useState, useContext, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Reminders from "./Reminders.jsx";
 import Lists from "./Lists.jsx";
+import Tasks from "./Tasks";
 import { updateList } from "../utils/api.js";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext.jsx";
@@ -119,6 +120,17 @@ const Menu = () => {
                     animate={{ x: 0, opacity: 1 }}
                   >
                     <Lists />
+                  </motion.div>
+                </AnimatePresence>
+              )}
+              {showCategory === "task" && (
+                <AnimatePresence>
+                  <motion.div
+                    initial={{ x: "-10%", opacity: 0 }}
+                    exit={{ x: "-10%", opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                  >
+                    <Tasks />
                   </motion.div>
                 </AnimatePresence>
               )}

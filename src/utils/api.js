@@ -45,6 +45,11 @@ export const loginWithGoogle = async (user) => {
   return res;
 };
 
+export const loginWithFb = (fbToken) => {
+  const res = Axios.post(`${productionUrl}/login/facebook`, { accessToken: token });
+  return res;
+};
+
 export const loginWithPasswordAndUsername = async (credentials) => {
   const { username, email, password, avatarUrl } = credentials;
   const res = Axios.post(`${productionUrl}/login/classic`, {
@@ -338,7 +343,7 @@ export const getAllTasks = (token) => {
   const res = Axios.get(`${productionUrl}/all/tasks`, {
     headers: { Authorization: `Bearer ${token}` },
   });
-  return res
+  return res;
 };
 
 export const createTask = (token, task) => {

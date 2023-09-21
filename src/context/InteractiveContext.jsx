@@ -14,6 +14,7 @@ export const InteractiveProvider = ({ children }) => {
   const [event, setEvent] = useState(null);
   const [showCategory, setShowCategory] = useState(null);
   const [mainView, setMainView] = useState("calendar")
+  const [showDatePicker, setShowDatePicker] = useState(false)
 
   return (
     <InteractiveContext.Provider
@@ -26,7 +27,9 @@ export const InteractiveProvider = ({ children }) => {
         showNotifs,
         listUpdate,
         event,
-        filters,
+        filters, 
+        showDatePicker, 
+        setShowDatePicker, 
         showCategory,
         mainView, 
         setMainView, 

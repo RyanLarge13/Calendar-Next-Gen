@@ -401,9 +401,9 @@ export const holidays = [
     color: "bg-blue-300",
     date: "7/4/2023",
     summary: "Independance Day!!",
-    description: "Happy 4th of July!", 
+    description: "Happy 4th of July!",
     id: 14,
-       reminders: {
+    reminders: {
       reminder: false,
     },
     repeats: {
@@ -425,8 +425,21 @@ export const holidays = [
     date: "9/4/2023",
     summary: "Labor Day!!",
     id: 15,
-    reminders: false,
-    repeat: false,
+    reminders: {
+      reminder: false,
+    },
+    repeats: {
+      repeat: false,
+      howOften: "yearly",
+      nextDate: "9/4/2024",
+    },
+    start: {
+      startTime: null,
+    },
+    end: {
+      endTime: null,
+    },
+    location: "",
     time: false,
   },
   {
@@ -434,8 +447,21 @@ export const holidays = [
     date: "10/31/2023",
     summary: "Halloween",
     id: 16,
-    reminders: false,
-    repeat: false,
+    reminders: {
+      reminder: false,
+    },
+    repeats: {
+      repeat: false,
+      howOften: "yearly",
+      nextDate: "10/31/2024",
+    },
+    start: {
+      startTime: null,
+    },
+    end: {
+      endTime: null,
+    },
+    location: "",
     time: false,
   },
   {
@@ -443,8 +469,21 @@ export const holidays = [
     date: "11/23/2023",
     summary: "Thanksgiving!!",
     id: 17,
-    reminders: false,
-    repeat: false,
+    reminders: {
+      reminder: false,
+    },
+    repeats: {
+      repeat: false,
+      howOften: "yearly",
+      nextDate: "11/23/2024",
+    },
+    start: {
+      startTime: null,
+    },
+    end: {
+      endTime: null,
+    },
+    location: "",
     time: false,
   },
   {
@@ -452,8 +491,21 @@ export const holidays = [
     date: "12/25/2023",
     summary: "Christmas!!",
     id: 18,
-    reminders: false,
-    repeat: false,
+    reminders: {
+      reminder: false,
+    },
+    repeats: {
+      repeat: false,
+      howOften: "yearly",
+      nextDate: "12/25/2024",
+    },
+    start: {
+      startTime: null,
+    },
+    end: {
+      endTime: null,
+    },
+    location: "",
     time: false,
   },
 ];
@@ -495,3 +547,39 @@ export const weatherCodes = [
     icon: 6,
   },
 ];
+
+export const staticMonths = [
+  { name: "January", num: 0 },
+  { name: "February", num: 1 },
+  { name: "March", num: 2 },
+  { name: "April", num: 3 },
+  { name: "May", num: 4 },
+  { name: "June", num: 5 },
+  { name: "July", num: 6 },
+  { name: "August", num: 7 },
+  { name: "September", num: 8 },
+  { name: "October", num: 9 },
+  { name: "November", num: 10 },
+  { name: "December", num: 11 },
+];
+
+export const staticYears = [
+  "2023",
+  "2024",
+  "2025",
+  "2026",
+  "2027",
+  "2028",
+  "2029",
+  "2030",
+  "2031",
+  "2032",
+  "2033",
+  "2034",
+  "2035",
+  "2036",
+  "2037",
+];
+
+//LandingPage
+export const sliders = [{}];
