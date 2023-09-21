@@ -7,20 +7,18 @@ const DatePicker = () => {
   const { setShowDatePicker } = useContext(InteractiveContext);
 
   const scrollContainerRef = useRef(null);
-  
+
   const [closestElement, setClosestElement] = useState(null);
 
   useEffect(() => {
     const scrollContainer = scrollContainerRef.current;
-
     const handleScroll = () => {
       const scrollY = scrollContainer.scrollTop;
-      const elements = Array.from(scrollContainer.querySelectorAll(".snap-element"));
-
-      // Find the element that is closest to being fully in view
+      const elements = Array.from(
+        scrollContainer.querySelectorAll(".snap-element")
+      );
       let closest = null;
       let minDistance = Infinity;
-
       elements.forEach((element) => {
         const rect = element.getBoundingClientRect();
         const distance = Math.abs(rect.top);
@@ -30,21 +28,14 @@ const DatePicker = () => {
           closest = element;
         }
       });
-
-      // Set the closest element
       setClosestElement(closest);
     };
-
-    // Attach the scroll event listener
     scrollContainer.addEventListener("scroll", handleScroll);
-
-    // Clean up the event listener on component unmount
     return () => {
       scrollContainer.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
-  // Function to snap the closest element into view
   const snapToClosestElement = () => {
     if (closestElement) {
       closestElement.scrollIntoView({ behavior: "smooth" });
