@@ -56,9 +56,9 @@ const DatePicker = () => {
               className="overflow-y-scroll max-h-[60px] text-[40px] scrollbar-hide"
               ref={scrollContainerRef}
             >
-              {staticMonths.map((mon) => (
+              {staticMonths.map((mon, index) => (
                 <motion.div
-                  key={mon}
+                  key={index}
                   initial={{ scale: 0 }}
                   whileInView={{ scale: 1 }}
                   className="pb-4 snap-element"
@@ -71,9 +71,9 @@ const DatePicker = () => {
           <div>
             <h2 className="text-lg">Year</h2>
             <div className="overflow-y-scroll max-h-[60px] text-[40px] scrollbar-hide">
-              {staticYears.map((stYr) => (
+              {staticYears.map((stYr, index) => (
                 <motion.div
-                  key={stYr}
+                  key={index}
                   initial={{ scale: 0 }}
                   whileInView={{ scale: 1 }}
                   className="pb-4"
