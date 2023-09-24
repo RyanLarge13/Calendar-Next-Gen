@@ -41,9 +41,7 @@ const Lists = () => {
         <div>
           <div className="rounded-md p-3 shadow-md my-5 flex justify-between items-center">
             <div>
-              <h2 className="font-semibold mb-2">
-                You have no lists to complete
-              </h2>
+              <h2 className="font-semibold mb-2">You have no lists</h2>
               <BiListPlus />
             </div>
             <div
