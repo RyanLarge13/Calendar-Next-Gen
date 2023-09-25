@@ -1,13 +1,16 @@
 import { useContext, useRef, useState, useEffect } from "react";
 import { staticMonths, staticYears } from "../constants.js";
 import { motion } from "framer-motion";
+import {
+  BsFillArrowDownCircleFill,
+  BsFillArrowUpCircleFill,
+} from "react-icons/bs";
 import InteractiveContext from "../context/InteractiveContext";
 import DatesContext from "../context/DatesContext";
 
 const DatePicker = () => {
   const { setShowDatePicker } = useContext(InteractiveContext);
-  const { setUpdatedDate, setNav, nav } =
-    useContext(DatesContext);
+  const { setUpdatedDate, setNav, nav, month, year } = useContext(DatesContext);
 
   const [newYear, setNewYear] = useState(null);
   const [newMonth, setNewMonth] = useState(null);
@@ -16,6 +19,27 @@ const DatePicker = () => {
   const scrollYearRef = useRef(null);
   let debounceMonthTimeout;
   let debounceYearTimeout;
+
+  useEffect(() => {
+    const itemHeight = 60;
+    if (scrollMonthRef) {
+      scrollMonthRef.current.scrollTo({
+        top: month * itemHeight,
+        behavior: "smooth",
+      });
+      setNewMonth(month);
+    }
+    if (scrollYearRef) {
+      const index = staticYears.indexOf(year);
+      scrollYearRef.current.scrollTo({
+        top: index * itemHeight,
+        behavior: "smooth",
+      });
+      setNewYear(Number(staticYears[index]));
+    }
+  }, []);
+
+  useEffect(() => {}, []);
 
   const handleMonthScroll = () => {
     clearTimeout(debounceMonthTimeout);
@@ -36,6 +60,10 @@ const DatePicker = () => {
     }, 50);
   };
 
+  const increaseMonth = () => {};
+
+  const decreaseMonth = () => {};
+
   const handleYearScroll = () => {
     clearTimeout(debounceYearTimeout);
     const scrollPosition = scrollYearRef.current.scrollTop;
@@ -55,6 +83,10 @@ const DatePicker = () => {
       setNewYear(yearToSet);
     }, 50);
   };
+
+  const increaseYear = () => {};
+
+  const decreaseYear = () => {};
 
   const submitMonthAndTime = () => {
     const newDt = new Date();
@@ -77,6 +109,9 @@ const DatePicker = () => {
         <div className="flex gap-x-3">
           <div>
             <h2 className="text-lg">Month</h2>
+            <div className="text-sm mt-1 mb-2 p-3 flex justify-center items-center bg-cyan-100 rounded-md shadow-md">
+              <BsFillArrowUpCircleFill onClick={() => decreaseMonth()} />
+            </div>
             <div
               className="overflow-y-scroll max-h-[60px] text-[40px] scrollbar-hide"
               ref={scrollMonthRef}
@@ -86,8 +121,8 @@ const DatePicker = () => {
                 {staticMonths.map((mon, index) => (
                   <motion.div
                     key={index}
-                    initial={{ scale: 0 }}
-                    whileInView={{ scale: 1 }}
+                    initial={{ scale: 0.5, opacity: 0 }}
+                    whileInView={{ scale: 1, opacity: 1 }}
                     className="h-[60px]"
                   >
                     {mon.name}
@@ -95,9 +130,15 @@ const DatePicker = () => {
                 ))}
               </div>
             </div>
+            <div className="text-sm mt-2 mb-1 p-3 flex justify-center items-center bg-cyan-100 rounded-md shadow-md">
+              <BsFillArrowDownCircleFill onClick={() => increaseMonth()} />
+            </div>
           </div>
           <div>
             <h2 className="text-lg">Year</h2>
+            <div className="text-sm mt-1 mb-2 p-3 flex justify-center items-center bg-cyan-100 rounded-md shadow-md">
+              <BsFillArrowUpCircleFill onClick={() => decreaseYear()} />
+            </div>
             <div
               className="overflow-y-scroll max-h-[60px] text-[40px] scrollbar-hide"
               ref={scrollYearRef}
@@ -115,6 +156,9 @@ const DatePicker = () => {
                   </motion.div>
                 ))}
               </div>
+            </div>
+            <div className="text-sm mt-2 mb-1 p-3 flex justify-center items-center bg-cyan-100 rounded-md shadow-md">
+              <BsFillArrowDownCircleFill onClick={() => increaseYear()} />
             </div>
           </div>
         </div>

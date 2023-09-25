@@ -46,7 +46,9 @@ export const loginWithGoogle = async (user) => {
 };
 
 export const loginWithFb = (fbToken) => {
-  const res = Axios.post(`${productionUrl}/login/facebook`, { accessToken: token });
+  const res = Axios.post(`${productionUrl}/login/facebook`, {
+    accessToken: fbToken,
+  });
   return res;
 };
 
