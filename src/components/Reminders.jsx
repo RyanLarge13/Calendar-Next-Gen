@@ -1,4 +1,5 @@
 import { useState, useContext } from "react";
+import { IoIosAddCircle } from "react-icons/io";
 import { BiAlarmSnooze } from "react-icons/bi";
 import { BsFillPenFill } from "react-icons/bs";
 import { motion } from "framer-motion";
@@ -6,11 +7,14 @@ import { deleteReminder } from "../utils/api.js";
 import { formatTime } from "../utils/helpers.js";
 import UserContext from "../context/UserContext.jsx";
 import DatesContext from "../context/DatesContext.jsx";
+import InteractiveContext from "../context/InteractiveContext";
 import { BsAlarmFill } from "react-icons/bs";
 
 const Reminders = () => {
   const { reminders, setReminders, user } = useContext(UserContext);
-  const { dateObj } = useContext(DatesContext);
+  const { dateObj, string, setString } = useContext(DatesContext);
+  const { setType, setMenu, setOpenModal, setAddNewEvent } =
+    useContext(InteractiveContext);
 
   const [selected, setSelected] = useState([]);
   const [selectable, setSelectable] = useState(false);
@@ -83,24 +87,28 @@ const Reminders = () => {
     }
   };
 
+  const openModalAndSetType = () => {
+    if (!string) {
+      setString(dateObj.toLocaleDateString());
+    }
+    setType("reminder");
+    setMenu(false);
+    setOpenModal(true);
+    setAddNewEvent(true);
+  };
+
   return (
     <motion.div className="p-3">
-      {/* <div className="sticky top-1 right-0 left-0 p-3 mb-5 w-full flex justify-between items-center gap-x-3 rounded-md shadow-md bg-white z-20">
-        <IoIosAlarm />
-        <AiOutlinePlus
-          onClick={() => {
-            setString(() => new Date().toLocaleDateString());
-            setOpenModal(true);
-            setAddNewEvent(true);
-            setType("reminder");
-          }}
-        />
-      </div> */}
       {reminders.length < 1 && (
         <div>
-          <div className="rounded-md p-3 shadow-md my-5">
-            <h2 className="font-semibold mb-2">No Upcomming Reminders</h2>
-            <BiAlarmSnooze />
+          <div className="rounded-md p-3 shadow-md my-5 flex justify-between items-center">
+            <div>
+              <h2 className="font-semibold mb-2">No Upcomming Reminders</h2>
+              <BiAlarmSnooze />
+            </div>
+            <div className="text-2xl p-2" onClick={() => openModalAndSetType()}>
+              <IoIosAddCircle />
+            </div>
           </div>
         </div>
       )}

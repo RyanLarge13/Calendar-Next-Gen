@@ -1,10 +1,12 @@
 import { useState, useContext, useCallback } from "react";
 import { colors } from "../constants.js";
+import { AiFillInfoCircle } from "react-icons/ai";
 import Color from "./Color";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import Toggle from "./Toggle";
 
 const AddSticky = () => {
   const { stickies, setStickies, setSystemNotif } = useContext(UserContext);
@@ -13,6 +15,7 @@ const AddSticky = () => {
   const [title, setTitle] = useState("");
   const [color, setColor] = useState("");
   const [text, setText] = useState("");
+  const [pin, setPin] = useState(false);
 
   const handleTextChange = (value) => {
     setText(value);
@@ -24,6 +27,7 @@ const AddSticky = () => {
       title,
       body: text,
       color,
+      pin,
     };
     setStickies((prev) => [newSticky, ...prev]);
   };
@@ -100,6 +104,13 @@ const AddSticky = () => {
           onChange={handleTextChange}
           className="h-full"
         />
+      </div>
+      <div className="rounded-md shadow-md p-3 flex justify-between items-center mb-10">
+        <div className="flex justify-center items-center">
+          <AiFillInfoCircle />
+          <p className="ml-2">Pin</p>
+        </div>
+        <Toggle condition={pin} setCondition={setPin} />
       </div>
       <div className="text-xs font-semibold mb-3">
         <button

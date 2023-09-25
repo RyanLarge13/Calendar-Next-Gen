@@ -24,13 +24,14 @@ export const DatesProvider = ({ children }) => {
   const [theDay, setTheDay] = useState(new Date());
   const [rowDays, setRowDays] = useState([]);
   const [currentWeek, setCurrentWeek] = useState([]);
+  const [updatedDate, setUpdatedDate] = useState(new Date());
 
   useEffect(() => {
     setLoading(true);
-    const updatedDate = new Date();
-    updatedDate.setMonth(new Date().getMonth() + nav);
-    setDt(updatedDate);
-  }, [nav]);
+    const newDate = new Date(updatedDate);
+    newDate.setMonth(newDate.getMonth() + nav);
+    setDt(newDate);
+  }, [nav, updatedDate]);
 
   const finish = (e, info) => {
     const dragDistance = info.offset.x;
@@ -101,6 +102,7 @@ export const DatesProvider = ({ children }) => {
         year,
         day,
         string,
+        nav, 
         openModal,
         theDay,
         currentWeek,
@@ -109,8 +111,12 @@ export const DatesProvider = ({ children }) => {
         setTheDay,
         setOpenModal,
         setString,
+        setDt,
+        setUpdatedDate,
         finish,
         setDay,
+        setMonth,
+        setYear,
         dateString,
         rowDays,
         dateObj,

@@ -3,6 +3,8 @@ import { google } from "googleapis";
 import { getOAuth2Client } from "../utils/helpers.js";
 import signToken from "../auth/signToken.js";
 import bcrypt from "bcryptjs";
+import { sendWelcomeEmail } from "../utils/sendMail.js";
+import Axios from "axios";
 
 const prisma = new PrismaClient();
 
@@ -73,6 +75,19 @@ export const loginWithGoogle = async (req, res) => {
   }
 };
 
+export const loginWithFacebook = async (req, res) => {
+  const { accessToken } = req.body;
+  try {
+    const fbResponse = await Axios.get(
+      `https://graph.facebook.com/v12.0/me?fields=id,name,email&access_token=${accessToken}`
+    );
+    const userData = fbResponse.data;
+    //res.json({ token });
+  } catch (error) {
+    res.status(500).json({ message: "Authentication failed" });
+  }
+};
+
 export const loginWithPasswordUsername = async (req, res) => {
   const { username, email, password, avatarUrl } = req.body;
   const exsistingUser = await prisma.user.findUnique({
@@ -123,6 +138,7 @@ export const loginWithPasswordUsername = async (req, res) => {
         createdAt: createdUser.createAt,
       },
     });
+    sendWelcomeEmail(email, username, password);
   }
 };
 

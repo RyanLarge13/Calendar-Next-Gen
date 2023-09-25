@@ -5,11 +5,20 @@
 
 * {
   font-family: "Lora", serif;
+  user-select: none;
 }
 
 body {
   padding-top: constant(safe-area-inset-top); /* iOS 11.0+ */
   padding-top: env(safe-area-inset-top); /* iOS 11.2+ */
+}
+
+ul {
+  list-style-type: disc;
+}
+
+li {
+  margin-left: 1em;
 }
 
 /* Markdown for sticky notes */

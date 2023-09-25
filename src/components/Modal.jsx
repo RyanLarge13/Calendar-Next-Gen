@@ -63,7 +63,7 @@ const Modal = () => {
           setOpenModal(false);
           setType(null);
         }}
-        className="fixed inset-0 bg-[rgba(0,0,0,0.4)] flex z-[10]"
+        className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex z-[10]"
       ></motion.div>
       <motion.div
         initial={{ x: 100, opacity: 0 }}

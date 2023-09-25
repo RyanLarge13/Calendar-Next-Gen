@@ -60,7 +60,9 @@ const SystemNotif = () => {
             className={`absolute top-0 left-0 bottom-0 ${systemNotif.color} w-[5px] rounded-md`}
           ></div>
           <p className="text-lg font-semibold">{systemNotif.title}</p>
-          <p className="text-sm">{systemNotif.text}</p>
+          <p
+            className="text-xs"
+          >{systemNotif.text}</p>
           <div className="mt-3 p-1 border-t flex justify-between items-center">
             {systemNotif.actions?.map((action, index) => (
               <div key={index} onClick={() => action.func()}>

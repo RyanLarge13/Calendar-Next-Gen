@@ -38,7 +38,6 @@ export const UserProvider = ({ children }) => {
   const [systemNotif, setSystemNotif] = useState({ show: false });
   const [backOnlineTrigger, setBackOnlineTrigger] = useState(false);
   const [googleToken, setGoogleToken] = useState(false);
-  const [loginLoading, setLoginLoading] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
 
   const updateStatus = () => {
@@ -348,7 +347,6 @@ export const UserProvider = ({ children }) => {
         events,
         reminders,
         googleToken,
-        loginLoading,
         isOnline,
         lists,
         notifications,
@@ -365,7 +363,6 @@ export const UserProvider = ({ children }) => {
         setUser,
         setEvents,
         setGoogleToken,
-        setLoginLoading,
         setAuthToken,
         setReminders,
       }}

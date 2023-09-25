@@ -11,13 +11,14 @@ import DayView from "./DayView";
 import WeekView from "./WeekView";
 import MasonryView from "./MasonryView";
 import AgendaView from "./AgendaView";
+import DatePicker from "./DatePicker";
 import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext";
 
 const Calendar = () => {
   const { events, holidays, reminders, weekDays } = useContext(UserContext);
-  const { view, event } = useContext(InteractiveContext);
+  const {showDatePicker, view, event } = useContext(InteractiveContext);
   const { finish, loading, theDay, openModal, dateString, string, dateObj } =
     useContext(DatesContext);
 
@@ -99,6 +100,7 @@ const Calendar = () => {
             <></>
           )}
         </section>
+        {showDatePicker && <DatePicker />} 
         {openModal || event ? (
           <ModalHeader allDayEvents={allDayEvents} />
         ) : null}
