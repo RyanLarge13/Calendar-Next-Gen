@@ -211,13 +211,13 @@ export const UserProvider = ({ children }) => {
         .catch((err) => {
           console.log(err);
         });
-      // getAllTasks(authToken)
-//         .then((response) => {
-//           setUserTasks(response.data.tasks);
-//         })
-//         .catch((err) => {
-//           console.log(err);
-//         });
+      getAllTasks(authToken)
+    .then((response) => {
+         setUserTasks(response.data.tasks);
+        })
+        .catch((err) => {
+console.log(err);
+        });
       registerServiceWorkerSync();
     }
     if (!authToken && user) {
