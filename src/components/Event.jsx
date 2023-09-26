@@ -11,6 +11,7 @@ import { MdLocationPin, MdOutlineDragIndicator } from "react-icons/md";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import { motion, useDragControls } from "framer-motion";
 import { fetchAttachments } from "../utils/api";
+import { formatDbText } from "../utils/helpers";
 import GoogleMaps from "./GoogleMaps";
 import Masonry from "react-masonry-css";
 import InteractiveContext from "../context/InteractiveContext";
@@ -28,6 +29,8 @@ const Event = ({ dayEvents }) => {
   const [imagesLoading, setImagesLoading] = useState(false);
 
   const controls = useDragControls();
+
+  const descriptions = formatDbText(event.description);
 
   const breakpointColumnsObj = {
     default: 4, // Number of columns by default
@@ -224,7 +227,17 @@ const Event = ({ dayEvents }) => {
         <div
           className={`p-2 mt-2 rounded-md shadow-sm font-bold ${event.color} bg-opacity-50`}
         >
-          <p className="text-[14px]">{event.description}</p>
+          <div>
+            {descriptions.length > 0 ? (
+              descriptions.map((text, index) => (
+                <p key={index} className="text-[14px]">
+                  {text}
+                </p>
+              ))
+            ) : (
+              <p className="text-[14px]">{descriptions[0]}</p>
+            )}
+          </div>
         </div>
         {event.start.startTime && (
           <div>
@@ -321,14 +334,10 @@ const Event = ({ dayEvents }) => {
         <div className="sticky top-[50%] right-2 left-2 py-2 flex justify-between items-center text-xl">
           {index > 0 ? (
             <BsFillArrowLeftCircleFill onClick={() => getPreviousEvent()} />
-          ) : (
-            null
-          )}
+          ) : null}
           {index < dayEvents.length - 1 ? (
             <BsFillArrowRightCircleFill onClick={() => getNextEvent()} />
-          ) : (
-            null
-          )}
+          ) : null}
         </div>
         {imagesLoading ? (
           <p>Loading {event.attachmentLength} images...</p>

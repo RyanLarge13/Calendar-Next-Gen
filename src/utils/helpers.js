@@ -25,3 +25,10 @@ export const formatTime = (date) => {
     duration /= division.amount;
   }
 };
+
+export const formatDbText = (text) => {
+  if (!text) return "";
+  const delimiter = "|||";
+  const textParts = text.split(delimiter);
+  return textParts;
+};
