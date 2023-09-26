@@ -109,7 +109,7 @@ const ListItems = ({ addItems, listId, items }) => {
             }}
             key={listItem.id}
             value={listItem}
-            className="bg-white bg-opacity-20 rounded-md shadow-md px-2 py-5 my-3 flex justify-between items-center cursor-grab relative"
+            className="bg-white bg-opacity-20 rounded-md ml-0 shadow-md px-2 py-5 my-3 flex justify-between items-center cursor-grab relative"
           >
             <div>
               <p className="absolute top-[-6px] left-[-6px] w-[15px] h-[15px] shadow-md flex justify-center items-center rounded-full bg-white text-xs">

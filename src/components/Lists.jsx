@@ -55,7 +55,7 @@ const Lists = () => {
       {lists.map((list) => (
         <div
           key={list.id}
-          className={`my-5 mr-10 py-3 rounded-md shadow-md ${list.color}`}
+          className={`my-5 mr-10 p-3 rounded-md shadow-md ${list.color}`}
         >
           <div className="mb-2 bg-white rounded-md shadow-md p-3 flex justify-between items-center">
             <p className="font-semibold mr-2">{list.title}</p>
