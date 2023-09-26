@@ -37,7 +37,7 @@ const Tasks = () => {
         userTasks.map((task) => (
           <div
             key={task.id}
-            className={`p-3 rounded-md shadow-md ${item.color}`}
+            className={`p-3 rounded-md shadow-md ${task.color}`}
           >
             <div className="rounded-md shadow-md bg-white p-2 mb-2">
               <p>{task.date}</p>
