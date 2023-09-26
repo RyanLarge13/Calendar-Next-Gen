@@ -8,7 +8,7 @@ import {
   getReminders,
   requestAndSubscribe,
   getAllLists,
-  getAllTasks, 
+  getAllTasks,
   getNotifications,
   getNotificationsAtStart,
   checkSubscription,
@@ -100,7 +100,6 @@ export const UserProvider = ({ children }) => {
 
   useEffect(() => {
     if (googleToken && !authToken) {
-      setLoginLoading(true);
       getGoogleData(googleToken)
         .then((res) => {
           loginWithGoogle(res.data)
@@ -211,13 +210,13 @@ export const UserProvider = ({ children }) => {
         .catch((err) => {
           console.log(err);
         });
-      // getAllTasks(authToken)
-//         .then((response) => {
-//           setUserTasks(response.data.tasks);
-//         })
-//         .catch((err) => {
-//           console.log(err);
-//         });
+      getAllTasks(authToken)
+        .then((response) => {
+          setUserTasks(response.data.tasks);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
       registerServiceWorkerSync();
     }
     if (!authToken && user) {

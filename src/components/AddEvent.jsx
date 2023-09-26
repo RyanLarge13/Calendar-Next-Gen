@@ -113,7 +113,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
         id: newEventId,
         kind: "Event",
         summary,
-        description,
+        description: formatDescText(description),
         location: location ? locationObject : undefined,
         date: string,
         attachmentLength: attachments.length,
@@ -197,6 +197,11 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
       return false;
     }
     return true;
+  };
+
+  const formatDescText = (text) => {
+    const formattedText = text.replace(/\n/g, "|||");
+    return formattedText;
   };
 
   const handleFileChange = async (event) => {

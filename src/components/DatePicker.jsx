@@ -30,7 +30,7 @@ const DatePicker = () => {
       setNewMonth(month);
     }
     if (scrollYearRef) {
-      const index = staticYears.indexOf(year);
+      const index = staticYears.indexOf(year.toString());
       scrollYearRef.current.scrollTo({
         top: index * itemHeight,
         behavior: "smooth",
@@ -38,8 +38,6 @@ const DatePicker = () => {
       setNewYear(Number(staticYears[index]));
     }
   }, []);
-
-  useEffect(() => {}, []);
 
   const handleMonthScroll = () => {
     clearTimeout(debounceMonthTimeout);
@@ -60,9 +58,25 @@ const DatePicker = () => {
     }, 50);
   };
 
-  const increaseMonth = () => {};
+  const increaseMonth = () => {
+    if (newMonth < staticMonths.length - 1) {
+      setNewMonth(newMonth + 1);
+      scrollMonthRef.current.scrollTo({
+        top: (newMonth + 1) * 60, // Assuming each item is 60px tall
+        behavior: "smooth",
+      });
+    }
+  };
 
-  const decreaseMonth = () => {};
+  const decreaseMonth = () => {
+    if (newMonth > 0) {
+      setNewMonth(newMonth - 1);
+      scrollMonthRef.current.scrollTo({
+        top: (newMonth - 1) * 60, // Assuming each item is 60px tall
+        behavior: "smooth",
+      });
+    }
+  };
 
   const handleYearScroll = () => {
     clearTimeout(debounceYearTimeout);
@@ -84,9 +98,29 @@ const DatePicker = () => {
     }, 50);
   };
 
-  const increaseYear = () => {};
+  const increaseYear = () => {
+    const index = staticYears.indexOf(newYear.toString());
+    if (index < staticYears.length - 1) {
+      const newYearToSet = Number(staticYears[index + 1]);
+      setNewYear(newYearToSet);
+      scrollYearRef.current.scrollTo({
+        top: (index + 1) * 60, // Assuming each item is 60px tall
+        behavior: "smooth",
+      });
+    }
+  };
 
-  const decreaseYear = () => {};
+  const decreaseYear = () => {
+    const index = staticYears.indexOf(newYear.toString());
+    if (index > 0) {
+      const newYearToSet = Number(staticYears[index - 1]);
+      setNewYear(newYearToSet);
+      scrollYearRef.current.scrollTo({
+        top: (index - 1) * 60, // Assuming each item is 60px tall
+        behavior: "smooth",
+      });
+    }
+  };
 
   const submitMonthAndTime = () => {
     const newDt = new Date();
@@ -109,9 +143,13 @@ const DatePicker = () => {
         <div className="flex gap-x-3">
           <div>
             <h2 className="text-lg">Month</h2>
-            <div className="text-sm mt-1 mb-2 p-3 flex justify-center items-center bg-cyan-100 rounded-md shadow-md">
-              <BsFillArrowUpCircleFill onClick={() => decreaseMonth()} />
-            </div>
+            <motion.div
+              whileTap={{ scale: 0.9 }}
+              className="text-sm mt-1 mb-2 p-3 flex justify-center items-center bg-cyan-100 rounded-md shadow-md"
+              onClick={() => decreaseMonth()}
+            >
+              <BsFillArrowUpCircleFill />
+            </motion.div>
             <div
               className="overflow-y-scroll max-h-[60px] text-[40px] scrollbar-hide"
               ref={scrollMonthRef}
@@ -130,15 +168,24 @@ const DatePicker = () => {
                 ))}
               </div>
             </div>
-            <div className="text-sm mt-2 mb-1 p-3 flex justify-center items-center bg-cyan-100 rounded-md shadow-md">
-              <BsFillArrowDownCircleFill onClick={() => increaseMonth()} />
-            </div>
+            <motion.div
+              whileTap={{ scale: 0.9 }}
+              className="text-sm mt-2 mb-1 p-3 flex justify-center items-center bg-cyan-100 rounded-md shadow-md"
+              onClick={() => increaseMonth()}
+            >
+              <BsFillArrowDownCircleFill />
+            </motion.div>
           </div>
           <div>
             <h2 className="text-lg">Year</h2>
-            <div className="text-sm mt-1 mb-2 p-3 flex justify-center items-center bg-cyan-100 rounded-md shadow-md">
-              <BsFillArrowUpCircleFill onClick={() => decreaseYear()} />
-            </div>
+            <motion.div
+              whileTap={{ scale: 0.9 
+              }}
+              className="text-sm mt-1 mb-2 p-3 flex justify-center items-center bg-cyan-100 rounded-md shadow-md"
+              onClick={() => decreaseYear()}
+            >
+              <BsFillArrowUpCircleFill />
+            </motion.div>
             <div
               className="overflow-y-scroll max-h-[60px] text-[40px] scrollbar-hide"
               ref={scrollYearRef}
@@ -157,9 +204,13 @@ const DatePicker = () => {
                 ))}
               </div>
             </div>
-            <div className="text-sm mt-2 mb-1 p-3 flex justify-center items-center bg-cyan-100 rounded-md shadow-md">
-              <BsFillArrowDownCircleFill onClick={() => increaseYear()} />
-            </div>
+            <motion.div
+              whileTap={{ scale: 0.9 }}
+              className="text-sm mt-2 mb-1 p-3 flex justify-center items-center bg-cyan-100 rounded-md shadow-md"
+              onClick={() => increaseYear()}
+            >
+              <BsFillArrowDownCircleFill />
+            </motion.div>
           </div>
         </div>
         <div className="flex justify-between items-center mt-5 border-t p-3">

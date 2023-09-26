@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 export const getTasks = async (req, res) => {
   const { id } = req.user;
   const allTasks = await prisma.task.findMany({ where: { userId: id } });
-  return res.status(201).jaon({message: "Successfully fetched tasks", tasks: allTasks})
+  return res.status(201).json({message: "Successfully fetched tasks", tasks: allTasks})
 };
 
 export const createTask = async (req, res) => {

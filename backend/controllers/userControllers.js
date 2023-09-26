@@ -79,9 +79,24 @@ export const loginWithFacebook = async (req, res) => {
   const { accessToken } = req.body;
   try {
     const fbResponse = await Axios.get(
-      `https://graph.facebook.com/v12.0/me?fields=id,name,email&access_token=${accessToken}`
+      `https://graph.facebook.com/v12.0/me?fields=id,name,email,picture&access_token=${accessToken}`
     );
     const userData = fbResponse.data;
+    const hashedPassword = await hashPassword(userData.id);
+    const fbUser = {
+      username: userData.name,
+      email: userData.email,
+      password: hashedPassword,
+      avatarUrl: userData.picture.url,
+    };
+    const exsistingUser = await prisma.user.findUnique({
+      where: { email: userData.email },
+    });
+    if (exsistingUser) {
+    }
+    if (!exsistingUser) {
+    	
+    }
     //res.json({ token });
   } catch (error) {
     res.status(500).json({ message: "Authentication failed" });
