@@ -228,15 +228,11 @@ const Event = ({ dayEvents }) => {
           className={`p-2 mt-2 rounded-md shadow-sm font-bold ${event.color} bg-opacity-50`}
         >
           <div>
-            {descriptions.length > 0 ? (
-              descriptions.map((text, index) => (
-                <p key={index} className="text-[14px]">
-                  {text}
-                </p>
-              ))
-            ) : (
-              <p className="text-[14px]">{descriptions[0]}</p>
-            )}
+            {descriptions.map((text, index) => (
+              <p key={index} className="text-[14px]">
+                {text}
+              </p>
+            ))}
           </div>
         </div>
         {event.start.startTime && (

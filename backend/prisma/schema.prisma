@@ -106,6 +106,7 @@ updatedAt DateTime @updatedAt @default(now())
 model Task {
 id String @id @unique @default(uuid())
 date String
+color String
 tasks Json
 completed Boolean
 completedDate String

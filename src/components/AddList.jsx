@@ -1,8 +1,6 @@
 import { useState, useContext } from "react";
 import { createNewList } from "../utils/api.js";
 import { v4 as uuidv4 } from "uuid";
-import { MdCancel } from "react-icons/md";
-import { BsFillSaveFill } from "react-icons/bs";
 import UserContext from "../context/UserContext.jsx";
 import InteractiveContext from "../context/InteractiveContext.jsx";
 import DatesContext from "../context/DatesContext.jsx";
