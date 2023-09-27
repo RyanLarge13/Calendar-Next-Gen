@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useContext } from "react";
 import { motion } from "framer-motion";
 import { staticTimes } from "../constants.js";
+import { formatDbText } from "../utils/helpers.js";
 import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
 
@@ -158,7 +159,13 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
                 {item.summary || item.title}
               </p>
               <p className="mr-5 text-sm bg-white bg-opacity-30 rounded-md p-2 w-full mt-2">
-                {item.description || item.notes}
+                {item.description
+                  ? formatDbText(item.description).map((text, index) => (
+                      <p key={index} className="text-[14px]">
+                        {text}
+                      </p>
+                    ))
+                  : "" || item.notes}
               </p>
             </div>
           ))}

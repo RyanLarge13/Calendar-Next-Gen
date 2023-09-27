@@ -30,7 +30,7 @@ const Event = ({ dayEvents }) => {
 
   const controls = useDragControls();
 
-  const descriptions = formatDbText(event.description);
+  const descriptions = formatDbText(event.description || "");
 
   const breakpointColumnsObj = {
     default: 4, // Number of columns by default
