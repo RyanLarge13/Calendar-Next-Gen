@@ -1,4 +1,4 @@
-import { useState, useContext, useRef, useEffect } from "react";
+import { useState, useContext, useEffect } from "react";
 import { motion } from "framer-motion";
 import { IoIosAddCircle } from "react-icons/io";
 import {
@@ -6,23 +6,25 @@ import {
   AiOutlineQrcode,
   AiOutlineArrowDown,
 } from "react-icons/ai";
-import jsQR from "jsqr";
+import { sendFriendRequestByEmail } from "../utils/api";
+import QRCodeScanner from "./QRCodeScanner";
 import UserContext from "../context/UserContext";
 
 const Connections = ({ setOption }) => {
-  const { user, friends, setFriends, qrCodeUrl } = useContext(UserContext);
+  const {
+    user,
+    friends,
+    friendRequests,
+    connectionRequests,
+    setFriends,
+    qrCodeUrl,
+  } = useContext(UserContext);
 
   const [pick, setPick] = useState(false);
   const [qrOptions, setQrOptions] = useState(false);
   const [emailAdd, setEmailAdd] = useState(false);
   const [email, setEmail] = useState("");
   const [openCamera, setOpenCamera] = useState(false);
-
-  const videoRef = useRef(null);
-
-  useEffect(() => {
-    return () => videoRef.current.stop();
-  }, []);
 
   const finish = (e, info) => {
     const dragDistance = info.offset.y;
@@ -38,55 +40,15 @@ const Connections = ({ setOption }) => {
 
   const addFriendByEmail = (e) => {
     e.preventDefault();
-  };
-
-  const startCamera = async () => {
-    try {
-      // Check if the device supports mediaDevices.getUserMedia
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        throw new Error("getUserMedia is not supported on this device");
-      }
-      setOpenCamera(true);
-      // Request access to the camera
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      videoRef.current.srcObject = stream;
-
-      // Start playing the video
-      videoRef.current.play();
-
-      // Continuously capture frames from the camera feed and attempt to decode QR codes
-      const captureFrame = () => {
-        const canvas = document.createElement("canvas");
-        const context = canvas.getContext("2d");
-        canvas.width = videoRef.current.videoWidth;
-        canvas.height = videoRef.current.videoHeight;
-        context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-
-        // Attempt to decode QR code from the captured frame
-        const imageData = context.getImageData(
-          0,
-          0,
-          canvas.width,
-          canvas.height
-        );
-        const code = jsQR(imageData.data, imageData.width, imageData.height);
-
-        if (code) {
-          console.log("QR Code data:", code.data);
-
-          // Stop capturing frames and close the camera stream
-          stream.getTracks().forEach((track) => track.stop());
-        } else {
-          // If no QR code is detected, continue capturing frames
-          requestAnimationFrame(captureFrame);
-        }
-      };
-
-      // Start capturing frames
-      requestAnimationFrame(captureFrame);
-    } catch (error) {
-      setOpenCamera(false);
-      console.error("Error accessing camera:", error);
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      sendFriendRequestByEmail(email, token)
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
   };
 
@@ -109,6 +71,39 @@ const Connections = ({ setOption }) => {
         >
           <AiOutlineArrowDown />
         </div>
+      </div>
+      <div className="mt-50">
+        <p>Friend Requests</p>
+        {friendRequests.length > 0 ? (
+          friendRequests.map((friendReq) => (
+            <div
+              key={friendReq.sender.email}
+              className="p-3 rounded-md shadow-md my-3"
+            >
+              <div className="flex justify-between items-end">
+                <img
+                  src={friendReq.sender.avatarUrl}
+                  alt="users avatar"
+                  className="w-[50px] h-[50px] rounded-full shadow-md"
+                />
+                <div>
+                  <p className="text-sm mt-2">{friendReq.sender.username}</p>
+                  <p className="text-sm">{friendReq.sender.email}</p>
+                </div>
+              </div>
+              <div className="mt-3 flex justify-between items-center">
+                <button className="px-3 py-2 text-xs rounded-md shadow-md bg-red-300 font-semibold">
+                  Deny
+                </button>
+                <button className="px-3 py-2 text-xs rounded-md shadow-md bg-lime-300 font-semibold">
+                  Accept
+                </button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p>No friend requests</p>
+        )}
       </div>
       <div className="mt-5">
         <p>Your Friends</p>
@@ -156,22 +151,14 @@ const Connections = ({ setOption }) => {
                     className="w-40 h-40 rounded-md shadow-md"
                   />
                   <button
-                    onClick={() => startCamera()}
+                    onClick={() =>
+                      openCamera ? setOpenCamera(false) : setOpenCamera(false)
+                    }
                     className="px-3 py-2 rounded-md shadow-md bg-white mt-5"
                   >
-                    Or Scan Your Friends!
+                    {openCamera ? "cancel" : "Or Scan Your Friends!"}
                   </button>
-                  {openCamera && (
-                    <div className="mt-5">
-                      <video
-                        ref={videoRef}
-                        autoPlay
-                        muted
-                        playsInline
-                        className="rounded-md shadow-md"
-                      />
-                    </div>
-                  )}
+                  {openCamera && <QRCodeScanner />}
                 </div>
               )}
               {emailAdd && (
@@ -190,6 +177,34 @@ const Connections = ({ setOption }) => {
             </div>
           )}
         </div>
+        {connectionRequests.length > 0 ? (
+          connectionRequests.map((connectionReq) => (
+            <div
+              key={connectionReq.recipient.email}
+              className="flex justify-between items-end p-3 rounded-md shadow-md my-3 relative"
+            >
+              <button className="absolute px-3 py-2 text-xs top-1 right-1 rounded-md shadow-md bg-red-300 font-semibold">
+                Cancel Request
+              </button>
+              <div>
+                <img
+                  src={connectionReq.recipient.avatarUrl}
+                  alt="users avatar"
+                  className="w-[50px] h-[50px] rounded-full shadow-md"
+                />
+                <p className="text-sm mt-2">STATUS: pending</p>
+              </div>
+              <div>
+                <p className="text-sm mt-2">
+                  {connectionReq.recipient.username}
+                </p>
+                <p className="text-sm">{connectionReq.recipient.email}</p>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p>No connection requests sent out</p>
+        )}
       </div>
     </motion.div>
   );

@@ -54,7 +54,7 @@ export const loginWithFb = (fbToken) => {
 
 export const loginWithPasswordAndUsername = async (credentials) => {
   const { username, email, password, avatarUrl } = credentials;
-  const res = Axios.post(`${productionUrl}/login/classic`, {
+  const res = Axios.post(`${devUrl}/login/classic`, {
     username,
     email,
     password,
@@ -353,6 +353,29 @@ export const createTask = (token, task) => {
     `${productionUrl}/new/tasks`,
     { task },
     { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return res;
+};
+
+// Friend management
+export const getFriendinfo = (token) => {
+  const res = Axios.get(`${productionUrl}/friends/friendinfo`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res;
+};
+
+export const sendFriendRequestByEmail = (userEmail, token) => {
+  const res = Axios.post(
+    `${productionUrl}/friends/add/request/email/${userEmail}`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
   );
   return res;
 };

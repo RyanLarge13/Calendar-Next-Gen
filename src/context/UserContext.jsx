@@ -15,6 +15,7 @@ import {
   addSubscriptionToUser,
   getGoogleCalendarEvents,
   markAsRead,
+  getFriendinfo,
 } from "../utils/api";
 import QRCode from "qrcode-generator";
 import IndexedDBManager from "../utils/indexDBApi";
@@ -34,6 +35,8 @@ export const UserProvider = ({ children }) => {
   const [stickies, setStickies] = useState([]);
   const [userTasks, setUserTasks] = useState([]);
   const [friends, setFriends] = useState([]);
+  const [connectionRequests, setConnectionRequests] = useState([]);
+  const [friendRequests, setFriendRequests] = useState([]);
   const [localDB, setLocalDB] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [systemNotif, setSystemNotif] = useState({ show: false });
@@ -220,6 +223,16 @@ export const UserProvider = ({ children }) => {
         .catch((err) => {
           console.log(err);
         });
+      getFriendinfo(authToken)
+        .then((response) => {
+          const data = response.data;
+          setFriends(data.userFriends);
+          setFriendRequests(data.friendRequests);
+          setConnectionRequests(data.connectionRequests);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
       registerServiceWorkerSync();
     }
     if (!authToken && user) {
@@ -367,6 +380,10 @@ export const UserProvider = ({ children }) => {
         stickies,
         userTasks,
         qrCodeUrl,
+        connectionRequests,
+        friendRequests,
+        setConnectionRequests,
+        setFriendRequests,
         setUserTasks,
         setStickies,
         setFriends,
