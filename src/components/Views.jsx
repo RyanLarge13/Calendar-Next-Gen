@@ -32,7 +32,7 @@ const Views = () => {
       {menu ? (
         <div
           onClick={() => setMenu(false)}
-          className="fixed cursor-pointer bottom-5 left-5 z-[700] p-3 rounded-full flex justify-center items-center bg-gradient-to-tr from-lime-200 to-yellow-100 shadow-md"
+          className="fixed cursor-pointer bottom-5 left-5 z-[700] p-3 rounded-full flex justify-center items-center bg-gradient-to-tr from-cyan-200 to-cyan-100 shadow-md"
         >
           <div>
             <BsFillCalendar2EventFill className="text-md" />
@@ -45,7 +45,7 @@ const Views = () => {
             showLogin
               ? "opacity-0 pointer-events-none"
               : "opacity-100 pointer-events-auto"
-          } p-3 rounded-full flex justify-center items-center bg-gradient-to-tr from-lime-200 to-yellow-100 shadow-md`}
+          } p-3 rounded-full flex justify-center items-center bg-gradient-to-tr from-cyan-200 to-cyan-100 shadow-md`}
         >
           {show ? <BsXCircleFill /> : <BsColumnsGap />}
         </div>

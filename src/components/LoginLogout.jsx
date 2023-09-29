@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { BiLogInCircle, BiLogOutCircle } from "react-icons/bi";
 import { BsFillBellFill } from "react-icons/bs";
 import { updateNotification } from "../utils/api";
+import { Logo } from "../assets";
 import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
 import Notification from "./Notification";
@@ -157,6 +158,15 @@ const LoginLogout = () => {
                 </div>
               ) : (
                 <div className="">
+                  {/* <div className="flex flex-col justify-center items-center mb-20 mt-5">
+                    <h2 className="text-2xl">CNG</h2>
+                    <img
+                      src={Logo}
+                      alt="CNG logo"
+                      className="w-[75px] h-[75px] rounded-md mt-3 mb-2"
+                    />
+                    <h3 className="text-xs">sign in to calendat next gen</h3>
+                  </div> */}
                   {!regularLogin && (
                     <motion.div
                       initial={{ x: 50, opacity: 0 }}

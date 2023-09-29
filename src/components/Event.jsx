@@ -39,6 +39,7 @@ const Event = ({ dayEvents }) => {
   };
 
   useEffect(() => {
+    console.log(event);
     if (event.attachmentLength > 0) {
       setImagesLoading(true);
       fetchAttachments(event.id)

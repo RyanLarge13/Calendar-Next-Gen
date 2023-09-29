@@ -44,7 +44,7 @@ const Lists = () => {
     if (!string) {
       setString(dateObj.toLocaleDateString());
     }
-    setType("list");
+    setType("todo-list");
     setMenu(false);
     setOpenModal(true);
     setAddNewEvent(true);
@@ -53,15 +53,13 @@ const Lists = () => {
   return (
     <motion.div className="py-3 relative">
       {lists.length < 1 && (
-        <div>
+        <div className="px-3">
           <div className="rounded-md p-3 shadow-md my-5 flex justify-between items-center">
             <div>
               <h2 className="font-semibold mb-2">You have no lists</h2>
-              <BiListPlus onClick={() => openModalAndSetType()} />
+              <BiListPlus />
             </div>
-            <div
-              className="text-2xl p-2" //onClick={() => openModalAndSetType()}
-            >
+            <div className="text-2xl p-2" onClick={() => openModalAndSetType()}>
               <IoIosAddCircle />
             </div>
           </div>

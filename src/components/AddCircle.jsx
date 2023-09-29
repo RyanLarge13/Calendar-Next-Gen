@@ -80,7 +80,7 @@ export const AddCircle = () => {
         <>
           <div
             onClick={() => setShowMenuBtns((prev) => !prev)}
-            className="fixed w-[40px] h-[40px] z-[700] p-3 rounded-full cursor-pointer flex justify-center items-center bg-gradient-to-tr right-5 bottom-5 from-lime-200 to-yellow-100 shadow-md"
+            className="fixed w-[40px] h-[40px] z-[700] p-3 rounded-full cursor-pointer flex justify-center items-center bg-gradient-to-tr right-5 bottom-5 from-cyan-200 to-cyan-100 shadow-md"
           >
             <BiCategoryAlt />
           </div>
@@ -140,7 +140,7 @@ export const AddCircle = () => {
             showLogin || type !== null
               ? "opacity-0 pointer-events-none"
               : "opacity-100 pointer-events-auto"
-          } p-3 rounded-full cursor-pointer flex justify-center items-center bg-gradient-to-tr right-5 bottom-5 from-lime-200 to-yellow-100 shadow-md`}
+          } p-3 rounded-full cursor-pointer flex justify-center items-center bg-gradient-to-tr right-5 bottom-5 from-cyan-200 to-cyan-100 shadow-md`}
         >
           {show ? <BsXCircleFill /> : <BsFillCalendarPlusFill />}
         </motion.div>

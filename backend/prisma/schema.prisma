@@ -55,9 +55,16 @@ summary String
 description String?
 location Json?
 date String
+startDate DateTime
+endDate DateTime
+nextDate String?
 attachmentLength Int @default(0)
 reminders Json?
 repeats Json?
+remindersLinked Reminder[]
+repeatEvents RepeatEvent[]
+lists List[]
+tasks Task[]
 attachments Attachment[]
 color String
 start Json
@@ -71,6 +78,20 @@ userId String
 @@index([userId], name: "userIdRefIndex")
 }
 
+model RepeatEvent {
+  id            String    @id @unique
+  event         Event     @relation(fields: [eventId], references: [id])
+  eventId       String
+  date          String?
+  reminders     Json?
+  nextDate      String?
+  start         Json?
+  end           Json?
+
+  @@index([eventId], name: "eventRepeatIdIndex")
+}
+
+
 model Attachment {
 id String      @id @default(uuid())
 filename String
@@ -82,49 +103,66 @@ eventId String
 
 
 model Reminder {
-id String @id @unique @default(uuid())
-title String
-notes String
-time String
-eventRefId String?
-User User   @relation(fields: [userId], references: [id])
-userId String
+  id          String   @id @unique @default(uuid())
+  title       String
+  notes       String
+  time        String
+  notification Notification[]
+  eventRef    Event?   @relation(fields: [eventRefId], references: [id])
+  eventRefId  String?
+  User        User     @relation(fields: [userId], references: [id])
+  userId      String
+
+  @@index([userId], name: "userReminderIndex")
 }
+
 
 model Notification {
-id String  @id @unique @default(uuid())
-type String
-time String
-read Boolean @default(false)
-readTime String?
-notifData Json
-reminderRefId String?
-User User    @relation(fields: [userId], references: [id])
-sentNotification Boolean @default(false)
-sentWebPush Boolean @default(false)
-userId String
+  id               String   @id @unique @default(uuid())
+  type             String
+  time             String
+  read             Boolean  @default(false)
+  readTime         String?
+  notifData        Json
+  reminderRef      Reminder? @relation(fields: [reminderRefId], references: [id])
+  reminderRefId    String?
+  User             User     @relation(fields: [userId], references: [id])
+  sentNotification Boolean @default(false)
+  sentWebPush      Boolean @default(false)
+  userId           String
+
+  @@index([userId], name: "userNotificationIndex")
 }
+
 
 model List {
-id String @id @unique @default(uuid())
-title String
-items Json?
-color String
-User User   @relation(fields: [userId], references: [id])
-userId String
-updatedAt DateTime @updatedAt @default(now())
+  id       String   @id @unique @default(uuid())
+  title    String
+  items    Json?
+  color    String
+  event   Event?  @relation(fields: [eventId], references: [id])
+  eventId String?
+  User     User     @relation(fields: [userId], references: [id])
+  userId   String
+  updatedAt DateTime @updatedAt @default(now())
 }
 
+
 model Task {
-id String @id @unique @default(uuid())
-date String
-color String
-tasks Json
-completed Boolean
-completedDate String
-User User   @relation(fields: [userId], references: [id])
-userId String
+  id           String   @id @unique @default(uuid())
+  date         String
+  color        String
+  tasks        Json
+  completed    Boolean
+  completedDate String
+  event        Event?   @relation(fields: [eventId], references: [id])
+  eventId      String?
+  User         User     @relation(fields: [userId], references: [id])
+  userId       String
+
+  @@index([userId], name: "userTaskIndex")
 }
+
 
 model Kanban {
 id String @id @unique @default(uuid())

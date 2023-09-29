@@ -43,9 +43,28 @@ const MonthView = () => {
     }
   };
 
+  const getEventContainerWidth = (startDate, endDate, pixelsPerDay = 3) => {
+    const durationInDays = (endDate - startDate) / (24 * 60 * 60 * 1000) + 1;
+    const max = 7 - startDate.getDay();
+    const maxWidthPercentage = max * 100 > 700 ? 700 : max * 100;
+    const minWidthPercentage = 100;
+    let widthPercentage;
+    if (durationInDays === 1) {
+      widthPercentage = minWidthPercentage + "%";
+    } else {
+      const percentageWidth = Math.min(
+        maxWidthPercentage * (durationInDays / max),
+        maxWidthPercentage
+      );
+      const pixelWidth = pixelsPerDay * durationInDays;
+      widthPercentage = `calc(${percentageWidth}% + ${pixelWidth}px)`;
+    }
+    return widthPercentage;
+  };
+
   const getEventsForDate = (targetDate) => {
-    return [...events, ...holidays].filter(
-      (event) => event.date === targetDate
+    return [...events].filter(
+      (event) => new Date(event.startDate).toLocaleDateString() === targetDate
     );
   };
 
@@ -121,7 +140,7 @@ const MonthView = () => {
               <p>{index >= paddingDays && index - paddingDays + 1}</p>
             </div>
             <div
-              className={`w-full absolute inset-0 pt-8 overflow-y-clip ${
+              className={`w-full absolute inset-0 pt-8 ${
                 selected.includes(index)
                   ? "bg-cyan-100 bg-opacity-50"
                   : "bg-transparent"
@@ -134,7 +153,13 @@ const MonthView = () => {
                   animate={{
                     opacity: 1,
                   }}
-                  className={`rounded-lg ${event.color} shadow-md p-1 my-1 mx-auto`}
+                  style={{
+                    width: getEventContainerWidth(
+                      new Date(event.startDate),
+                      new Date(event.endDate)
+                    ),
+                  }}
+                  className={`rounded-lg ${event.color} sticky top-0 z-10 shadow-md p-1 my-1 mx-auto`}
                 >
                   <p className="whitespace-nowrap text-xs overflow-hidden">
                     {event.summary}

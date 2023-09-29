@@ -54,7 +54,7 @@ export const loginWithFb = (fbToken) => {
 
 export const loginWithPasswordAndUsername = async (credentials) => {
   const { username, email, password, avatarUrl } = credentials;
-  const res = Axios.post(`${devUrl}/login/classic`, {
+  const res = Axios.post(`${productionUrl}/login/classic`, {
     username,
     email,
     password,

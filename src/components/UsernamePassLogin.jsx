@@ -1,5 +1,6 @@
-import { useState, useContext } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useContext } from "react";
+import { motion } from "framer-motion";
+import { Logo } from "../assets/index.js";
 import { loginWithPasswordAndUsername } from "../utils/api";
 import UserContext from "../context/UserContext";
 
@@ -10,31 +11,66 @@ const UsernamePassLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [validUserName, setValidUserName] = useState(null);
-  const [validEmail, setValidEmail] = useState(null);
   const [validPassword, setValidPassword] = useState(null);
+
+  useEffect(() => {
+    if (!password || validPassword) {
+      setSystemNotif({ show: false });
+    }
+    if (!username || validUserName) {
+      setSystemNotif({ show: false });
+    }
+    if (username && !validUserName) {
+      const newError = {
+        show: true,
+        title: "Invalid Username",
+        text: "Please input a valid username: A username must be:\n\n - At least 4 letters\n - cannot be greater than 20 characters\n - usernames can contain only letters, numbers, underscores and dashes",
+        color: "bg-red-200",
+        hasCancel: true,
+        actions: [
+          { text: "close", func: () => setSystemNotif({ show: false }) },
+        ],
+      };
+      setSystemNotif(newError);
+    }
+    if (password && !validPassword) {
+      const newError = {
+        show: true,
+        title: "Invalid Password",
+        text: "Please input a valid password: A password must be:\n\n - At least 8 characters long\n - Have at least one uppercase character\n - One lowercase character\n - One number\n - And at least 2 special characters '@, $, !, %, *, ? or &'",
+        color: "bg-red-200",
+        hasCancel: true,
+        actions: [
+          { text: "close", func: () => setSystemNotif({ show: false }) },
+        ],
+      };
+      setSystemNotif(newError);
+    }
+  }, [validUserName, validPassword]);
 
   const checkValidInput = (type) => {
     if (type === "username") {
       const usernameRegex = /^[a-zA-Z0-9_-]{3,20}$/;
       const isValid = usernameRegex.test(username);
+      if (!username) {
+        return setValidUserName(null);
+      }
       setValidUserName(isValid);
-    }
-    if (type === "email") {
-      const emailRegex = /^[\w.-]+@[a-zA-Z_-]+?(?:\.[a-zA-Z]{2,})+$/;
-      const isValid = emailRegex.test(email);
-      setValidEmail(isValid);
     }
     if (type === "password") {
       const passwordRegex =
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
       const isValid = passwordRegex.test(password);
+      if (!password) {
+        return setValidPassword(null);
+      }
       setValidPassword(isValid);
     }
   };
 
   const loginPasswordUsername = (e) => {
     e.preventDefault();
-    if (!validPassword || !validEmail || !validUserName) return showErrors();
+    if (!validPassword || !validUserName) return showErrors();
     if (!password || !email || !username) return;
     const credentials = {
       username,
@@ -58,8 +94,6 @@ const UsernamePassLogin = () => {
       title: "Credentials",
       color: "bg-red-300",
       text: `Invalid ${!validUserName && "username"}, ${
-        !validEmail && "email"
-      }, ${
         !validPassword && "password"
       }. Please fill out the form registration for with valid credentials`,
       hasCancel: true,
@@ -78,13 +112,11 @@ const UsernamePassLogin = () => {
         transition: { delay: 0.25 },
       }}
       onSubmit={loginPasswordUsername}
-      className="w-full flex flex-col items-center justify-center"
+      className="flex flex-col items-center justify-center"
     >
       <input
-        onChange={(e) => {
-          setUsername(e.target.value);
-          checkValidInput("username");
-        }}
+        onChange={(e) => setUsername(e.target.value)}
+        onBlur={() => checkValidInput("username")}
         type="text"
         placeholder="Username"
         value={username}
@@ -98,57 +130,18 @@ const UsernamePassLogin = () => {
             : "shadow-red-200"
         } w-full p-2 my-2 rounded-md shadow-md`}
       />
-      <AnimatePresence>
-        {username && !validUserName && (
-          <motion.div
-            initial={{ scale: 0 }}
-            exit={{ scale: 0 }}
-            animate={{ scale: 1 }}
-          >
-            <ul>
-              <li>Must be between 3 - 21 characters</li>
-              <li>Contain only letters, numbers, underscores & dashes</li>
-            </ul>
-          </motion.div>
-        )}
-      </AnimatePresence>
       <input
-        onChange={(e) => {
-          setEmail(e.target.value);
-          checkValidInput("email");
-        }}
+        onChange={(e) => setEmail(e.target.value)}
         type="email"
         placeholder="Email"
         value={email}
         id="email"
         name="email"
-        className={`${
-          validEmail === null
-            ? ""
-            : validEmail
-            ? "shadow-green-200"
-            : "shadow-red-200"
-        } w-full p-3 rounded-md shadow-md`}
+        className="w-full p-3 rounded-md shadow-md"
       />
-      <AnimatePresence>
-        {email && !validEmail && (
-          <motion.div
-            initial={{ scale: 0 }}
-            exit={{ scale: 0 }}
-            animate={{ scale: 1 }}
-          >
-            <ul>
-              <li>Must be valid email address</li>
-              <li>Must be valid email address</li>
-            </ul>
-          </motion.div>
-        )}
-      </AnimatePresence>
       <input
-        onChange={(e) => {
-          setPassword(e.target.value);
-          checkValidInput("password");
-        }}
+        onChange={(e) => setPassword(e.target.value)}
+        onBlur={() => checkValidInput("password")}
         type="password"
         placeholder="Password"
         value={password}
@@ -162,31 +155,15 @@ const UsernamePassLogin = () => {
             : "shadow-red-200"
         } w-full p-3 my-2 rounded-md shadow-md`}
       />
-      <AnimatePresence>
-        {password && !validPassword && (
-          <motion.div
-            initial={{ scale: 0 }}
-            exit={{ scale: 0 }}
-            animate={{ scale: 1 }}
-          >
-            <ul>
-              <li>Must be at least 8 characters</li>
-              <li>Must contain at least 1 uppercase character</li>
-              <li>Must contain at least 1 lowercase character</li>
-              <li>Must contain at least 1 special character</li>
-            </ul>
-          </motion.div>
-        )}
-      </AnimatePresence>
       <button
         type="submit"
-        className="px-3 py-2 bg-emerald-100 rounded-md shadow-md w-full mt-4"
+        className="px-3 py-2 bg-cyan-100 rounded-md shadow-md w-full mt-4"
       >
         Login
       </button>
       <button
         type="text"
-        className="px-3 py-2 bg-lime-100 rounded-md shadow-md w-full mt-4"
+        className="px-3 py-2 bg-cyan-100 rounded-md shadow-md w-full mt-4"
       >
         Sign Up
       </button>
