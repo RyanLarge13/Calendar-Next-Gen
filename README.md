@@ -29,6 +29,7 @@
   - <a href="#ux">UX</a>
 - <a href="#functionality">Functionality</a>
   - <a href="#accounts">Accounts</a>
+  - <a href="#delete-your-account">Deleting Your Account</a>
   - <a href="#adding-content">Adding Content</a>
   - <a href="#syncronizing">Synchronizing</a>
   - <a href="#installation">Installation</a>
@@ -76,7 +77,7 @@
 <li>Reorder times on events & reminders</li>
 </ul>
 
-## Functionality 
+## Functionality
 
 <img src="https://img.shields.io/badge/Speed-10/10-green?style=flat&logo=appveyor" alt="app speed" /><br />
 <img src="https://img.shields.io/badge/Informative-10/10-green?style=flat&logo=appveyor" alt="website" /><br />
@@ -87,74 +88,50 @@
 <p><b>Creating an account & logging in has never been easier. With many options to choose from you can create a new account with 2 clicks of a button and zero configuration. Or you can fully customize your account as you desire. The data which is stored within the application for new users is minimal and secured. If ever your account is deleted all data will be wiped clean in relation of all datasets. No personal information other than a username, photo, email & password are stored.</b></p>
 
 <ul>
-<li>The website will not request again for your notification permissions if they are denied. You will need to manually turn notifications back on from the browser agian if your mind changes.</li>
+<li>The website will not request again for your notification permissions if they are denied. You will need to manually turn notifications back on from the browser again if your mind changes.</li>
 </ul>
+
+### Login Options
+
+<p><b>Your login options include a various set of simple methods to use including classical and social login methods. After an account is established two factor authentication or passkeys can be used for future authentication</b></p>
+
+<p><b>Social Login Methods Available</b></p>
+
+<ul>
+<li>Google</li>
+<li>Facebook</li>
+<li>Discord</li>
+<li>Apple</li>
+</ul>
+
+<i>Social sign in methods where the social platform has the same email as another will not create seperate accounts and instead only link two accounts together into one</i>
+
+<p><b>Classic Login</b></p>
+
+<ul>
+<li>Username / Password / Email</li>
+</ul>
+
+<i>This is a classic way to login to an application. Clicking the sign in button will both create a new user with your credentials if one is not found in the database or log you in as your current self if you exsist. Do not fear, all of your data is changeable and editable</i>
+
+<p><b>Furthur Auth</b></p>
+
+<ul>
+<li>Two factor authentication</li>
+<li>Passkeys</li>
+</ul>
+
+<i>Both are viable safe methods for re-authenticating users who have been logged in for an extent period of time away from the application</i>
+
+### Deleting Your Account
+
+<p><b>Deleting your account after creation is easy and straight forward. Under settings within the application while you are logged in at the very bottom there is an option to delete your account with 2 clicks of a button.</b></p>
+
+<i>Deleting your account will destroy all of your account data and all data related to your account. No information will be saved. Note: If you have imported Google calendar information all events will still be preserved in your Google calendar, but all information will be destroyed for Calendar Next Gen.</i>
 
 ### Adding Data
 
-<p><b>Your locaton is shown in the notification from the data recieved by reverse geoloation provided by Open Weather Map's API... <a href="#location">See Location Info</a></b></p>
-
-### Weather Data
-
-<p><b>The weather data shown in the notification each hour is the current hours current temperature provided to you by Open Meteo's API... <a href="#weather-data">See Weather Data</a></b></p>
-
-<p><i>THINGS TO CONSIDER</i></p>
-
-<ul>
-<li>No icon is shown in the notification as of Version 1.</li>
-<li>Top 3 US News Articles</li>
-</ul>
-
-<p><b>Hourly notifications will persist when the tab on your browser is still open for the website. <i>No notification support for mobile devices.</i> You will be promted to accept notifications first. If accepted, it will display the current temperature of the hour in your area.</b></p>
-
-<p><b>For an added touch to the website as any good weather site would include are three top news articles in the US that will redirect you to the article.</b></p>
-
-## Data Reliability
-
-<img src="https://img.shields.io/badge/Accurancy-8/10-green?style=flat&logo=appveyor" alt="permissons" /><br />
-<img src="https://img.shields.io/badge/UI-8/10-green?style=flat&logo=uikit" alt="website" /><br />
-
-### Accuracy And Features
-
-- Data
-  - Open Meteo & Open Weather Map provide you with extremely accurate information.
-  - Open Meteo gathers weather information from all around the world and multiple data providers based on your country for the most up to data information in your area.
-    - Todays Forcast
-      - Weather Icon
-      - weather Name
-      - High Low
-      - Precipitation % (avarage for the 24 period)
-      - windspeed
-      - UV Index
-      - Sunrise/Sunset
-      - Current date
-    - Hourly Forcast
-      - Weather Icon
-      - High Temp
-      - Humidity
-      - Windspeed
-      - Apparent Temp
-      - Time (hour)
-    - Daily Forcast
-      - Weather icon
-      - Week Day
-      - High/Low temp
-      - Sunrise/Sunset
-      - Precipitation Percentage
-      - UV Index
-  - Open Weather Maps large store of cities, towns, countries, states & counties garuntees you will be provided with percice location information based on your longitude and latitude.
-    - If no state is present it will show your city/town and country
-- UI
-  - SVG Icons for 7 different weather states are provided.
-    - Rain
-    - Snow
-    - Sun
-    - Clouds
-    - Storm
-    - Drizzle
-    - Fog
-  - The application will automatically dedect wether or not it is day time or night time by cross refrencing the current hour and the hourly sunset/sunrise data given from Open Meteo API
-  - Today's Forcast, Hourly Forcast & Weekly Forcast are split between three sections for ease of access and orginization
+<p><b>Adding data to your account is secure and easy! No information is shared with other account holders. Unless you share your email to another by choice or allow another user to scan your friend request QRcode no user will ever have access to your information. Only emails are shared between connected users and friendships</b></p>
 
 ## Contributions
 

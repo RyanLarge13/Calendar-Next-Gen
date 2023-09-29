@@ -17,13 +17,32 @@ registerRoute(
   })
 );
 
+const formatDbText = (text) => {
+  if (typeof text !== "string") {
+    return "";
+  }
+  const delimiter = "|||";
+  if (text.includes(delimiter)) {
+    const formattedText = text
+      .split(delimiter)
+      .map((part) => part.trim())
+      .join("\n");
+    return formattedText;
+  } else {
+    return text.trim();
+  }
+};
+
 self.addEventListener("push", (event) => {
   let payload = {};
   if (event.data) {
     try {
       payload = event.data.json();
     } catch (error) {
-      payload = { title: "Notification", body: event.data.text() };
+      payload = {
+        title: "Notification",
+        body: event.data.text(),
+      };
     }
   } else {
     payload = {
@@ -34,7 +53,7 @@ self.addEventListener("push", (event) => {
   const { title, body, data } = payload;
   event.waitUntil(
     self.registration.showNotification(title, {
-      body,
+      body: formatDbText(body),
       data,
       icon: "./favicon.svg",
       badge: "./badge.svg",
@@ -48,7 +67,7 @@ self.addEventListener("push", (event) => {
 });
 
 self.addEventListener("notificationclick", (event) => {
-	event.preventDefault()
+  event.preventDefault();
   const notifId = event.notification.data.id;
   if (event.action === "mark-as-read") {
     fetch("https://calendar-next-gen-production.up.railway.app/mark-as-read", {

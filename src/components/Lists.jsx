@@ -10,9 +10,14 @@ import {
 import { BiListMinus, BiListPlus } from "react-icons/bi";
 import { IoIosAddCircle } from "react-icons/io";
 import UserContext from "../context/UserContext";
+import InteractiveContext from "../context/InteractiveContext";
+import DatesContext from "../context/DatesContext";
 
 const Lists = () => {
+  const { string, setString, setOpenModal } = useContext(DatesContext);
   const { lists, setLists, setSystemNotif } = useContext(UserContext);
+  const { setMenu, setType, setAddNewEvent } = useContext(InteractiveContext);
+
   const [addItems, setAddItems] = useState([]);
 
   const deleteEntireList = (listId) => {
@@ -35,18 +40,26 @@ const Lists = () => {
     return newSort;
   };
 
+  const openModalAndSetType = () => {
+    if (!string) {
+      setString(dateObj.toLocaleDateString());
+    }
+    setType("todo-list");
+    setMenu(false);
+    setOpenModal(true);
+    setAddNewEvent(true);
+  };
+
   return (
     <motion.div className="py-3 relative">
       {lists.length < 1 && (
-        <div>
+        <div className="px-3">
           <div className="rounded-md p-3 shadow-md my-5 flex justify-between items-center">
             <div>
               <h2 className="font-semibold mb-2">You have no lists</h2>
               <BiListPlus />
             </div>
-            <div
-              className="text-2xl p-2" //onClick={() => openModalAndSetType()}
-            >
+            <div className="text-2xl p-2" onClick={() => openModalAndSetType()}>
               <IoIosAddCircle />
             </div>
           </div>

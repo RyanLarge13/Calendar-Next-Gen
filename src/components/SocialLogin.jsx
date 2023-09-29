@@ -24,11 +24,13 @@ const SocialLogin = () => {
   const loginFb = async (response) => {
     if (response.accessToken) {
       try {
-        loginWithFb(response.accessToken).then((res) => {
-        	console.log(res)
-        }).catch((err) => {
-        	console.log(err)
-        })
+        loginWithFb(response.accessToken)
+          .then((res) => {
+            console.log(res);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       } catch (err) {
         console.log(err);
       }
@@ -44,6 +46,7 @@ const SocialLogin = () => {
         y: 0,
         transition: { delay: 0.25 },
       }}
+      className=""
     >
       <button
         onClick={() => loginGoogle()}

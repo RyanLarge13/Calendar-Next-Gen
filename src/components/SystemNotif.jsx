@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import UserContext from "../context/UserContext";
 
@@ -60,9 +60,14 @@ const SystemNotif = () => {
             className={`absolute top-0 left-0 bottom-0 ${systemNotif.color} w-[5px] rounded-md`}
           ></div>
           <p className="text-lg font-semibold">{systemNotif.title}</p>
-          <p
-            className="text-xs"
-          >{systemNotif.text}</p>
+          <p className="text-xs">
+            {systemNotif.text.split("\n").map((line, index) => (
+              <React.Fragment key={index}>
+                {line}
+                <br />
+              </React.Fragment>
+            ))}
+          </p>
           <div className="mt-3 p-1 border-t flex justify-between items-center">
             {systemNotif.actions?.map((action, index) => (
               <div key={index} onClick={() => action.func()}>

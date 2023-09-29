@@ -116,6 +116,9 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
         description: formatDescText(description),
         location: location ? locationObject : undefined,
         date: string,
+        startDate: new Date(string),
+        endDate: new Date(string),
+        nextDate: null,
         attachmentLength: attachments.length,
         reminders: {
           reminder,
@@ -125,7 +128,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
         repeats: {
           repeat,
           howOften: repeat ? howOften : null,
-          nextDate: repeat && null,
+          nextDate: null,
           interval: interval ? interval : 7,
           repeatId: uuidv4(),
         },

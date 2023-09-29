@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { IoIosAddCircle } from "react-icons/io";
 import { AiFillCloseCircle } from "react-icons/ai";
+import { BsListTask } from "react-icons/bs";
 import UserContext from "../context/UserContext";
 import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
@@ -27,6 +28,7 @@ const Tasks = () => {
           <div className="rounded-md p-3 shadow-md my-5 flex justify-between items-center">
             <div>
               <h2 className="font-semibold mb-2">No Tasks to Show</h2>
+              <BsListTask />
             </div>
             <div className="text-2xl p-2" onClick={() => openModalAndSetType()}>
               <IoIosAddCircle />

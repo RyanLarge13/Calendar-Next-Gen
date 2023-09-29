@@ -356,3 +356,26 @@ export const createTask = (token, task) => {
   );
   return res;
 };
+
+// Friend management
+export const getFriendinfo = (token) => {
+  const res = Axios.get(`${productionUrl}/friends/friendinfo`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res;
+};
+
+export const sendFriendRequestByEmail = (userEmail, token) => {
+  const res = Axios.post(
+    `${productionUrl}/friends/add/request/email/${userEmail}`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return res;
+};

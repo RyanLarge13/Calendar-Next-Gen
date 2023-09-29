@@ -15,7 +15,9 @@ import {
   addSubscriptionToUser,
   getGoogleCalendarEvents,
   markAsRead,
+  getFriendinfo,
 } from "../utils/api";
+import QRCode from "qrcode-generator";
 import IndexedDBManager from "../utils/indexDBApi";
 
 const UserContext = createContext({});
@@ -33,12 +35,15 @@ export const UserProvider = ({ children }) => {
   const [stickies, setStickies] = useState([]);
   const [userTasks, setUserTasks] = useState([]);
   const [friends, setFriends] = useState([]);
+  const [connectionRequests, setConnectionRequests] = useState([]);
+  const [friendRequests, setFriendRequests] = useState([]);
   const [localDB, setLocalDB] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [systemNotif, setSystemNotif] = useState({ show: false });
   const [backOnlineTrigger, setBackOnlineTrigger] = useState(false);
   const [googleToken, setGoogleToken] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
+  const [qrCodeUrl, setQrCodeUrl] = useState(null);
 
   const updateStatus = () => {
     setIsOnline(navigator.onLine);
@@ -145,6 +150,7 @@ export const UserProvider = ({ children }) => {
       getUserData(authToken)
         .then((res) => {
           setUser(res.data.user);
+          generateQrCode(res.data.user.email);
           if (
             res.data.user.notifSub?.length < 1 ||
             res.data.user.notifSub === null
@@ -217,6 +223,16 @@ export const UserProvider = ({ children }) => {
         .catch((err) => {
           console.log(err);
         });
+      getFriendinfo(authToken)
+        .then((response) => {
+          const data = response.data;
+          setFriends(data.userFriends);
+          setFriendRequests(data.friendRequests);
+          setConnectionRequests(data.connectionRequests);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
       registerServiceWorkerSync();
     }
     if (!authToken && user) {
@@ -226,11 +242,21 @@ export const UserProvider = ({ children }) => {
     }
   }, [authToken]);
 
+  const generateQrCode = (userEmail) => {
+    const qr = QRCode(0, "L");
+    const data = `https://calendar-next-gen-production.up.railway.app/friends/add/request/qrcode/${userEmail}`;
+    qr.addData(data);
+    qr.make();
+    const qrCodeDataUrl = qr.createDataURL(4);
+    setQrCodeUrl(qrCodeDataUrl);
+  };
+
   const fetchGoogleEvents = (authToken, googleToken) => {
     setSystemNotif({ show: false });
     getGoogleCalendarEvents(authToken, googleToken)
       .then((res) => {
-        console.log(res);
+        const events = res.data.events;
+        console.log(events);
       })
       .catch((err) => console.log(err));
   };
@@ -353,6 +379,11 @@ export const UserProvider = ({ children }) => {
         friends,
         stickies,
         userTasks,
+        qrCodeUrl,
+        connectionRequests,
+        friendRequests,
+        setConnectionRequests,
+        setFriendRequests,
         setUserTasks,
         setStickies,
         setFriends,

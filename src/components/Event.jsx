@@ -30,7 +30,7 @@ const Event = ({ dayEvents }) => {
 
   const controls = useDragControls();
 
-  const descriptions = formatDbText(event.description);
+  const descriptions = formatDbText(event.description || "");
 
   const breakpointColumnsObj = {
     default: 4, // Number of columns by default
@@ -39,6 +39,7 @@ const Event = ({ dayEvents }) => {
   };
 
   useEffect(() => {
+    console.log(event);
     if (event.attachmentLength > 0) {
       setImagesLoading(true);
       fetchAttachments(event.id)

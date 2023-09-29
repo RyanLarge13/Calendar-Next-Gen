@@ -3,7 +3,7 @@ import { google } from "googleapis";
 import { getOAuth2Client } from "../utils/helpers.js";
 import signToken from "../auth/signToken.js";
 import bcrypt from "bcryptjs";
-import { sendWelcomeEmail } from "../utils/sendMail.js";
+import { sendWelcomeEmail, sendSocialWelcomeEmail } from "../utils/sendMail.js";
 import Axios from "axios";
 
 const prisma = new PrismaClient();
@@ -72,6 +72,7 @@ export const loginWithGoogle = async (req, res) => {
         createdAt: createdUser.createAt,
       },
     });
+    sendSocialWelcomeEmail(email, username, "Google");
   }
 };
 
@@ -95,7 +96,6 @@ export const loginWithFacebook = async (req, res) => {
     if (exsistingUser) {
     }
     if (!exsistingUser) {
-    	
     }
     //res.json({ token });
   } catch (error) {
@@ -183,7 +183,7 @@ export const fetchGoogleCalendarEvents = async (req, res) => {
 
     const events = calendarResponse.data.items;
     res
-      .status(201)
+      .status(200)
       .json({ message: "Successfully fetched google calendar events", events });
   } catch (error) {
     console.error("Error fetching calendar events:", error);

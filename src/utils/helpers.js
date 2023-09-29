@@ -30,7 +30,6 @@ export const formatDbText = (text) => {
   if (typeof text !== "string") {
     return "";
   }
-
   const delimiter = "|||";
   if (text.includes(delimiter)) {
     const textParts = text.split(delimiter).map((part) => part.trim());

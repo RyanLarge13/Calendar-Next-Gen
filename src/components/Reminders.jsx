@@ -12,9 +12,8 @@ import { BsAlarmFill } from "react-icons/bs";
 
 const Reminders = () => {
   const { reminders, setReminders, user } = useContext(UserContext);
-  const { dateObj, string, setString } = useContext(DatesContext);
-  const { setType, setMenu, setOpenModal, setAddNewEvent } =
-    useContext(InteractiveContext);
+  const { dateObj, string, setString, setOpenModal } = useContext(DatesContext);
+  const { setType, setMenu, setAddNewEvent } = useContext(InteractiveContext);
 
   const [selected, setSelected] = useState([]);
   const [selectable, setSelectable] = useState(false);
