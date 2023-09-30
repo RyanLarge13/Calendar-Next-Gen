@@ -151,7 +151,7 @@ const MonthView = () => {
                   ) : (
                     <motion.p
                       whileHover={{ opacity: 1 }}
-                      className="text-xs opacity-0"
+                      className="text-xs opacity-0 whitespace-nowrap overflow-hidden"
                     >
                       {event.summary}
                     </motion.p>
