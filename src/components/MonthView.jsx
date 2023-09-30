@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { calendarBlocks } from "../motion";
 import { holidays } from "../constants";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { calendar } from "../motion";
 import DatesContext from "../context/DatesContext";
 import UserContext from "../context/UserContext";
