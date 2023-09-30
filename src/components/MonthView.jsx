@@ -141,7 +141,7 @@ const MonthView = () => {
                   animate={{
                     opacity: 1,
                   }}
-                  className={`rounded-lg ${event.color} shadow-md p-1 my-1 mx-auto`}
+                  className={`rounded-lg ${event.color} shadow-md p-1 my-1 mx-auto relative`}
                 >
                   {new Date(event.startDate).toLocaleDateString() ===
                   dateStr ? (
@@ -149,10 +149,10 @@ const MonthView = () => {
                       {event.summary}
                     </p>
                   ) : (
-                    <motion.p
-                      whileHover={{ opacity: 1 }}
-                      className="text-xs opacity-0 whitespace-nowrap overflow-hidden"
-                    >
+                    <motion.p className="text-xs whitespace-nowrap overflow-hidden">
+                      <div
+                        className={`absolute left-[-10%] w-2 top-[50%] translate-y-[-50%] rounded-full ${event.color} h-1`}
+                      ></div>
                       {event.summary}
                     </motion.p>
                   )}
