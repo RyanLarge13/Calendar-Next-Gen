@@ -74,7 +74,6 @@ export const DatesProvider = ({ children }) => {
     const day = dateObj.getDate();
     const dayOfWeek = dateObj.getDay();
     const start = day - dayOfWeek + paddingDays - 1;
-    const end = start + 6;
     setRowDays(Array.from({ length: 7 }, (_, i) => start + i));
   }, [paddingDays]);
 
@@ -102,7 +101,7 @@ export const DatesProvider = ({ children }) => {
         year,
         day,
         string,
-        nav, 
+        nav,
         openModal,
         theDay,
         currentWeek,
