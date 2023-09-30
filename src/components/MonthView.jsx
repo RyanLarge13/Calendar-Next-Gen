@@ -149,12 +149,12 @@ const MonthView = () => {
                       {event.summary}
                     </p>
                   ) : (
-                    <motion.p className="text-xs whitespace-nowrap overflow-hidden">
+                    <p className="text-xs whitespace-nowrap overflow-hidden">
                       <div
                         className={`absolute left-[-10%] w-2 top-[50%] translate-y-[-50%] rounded-full ${event.color} h-1`}
                       ></div>
                       {event.summary}
-                    </motion.p>
+                    </p>
                   )}
                 </motion.div>
               ))}
