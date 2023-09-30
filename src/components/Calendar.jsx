@@ -18,7 +18,7 @@ import UserContext from "../context/UserContext";
 
 const Calendar = () => {
   const { events, holidays, reminders, weekDays } = useContext(UserContext);
-  const {showDatePicker, view, event } = useContext(InteractiveContext);
+  const { showDatePicker, view, event } = useContext(InteractiveContext);
   const { finish, loading, theDay, openModal, dateString, string, dateObj } =
     useContext(DatesContext);
 
@@ -32,17 +32,37 @@ const Calendar = () => {
         new Date(item.date).toLocaleDateString() === theDay.toLocaleDateString()
     );
     if (string) {
-      const eventsForDay = [...events, ...holidays].filter(
-        (event) => new Date(event.date).toLocaleDateString() === string
-      );
-      const fullDayEvents = eventsForDay.filter(
-        (event) =>
-          new Date(event.end.endTime).getHours() -
-            new Date(event.start.startTime).getHours() >=
-            24 ||
+      const eventsForDay = [...events, ...holidays].filter((event) => {
+        const startDate = new Date(event.startDate);
+        const endDate = new Date(event.endDate);
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(0, 0, 0, 0);
+        for (
+          let currentDate = startDate;
+          currentDate <= endDate;
+          currentDate.setDate(currentDate.getDate() + 1)
+        ) {
+          if (currentDate.toLocaleDateString() === string) {
+            return true; // Event includes the 'string' date
+          }
+        }
+        return false; // Event does not include the 'string' date
+      });
+      const fullDayEvents = eventsForDay.filter((event) => {
+        const startDate = new Date(event.startDate);
+        const endDate = new Date(event.endDate);
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(0, 0, 0, 0);
+        const daysDifference = (endDate - startDate) / (24 * 60 * 60 * 1000);
+        if (
+          daysDifference >= 1 ||
           event.end.endTime === null ||
           event.start.startTime === null
-      );
+        ) {
+          return true;
+        }
+        return false;
+      });
       setAllDayEvents(fullDayEvents);
     }
     setTodaysEvents(eventsToday);
@@ -100,7 +120,7 @@ const Calendar = () => {
             <></>
           )}
         </section>
-        {showDatePicker && <DatePicker />} 
+        {showDatePicker && <DatePicker />}
         {openModal || event ? (
           <ModalHeader allDayEvents={allDayEvents} />
         ) : null}

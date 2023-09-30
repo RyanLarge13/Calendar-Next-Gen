@@ -30,9 +30,16 @@ const Modal = () => {
         : modalRef.current.scrollTo(0, 0);
     }
     addNewEvent && modalRef.current.scrollTo(0, 0);
-    const eventsForDay = [...events, ...holidays].filter(
-      (event) => event.date === string
-    );
+    const eventsForDay = [...events, ...holidays].filter((event) => {
+      const startDate = new Date(event.startDate);
+      const endDate = new Date(event.endDate);
+      startDate.setHours(0, 0, 0, 0);
+      endDate.setHours(0, 0, 0, 0);
+      const diff = (endDate - startDate) / (24 * 60 * 60 * 1000);
+      if (event.date === string && diff < 1) {
+        return event;
+      }
+    });
     const timedEvents = eventsForDay.filter(
       (event) =>
         event.start.startTime !== null &&
@@ -51,6 +58,8 @@ const Modal = () => {
     }
     setDayEvents(timedEvents);
   }, [string, events, addNewEvent]);
+
+  useEffect(() => {}, []);
 
   return (
     <>

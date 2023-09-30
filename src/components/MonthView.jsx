@@ -76,16 +76,24 @@ const MonthView = () => {
   };
 
   const getIndicesForEvents = (events, dtStr) => {
-    return events.filter((event) => {
-      const targetDateObj = new Date(dtStr);
-      const startDate = new Date(event.startDate);
-      const endDate = new Date(event.endDate);
-      startDate.setHours(0, 0, 0, 0);
-      endDate.setHours(0, 0, 0, 0);
-      if (startDate <= targetDateObj && endDate >= targetDateObj) {
-        return event;
-      }
-    });
+    const targetDateObj = new Date(dtStr);
+    return events
+      .filter((event) => {
+        const startDate = new Date(event.startDate);
+        const endDate = new Date(event.endDate);
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(0, 0, 0, 0);
+        return startDate <= targetDateObj && endDate >= targetDateObj;
+      })
+      .sort((a, b) => {
+        const daysDifferenceA = Math.abs(
+          (new Date(b.endDate) - new Date(b.startDate)) / (24 * 60 * 60 * 1000)
+        );
+        const daysDifferenceB = Math.abs(
+          (new Date(a.endDate) - new Date(a.startDate)) / (24 * 60 * 60 * 1000)
+        );
+        return daysDifferenceA - daysDifferenceB;
+      });
   };
 
   return (
@@ -141,7 +149,7 @@ const MonthView = () => {
                   animate={{
                     opacity: 1,
                   }}
-                  className={`rounded-lg ${event.color} shadow-md p-1 my-1 mx-auto`}
+                  className={`rounded-lg ${event.color} shadow-md p-1 my-1 mx-auto relative`}
                 >
                   {new Date(event.startDate).toLocaleDateString() ===
                   dateStr ? (
@@ -149,12 +157,14 @@ const MonthView = () => {
                       {event.summary}
                     </p>
                   ) : (
-                    <motion.p
-                      whileHover={{ opacity: 1 }}
-                      className="text-xs opacity-0 whitespace-nowrap overflow-hidden"
-                    >
-                      {event.summary}
-                    </motion.p>
+                    <>
+                      <div
+                        className={`absolute left-0 w-2 translate-x-[-75%] top-[50%] translate-y-[-50%] rounded-full ${event.color} h-1`}
+                      ></div>
+                      <p className="text-xs whitespace-nowrap overflow-hidden">
+                        {event.summary}
+                      </p>
+                    </>
                   )}
                 </motion.div>
               ))}
