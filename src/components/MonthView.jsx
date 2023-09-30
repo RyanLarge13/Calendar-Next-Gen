@@ -28,8 +28,6 @@ const MonthView = () => {
   const [longPressTimeout, setLongPressTimeout] = useState(null);
 
   const targetDate = new Date(dateString);
-  const paddingForMultiEvents = 16;
-  let containerEventIndex;
 
   const getCellStyle = (index) => {
     const isSameMonthAndYear =
@@ -77,30 +75,17 @@ const MonthView = () => {
     setString(date);
   };
 
-  const getIndicesForEvents = (events, targetDate) => {
+  const getIndicesForEvents = (events, dtStr) => {
     return events.filter((event) => {
+      const targetDateObj = new Date(dtStr);
       const startDate = new Date(event.startDate);
       const endDate = new Date(event.endDate);
-      if (
-        startDate.toLocaleDateString() <= targetDate &&
-        endDate.toLocaleDateString() >= targetDate
-      ) {
+      startDate.setHours(0, 0, 0, 0);
+      endDate.setHours(0, 0, 0, 0);
+      if (startDate <= targetDateObj && endDate >= targetDateObj) {
         return event;
       }
     });
-  };
-
-  const getPaddingTop = (event, dateStr, index) => {
-    if (new Date(event.startDate).toLocaleDateString() === dateStr) {
-      containerEventIndex = index;
-      return {};
-    } else {
-      if (containerEventIndex > 0 && index === 0) {
-        return {
-          marginTop: `${paddingForMultiEvents * containerEventIndex}px`,
-        };
-      }
-    }
   };
 
   return (
@@ -116,7 +101,6 @@ const MonthView = () => {
           month === dateObj.getMonth() &&
           year === dateObj.getFullYear();
         const dateStr = `${month + 1}/${index - paddingDays + 1}/${year}`;
-        // const targetDate = new Date(dateStr);
         const eventsToRender = getIndicesForEvents(events, dateStr);
 
         return (
@@ -150,19 +134,28 @@ const MonthView = () => {
                   : "bg-transparent"
               }`}
             >
-              {eventsToRender.map((event, eventIndex) => (
+              {eventsToRender.map((event) => (
                 <motion.div
                   key={`${event.id}_${index}`}
                   initial={{ opacity: 0 }}
                   animate={{
                     opacity: 1,
                   }}
-                  style={getPaddingTop(event, dateStr, eventIndex)}
                   className={`rounded-lg ${event.color} shadow-md p-1 my-1 mx-auto`}
                 >
-                  <p className="whitespace-nowrap text-xs overflow-hidden">
-                    {event.summary}
-                  </p>
+                  {new Date(event.startDate).toLocaleDateString() ===
+                  dateStr ? (
+                    <p className="whitespace-nowrap text-xs overflow-hidden">
+                      {event.summary}
+                    </p>
+                  ) : (
+                    <motion.p
+                      whileHover={{ opacity: 1 }}
+                      className="text-xs opacity-0"
+                    >
+                      {event.summary}
+                    </motion.p>
+                  )}
                 </motion.div>
               ))}
             </div>
