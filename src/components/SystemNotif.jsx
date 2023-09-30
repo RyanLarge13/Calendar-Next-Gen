@@ -61,7 +61,7 @@ const SystemNotif = () => {
           ></div>
           <p className="text-lg font-semibold">{systemNotif.title}</p>
           <p className="text-xs">
-            {systemNotif.text.split("\n").map((line, index) => (
+            {systemNotif.text.split(/\|\|\||\n/).map((line, index) => (
               <React.Fragment key={index}>
                 {line}
                 <br />

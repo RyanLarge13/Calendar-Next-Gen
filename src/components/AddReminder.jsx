@@ -112,7 +112,7 @@ const AddReminder = () => {
         );
         setReminders(sortedReminders);
         setMenu(true);
-        setShowCategory("reminders");
+        setShowCategory("reminder");
       })
       .catch((err) => console.log(err));
   };

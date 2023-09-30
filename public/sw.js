@@ -53,7 +53,7 @@ self.addEventListener("push", (event) => {
   const { title, body, data } = payload;
   event.waitUntil(
     self.registration.showNotification(title, {
-      body: formatDbText(body),
+      body: formatDbText(body || ""),
       data,
       icon: "./favicon.svg",
       badge: "./badge.svg",

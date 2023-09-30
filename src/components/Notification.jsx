@@ -1,6 +1,6 @@
 import { useContext, useState, useEffect } from "react";
 import { deleteNotification } from "../utils/api";
-import { formatTime } from "../utils/helpers";
+import { formatTime, formatDbText } from "../utils/helpers";
 import { motion, AnimatePresence, useDragControls } from "framer-motion";
 import { AiFillCloseCircle } from "react-icons/ai";
 import { IoIosAlarm } from "react-icons/io";
@@ -71,7 +71,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
       title: "Delete Notification",
       text: "Are you sure you want to delete this notification?",
       color: "bg-red-200",
-      hasCancel: true, 
+      hasCancel: true,
       actions: [
         { text: "close", func: () => setSystemNotif({ show: false }) },
         {
@@ -187,7 +187,13 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                         }}
                         className="text-sm"
                       >
-                        {notif.notifData.notes}
+                        {formatDbText(notif.notifData.notes || "").map(
+                          (text, index) => (
+                            <p key={index} className="text-[14px]">
+                              {text}
+                            </p>
+                          )
+                        )}
                       </motion.p>
                     </div>
                   )}

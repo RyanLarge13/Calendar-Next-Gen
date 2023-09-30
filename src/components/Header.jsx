@@ -36,9 +36,9 @@ const Header = () => {
       {menu ? (
         <MenuNavigation />
       ) : (
-        <motion.header
-          initial={{ y: "-100%", opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
+        <header
+          // initial={{ y: "-100%", opacity: 0 }}
+          // animate={{ y: 0, opacity: 1 }}
           className="fixed top-0 left-0 right-0 bg-white z-[1] flex justify-between p-5 mb-5 shadow-md"
         >
           <RiMenuUnfoldFill
@@ -124,7 +124,7 @@ const Header = () => {
               />
             )}
           </div>
-        </motion.header>
+        </header>
       )}
     </>
   );

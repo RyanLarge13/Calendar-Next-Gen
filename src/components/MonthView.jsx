@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { calendarBlocks } from "../motion";
 import { holidays } from "../constants";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { calendar } from "../motion";
 import DatesContext from "../context/DatesContext";
 import UserContext from "../context/UserContext";
@@ -43,12 +43,6 @@ const MonthView = () => {
     }
   };
 
-  const getEventsForDate = (targetDate) => {
-    return [...events, ...holidays].filter(
-      (event) => event.date === targetDate
-    );
-  };
-
   const handleDayLongPress = (index) => {
     setLongPressActive(true);
     setLongPressTimeout(
@@ -81,6 +75,19 @@ const MonthView = () => {
     setString(date);
   };
 
+  const getIndicesForEvents = (events, dtStr) => {
+    return events.filter((event) => {
+      const targetDateObj = new Date(dtStr);
+      const startDate = new Date(event.startDate);
+      const endDate = new Date(event.endDate);
+      startDate.setHours(0, 0, 0, 0);
+      endDate.setHours(0, 0, 0, 0);
+      if (startDate <= targetDateObj && endDate >= targetDateObj) {
+        return event;
+      }
+    });
+  };
+
   return (
     <motion.div
       variants={calendar}
@@ -94,7 +101,7 @@ const MonthView = () => {
           month === dateObj.getMonth() &&
           year === dateObj.getFullYear();
         const dateStr = `${month + 1}/${index - paddingDays + 1}/${year}`;
-        const eventsForDate = getEventsForDate(dateStr);
+        const eventsToRender = getIndicesForEvents(events, dateStr);
 
         return (
           <motion.div
@@ -127,18 +134,28 @@ const MonthView = () => {
                   : "bg-transparent"
               }`}
             >
-              {eventsForDate.map((event) => (
+              {eventsToRender.map((event) => (
                 <motion.div
-                  key={event.id}
+                  key={`${event.id}_${index}`}
                   initial={{ opacity: 0 }}
                   animate={{
                     opacity: 1,
                   }}
                   className={`rounded-lg ${event.color} shadow-md p-1 my-1 mx-auto`}
                 >
-                  <p className="whitespace-nowrap text-xs overflow-hidden">
-                    {event.summary}
-                  </p>
+                  {new Date(event.startDate).toLocaleDateString() ===
+                  dateStr ? (
+                    <p className="whitespace-nowrap text-xs overflow-hidden">
+                      {event.summary}
+                    </p>
+                  ) : (
+                    <motion.p
+                      whileHover={{ opacity: 1 }}
+                      className="text-xs opacity-0"
+                    >
+                      {event.summary}
+                    </motion.p>
+                  )}
                 </motion.div>
               ))}
             </div>
