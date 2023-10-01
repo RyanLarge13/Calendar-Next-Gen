@@ -290,10 +290,14 @@ const Event = ({ dayEvents }) => {
                 <div className="flex justify-between items-start">
                   <div>
                     <MdLocationPin />
-                    <p>{event.location.string}</p>
+                    <p
+                      className={`mt-3 p-2 rounded-md shadow-md ${event.color} font-semibold`}
+                    >
+                      {event.location.string}
+                    </p>
                   </div>
                   <div
-                    className="mr-5"
+                    className=""
                     onClick={() =>
                       (window.location.href = `https://www.google.com/maps/dir/?api=1&destination=${event.location.string}`)
                     }
@@ -309,16 +313,18 @@ const Event = ({ dayEvents }) => {
               <p className="text-[14px]">No location provided</p>
             )}
           </div>
-          <div className="p-2 rounded-md shadow-md my-2 flex justify-between items-start bg-white">
+          <div className="p-2 rounded-md shadow-md my-2 bg-white">
             {event.reminders.reminder ? (
               <div>
-                <div>
+                <div className="flex justify-between items-center">
                   <IoIosAlarm />
-                  <p>{new Date(event.reminders.when).toLocaleTimeString()}</p>
+                  <div>
+                    <BsFillTrashFill />
+                  </div>
                 </div>
-                <div>
-                  <BsFillTrashFill />
-                </div>
+                <p className={`${event.color} mt-3 p-2 rounded-md shadow-md`}>
+                  {new Date(event.reminders.when).toLocaleTimeString()}
+                </p>
               </div>
             ) : (
               <p className="text-[14px]">No reminders set</p>

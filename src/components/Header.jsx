@@ -12,23 +12,35 @@ import DatesContext from "../context/DatesContext";
 import MenuNavigation from "./MenuNavigation";
 
 const Header = () => {
-  const { dt, setNav, theDay, setTheDay, currentWeek } =
+  const { dt, setNav, theDay, setTheDay, currentWeek, setWeekOffset } =
     useContext(DatesContext);
   const { user } = useContext(UserContext);
   const { menu, setShowDatePicker, setMenu, setShowLogin, view } =
     useContext(InteractiveContext);
 
   const changeDay = (operand) => {
+    const newDay = new Date(theDay);
     if (operand === "minus") {
-      const newDay = new Date();
-      newDay.setDate(theDay.getDate() - 1);
-      setTheDay(newDay);
+      newDay.setDate(newDay.getDate() - 1);
     }
     if (operand === "plus") {
-      const newDay = new Date();
-      newDay.setDate(theDay.getDate() + 1);
-      setTheDay(newDay);
+      newDay.setDate(newDay.getDate() + 1);
     }
+    if (newDay.getMonth() !== theDay.getMonth()) {
+      if (operand === "plus") {
+        newDay.setMonth(theDay.getMonth() + 1);
+      } else if (operand === "minus") {
+        newDay.setMonth(theDay.getMonth() - 1);
+      }
+      if (newDay.getFullYear() !== theDay.getFullYear()) {
+        if (operand === "plus") {
+          newDay.setYear(theDay.getFullYear() + 1);
+        } else if (operand === "minus") {
+          newDay.setYear(theDay.getFullYear() - 1);
+        }
+      }
+    }
+    setTheDay(newDay);
   };
 
   return (
@@ -90,7 +102,7 @@ const Header = () => {
           {view === "week" && (
             <div className="flex justify-center items-center">
               <BsFillArrowLeftCircleFill
-                onClick={() => {}}
+                onClick={() => setWeekOffset((prev) => prev - 1)}
                 className="text-xl cursor-pointer"
               />
               <h1 className="mx-5 text-[12px]">
@@ -98,7 +110,7 @@ const Header = () => {
                 {currentWeek[currentWeek.length - 1].toLocaleDateString()}
               </h1>
               <BsFillArrowRightCircleFill
-                onClick={() => {}}
+                onClick={() => setWeekOffset((prev) => prev + 1)}
                 className="text-xl cursor-pointer"
               />
             </div>

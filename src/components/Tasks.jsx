@@ -39,10 +39,14 @@ const Tasks = () => {
         userTasks.map((task) => (
           <div
             key={task.id}
-            className={`p-3 rounded-md shadow-md ${task.color}`}
+            className={`p-3 my-5 rounded-md shadow-md ${task.color}`}
           >
-            <div className="rounded-md shadow-md bg-white p-2 mb-2">
+            <div className="rounded-md shadow-md bg-white p-2 mb-2 flex justify-between items-center">
               <p>{task.date}</p>
+              <p className="font-semibold">
+                {task.tasks.filter((tsk) => tsk.complete).length} /{" "}
+                {task.tasks.length}
+              </p>
             </div>
             <div>
               {task.tasks.map((item) => (

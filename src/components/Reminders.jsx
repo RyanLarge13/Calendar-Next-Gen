@@ -168,7 +168,7 @@ const Reminders = () => {
                 </div>
               </div>
               {reminder.notes && (
-                <div className="mt-2 p-2 rounded-md shadow-sm bg-white bg-opacity-75 flex justify-between items-center">
+                <div className="mt-2 p-2 rounded-md shadow-sm bg-white bg-opacity-75 flex justify-between items-start">
                   <p className="text-xs">
                     {reminder.notes.split(/\|\|\||\n/).map((line, index) => (
                       <React.Fragment key={index}>

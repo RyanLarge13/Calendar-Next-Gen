@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useContext } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { motion } from "framer-motion";
 import Masonry from "react-masonry-css";
 import UserContext from "../context/UserContext";
@@ -116,7 +116,14 @@ const MasonryView = () => {
                     </p>
                     {event.description && (
                       <p className="bg-white bg-opacity-30 rounded-md shadow-md p-2">
-                        {event.description}
+                        {event.description
+                          .split(/\|\|\||\n/)
+                          .map((line, index) => (
+                            <React.Fragment key={index}>
+                              {line}
+                              <br />
+                            </React.Fragment>
+                          ))}
                       </p>
                     )}
                   </motion.div>

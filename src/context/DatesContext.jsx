@@ -5,6 +5,8 @@ const DatesContext = createContext({});
 
 export const DatesProvider = ({ children }) => {
   const dateObj = new Date();
+  const [weekDateObj, setWeekDateObj] = useState(new Date());
+  const [weekOffset, setWeekOffset] = useState(0);
   const [nav, setNav] = useState(0);
   const [dt, setDt] = useState(new Date());
   const [loading, setLoading] = useState(false);
@@ -79,17 +81,16 @@ export const DatesProvider = ({ children }) => {
   }, [paddingDays]);
 
   useEffect(() => {
-    const currentDay = dateObj.getDay();
-    const startOfWeek = new Date(dateObj);
-    startOfWeek.setDate(dateObj.getDate() - currentDay);
-
+    const currentDay = weekDateObj.getDay();
+    const startOfWeek = new Date(weekDateObj);
+    startOfWeek.setDate(weekDateObj.getDate() - currentDay + 7 * weekOffset);
     const week = Array.from({ length: 7 }, (_, i) => {
       const day = new Date(startOfWeek);
       day.setDate(startOfWeek.getDate() + i);
       return day;
     });
     setCurrentWeek(week);
-  }, []);
+  }, [weekDateObj, weekOffset]);
 
   return (
     <DatesContext.Provider
@@ -107,6 +108,7 @@ export const DatesProvider = ({ children }) => {
         theDay,
         currentWeek,
         secondString,
+        setWeekOffset,
         setSecondString,
         setNav,
         setCurrentWeek,
