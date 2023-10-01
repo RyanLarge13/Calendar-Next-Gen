@@ -125,7 +125,9 @@ export const getNotifications = async (req, res) => {
   );
   if (existingClientIndex !== -1) {
     const existingClient = connectedClients[existingClientIndex];
-    console.log(`User is attempting reconnection with user id: ${existingClient.id}`);
+    console.log(
+      `User is attempting reconnection with user id: ${existingClient.id}`
+    );
     existingClient.response = clientResponse;
     existingClient.job.stop();
     const newJob = cron.schedule("*/15 * * * * *", () => {
@@ -224,33 +226,54 @@ export const updateNotification = async (req, res) => {
 
 export const markAsRead = async (req, res) => {
   const { notifId } = req.body;
-  console.log(req.body);
   try {
-    await prisma.notification.update({
+    const updatedNotification = await prisma.notification.update({
       where: { id: notifId },
       data: { read: true },
     });
+    if (updatedNotification) {
+      return res.status(200).json({
+        message: "Notification marked as read",
+        notif: updatedNotification,
+      });
+    } else {
+      return res.status(404).json({
+        message: "Notification not found",
+      });
+    }
   } catch (err) {
-    console.log(err);
+    console.error("Error marking notification as read:", err);
+    return res.status(500).json({
+      message: "An error occurred while marking the notification as read",
+    });
   }
 };
 
 export const deleteNotification = async (req, res) => {
   const notifId = req.params.notifId;
-  const deletedNotif = await prisma.notification.delete({
-    where: {
-      id: notifId,
-    },
-  });
-  if (deletedNotif) {
-    return res.status(201).json({
-      message: "Successfully deleted notification",
-      notif: deletedNotif,
+  try {
+    const deletedCount = await prisma.notification.deleteMany({
+      where: {
+        id: notifId,
+      },
     });
-  }
-  if (!deletedNotif) {
-    return res
-      .status(400)
-      .json({ message: "There was an error deleting your notification" });
+    if (deletedCount === 1) {
+      return res.status(201).json({
+        message: "Successfully deleted notification",
+      });
+    } else if (deletedCount === 0) {
+      return res.status(400).json({
+        message: "Notification not found, or it was already deleted",
+      });
+    } else {
+      return res.status(500).json({
+        message: "An error occurred while deleting the notification",
+      });
+    }
+  } catch (error) {
+    console.error("Error deleting notification:", error);
+    return res.status(500).json({
+      message: "An error occurred while deleting the notification",
+    });
   }
 };

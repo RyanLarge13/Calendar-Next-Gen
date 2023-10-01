@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import React, { useState, useContext } from "react";
 import { IoIosAddCircle } from "react-icons/io";
 import { BiAlarmSnooze } from "react-icons/bi";
 import { BsFillPenFill } from "react-icons/bs";
@@ -169,7 +169,14 @@ const Reminders = () => {
               </div>
               {reminder.notes && (
                 <div className="mt-2 p-2 rounded-md shadow-sm bg-white bg-opacity-75 flex justify-between items-center">
-                  <p>{reminder.notes}</p>
+                  <p className="text-xs">
+                    {reminder.notes.split(/\|\|\||\n/).map((line, index) => (
+                      <React.Fragment key={index}>
+                        {line}
+                        <br />
+                      </React.Fragment>
+                    ))}
+                  </p>
                   <BsFillPenFill />
                 </div>
               )}

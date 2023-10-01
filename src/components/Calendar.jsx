@@ -1,6 +1,5 @@
 import { useState, useContext, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Dna } from "react-loader-spinner";
 import Modal from "./Modal";
 import ModalHeader from "./ModalHeader";
 import Menu from "./Menu";
@@ -15,10 +14,12 @@ import DatePicker from "./DatePicker";
 import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext";
+import FullDatePicker from "./FullDatePicker";
 
 const Calendar = () => {
   const { events, holidays, reminders, weekDays } = useContext(UserContext);
-  const { showDatePicker, view, event } = useContext(InteractiveContext);
+  const { showDatePicker, showFullDatePicker, view, event } =
+    useContext(InteractiveContext);
   const { finish, loading, theDay, openModal, dateString, string, dateObj } =
     useContext(DatesContext);
 
@@ -121,6 +122,7 @@ const Calendar = () => {
           )}
         </section>
         {showDatePicker && <DatePicker />}
+        {showFullDatePicker && <FullDatePicker />}
         {openModal || event ? (
           <ModalHeader allDayEvents={allDayEvents} />
         ) : null}
