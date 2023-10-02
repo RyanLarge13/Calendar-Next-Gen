@@ -101,7 +101,7 @@ const MonthView = () => {
       variants={calendar}
       initial="hidden"
       animate="show"
-      className="grid grid-cols-7 min-h-[50vh] h-[76vh] gap-1"
+      className="grid grid-cols-7 min-h-[50vh] h-[83vh] gap-1"
     >
       {[...Array(paddingDays + daysInMonth)].map((_, index) => {
         const isCurrentDate =

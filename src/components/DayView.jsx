@@ -146,26 +146,25 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
                       top: fromTop(new Date(item.start.startTime)),
                     }
                   : {
-                      height: `${getHeight()}px`,
                       top: fromTop(new Date(item.time)),
                     }
               }
               onClick={() => (item.start ? setEvent(item) : null)}
               className={`${item.color || "bg-slate-200"} ${
-                item.start ? "z-[10]" : "z-[50]"
-              } absolute right-5 left-20 bg-opacity-70 p-2 rounded-md shadow-md`}
+                item.start ? "z-[10] left-20" : "z-[50] left-60"
+              } absolute right-5 p-2 rounded-md shadow-md`}
             >
               <p className="font-bold bg-white bg-opacity-50 p-2 rounded-md">
                 {item.summary || item.title}
               </p>
               <p className="mr-5 text-sm bg-white bg-opacity-30 rounded-md p-2 w-full mt-2">
-                {item.description
-                  ? formatDbText(item.description).map((text, index) => (
-                      <p key={index} className="text-[14px]">
-                        {text}
-                      </p>
-                    ))
-                  : "" || item.notes}
+                {formatDbText(item.description || item.notes || "").map(
+                  (text, index) => (
+                    <p key={index} className="text-[14px]">
+                      {text}
+                    </p>
+                  )
+                )}
               </p>
             </div>
           ))}

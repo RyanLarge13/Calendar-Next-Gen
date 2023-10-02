@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { deleteNotification } from "../utils/api";
 import { formatTime, formatDbText } from "../utils/helpers";
 import { motion, AnimatePresence, useDragControls } from "framer-motion";
@@ -187,13 +187,16 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                         }}
                         className="text-sm"
                       >
-                        {formatDbText(notif.notifData.notes || "").map(
-                          (text, index) => (
-                            <p key={index} className="text-[14px]">
-                              {text}
-                            </p>
-                          )
-                        )}
+                        <p className="text-xs">
+                          {notif.notifData.notes
+                            .split(/\|\|\||\n/)
+                            .map((line, index) => (
+                              <React.Fragment key={index}>
+                                {line}
+                                <br />
+                              </React.Fragment>
+                            ))}
+                        </p>
                       </motion.p>
                     </div>
                   )}

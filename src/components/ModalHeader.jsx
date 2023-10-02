@@ -1,6 +1,7 @@
 import { useState, useContext, useEffect } from "react";
 import { motion } from "framer-motion";
 import { deleteEvent } from "../utils/api.js";
+import { AiFillPlusCircle } from "react-icons/ai";
 import {
   BsFillArrowDownCircleFill,
   BsFillArrowUpCircleFill,
@@ -13,10 +14,12 @@ import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
 
 const ModalHeader = ({ allDayEvents }) => {
-  const { string, setString } = useContext(DatesContext);
+  const { string, setString, secondString, setSecondString } =
+    useContext(DatesContext);
   const { user, events, setEvents, holidays, setSystemNotif } =
     useContext(UserContext);
-  const { addNewEvent, event, setEvent } = useContext(InteractiveContext);
+  const { addNewEvent, event, setEvent, setShowFullDatePicker } =
+    useContext(InteractiveContext);
 
   const [showAllDayEvents, setShowAllDayEvents] = useState(true);
   const [x, setX] = useState("110%");
@@ -69,6 +72,10 @@ const ModalHeader = ({ allDayEvents }) => {
     setString(newDate.toLocaleDateString());
   };
 
+  const addSecondString = () => {
+    setShowFullDatePicker(true);
+  };
+
   return (
     <motion.div
       initial={{ x: "110%" }}
@@ -77,17 +84,37 @@ const ModalHeader = ({ allDayEvents }) => {
       }
       className="bg-white z-[902] p-2 font-bold shadow-md fixed top-1 right-1 rounded-md"
     >
-      <div className="flex justify-between items-center">
-        <motion.h2
+      <div className="flex justify-between items-start">
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           drag="x"
           dragSnapToOrigin={true}
           onDragEnd={switchDays}
-          className="bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent"
         >
-          {string}
-        </motion.h2>
+          <div className="flex justify-center items-center">
+            <h2 className="bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent">
+              {string}
+            </h2>
+            {addNewEvent && (
+              <div>
+                {!secondString && (
+                  <div
+                    className="cursor-pointer ml-3"
+                    onClick={() => addSecondString()}
+                  >
+                    <AiFillPlusCircle />
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+          {secondString && (
+            <p className="bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent">
+              {secondString}
+            </p>
+          )}
+        </motion.div>
         <div className="flex gap-x-3">
           {allDayEvents.length > 0 && (
             <div>
@@ -148,7 +175,7 @@ const ModalHeader = ({ allDayEvents }) => {
             animate={
               showAllDayEvents
                 ? { opacity: 1, y: 0, transition: { delay: 0.25 } }
-                : { opacity: 0, y: -50 }
+                : { opacity: 0, y: -50, pointerEvents: "none" }
             }
             key={event.id}
             className={`py-1 px-2 rounded-md shadow-sm flex justify-between ${

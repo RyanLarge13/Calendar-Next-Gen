@@ -86,7 +86,7 @@ const Connections = ({ setOption }) => {
                   alt="users avatar"
                   className="w-[50px] h-[50px] rounded-full shadow-md"
                 />
-                <div>
+                <div className="text-right">
                   <p className="text-sm mt-2">{friendReq.sender.username}</p>
                   <p className="text-sm">{friendReq.sender.email}</p>
                 </div>
@@ -168,6 +168,7 @@ const Connections = ({ setOption }) => {
                 >
                   <input
                     placeholder="Users Email"
+                    type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="p-3 rounded-md shadow-md bg-white focus:outline-none w-full"
@@ -181,9 +182,9 @@ const Connections = ({ setOption }) => {
           connectionRequests.map((connectionReq) => (
             <div
               key={connectionReq.recipient.email}
-              className="flex justify-between items-end p-3 rounded-md shadow-md my-3 relative"
+              className="flex justify-between items-end p-3 rounded-md shadow-md my-3 relative bg-slate-100"
             >
-              <button className="absolute px-3 py-2 text-xs top-1 right-1 rounded-md shadow-md bg-red-300 font-semibold">
+              <button className="absolute px-3 py-2 text-xs top-0 right-0 rounded-md shadow-md bg-red-300 font-semibold">
                 Cancel Request
               </button>
               <div>
@@ -194,11 +195,15 @@ const Connections = ({ setOption }) => {
                 />
                 <p className="text-sm mt-2">STATUS: pending</p>
               </div>
-              <div>
-                <p className="text-sm mt-2">
+              <div className="text-right">
+                <p className="text-sm mt-2 font-semibold">
                   {connectionReq.recipient.username}
                 </p>
-                <p className="text-sm">{connectionReq.recipient.email}</p>
+                <p className="text-sm">
+                  <a href={`mailto:${connectionReq.recipient.email}`}>
+                    {connectionReq.recipient.email}
+                  </a>
+                </p>
               </div>
             </div>
           ))
