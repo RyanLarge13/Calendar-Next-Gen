@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState, useContext } from "react";
 import { motion } from "framer-motion";
 import { staticTimes } from "../constants.js";
+import { formatDbText } from "../utils/helpers.js";
 import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
 
 const DayView = ({ todaysEvents, todaysReminders }) => {
   const { setEvent } = useContext(InteractiveContext);
-  const { theDay } = useContext(DatesContext);
-  const [time, setTime] = useState(new Date().toLocaleTimeString());
+  const { theDay, dateObj } = useContext(DatesContext);
+  const [time, setTime] = useState(dateObj.toLocaleTimeString());
   const [height, setheight] = useState(0);
   const [combinedArray, setCombinedArray] = useState([]);
   const [times, setTimes] = useState([]);
@@ -22,7 +23,7 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
       return dateA - dateB;
     });
     setCombinedArray(combined);
-    if (theDay.toLocaleDateString() === new Date().toLocaleDateString()) {
+    if (theDay.toLocaleDateString() === dateObj.toLocaleDateString()) {
       getTime();
     }
     return () => clearInterval(interval);
@@ -54,21 +55,22 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
     }
     return 0;
   };
-  
+
   useEffect(() => {
-  	return window.scrollTo({top: height, behavior: "smooth"})
-  }, [height])
+    return window.scrollTo({ top: height, behavior: "smooth" });
+  }, [height]);
 
   const getTime = () => {
     interval = setInterval(() => {
-      const now = new Date();
       const percentageOfDay =
-        (now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds()) /
+        (dateObj.getHours() * 3600 +
+          dateObj.getMinutes() * 60 +
+          dateObj.getSeconds()) /
         (24 * 3600);
       const containerHeight = dayViewContainer.current.clientHeight;
       const newPosition = Math.floor(percentageOfDay * containerHeight);
       setheight(newPosition);
-      setTime(now.toLocaleTimeString());
+      setTime(new Date().toLocaleTimeString());
     }, 1000);
   };
 
@@ -93,7 +95,7 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
   return (
     <div className="py-20">
       <div ref={dayViewContainer} className="text-sm min-h-[400vh] relative">
-        {new Date().toLocaleDateString() === theDay.toLocaleDateString() ? (
+        {dateObj.toLocaleDateString() === theDay.toLocaleDateString() ? (
           <motion.div
             animate={{ top: height }}
             className="absolute right-0 z-[200] translate-y-[-50%]"
@@ -144,17 +146,26 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
                       top: fromTop(new Date(item.start.startTime)),
                     }
                   : {
-                      height: `${getHeight()}px`,
                       top: fromTop(new Date(item.time)),
                     }
               }
               onClick={() => (item.start ? setEvent(item) : null)}
               className={`${item.color || "bg-slate-200"} ${
-                item.start ? "z-[10]" : "z-[50]"
-              } absolute right-5 left-20 bg-opacity-70 p-2 rounded-md shadow-md`}
+                item.start ? "z-[10] left-20" : "z-[50] left-60"
+              } absolute right-5 p-2 rounded-md shadow-md`}
             >
-              <p className="font-bold">{item.summary || item.title}</p>
-              <p className="mr-5 text-sm">{item.description || item.notes}</p>
+              <p className="font-bold bg-white bg-opacity-50 p-2 rounded-md">
+                {item.summary || item.title}
+              </p>
+              <p className="mr-5 text-sm bg-white bg-opacity-30 rounded-md p-2 w-full mt-2">
+                {formatDbText(item.description || item.notes || "").map(
+                  (text, index) => (
+                    <p key={index} className="text-[14px]">
+                      {text}
+                    </p>
+                  )
+                )}
+              </p>
             </div>
           ))}
         </div>

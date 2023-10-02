@@ -1,7 +1,6 @@
 import { useState, useContext } from "react";
 import { colors } from "../constants.js";
-import { MdCancel } from "react-icons/md";
-import { BsFillSaveFill } from "react-icons/bs";
+import Color from "./Color";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext";
 
@@ -10,7 +9,7 @@ const AddKanban = () => {
   const { setSystemNotif } = useContext(UserContext);
 
   const [title, setTitle] = useState("");
-  const [selectedColor, setSelectedColor] = useState("");
+  const [color, setColor] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -23,18 +22,20 @@ const AddKanban = () => {
         color: "bg-red-200",
         title: "Project Title",
         text: "Please add a title for your new Kanban project",
+        hasCancel: false,
         actions: [
           { text: "close", func: () => setSystemNotif({ show: false }) },
         ],
       };
-      return setSystemNotif(newError)
+      return setSystemNotif(newError);
     }
-    if (!selectedColor) {
+    if (!color) {
       const newError = {
         show: true,
         color: "bg-red-200",
         title: "Project Color",
         text: "Please select a color for your new Kanban project",
+        hasCancel: false,
         actions: [
           { text: "close", func: () => setSystemNotif({ show: false }) },
         ],
@@ -44,46 +45,42 @@ const AddKanban = () => {
   };
 
   return (
-    <div className="p-3">
-      <p>Name your kanban project and begin!</p>
+    <div>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
-          placeholder="Title"
+          placeholder="Kanban"
           value={title}
-          className={`${selectedColor} p-3 mt-10 text-center rounded-md shadow-md bg-opacity-30`}
+          className={`p-2 w-full focus:outline-none text-4xl bg-opacity-30 mt-5`}
           onChange={(e) => setTitle(e.target.value)}
         />
       </form>
-      <div className="mt-10 flex flex-wrap justify-center items-center gap-3">
-        {colors.map((color) => (
-          <div
-            className={`${color.color} ${
-              color.color === selectedColor ? "outline" : ""
-            } w-10 h-10 rounded-md shadow-md`}
-            onClick={() =>
-              setSelectedColor((prev) =>
-                prev === color.color ? "" : color.color
-              )
-            }
-          ></div>
+      <div className="flex flex-wrap justify-center items-center my-5">
+        {colors.map((item, index) => (
+          <Color
+            key={index}
+            string={item.color}
+            color={color}
+            setColor={setColor}
+            index={index}
+          />
         ))}
       </div>
-      <div className="fixed right-[65vw] bottom-5 flex flex-col justify-center items-center px-2">
+      <div className="text-center text-xs font-semibold absolute bottom-4 right-4 left-4">
+        <button
+          onClick={() => saveKanban()}
+          className="w-full px-3 py-2 rounded-md shadow-md bg-gradient-to-r from-lime-200 to-green-200 underline"
+        >
+          save
+        </button>
         <button
           onClick={() => {
             setType(null);
             setAddNewEvent(false);
           }}
-          className="p-3 rounded-full shadow-md bg-gradient-to-r from-red-300 to-red-200"
+          className="w-full px-3 mt-3 py-2 rounded-md shadow-md bg-gradient-to-tr from-red-200 to-rose-200 underline"
         >
-          <MdCancel />
-        </button>
-        <button
-          onClick={() => saveKanban()}
-          className="rounded-full p-3 shadow-md bg-gradient-to-r from-green-300 to-green-200 mt-5"
-        >
-          <BsFillSaveFill />
+          cancel
         </button>
       </div>
     </div>

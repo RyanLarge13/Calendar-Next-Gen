@@ -1,97 +1,162 @@
 import { useState, useContext } from "react";
+import { v4 as uuidv4 } from "uuid";
 import { AiFillCloseCircle } from "react-icons/ai";
-import { MdCancel } from "react-icons/md";
-import { BsFillSaveFill } from "react-icons/bs";
+import { colors } from "../constants.js";
+import { createTask } from "../utils/api.js";
+import Color from "./Color.jsx";
 import InteractiveContext from "../context/InteractiveContext";
+import DatesContext from "../context/DatesContext";
+import UserContext from "../context/UserContext";
 
 const AddTask = () => {
-  const { setType, setAddNewEvent } = useContext(InteractiveContext);
+  const { setType, setAddNewEvent, setMenu, setShowCategory } =
+    useContext(InteractiveContext);
+  const { string, setOpenModal } = useContext(DatesContext);
+  const { user, setUserTasks } = useContext(UserContext);
 
   const [tasks, setTasks] = useState([]);
-  const [checked, setChecked] = useState([]);
   const [title, setTitle] = useState("");
+  const [color, setColor] = useState("");
 
-  const addTask = () => {
-    setTasks((prev) => [...prev, title]);
+  const addTask = (e) => {
+    e.preventDefault();
+    const newTask = {
+      id: uuidv4(),
+      text: title,
+      complete: false,
+    };
+    setTasks((prev) => [...prev, newTask]);
     setTitle("");
   };
 
-  const removeTask = (aTask) => {
-    const newTaskList = tasks.filter((tsk) => tsk !== aTask);
+  const removeTask = (taskId) => {
+    const newTaskList = tasks.filter((tsk) => tsk.id !== taskId);
     setTasks(newTaskList);
   };
 
-  const handleChecked = (e, task) => {
+  const handleChecked = (e, taskId) => {
     if (e.target.checked) {
-      setChecked((prev) => [...prev, task]);
+      const updatedTasks = tasks.map((tsk) => {
+        if (tsk.id === taskId) {
+          return { ...tsk, complete: true };
+        }
+        return tsk;
+      });
+      setTasks(updatedTasks);
     }
     if (!e.target.checked) {
-      const newList = checked.filter((check) => check !== task);
-      setChecked(newList);
+      const updatedTasks = tasks.map((tsk) => {
+        if (tsk.id === taskId) {
+          return { ...tsk, complete: false };
+        }
+        return tsk;
+      });
+      setTasks(updatedTasks);
     }
   };
 
+  const addTasks = () => {
+    if (!checksPassed()) {
+      return;
+    }
+    const token = localStorage.getItem("authToken");
+    const newTaskSet = {
+      date: string,
+      color,
+      tasks,
+      completed: false,
+      completedDate: "",
+      userId: user.id,
+    };
+    createTask(token, newTaskSet)
+      .then((res) => {
+        setAddNewEvent(false);
+        setOpenModal(false);
+        setUserTasks((prev) => [...prev, res.data.task]);
+        setMenu(true);
+        setShowCategory("task");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const checksPassed = () => {
+    return true;
+  };
+
   return (
-    <div className="mt-20">
-      <p className="text-center">Tasks Today</p>
-      <input
-        value={title}
-        placeholder="Task"
-        onChange={(e) => setTitle(e.target.value)}
-        className="w-full rounded-md shadow-md p-2 mt-10 mb-5"
-      />
+    <div>
+      <div className="flex flex-wrap items-center justify-center mb-5 mt-20">
+        {colors.map((item, index) => (
+          <Color
+            key={index}
+            string={item.color}
+            color={color}
+            setColor={setColor}
+            index={index}
+          />
+        ))}
+        <form onSubmit={addTask}>
+          <input
+            value={title}
+            placeholder="Task"
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full focus:outline-none text-4xl p-2 my-5"
+          />
+        </form>
+      </div>
       <button
-        type="button"
-        onClick={() => addTask()}
-        className="w-full rounded-md shadow-md bg-gradient-to-r from-green-300 to-lime-200 py-1"
+        type="submit"
+        onClick={addTask}
+        className="w-full text-xs underline rounded-md shadow-md bg-gradient-to-r from-green-300 to-lime-200 py-2"
       >
         Add
       </button>
-      <div className="mt-10">
+      <div className="overflow-y-auto scrollbar-hide mb-40">
         {tasks.length > 0 &&
           tasks.map((task, index) => (
-            <div
-              key={index}
-              className="bg-slate-100 p-3 border-b border-b-slate-300"
-            >
+            <div key={index} className="p-3 py-4 border-b border-b-slate-300">
               <label htmlFor={task} className="flex">
                 <input
-                  onChange={(e) => handleChecked(e, task)}
+                  onChange={(e) => handleChecked(e, task.id)}
                   type="checkbox"
-                  value={task}
-                  id={task}
-                  name={task}
+                  value={task.text}
                   className="text-black"
                 />
                 <div className=" ml-5 w-full flex justify-between items-center">
                   <p
                     className={`${
-                      checked.includes(task) ? "line-through" : ""
-                    }`}
+                      task.complete === true
+                        ? "line-through text-slate-400"
+                        : ""
+                    } mr-2`}
                   >
-                    {task}
+                    {task.text}
                   </p>
-                  <AiFillCloseCircle onClick={() => removeTask(task)} />
+                  <div>
+                    <AiFillCloseCircle onClick={() => removeTask(task.id)} />
+                  </div>
                 </div>
               </label>
             </div>
           ))}
       </div>
-      <div className="fixed right-[65vw] bottom-5 flex flex-col justify-center items-center px-2">
+      <div className="fixed bottom-4 right-4 w-[60%] text-xs">
+        <button
+          onClick={() => addTasks()}
+          className="w-full px-3 py-2 rounded-md shadow-md bg-gradient-to-r from-lime-200 to-green-200 underline"
+        >
+          save
+        </button>
         <button
           onClick={() => {
             setType(null);
             setAddNewEvent(false);
           }}
-          className="p-3 rounded-full shadow-md bg-gradient-to-r from-red-300 to-red-200"
+          className="w-full mt-3 px-3 py-2 rounded-md shadow-md bg-gradient-to-tr from-red-200 to-rose-200 underline"
         >
-          <MdCancel />
-        </button>
-        <button
-          onClick={() => {}}
-          className="rounded-full p-3 shadow-md bg-gradient-to-r from-green-300 to-green-200 mt-5"
-        >
-          <BsFillSaveFill />
+          cancel
         </button>
       </div>
     </div>

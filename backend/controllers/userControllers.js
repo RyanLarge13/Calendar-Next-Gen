@@ -3,6 +3,8 @@ import { google } from "googleapis";
 import { getOAuth2Client } from "../utils/helpers.js";
 import signToken from "../auth/signToken.js";
 import bcrypt from "bcryptjs";
+import { sendWelcomeEmail, sendSocialWelcomeEmail } from "../utils/sendMail.js";
+import Axios from "axios";
 
 const prisma = new PrismaClient();
 
@@ -70,6 +72,34 @@ export const loginWithGoogle = async (req, res) => {
         createdAt: createdUser.createAt,
       },
     });
+    sendSocialWelcomeEmail(email, username, "Google");
+  }
+};
+
+export const loginWithFacebook = async (req, res) => {
+  const { accessToken } = req.body;
+  try {
+    const fbResponse = await Axios.get(
+      `https://graph.facebook.com/v12.0/me?fields=id,name,email,picture&access_token=${accessToken}`
+    );
+    const userData = fbResponse.data;
+    const hashedPassword = await hashPassword(userData.id);
+    const fbUser = {
+      username: userData.name,
+      email: userData.email,
+      password: hashedPassword,
+      avatarUrl: userData.picture.url,
+    };
+    const exsistingUser = await prisma.user.findUnique({
+      where: { email: userData.email },
+    });
+    if (exsistingUser) {
+    }
+    if (!exsistingUser) {
+    }
+    //res.json({ token });
+  } catch (error) {
+    res.status(500).json({ message: "Authentication failed" });
   }
 };
 
@@ -123,6 +153,7 @@ export const loginWithPasswordUsername = async (req, res) => {
         createdAt: createdUser.createAt,
       },
     });
+    sendWelcomeEmail(email, username, password);
   }
 };
 
@@ -152,7 +183,7 @@ export const fetchGoogleCalendarEvents = async (req, res) => {
 
     const events = calendarResponse.data.items;
     res
-      .status(201)
+      .status(200)
       .json({ message: "Successfully fetched google calendar events", events });
   } catch (error) {
     console.error("Error fetching calendar events:", error);

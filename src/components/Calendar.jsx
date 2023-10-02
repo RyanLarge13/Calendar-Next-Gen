@@ -1,31 +1,27 @@
-import { useState, useContext, memo, useEffect } from "react";
-import { motion } from "framer-motion";
-import { Dna } from "react-loader-spinner";
+import { useState, useContext, useEffect } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import Modal from "./Modal";
 import ModalHeader from "./ModalHeader";
 import Menu from "./Menu";
+import LoginLogout from "./LoginLogout";
 import Event from "./Event";
 import MonthView from "./MonthView";
 import DayView from "./DayView";
 import WeekView from "./WeekView";
 import MasonryView from "./MasonryView";
 import AgendaView from "./AgendaView";
+import DatePicker from "./DatePicker";
 import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext";
+import FullDatePicker from "./FullDatePicker";
 
 const Calendar = () => {
   const { events, holidays, reminders, weekDays } = useContext(UserContext);
-  const { menu, view, event } = useContext(InteractiveContext);
-  const {
-    finish,
-    loading,
-    theDay,
-    openModal,
-    diff,
-    dateString,
-    string,
-  } = useContext(DatesContext);
+  const { showDatePicker, showFullDatePicker, view, event } =
+    useContext(InteractiveContext);
+  const { finish, loading, theDay, openModal, dateString, string, dateObj } =
+    useContext(DatesContext);
 
   const [todaysEvents, setTodaysEvents] = useState([]);
   const [todaysReminders, setTodaysReminder] = useState([]);
@@ -37,17 +33,37 @@ const Calendar = () => {
         new Date(item.date).toLocaleDateString() === theDay.toLocaleDateString()
     );
     if (string) {
-      const eventsForDay = [...events, ...holidays].filter(
-        (event) => new Date(event.date).toLocaleDateString() === string
-      );
-      const fullDayEvents = eventsForDay.filter(
-        (event) =>
-          new Date(event.end.endTime).getHours() -
-            new Date(event.start.startTime).getHours() >=
-            24 ||
+      const eventsForDay = [...events, ...holidays].filter((event) => {
+        const startDate = new Date(event.startDate);
+        const endDate = new Date(event.endDate);
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(0, 0, 0, 0);
+        for (
+          let currentDate = startDate;
+          currentDate <= endDate;
+          currentDate.setDate(currentDate.getDate() + 1)
+        ) {
+          if (currentDate.toLocaleDateString() === string) {
+            return true; // Event includes the 'string' date
+          }
+        }
+        return false; // Event does not include the 'string' date
+      });
+      const fullDayEvents = eventsForDay.filter((event) => {
+        const startDate = new Date(event.startDate);
+        const endDate = new Date(event.endDate);
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(0, 0, 0, 0);
+        const daysDifference = (endDate - startDate) / (24 * 60 * 60 * 1000);
+        if (
+          daysDifference >= 1 ||
           event.end.endTime === null ||
           event.start.startTime === null
-      );
+        ) {
+          return true;
+        }
+        return false;
+      });
       setAllDayEvents(fullDayEvents);
     }
     setTodaysEvents(eventsToday);
@@ -69,9 +85,9 @@ const Calendar = () => {
                 key={day}
                 className={`${
                   index === new Date().getDay() &&
-                  new Date(dateString).getMonth() === new Date().getMonth() &&
-                  new Date(dateString).getYear() === new Date().getYear()
-                    ? "bg-gradient-to-r from-cyan-300 to-cyan-500 bg-clip-text text-transparent font-semibold border-b-2 rounded-md"
+                  new Date(dateString).getMonth() === dateObj.getMonth() &&
+                  new Date(dateString).getYear() === dateObj.getYear()
+                    ? "bg-cyan-400 bg-clip-text text-transparent font-semibold border-b-2 rounded-md"
                     : ""
                 } mx-2 text-center`}
               >
@@ -86,6 +102,7 @@ const Calendar = () => {
               dragSnapToOrigin={true}
               dragTransition={{ bounceStiffness: 100, bounceDamping: 10 }}
               onDragEnd={(e, info) => finish(e, info)}
+              className="will-change-transform"
             >
               <div>
                 {view === "month" && <MonthView />}
@@ -101,24 +118,21 @@ const Calendar = () => {
               </div>
             </motion.div>
           ) : (
-            <div className="flex justify-center items-center">
-              <Dna
-                visible={loading}
-                height="80"
-                width="80"
-                ariaLabel="dna-loading"
-                wrapperClass="dna-wrapper"
-              />
-            </div>
+            <></>
           )}
         </section>
-        {openModal && <ModalHeader allDayEvents={allDayEvents} />}
-        <Modal />
+        {showDatePicker && <DatePicker />}
+        {showFullDatePicker && <FullDatePicker />}
+        {openModal || event ? (
+          <ModalHeader allDayEvents={allDayEvents} />
+        ) : null}
+        <AnimatePresence>{openModal && <Modal />}</AnimatePresence>
         <Menu />
+        <LoginLogout />
         {event && <Event dayEvents={todaysEvents} />}
       </section>
     </main>
   );
 };
 
-export default memo(Calendar);
+export default Calendar;

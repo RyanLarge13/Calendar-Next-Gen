@@ -45,6 +45,13 @@ export const loginWithGoogle = async (user) => {
   return res;
 };
 
+export const loginWithFb = (fbToken) => {
+  const res = Axios.post(`${productionUrl}/login/facebook`, {
+    accessToken: fbToken,
+  });
+  return res;
+};
+
 export const loginWithPasswordAndUsername = async (credentials) => {
   const { username, email, password, avatarUrl } = credentials;
   const res = Axios.post(`${productionUrl}/login/classic`, {
@@ -80,7 +87,7 @@ export const getEvents = async (username, token) => {
 };
 
 export const fetchAttachments = async (eventId) => {
-  const res = Axios.get(`${devUrl}/attachments/${eventId}`);
+  const res = Axios.get(`${productionUrl}/attachments/${eventId}`);
   return res;
 };
 
@@ -93,6 +100,15 @@ export const postEvent = (event, token) => {
         Authorization: `Bearer ${token}`,
       },
     }
+  );
+  return res;
+};
+
+export const createAttachments = (attachments, eventId, token) => {
+  const res = Axios.post(
+    `${productionUrl}/new/attachments/${eventId}`,
+    { attachments },
+    { headers: { Authorization: `Bearer ${token}` } }
   );
   return res;
 };
@@ -234,6 +250,15 @@ export const addSubscriptionToUser = (sub, token) => {
   return response;
 };
 
+export const createNotification = (newNotif, token) => {
+  const res = Axios.post(
+    `${productionUrl}/new/notification`,
+    { notification: newNotif },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return res;
+};
+
 export const getNotifications = (userId) => {
   const eventSource = new EventSource(
     `${productionUrl}/${userId}/notifications`
@@ -312,5 +337,45 @@ export const deleteList = (token, listId) => {
       Authorization: `Bearer ${token}`,
     },
   });
+  return res;
+};
+
+//Tasks
+export const getAllTasks = (token) => {
+  const res = Axios.get(`${productionUrl}/all/tasks`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res;
+};
+
+export const createTask = (token, task) => {
+  const res = Axios.post(
+    `${productionUrl}/new/tasks`,
+    { task },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return res;
+};
+
+// Friend management
+export const getFriendinfo = (token) => {
+  const res = Axios.get(`${productionUrl}/friends/friendinfo`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res;
+};
+
+export const sendFriendRequestByEmail = (userEmail, token) => {
+  const res = Axios.post(
+    `${productionUrl}/friends/add/request/email/${userEmail}`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
   return res;
 };

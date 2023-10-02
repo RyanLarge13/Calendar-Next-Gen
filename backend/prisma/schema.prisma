@@ -17,6 +17,7 @@ birthday      DateTime?
 createAt      DateTime       @default(now())
 notifSub      String[]
 notifSubCanceled String[]
+importedGoogleEvents Boolean @default(false)
 events        Event[]
 reminders     Reminder[]
 notifications Notification[]
@@ -24,6 +25,8 @@ lists         List[]
 tasks Task[]
 kanbans Kanban[]
 friends       Friend[]       @relation(name: "UserToFriends")
+friendRequestsSent    FriendRequest[] @relation(name: "SentFriendRequests")
+friendRequestsReceived FriendRequest[] @relation(name: "ReceivedFriendRequests")
 
 @@index([id], name: "userIdIndex")
 }
@@ -35,6 +38,16 @@ User User     @relation(name: "UserToFriends", fields: [userId], references: [id
 userId String
 }
 
+model FriendRequest {
+id        String   @id @default(uuid())
+createdAt DateTime @default(now())
+sender    User     @relation(name: "SentFriendRequests", fields: [senderId], references: [id])
+senderId  String
+recipient User     @relation(name: "ReceivedFriendRequests", fields: [recipientId], references: [id])
+recipientId String
+status    String
+}
+
 model Event {
 id String   @id @unique
 kind String?
@@ -42,13 +55,21 @@ summary String
 description String?
 location Json?
 date String
+startDate DateTime
+endDate DateTime
+nextDate String?
+attachmentLength Int @default(0)
 reminders Json?
 repeats Json?
+remindersLinked Reminder[]
+repeatEvents RepeatEvent[]
+lists List[]
+tasks Task[]
 attachments Attachment[]
 color String
 start Json
 end Json
-updated DateTime @updatedAt
+updated DateTime @updatedAt @default(now())
 created DateTime @default(now())
 User User     @relation(fields: [userId], references: [id])
 userId String
@@ -57,58 +78,91 @@ userId String
 @@index([userId], name: "userIdRefIndex")
 }
 
+model RepeatEvent {
+  id            String    @id @unique
+  event         Event     @relation(fields: [eventId], references: [id])
+  eventId       String
+  date          String?
+  reminders     Json?
+  nextDate      String?
+  start         Json?
+  end           Json?
+
+  @@index([eventId], name: "eventRepeatIdIndex")
+}
+
+
 model Attachment {
 id String      @id @default(uuid())
 filename String
 mimetype String
 content Bytes
-Event Event @relation(fields: [eventId], references: [id])
+Event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
 eventId String
 }
 
 
 model Reminder {
-id String @id @unique @default(uuid())
-title String
-notes String
-time String
-eventRefId String?
-User User   @relation(fields: [userId], references: [id])
-userId String
+  id          String   @id @unique @default(uuid())
+  title       String
+  notes       String
+  time        String
+  notification Notification[]
+  eventRef    Event?   @relation(fields: [eventRefId], references: [id])
+  eventRefId  String?
+  User        User     @relation(fields: [userId], references: [id])
+  userId      String
+
+  @@index([userId], name: "userReminderIndex")
 }
+
 
 model Notification {
-id String  @id @unique @default(uuid())
-type String
-time String
-read Boolean @default(false)
-readTime String?
-notifData Json
-reminderRefId String?
-User User    @relation(fields: [userId], references: [id])
-sentNotification Boolean @default(false)
-sentWebPush Boolean @default(false)
-userId String
+  id               String   @id @unique @default(uuid())
+  type             String
+  time             String
+  read             Boolean  @default(false)
+  readTime         String?
+  notifData        Json
+  reminderRef      Reminder? @relation(fields: [reminderRefId], references: [id])
+  reminderRefId    String?
+  User             User     @relation(fields: [userId], references: [id])
+  sentNotification Boolean @default(false)
+  sentWebPush      Boolean @default(false)
+  userId           String
+
+  @@index([userId], name: "userNotificationIndex")
 }
+
 
 model List {
-id String @id @unique @default(uuid())
-title String
-items Json?
-color String
-User User   @relation(fields: [userId], references: [id])
-userId String
+  id       String   @id @unique @default(uuid())
+  title    String
+  items    Json?
+  color    String
+  event   Event?  @relation(fields: [eventId], references: [id])
+  eventId String?
+  User     User     @relation(fields: [userId], references: [id])
+  userId   String
+  updatedAt DateTime @updatedAt @default(now())
 }
 
+
 model Task {
-id String @id @unique @default(uuid())
-date String
-tasks Json
-completed Boolean
-completedDate String
-User User   @relation(fields: [userId], references: [id])
-userId String
+  id           String   @id @unique @default(uuid())
+  date         String
+  color        String
+  tasks        Json
+  completed    Boolean
+  completedDate String
+  event        Event?   @relation(fields: [eventId], references: [id])
+  eventId      String?
+  User         User     @relation(fields: [userId], references: [id])
+  userId       String
+
+  @@index([userId], name: "userTaskIndex")
 }
+
 
 model Kanban {
 id String @id @unique @default(uuid())

@@ -4,12 +4,12 @@ import { weekDays } from "../constants";
 const DatesContext = createContext({});
 
 export const DatesProvider = ({ children }) => {
+  const dateObj = new Date();
+  const [weekDateObj, setWeekDateObj] = useState(new Date());
+  const [weekOffset, setWeekOffset] = useState(0);
   const [nav, setNav] = useState(0);
   const [dt, setDt] = useState(new Date());
   const [loading, setLoading] = useState(false);
-  const [end, setEnd] = useState(null);
-  const [diff, setDiff] = useState(0);
-  const [open, setOpen] = useState(false);
   const [day, setDay] = useState(new Date().getDate());
   const [month, setMonth] = useState(dt.getMonth());
   const [year, setYear] = useState(dt.getFullYear());
@@ -23,17 +23,18 @@ export const DatesProvider = ({ children }) => {
   const [paddingDays, setPaddingDays] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [string, setString] = useState("");
+  const [secondString, setSecondString] = useState("");
   const [theDay, setTheDay] = useState(new Date());
   const [rowDays, setRowDays] = useState([]);
-  const [columnDays, setColumnDays] = useState([]);
   const [currentWeek, setCurrentWeek] = useState([]);
+  const [updatedDate, setUpdatedDate] = useState(new Date());
 
   useEffect(() => {
     setLoading(true);
-    const updatedDate = new Date();
-    updatedDate.setMonth(new Date().getMonth() + nav);
-    setDt(updatedDate);
-  }, [nav]);
+    const newDate = new Date(updatedDate);
+    newDate.setMonth(newDate.getMonth() + nav);
+    setDt(newDate);
+  }, [nav, updatedDate]);
 
   const finish = (e, info) => {
     const dragDistance = info.offset.x;
@@ -69,47 +70,27 @@ export const DatesProvider = ({ children }) => {
 
   useEffect(() => {
     setPaddingDays(weekDays.indexOf(dateString.split(", ")[0]));
-    setLoading(false);
-    const day = new Date().getDate();
-    const dayOfWeek = new Date().getDay();
-    const end = day + (6 - dayOfWeek) + paddingDays - 1;
-    const start = day - dayOfWeek + paddingDays - 1;
-    let rowDays = [];
-    for (let i = start; i <= end; i++) {
-      rowDays.push(i);
-    }
-    let column = new Date().getDay();
-    let columnDays = [];
-    for (let i = column; i < 40; i++) {
-      if (
-        i === column ||
-        i === column + 7 ||
-        i === column + 14 ||
-        i === column + 21 ||
-        i === column + 28 ||
-        i === column + 35
-      ) {
-        columnDays.push(i);
-      }
-    }
-    setColumnDays(columnDays);
-    setRowDays(rowDays);
-  }, [dateString, paddingDays]);
+  }, [dateString]);
 
   useEffect(() => {
-    const today = new Date();
-    const currentDay = today.getDay();
-    const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - currentDay);
+    setLoading(false);
+    const day = dateObj.getDate();
+    const dayOfWeek = dateObj.getDay();
+    const start = day - dayOfWeek + paddingDays - 1;
+    setRowDays(Array.from({ length: 7 }, (_, i) => start + i));
+  }, [paddingDays]);
 
-    const week = [];
-    for (let i = 0; i < 7; i++) {
+  useEffect(() => {
+    const currentDay = weekDateObj.getDay();
+    const startOfWeek = new Date(weekDateObj);
+    startOfWeek.setDate(weekDateObj.getDate() - currentDay + 7 * weekOffset);
+    const week = Array.from({ length: 7 }, (_, i) => {
       const day = new Date(startOfWeek);
       day.setDate(startOfWeek.getDate() + i);
-      week.push(day);
-    }
+      return day;
+    });
     setCurrentWeek(week);
-  }, []);
+  }, [weekDateObj, weekOffset]);
 
   return (
     <DatesContext.Provider
@@ -122,21 +103,27 @@ export const DatesProvider = ({ children }) => {
         year,
         day,
         string,
+        nav,
         openModal,
-        diff,
         theDay,
         currentWeek,
+        secondString,
+        setWeekOffset,
+        setSecondString,
+        setNav,
         setCurrentWeek,
         setTheDay,
-        setNav,
         setOpenModal,
         setString,
+        setDt,
+        setUpdatedDate,
         finish,
-        setOpen,
         setDay,
+        setMonth,
+        setYear,
         dateString,
         rowDays,
-        columnDays,
+        dateObj,
       }}
     >
       {children}

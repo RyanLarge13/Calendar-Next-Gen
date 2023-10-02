@@ -8,13 +8,16 @@ import {
   getReminders,
   requestAndSubscribe,
   getAllLists,
+  getAllTasks,
   getNotifications,
   getNotificationsAtStart,
   checkSubscription,
   addSubscriptionToUser,
   getGoogleCalendarEvents,
   markAsRead,
+  getFriendinfo,
 } from "../utils/api";
+import QRCode from "qrcode-generator";
 import IndexedDBManager from "../utils/indexDBApi";
 
 const UserContext = createContext({});
@@ -29,13 +32,18 @@ export const UserProvider = ({ children }) => {
   const [refresh, setRefresh] = useState(false);
   const [lists, setLists] = useState([]);
   const [reminders, setReminders] = useState([]);
+  const [stickies, setStickies] = useState([]);
+  const [userTasks, setUserTasks] = useState([]);
+  const [friends, setFriends] = useState([]);
+  const [connectionRequests, setConnectionRequests] = useState([]);
+  const [friendRequests, setFriendRequests] = useState([]);
   const [localDB, setLocalDB] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [systemNotif, setSystemNotif] = useState({ show: false });
   const [backOnlineTrigger, setBackOnlineTrigger] = useState(false);
   const [googleToken, setGoogleToken] = useState(false);
-  const [loginLoading, setLoginLoading] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
+  const [qrCodeUrl, setQrCodeUrl] = useState(null);
 
   const updateStatus = () => {
     setIsOnline(navigator.onLine);
@@ -58,6 +66,7 @@ export const UserProvider = ({ children }) => {
         title: "Network",
         text: "You are offline",
         color: "bg-red-300",
+        hasCancel: true,
         actions: [
           { text: "close", func: () => setSystemNotif({ show: false }) },
           { text: "refresh", func: () => window.location.reload() },
@@ -79,6 +88,7 @@ export const UserProvider = ({ children }) => {
         title: "Network",
         text: "You are back online",
         color: "bg-green-300",
+        hasCancel: true,
         actions: [
           { text: "close", func: () => setSystemNotif({ show: false }) },
         ],
@@ -95,7 +105,6 @@ export const UserProvider = ({ children }) => {
 
   useEffect(() => {
     if (googleToken && !authToken) {
-      setLoginLoading(true);
       getGoogleData(googleToken)
         .then((res) => {
           loginWithGoogle(res.data)
@@ -105,6 +114,7 @@ export const UserProvider = ({ children }) => {
                 title: "Google Events",
                 text: "Would you like to import your google calendar events?",
                 color: "bg-sky-300",
+                hasCancel: true,
                 actions: [
                   {
                     text: "close",
@@ -140,6 +150,7 @@ export const UserProvider = ({ children }) => {
       getUserData(authToken)
         .then((res) => {
           setUser(res.data.user);
+          generateQrCode(res.data.user.email);
           if (
             res.data.user.notifSub?.length < 1 ||
             res.data.user.notifSub === null
@@ -184,7 +195,7 @@ export const UserProvider = ({ children }) => {
           getReminders(res.data.user.username, authToken)
             .then((response) => {
               const sortedReminders = response.data.reminders.sort(
-                (a, b) => b.time - a.time
+                (a, b) => new Date(a.time) - new Date(b.time)
               );
               setReminders(sortedReminders);
             })
@@ -193,7 +204,10 @@ export const UserProvider = ({ children }) => {
             });
           getAllLists(authToken, res.data.user.username)
             .then((response) => {
-              setLists(response.data.lists);
+              const sortedLists = response.data.lists.sort(
+                (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+              );
+              setLists(sortedLists);
             })
             .catch((err) => {
               console.log(err);
@@ -202,6 +216,24 @@ export const UserProvider = ({ children }) => {
         .catch((err) => {
           console.log(err);
         });
+      getAllTasks(authToken)
+        .then((response) => {
+          setUserTasks(response.data.tasks);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      getFriendinfo(authToken)
+        .then((response) => {
+          const data = response.data;
+          setFriends(data.userFriends);
+          setFriendRequests(data.friendRequests);
+          setConnectionRequests(data.connectionRequests);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      registerServiceWorkerSync();
     }
     if (!authToken && user) {
       localStorage.removeItem("authToken");
@@ -210,11 +242,21 @@ export const UserProvider = ({ children }) => {
     }
   }, [authToken]);
 
+  const generateQrCode = (userEmail) => {
+    const qr = QRCode(0, "L");
+    const data = `https://calendar-next-gen-production.up.railway.app/friends/add/request/qrcode/${userEmail}`;
+    qr.addData(data);
+    qr.make();
+    const qrCodeDataUrl = qr.createDataURL(4);
+    setQrCodeUrl(qrCodeDataUrl);
+  };
+
   const fetchGoogleEvents = (authToken, googleToken) => {
     setSystemNotif({ show: false });
     getGoogleCalendarEvents(authToken, googleToken)
       .then((res) => {
-        console.log(res);
+        const events = res.data.events;
+        console.log(events);
       })
       .catch((err) => console.log(err));
   };
@@ -237,14 +279,13 @@ export const UserProvider = ({ children }) => {
 
   const send = async (token, userId) => {
     try {
-      console.log(userId);
       const serverSentSource = getNotifications(userId);
       getNotificationsAtStart(user.username, token)
         .then((res) => {
           const oldNotifs = res.data.notifs;
           const sortedOldNotifs = oldNotifs.sort((a, b) => b.time - a.time);
           setNotifications(sortedOldNotifs);
-          setupNotifListener(serverSentSource);
+          setupNotifListener(serverSentSource, userId);
         })
         .catch((err) => {
           console.log(err);
@@ -254,10 +295,10 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  const setupNotifListener = (serverSentSource) => {
+  const setupNotifListener = (serverSentSource, userId) => {
     console.log("Set up and listening for notifications");
     serverSentSource.addEventListener("open", () => {
-      console.log("Open");
+      console.log(`New SSE connection open ${serverSentSource}`);
     });
     serverSentSource.addEventListener("message", (event) => {
       const notification = JSON.parse(event.data);
@@ -267,11 +308,19 @@ export const UserProvider = ({ children }) => {
         title: notification.notifData.title,
         text: notification.notifData.notes,
         color: "bg-purple-300",
+        hasCancel: true,
         actions: [
           { text: "close", func: () => setSystemNotif({ show: false }) },
           {
             text: "mark as read",
             func: () => {
+              const updatedNotifications = notifications.map((notif) =>
+                notif.id === notification.id ? { ...notif, read: true } : notif
+              );
+              const sortedNotifications = updatedNotifications.sort(
+                (a, b) => b.time - a.time
+              );
+              setNotifications(sortedNotifications);
               setSystemNotif({ show: false });
               markAsRead(notification.id);
             },
@@ -282,12 +331,16 @@ export const UserProvider = ({ children }) => {
     });
     serverSentSource.addEventListener("error", (error) => {
       console.error("SSE error:", error);
-      if (error.eventPhase === EventSource.CLOSED) {
-        console.log("SSE connection closed.");
-        setTimeout(() => {
-          const source = getNotifications(user.id);
-          setupNotifListener(source);
-        }, 3000);
+      serverSentSource.close();
+      setTimeout(() => {
+        console.log("Attempting SSE reconnection...");
+        const newConnection = getNotifications(userId);
+        return setupNotifListener(newConnection, userId);
+      }, 15000);
+    });
+    window.addEventListener("beforeunload", () => {
+      if (serverSentSource !== null) {
+        serverSentSource.close(); // Close the SSE connection before unloading the window
       }
     });
   };
@@ -296,6 +349,18 @@ export const UserProvider = ({ children }) => {
     const request = indexedDB.open("myCalngDB", 1);
     const calngIndexDBManager = new IndexedDBManager(request);
     setLocalDB(calngIndexDBManager);
+  };
+
+  const registerServiceWorkerSync = () => {
+    navigator.serviceWorker.ready.then((registration) => {
+      if ("periodicSync" in registration) {
+        registration.periodicSync.register({
+          tag: "periodic-sync",
+          minInterval: 24 * 60 * 60 * 1000, // Minimum interval in milliseconds
+        });
+      }
+      return registration.sync.register("background-sync");
+    });
   };
 
   return (
@@ -307,18 +372,27 @@ export const UserProvider = ({ children }) => {
         events,
         reminders,
         googleToken,
-        loginLoading,
         isOnline,
         lists,
         notifications,
         systemNotif,
+        friends,
+        stickies,
+        userTasks,
+        qrCodeUrl,
+        connectionRequests,
+        friendRequests,
+        setConnectionRequests,
+        setFriendRequests,
+        setUserTasks,
+        setStickies,
+        setFriends,
         setSystemNotif,
         setNotifications,
         setLists,
         setUser,
         setEvents,
         setGoogleToken,
-        setLoginLoading,
         setAuthToken,
         setReminders,
       }}

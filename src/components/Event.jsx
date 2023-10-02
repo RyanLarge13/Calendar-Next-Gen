@@ -10,25 +10,52 @@ import { IoIosAlarm } from "react-icons/io";
 import { MdLocationPin, MdOutlineDragIndicator } from "react-icons/md";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import { motion, useDragControls } from "framer-motion";
-import GoogleMaps from "./GoogleMaps";
-import InteractiveContext from "../context/InteractiveContext";
 import { fetchAttachments } from "../utils/api";
+import { formatDbText } from "../utils/helpers";
+import GoogleMaps from "./GoogleMaps";
+import Masonry from "react-masonry-css";
+import InteractiveContext from "../context/InteractiveContext";
+import DatesContext from "../context/DatesContext";
 
 const Event = ({ dayEvents }) => {
-  const { event, setEvent, view } = useContext(InteractiveContext);
+  const { event, setEvent } = useContext(InteractiveContext);
+  const { dateObj, setString } = useContext(DatesContext);
   const [open, setOpen] = useState(true);
   const [timeLeft, setTimeLeft] = useState(null);
-  const [start, setStart] = useState(0);
+  const [fetchedImages, setFetchedImages] = useState([]);
   const [width, setWidth] = useState(0);
   const [timeInEvent, setTimeInEvent] = useState(0);
   const [index, setIndex] = useState(dayEvents.indexOf(event));
+  const [imagesLoading, setImagesLoading] = useState(false);
 
   const controls = useDragControls();
 
+  const breakpointColumnsObj = {
+    default: 4, // Number of columns by default
+    1100: 3, // Number of columns on screens > 1100px
+    700: 2, // Number of columns on screens > 700px
+  };
+
   useEffect(() => {
-    // fetchAttachments(event.id)
-    //   .then((res) => console.log(res))
-    //   .catch((err) => console.log(err));
+    if (event.attachmentLength > 0) {
+      setImagesLoading(true);
+      fetchAttachments(event.id)
+        .then((res) => {
+          res.data.attachments.forEach((file) => {
+            const blob = new Blob([new Uint8Array(file.content.data)], {
+              type: file.mimetype,
+            });
+            const url = URL.createObjectURL(blob);
+            setFetchedImages((prevUrls) => [...prevUrls, url]);
+            setImagesLoading(false);
+          });
+        })
+        .catch((err) => console.log(err));
+    }
+    return () => setFetchedImages([]);
+  }, []);
+
+  useEffect(() => {
     let interval;
     let timeLeftInterval;
     let timeInLeft;
@@ -172,145 +199,174 @@ const Event = ({ dayEvents }) => {
       onDragEnd={checkToClose}
       initial={{ y: "100%" }}
       animate={open ? { y: 0 } : { y: "110%" }}
-      className={`z-[901] fixed inset-3 top-[7%] rounded-md bg-white overflow-y-auto ${
-        event.color === "bg-black" ? "text-white" : "text-black"
-      }`}
+      className="z-[901] fixed inset-3 top-[7%] rounded-md bg-white overflow-y-auto"
     >
-      <div
-        onPointerDown={startDrag}
-        style={{ touchAction: "none" }}
-        className="px-3 py-5 sticky top-0 right-0 left-0 z-20 bg-white rounded-md shadow-md flex justify-between items-center"
-      >
-        <button
-          onClick={() => {
-            setOpen(false);
-            setTimeout(() => {
-              setEvent(false);
-            }, 500);
-          }}
-        >
-          <AiFillCloseCircle />
-        </button>
-        <MdOutlineDragIndicator />
-      </div>
-      <div
-        className={`w-full min-h-full rounded-md bg-opacity-20 p-3 ${event.color}`}
-      >
+      <div className={`${event.color} min-h-full bg-opacity-20`}>
         <div
-          className={`p-2 rounded-md shadow-sm font-bold text-sm ${event.color}`}
+          onPointerDown={startDrag}
+          style={{ touchAction: "none" }}
+          className="px-3 py-5 sticky top-0 right-0 left-0 z-20 bg-white rounded-md shadow-md flex justify-between items-center"
         >
-          <h1>{event.summary}</h1>
+          <button
+            onClick={() => {
+              setOpen(false);
+              setTimeout(() => {
+                setEvent(false);
+              }, 500);
+            }}
+          >
+            <AiFillCloseCircle />
+          </button>
+          <MdOutlineDragIndicator />
         </div>
-        <div
-          className={`p-2 mt-2 rounded-md shadow-sm font-bold ${event.color} bg-opacity-50 text-xs`}
-        >
-          <p>{event.description}</p>
-        </div>
-        {event.start.startTime && (
-          <>
-            <div className="relative mt-2 py-2 px-3 rounded-3xl shadow-sm flex w-full justify-between items-center bg-white">
-              <motion.div
-                animate={{
-                  width: `${width}%`,
-                  transition: { duration: 0.1, type: "spring", stiffness: 400 },
-                }}
-                className={`absolute left-1 top-1 bottom-1 ${
-                  event.color === "bg-white" ? "bg-slate-200" : event.color
-                } bg-opacity-50 rounded-3xl`}
-              ></motion.div>
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1, transition: { delay: 1.5 } }}
-                className="z-10 font-bold"
-              >
-                {timeLeft}
-              </motion.p>
-              <p className="z-10">
-                {new Date(event.start.startTime).toLocaleTimeString()}
-              </p>
-            </div>
-            <div className="relative mt-2 py-2 px-3 rounded-3xl shadow-sm flex w-full justify-between items-center bg-white">
-              <motion.div
-                animate={{
-                  width: `${timeInEvent}%`,
-                  transition: { duration: 0.1, type: "spring", stiffness: 400 },
-                }}
-                className={`absolute left-1 top-1 bottom-1 ${
-                  event.color === "bg-white" ? "bg-slate-200" : event.color
-                } bg-opacity-50 rounded-3xl`}
-              ></motion.div>
-              <p className="z-10">
-                {new Date(event.start.startTime).toLocaleTimeString()}
-              </p>
-              <p className="z-10">
-                {new Date(event.end.endTime).toLocaleTimeString()}
-              </p>
-            </div>
-          </>
-        )}
-        <div className="my-2 bg-white rounded-md shadow-md p-2">
-          {event.location ? (
+        <div className="rounded-md p-3">
+          <div className={`p-2 rounded-md shadow-sm font-bold ${event.color}`}>
+            <h1 className="text-[20px]">{event.summary}</h1>
+          </div>
+          <div
+            className={`p-2 mt-2 rounded-md shadow-sm font-bold ${event.color} bg-opacity-50`}
+          >
             <div>
-              <div className="flex justify-between items-start">
-                <div>
-                  <MdLocationPin />
-                  <p>{event.location.string}</p>
-                </div>
-                <div
-                  className="mr-5"
-                  onClick={() =>
-                    (window.location.href = `https://www.google.com/maps/dir/?api=1&destination=${event.location.string}`)
-                  }
+              {formatDbText(event.description || "").map((text, index) => (
+                <p key={index} className="text-[14px]">
+                  {text}
+                </p>
+              ))}
+            </div>
+          </div>
+          {event.start.startTime && (
+            <div>
+              <div className="relative mt-2 py-2 px-3 rounded-3xl shadow-sm flex w-full justify-between items-center bg-white">
+                <motion.div
+                  animate={{
+                    width: `${width}%`,
+                    transition: {
+                      duration: 0.1,
+                      type: "spring",
+                      stiffness: 400,
+                    },
+                  }}
+                  className={`absolute left-1 top-1 bottom-1 ${
+                    event.color === "bg-white" ? "bg-slate-200" : event.color
+                  } bg-opacity-50 rounded-3xl`}
+                ></motion.div>
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1, transition: { delay: 1.5 } }}
+                  className="z-10 font-bold"
                 >
-                  <FaExternalLinkAlt />
+                  {timeLeft}
+                </motion.p>
+                <p className="z-10">
+                  {new Date(event.start.startTime).toLocaleTimeString()}
+                </p>
+              </div>
+              <div className="relative mt-2 py-2 px-3 rounded-3xl shadow-sm flex w-full justify-between items-center bg-white">
+                <motion.div
+                  animate={{
+                    width: `${timeInEvent}%`,
+                    transition: {
+                      duration: 0.1,
+                      type: "spring",
+                      stiffness: 400,
+                    },
+                  }}
+                  className={`absolute left-1 top-1 bottom-1 ${
+                    event.color === "bg-white" ? "bg-slate-200" : event.color
+                  } bg-opacity-50 rounded-3xl`}
+                ></motion.div>
+                <p className="z-10">
+                  {new Date(event.start.startTime).toLocaleTimeString()}
+                </p>
+                <p className="z-10">
+                  {new Date(event.end.endTime).toLocaleTimeString()}
+                </p>
+              </div>
+            </div>
+          )}
+          <div className="my-2 bg-white rounded-md shadow-md p-2">
+            {event.location ? (
+              <div>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <MdLocationPin />
+                    <p
+                      className={`mt-3 p-2 rounded-md shadow-md ${event.color} font-semibold`}
+                    >
+                      {event.location.string}
+                    </p>
+                  </div>
+                  <div
+                    className=""
+                    onClick={() =>
+                      (window.location.href = `https://www.google.com/maps/dir/?api=1&destination=${event.location.string}`)
+                    }
+                  >
+                    <FaExternalLinkAlt />
+                  </div>
+                </div>
+                <div className="mt-5">
+                  <GoogleMaps coordinates={event.location.coordinates} />
                 </div>
               </div>
-              <div className="mt-5">
-                <GoogleMaps coordinates={event.location.coordinates} />
-              </div>
-            </div>
-          ) : (
-            <p>No location provided</p>
-          )}
-        </div>
-        <div className="p-2 rounded-md shadow-md my-2 flex justify-between items-start bg-white">
-          {event.reminders.reminder ? (
-            <>
+            ) : (
+              <p className="text-[14px]">No location provided</p>
+            )}
+          </div>
+          <div className="p-2 rounded-md shadow-md my-2 bg-white">
+            {event.reminders.reminder ? (
               <div>
-                <IoIosAlarm />
-                <p>{new Date(event.reminders.when).toLocaleTimeString()}</p>
+                <div className="flex justify-between items-center">
+                  <IoIosAlarm />
+                  <div>
+                    <BsFillTrashFill />
+                  </div>
+                </div>
+                <p className={`${event.color} mt-3 p-2 rounded-md shadow-md`}>
+                  {new Date(event.reminders.when).toLocaleTimeString()}
+                </p>
               </div>
-              <div>
-                <BsFillTrashFill />
+            ) : (
+              <p className="text-[14px]">No reminders set</p>
+            )}
+          </div>
+          <div className="bg-white rounded-md shadow-md p-2 my-2">
+            {event.repeats.repeat ? (
+              <div className="">
+                <FiRepeat />
+                <p>{event.repeats.howOften}</p>
               </div>
-            </>
+            ) : (
+              <p className="text-[14px]">No repeated events</p>
+            )}
+          </div>
+          <div className="sticky top-[50%] right-2 left-2 py-2 flex justify-between items-center text-xl">
+            {index > 0 ? (
+              <BsFillArrowLeftCircleFill onClick={() => getPreviousEvent()} />
+            ) : null}
+            {index < dayEvents.length - 1 ? (
+              <BsFillArrowRightCircleFill onClick={() => getNextEvent()} />
+            ) : null}
+          </div>
+          {imagesLoading ? (
+            <p>Loading {event.attachmentLength} images...</p>
           ) : (
-            <p>No reminders set</p>
-          )}
-        </div>
-        <div className="bg-white rounded-md shadow-md p-2 my-2 text-sm">
-          {event.repeats.repeat ? (
-            <div className="">
-              <FiRepeat />
-              <p>{event.repeats.howOften}</p>
-            </div>
-          ) : (
-            <div>
-              <p>No repeated events</p>
-            </div>
-          )}
-        </div>
-        {/*<div className="flex-1 bg-white rounded-md shadow-md my-2 h-full overflow-y-auto p-2"></div>*/}
-        <div className="sticky top-[50%] right-2 left-2 py-2 flex justify-between items-center text-xl">
-          {index > 0 ? (
-            <BsFillArrowLeftCircleFill onClick={() => getPreviousEvent()} />
-          ) : (
-            <p></p>
-          )}
-          {index < dayEvents.length - 1 ? (
-            <BsFillArrowRightCircleFill onClick={() => getNextEvent()} />
-          ) : (
-            <p></p>
+            fetchedImages.length > 0 && (
+              <Masonry
+                breakpointCols={breakpointColumnsObj}
+                className="my-masonry-grid-attachments"
+                columnClassName="my-masonry-grid_column-attachments"
+              >
+                {fetchedImages.map((img) => (
+                  <img
+                    key={img}
+                    src={img}
+                    alt={"event attachment"}
+                    className="mt-3 rounded-sm shadow-sm"
+                  />
+                ))}
+              </Masonry>
+            )
           )}
         </div>
       </div>

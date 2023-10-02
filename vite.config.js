@@ -27,7 +27,7 @@ export default defineConfig({
           "A next generation calendar application built for the orginized and busy",
         start_url: "/",
         display: "standalone",
-        orientation: "natural",
+        orientation: "portrait",
         background_color: "#ffffff",
         theme_color: "#ffffff",
         serviceworker: "/sw.js",
@@ -83,4 +83,7 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    sourcemap: true,
+  },
 });

@@ -10,6 +10,8 @@ export const calendar = {
 };
 
 export const calendarBlocks = {
-  hidden: { y: -20, opacity: 0 },
+  hidden: { y: -7.5, opacity: 0 },
   show: { y: 0, opacity: 1 },
+  // hidden: { opacity: 0 },
+  // show: { opacity: 1 },
 };

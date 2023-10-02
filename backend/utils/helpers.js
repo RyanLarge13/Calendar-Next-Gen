@@ -10,3 +10,8 @@ export const getOAuth2Client = (credentials, accessToken) => {
   oAuth2Client.setCredentials({ access_token: accessToken });
   return oAuth2Client;
 };
+
+export const validateEmail = (email) => {
+  const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+  return emailPattern.test(email);
+};

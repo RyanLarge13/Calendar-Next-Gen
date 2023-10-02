@@ -25,3 +25,17 @@ export const formatTime = (date) => {
     duration /= division.amount;
   }
 };
+
+export const formatDbText = (text) => {
+  if (typeof text !== "string") {
+    return "";
+  }
+  const delimiter = "|||";
+  if (text.includes(delimiter)) {
+    const textParts = text.split(delimiter).map((part) => part.trim());
+    const filteredTextParts = textParts.filter((part) => part !== "");
+    return filteredTextParts;
+  } else {
+    return [text.trim()];
+  }
+};

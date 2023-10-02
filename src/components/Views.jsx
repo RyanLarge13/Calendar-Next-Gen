@@ -1,5 +1,6 @@
 import { useState, useContext, useEffect } from "react";
 import { motion } from "framer-motion";
+import { AiFillSchedule } from "react-icons/ai";
 import {
   BsFillCalendarWeekFill,
   BsFillCalendarDayFill,
@@ -7,6 +8,7 @@ import {
   BsXCircleFill,
   BsColumnsGap,
   BsSearch,
+  BsFillCalendar2EventFill,
 } from "react-icons/bs";
 import { CgOptions } from "react-icons/cg";
 import { MdViewAgenda } from "react-icons/md";
@@ -14,7 +16,8 @@ import { TbSwitch3 } from "react-icons/tb";
 import InteractiveContext from "../context/InteractiveContext";
 
 const Views = () => {
-  const { setView, setFilters, showLogin } = useContext(InteractiveContext);
+  const { setView, setFilters, showLogin, menu, setMenu } =
+    useContext(InteractiveContext);
 
   const [show, setShow] = useState(false);
 
@@ -26,16 +29,27 @@ const Views = () => {
 
   return (
     <>
-      <div
-        onClick={() => setShow((prev) => !prev)}
-        className={`fixed cursor-pointer bottom-5 left-5 z-[700] ${
-          showLogin
-            ? "opacity-0 pointer-events-none"
-            : "opacity-100 pointer-events-auto"
-        } p-3 rounded-full flex justify-center items-center bg-gradient-to-tr from-lime-200 to-yellow-100 shadow-md`}
-      >
-        {show ? <BsXCircleFill /> : <BsColumnsGap />}
-      </div>
+      {menu ? (
+        <div
+          onClick={() => setMenu(false)}
+          className="fixed cursor-pointer bottom-5 left-5 z-[700] p-3 rounded-full flex justify-center items-center bg-gradient-to-tr from-cyan-200 to-cyan-100 shadow-md"
+        >
+          <div>
+            <BsFillCalendar2EventFill className="text-md" />
+          </div>
+        </div>
+      ) : (
+        <div
+          onClick={() => setShow((prev) => !prev)}
+          className={`fixed cursor-pointer bottom-5 left-5 z-[700] ${
+            showLogin
+              ? "opacity-0 pointer-events-none"
+              : "opacity-100 pointer-events-auto"
+          } p-3 rounded-full flex justify-center items-center bg-gradient-to-tr from-cyan-200 to-cyan-100 shadow-md`}
+        >
+          {show ? <BsXCircleFill /> : <BsColumnsGap />}
+        </div>
+      )}
       <motion.div
         initial={{ opacity: 0 }}
         animate={

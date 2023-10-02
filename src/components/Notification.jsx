@@ -1,18 +1,34 @@
-import { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { deleteNotification } from "../utils/api";
-import { formatTime } from "../utils/helpers";
-import { motion, AnimatePresence } from "framer-motion";
+import { formatTime, formatDbText } from "../utils/helpers";
+import { motion, AnimatePresence, useDragControls } from "framer-motion";
+import { AiFillCloseCircle } from "react-icons/ai";
 import { IoIosAlarm } from "react-icons/io";
 import { MdEventAvailable, MdSystemSecurityUpdateGood } from "react-icons/md";
+import { RxDragHandleHorizontal } from "react-icons/rx";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext";
 
 const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
   const { notifications, setNotifications, setSystemNotif } =
     useContext(UserContext);
-  const { showNotifs } = useContext(InteractiveContext);
+  const { showNotifs, setShowNotifs } = useContext(InteractiveContext);
 
   const [notifOpen, setNotifOpen] = useState("");
+
+  const controls = useDragControls();
+
+  useEffect(() => {
+    const hasUnread = notifications.some((notif) => !notif.read);
+    if (!hasUnread) return;
+    if (hasUnread) {
+      if (navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({
+          command: "closeNotifications",
+        });
+      }
+    }
+  }, []);
 
   const openNotif = (id, read) => {
     setNotifOpen((prev) => (prev === id ? "" : id));
@@ -55,6 +71,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
       title: "Delete Notification",
       text: "Are you sure you want to delete this notification?",
       color: "bg-red-200",
+      hasCancel: true,
       actions: [
         { text: "close", func: () => setSystemNotif({ show: false }) },
         {
@@ -83,15 +100,41 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
       });
   };
 
+  const checkToClose = (e, info) => {
+    const distance = Math.abs(info.offset.y);
+    const cancelThreshold = 150;
+    if (info.offset.y < 0 && distance > cancelThreshold) {
+      setShowNotifs(false);
+    }
+  };
+
+  const startDrag = (e) => {
+    controls.start(e);
+  };
+
   return (
     <AnimatePresence>
       {showNotifs && (
         <motion.div
-          initial={{ y: "-100%", opacity: 0 }}
-          exit={{ y: "-100%", opacity: 0 }}
+          initial={{ y: -50, opacity: 0 }}
+          drag="y"
+          dragSnapToOrigin={true}
+          dragControls={controls}
+          dragListener={false}
+          dragConstraints={{ bottom: 0 }}
+          onDragEnd={checkToClose}
+          exit={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="py-3 px-5 rounded-b-md fixed top-0 right-0 left-0 z-20 max-h-[60vh] overflow-y-auto bg-purple-100"
+          className="pt-3 pb-10 px-5 rounded-b-md shadow-md fixed top-0 bottom-0 right-0 left-0 z-20 max-h-[75vh] overflow-y-auto bg-cyan-100"
         >
+          <div
+            className="absolute bottom-0 right-0 left-0 p-5 rounded-md bg-white flex justify-between items-center pointer-events-auto"
+            style={{ touchAction: "none" }}
+            onPointerDown={startDrag}
+          >
+            <AiFillCloseCircle onClick={() => setShowNotifs(false)} />
+            <RxDragHandleHorizontal />
+          </div>
           {notifications.length < 1 ? (
             <div className="flex flex-col items-center justify-center w-full">
               <motion.p
@@ -144,7 +187,16 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                         }}
                         className="text-sm"
                       >
-                        {notif.notifData.notes}
+                        <p className="text-xs">
+                          {notif.notifData.notes
+                            .split(/\|\|\||\n/)
+                            .map((line, index) => (
+                              <React.Fragment key={index}>
+                                {line}
+                                <br />
+                              </React.Fragment>
+                            ))}
+                        </p>
                       </motion.p>
                     </div>
                   )}

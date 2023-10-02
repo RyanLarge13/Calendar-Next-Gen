@@ -1,6 +1,7 @@
 import { useState, useContext, useEffect } from "react";
 import { motion } from "framer-motion";
 import { deleteEvent } from "../utils/api.js";
+import { AiFillPlusCircle } from "react-icons/ai";
 import {
   BsFillArrowDownCircleFill,
   BsFillArrowUpCircleFill,
@@ -13,10 +14,12 @@ import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
 
 const ModalHeader = ({ allDayEvents }) => {
-  const { string } = useContext(DatesContext);
+  const { string, setString, secondString, setSecondString } =
+    useContext(DatesContext);
   const { user, events, setEvents, holidays, setSystemNotif } =
     useContext(UserContext);
-  const { addNewEvent, event, setEvent } = useContext(InteractiveContext);
+  const { addNewEvent, event, setEvent, setShowFullDatePicker } =
+    useContext(InteractiveContext);
 
   const [showAllDayEvents, setShowAllDayEvents] = useState(true);
   const [x, setX] = useState("110%");
@@ -28,6 +31,9 @@ const ModalHeader = ({ allDayEvents }) => {
   }, []);
 
   useEffect(() => {
+    if (event) {
+      setString(event.date);
+    }
     event || addNewEvent
       ? setShowAllDayEvents(false)
       : setShowAllDayEvents(true);
@@ -37,9 +43,9 @@ const ModalHeader = ({ allDayEvents }) => {
     const authToken = localStorage.getItem("authToken");
     deleteEvent(user.username, event.id, authToken)
       .then((res) => {
-        const storedEvents = JSON.parse(localStorage.getItem("events")) || [];
-        const newStore = storedEvents.filter((e) => e.id !== res.data.eventId);
-        localStorage.setItem("events", JSON.stringify(newStore));
+        //const storedEvents = JSON.parse(localStorage.getItem("events")) || [];
+        // const newStore = storedEvents.filter((e) => e.id !== res.data.eventId);
+        // localStorage.setItem("events", JSON.stringify(newStore));
         const filteredEvents = events.filter((e) => e.id !== res.data.eventId);
         setEvent(null);
         setEvents(filteredEvents);
@@ -50,16 +56,65 @@ const ModalHeader = ({ allDayEvents }) => {
       .catch((err) => console.log(err));
   };
 
+  const switchDays = (e, info) => {
+    const dragDistance = info.offset.x;
+    const cancelThreshold = 75;
+    const currentDate = new Date(string); // Use the 'string' state value as the initial date
+    const newDate = new Date(currentDate); // Create a new date object to modify
+    if (dragDistance > cancelThreshold) {
+      // subtract a day
+      newDate.setDate(currentDate.getDate() - 1);
+    }
+    if (dragDistance < -cancelThreshold) {
+      // add a day
+      newDate.setDate(currentDate.getDate() + 1);
+    }
+    setString(newDate.toLocaleDateString());
+  };
+
+  const addSecondString = () => {
+    setShowFullDatePicker(true);
+  };
+
   return (
     <motion.div
       initial={{ x: "110%" }}
-      animate={event && !addNewEvent ? { left: 5, x: x} : { left: "36%", x: x }}
+      animate={
+        event && !addNewEvent ? { left: 5, x: x } : { left: "36%", x: x }
+      }
       className="bg-white z-[902] p-2 font-bold shadow-md fixed top-1 right-1 rounded-md"
     >
-      <div className="flex justify-between items-center">
-        <h2 className="bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent">
-          {string}
-        </h2>
+      <div className="flex justify-between items-start">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          drag="x"
+          dragSnapToOrigin={true}
+          onDragEnd={switchDays}
+        >
+          <div className="flex justify-center items-center">
+            <h2 className="bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent">
+              {string}
+            </h2>
+            {addNewEvent && (
+              <div>
+                {!secondString && (
+                  <div
+                    className="cursor-pointer ml-3"
+                    onClick={() => addSecondString()}
+                  >
+                    <AiFillPlusCircle />
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+          {secondString && (
+            <p className="bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent">
+              {secondString}
+            </p>
+          )}
+        </motion.div>
         <div className="flex gap-x-3">
           {allDayEvents.length > 0 && (
             <div>
@@ -87,6 +142,7 @@ const ModalHeader = ({ allDayEvents }) => {
                         title: `Delete ${event.summary}`,
                         text: "Are you sure you want to delete this event?",
                         color: "bg-red-200",
+                        hasCancel: true,
                         actions: [
                           {
                             text: "cancel",
@@ -119,7 +175,7 @@ const ModalHeader = ({ allDayEvents }) => {
             animate={
               showAllDayEvents
                 ? { opacity: 1, y: 0, transition: { delay: 0.25 } }
-                : { opacity: 0, y: -50 }
+                : { opacity: 0, y: -50, pointerEvents: "none" }
             }
             key={event.id}
             className={`py-1 px-2 rounded-md shadow-sm flex justify-between ${

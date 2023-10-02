@@ -1,110 +1,75 @@
 import { PrismaClient } from "@prisma/client";
-import { v4 as uuidv4 } from "uuid";
 const prisma = new PrismaClient();
 
-const addMultipleEvents = async (newEvent, newEventId, howOften) => {
+const addMultipleEvents = async (newEvent) => {
+  const howOften = newEvent.repeats.howOften;
   if (!howOften) return [];
-  let interval = newEvent.repeats.interval;
-  let day = new Date(newEvent.date).getDate();
-  let month = new Date(newEvent.date).getMonth() + 1;
-  let year = new Date(newEvent.date).getFullYear();
-  let daysInMonth = new Date(year, month, 0).getDate();
-  let repeats = [];
-  if (howOften === "Daily") {
-    for (let i = 1; i < interval; i++) {
-      day === daysInMonth && (month += 1);
-      month === 13 && (year += 1);
-      month === 13 && (month = 1);
-      day === daysInMonth ? (day = 1) : (day += 1);
+  const repeats = [];
+  let date = new Date(newEvent.date);
+  for (let i = 0; i < newEvent.repeats.interval; i++) {
+    const nextEventDate = new Date(date);
+    let nextDate;
+    if (howOften === "Daily") {
+      nextDate = nextEventDate.setDate(date.getDate() + 1);
+    } else if (howOften === "Weekly") {
+      nextDate = nextEventDate.setDate(date.getDate() + 7);
+    } else if (howOften === "Bi Weekly") {
+      nextDate = nextEventDate.setDate(date.getDate() + 14);
+    } else if (howOften === "Monthly") {
+      nextDate = nextEventDate.setMonth(date.getMonth() + 1);
+      // Calculate the number of days to add based on the month change
+      const daysToAdd = nextEventDate.getDate() - date.getDate();
+      nextDate = new Date(
+        nextEventDate.getTime() + daysToAdd * 24 * 60 * 60 * 1000
+      );
+    } else if (howOften === "Yearly") {
+      nextDate = nextEventDate.setFullYear(date.getFullYear() + 1);
+      // Calculate the number of days to add based on the year change
+      const daysToAdd =
+        nextEventDate.getDate() -
+        date.getDate() +
+        (nextEventDate.getMonth() - date.getMonth()) * 30;
+      nextDate = new Date(
+        nextEventDate.getTime() + daysToAdd * 24 * 60 * 60 * 1000
+      );
+    }
+    // Check if reminders are enabled
+    if (newEvent.reminders.reminder) {
+      let reminderTime = new Date(newEvent.reminders.when);
+      reminderTime = new Date(
+        reminderTime.getTime() +
+          i * newEvent.repeats.interval * 24 * 60 * 60 * 1000
+      );
       const nextEvent = {
         ...newEvent,
-        id: newEventId,
-        date: `${month}/${day}/${year}`,
-        nextDate: `${month}/${day + 1}/${year}`,
+        id: newEvent.id,
+        date: new Date(date).toLocaleDateString(),
+        // nextDate: new Date(nextDate),
+        reminders: {
+          when: reminderTime,
+          reminderTimeString: reminderTime.toLocaleTimeString(),
+        },
       };
       repeats.push(nextEvent);
-    }
-    return repeats;
-    // prisma.event.createMany({
-    //   data: repeats
-    // });
-  }
-  if (howOften === "Weekly") {
-    let diff = daysInMonth - 7;
-    for (let i = 1; i < interval; i++) {
-      day > diff && (month += 1);
-      month === 13 && (year += 1);
-      month === 13 && (month = 1);
-      day >= diff && (day = (day - daysInMonth) * 1);
-      day < diff && (day += 7);
+      date = new Date(nextDate);
+      await createNotification(nextEvent);
+    } else {
+      // Reminders are disabled
       const nextEvent = {
         ...newEvent,
-        id: newEventId,
-        date: `${month}/${day}/${year}`,
-        nextDate: `${month}/${day + 7}/${year}`,
+        id: newEvent.id,
+        date: new Date(date).toLocaleDateString(),
+        // nextDate: new Date(nextDate),
       };
       repeats.push(nextEvent);
+      date = new Date(nextDate);
     }
-    return repeats;
-    // prisma.event.createMany({
-    //   data: repeats
-    // });
   }
-  if (howOften === "Bi Weekly") {
-    let diff = daysInMonth - 7;
-    for (let i = 1; i < interval; i++) {
-      day > diff && (month += 1);
-      month === 13 && (year += 1);
-      month === 13 && (month = 1);
-      day >= diff && (day = (day - daysInMonth) * 1);
-      day < diff && (day += 14);
-      const nextEvent = {
-        ...newEvent,
-        id: newEventId,
-        date: `${month}/${day}/${year}`,
-        nextDate: `${month}/${day + 14}/${year}`,
-      };
-      repeats.push(nextEvent);
-    }
-    return repeats;
-    // prisma.event.createMany({
-    //   data: repeats
-    // });
-  }
-  if (howOften === "Monthly") {
-    for (let i = 1; i < interval; i++) {
-      month += 1;
-      month === 13 && (year += 1);
-      month === 13 && (month = 1);
-      const nextEvent = {
-        ...newEvent,
-        id: newEventId,
-        date: `${month}/${day}/${year}`,
-        nextDate: `${month + 1}/${day}/${year}`,
-      };
-      repeats.push(nextEvent);
-    }
-    return repeats;
-    // prisma.event.createMany({
-    //   data: repeats
-    // });
-  }
-  if (howOften === "Yearly") {
-    for (let i = 1; i < interval; i++) {
-      year += 1;
-      const nextEvent = {
-        ...newEvent,
-        id: newEventId,
-        date: `${month}/${day}/${year}`,
-        nextDate: `${month}/${day}/${year + 1}`,
-      };
-      repeats.push(nextEvent);
-    }
-    return repeats;
-    // prisma.event.createMany({
-    //   data: repeats
-    // });
-  }
+  // Save to the database using Prisma
+  console.log(repeats);
+  await prisma.event.createMany({
+    data: repeats,
+  });
 };
 
 export const getEvents = async (req, res) => {
@@ -116,6 +81,22 @@ export const getEvents = async (req, res) => {
     orderBy: [{ date: "asc" }],
   });
   res.status(200).json({ events: usersEvents, message: "Success" });
+};
+
+const createNotification = async (event) => {
+  const newNotif = {
+    type: "event",
+    read: false,
+    readTime: null,
+    time: event.reminders.when,
+    notifData: newReminder,
+    sentNotification: false,
+    sentWebPush: false,
+    userId: event.userId,
+  };
+  await prisma.notification.create({
+    data: newNotif,
+  });
 };
 
 const createReminder = async (event) => {
@@ -144,38 +125,32 @@ const createReminder = async (event) => {
   return reminder;
 };
 
-const createAttachments = async (attachments, newEventId) => {
+export const createAttachments = async (req, res) => {
+  const newEventId = req.params.newEventId;
+  const { attachments } = req.body;
   try {
     const createdAttachments = await Promise.all(
       attachments.map(async (attachment) => {
         const { filename, mimetype, content } = attachment;
-        const array = new Uint8Array(content);
-        // const maxPosition = Math.max(...Object.keys(data).map(Number));
-
-        // // Initialize a Uint8Array with zeros
-        // const uint8Array = new Uint8Array(maxPosition + 1);
-
-        // // Populate the Uint8Array based on the key-value pairs
-        // for (const [position, value] of Object.entries(data)) {
-        //   uint8Array[Number(position)] = value;
-        // }
-
-        // // Convert the Uint8Array to a Buffer
-        // const buffer = Buffer.from(uint8Array);
-        return console.log(content);
-        const contentBytes = Buffer.from(array);
+        const byteBuffer = Buffer.from(Object.values(content));
         return prisma.attachment.create({
           data: {
             filename,
             mimetype,
-            content: contentBytes,
+            content: byteBuffer,
             eventId: newEventId,
           },
         });
       })
     );
-    console.log("Attachments created:", createdAttachments);
+    if (createdAttachments) {
+      res.status(201).json({
+        message: `Successfully created new attachments for event ${newEventId}`,
+      });
+      console.log("Attachments created:", createdAttachments);
+    }
   } catch (err) {
+    res.status(401).json({ message: `Error creating new attachments ${err}` });
     console.log(`Error creating attachments: ${err}`);
   }
 };
@@ -183,23 +158,15 @@ const createAttachments = async (attachments, newEventId) => {
 export const addEvent = async (req, res) => {
   const newEvent = req.body.event;
   const user = req.user;
-  const newEventId = uuidv4();
   let reminder;
-  const repeatEvents = await addMultipleEvents(
-    newEvent,
-    newEventId,
-    newEvent.repeats.howOften
-  );
+  const repeatEvents = await addMultipleEvents(newEvent);
   if (newEvent.reminders.reminder) {
     reminder = await createReminder(newEvent);
   }
   const createdEvent = await prisma.event.create({
-    data: { ...newEvent, id: newEventId, attachments: undefined },
+    data: { ...newEvent, id: newEvent.id },
   });
   if (createdEvent) {
-    // if (newEvent.attachments.length > 0) {
-    //   createAttachments(newEvent.attachments, newEventId);
-    // }
     return res.json({
       message: "Successfully added new event",
       user: {
@@ -210,7 +177,8 @@ export const addEvent = async (req, res) => {
         id: user.id,
         createdAt: user.createAt,
       },
-      event: [createdEvent, ...repeatEvents],
+      event: [createdEvent],
+      repeats: repeatEvents,
       reminders: reminder,
     });
   }

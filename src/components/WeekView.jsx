@@ -10,14 +10,20 @@ import { BsFillCalendarDayFill } from "react-icons/bs";
 const WeekView = () => {
   const { events, holidays } = useContext(UserContext);
   const { setEvent, setAddNewEvent, setType } = useContext(InteractiveContext);
-  const { currentWeek, setCurrentWeek, string, setString, setOpenModal } =
-    useContext(DatesContext);
+  const {
+    currentWeek,
+    setCurrentWeek,
+    string,
+    setString,
+    setOpenModal,
+    dateObj,
+  } = useContext(DatesContext);
 
   const [weeklyEvents, setWeeklyEvents] = useState([]);
   const dateContainerRefs = useRef([]);
   const containerWidth = useRef(null);
 
-  const currentWeekday = new Date().getDay();
+  const currentWeekday = dateObj.getDay();
 
   useEffect(() => {
     const matchingEvents = currentWeek.map((weekDay) =>
@@ -78,6 +84,11 @@ const WeekView = () => {
     }
   };
 
+  const addNewDataForDay = (date) => {
+    setString(date.toLocaleDateString());
+    setOpenModal(true);
+  };
+
   return (
     <section className="relative flex flex-col justify-between items-start">
       {currentWeek.map((date, index) => (
@@ -97,12 +108,7 @@ const WeekView = () => {
               <BsFillCalendarDayFill />
               <AiOutlinePlusCircle
                 className="text-lg"
-                onClick={() => {
-                  setOpenModal(true);
-                  setString(date);
-                  setType("event");
-                  setAddNewEvent(true);
-                }}
+                onClick={() => addNewDataForDay(date)}
               />
             </div>
           </div>
@@ -135,7 +141,9 @@ const WeekView = () => {
                       className={`absolute top-5 bottom-2 event-item rounded-md shadow-md p-2 ${weekEvent.color}`}
                       onClick={() => setEvent(weekEvent)}
                     >
-                      <p>{weekEvent.summary}</p>
+                      <p className="p-1 text-xs bg-white rounded-md shadow-md">
+                        {weekEvent.summary}
+                      </p>
                     </div>
                   ))}
               </div>

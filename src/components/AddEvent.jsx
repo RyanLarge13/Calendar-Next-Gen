@@ -1,15 +1,15 @@
-import { useState, useEffect, useRef, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import { motion } from "framer-motion";
 import { colors } from "../constants";
-import { MdLocationPin, MdCancel } from "react-icons/md";
-import { AiFillCloseCircle } from "react-icons/ai";
+import { MdLocationPin } from "react-icons/md";
+import { AiFillCloseCircle, AiFillInfoCircle } from "react-icons/ai";
 import { FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";
 import { RiGalleryUploadFill } from "react-icons/ri";
-import { BsFillSaveFill } from "react-icons/bs";
-import { postEvent } from "../utils/api.js";
+import { createAttachments, postEvent } from "../utils/api.js";
 import { repeatOptions } from "../constants";
 import { v4 as uuidv4 } from "uuid";
+import Compressor from "compressorjs";
 import Masonry from "react-masonry-css";
 import DatesContext from "../context/DatesContext";
 import UserContext from "../context/UserContext";
@@ -39,6 +39,11 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
   const [reminder, setReminder] = useState(false);
   const [reminderTimeString, setReminderTimeString] = useState("");
   const [when, setWhen] = useState(null);
+  const [extraReminders, setExtraReminders] = useState([]);
+  const [addAnotherReminder, setAddAnotherReminder] = useState(false);
+  const [anotherReminderWhen, setAnotherReminderWhen] = useState(null);
+  const [anotherReminderString, setAnotherReminderString] = useState("");
+  const [onlyNotify, setOnlyNotify] = useState(false);
   // repeats
   const [repeat, setRepeat] = useState(false);
   const [howOften, setHowOften] = useState(false);
@@ -99,16 +104,22 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
   }, [passedStartTime]);
 
   const addEvent = () => {
+    const newEventId = uuidv4();
     if (!runChecks()) return;
     if (!isOnline) {
     }
     if (isOnline) {
       const newEvent = {
+        id: newEventId,
         kind: "Event",
         summary,
-        description,
+        description: formatDescText(description),
         location: location ? locationObject : undefined,
         date: string,
+        startDate: new Date(string),
+        endDate: new Date(string),
+        nextDate: null,
+        attachmentLength: attachments.length,
         reminders: {
           reminder,
           reminderTimeString: reminder ? reminderTimeString : null,
@@ -117,11 +128,10 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
         repeats: {
           repeat,
           howOften: repeat ? howOften : null,
-          nextDate: repeat && null,
+          nextDate: null,
           interval: interval ? interval : 7,
           repeatId: uuidv4(),
         },
-        attachments: attachments.length > 0 ? attachments : [],
         color: color ? color : "bg-white",
         start: {
           startTime: startTime ? (allDay ? null : startWhen) : null,
@@ -142,6 +152,17 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
           setAddNewEvent(false);
           setType(null);
           setOpenModal(false);
+          if (attachments.length > 0) {
+            setTimeout(() => {
+              createAttachments(
+                attachments,
+                newEventId,
+                localStorage.getItem("authToken")
+              )
+                .then((res) => console.log(res))
+                .catch((err) => console.log(err));
+            }, 1000);
+          }
         })
         .catch((err) => {
           console.log(err);
@@ -156,6 +177,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
         title: "Add Title",
         text: "You must add a title to your new event",
         color: "bg-red-200",
+        hasCancel: false,
         actions: [
           { text: "close", func: () => setSystemNotif({ show: false }) },
         ],
@@ -169,6 +191,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
         title: "Add Color",
         text: "You must add a color to your new event",
         color: "bg-red-200",
+        hasCancel: false,
         actions: [
           { text: "close", func: () => setSystemNotif({ show: false }) },
         ],
@@ -179,37 +202,62 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
     return true;
   };
 
-  const handleFileChange = (event) => {
+  const formatDescText = (text) => {
+    const formattedText = text.replace(/\n/g, "|||");
+    return formattedText;
+  };
+
+  const handleFileChange = async (event) => {
     const newFiles = [...event.target.files];
-    newFiles.forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const fileContent = new Uint8Array(reader.result);
-        // console.log(fileContent);
+    for (const file of newFiles) {
+      try {
+        const compressedFile = await compressImage(file);
+        const compressedArrayBuffer = await compressedFile.arrayBuffer();
+        const compressedFileContent = new Uint8Array(compressedArrayBuffer);
         const newFile = {
-          img: URL.createObjectURL(file),
+          img: URL.createObjectURL(compressedFile),
           mimetype: file.type,
           filename: file.name,
-          content: fileContent,
+          content: compressedFileContent,
         };
         setAttachments((prevFiles) => [...prevFiles, newFile]);
-      };
-      reader.onerror = (error) => {
-        console.error("FileReader error:", error);
-      };
-      // console.log("Reading file:", file);
-      reader.readAsArrayBuffer(file);
+      } catch (err) {
+        console.log(`Error compressing image: ${err}`);
+      }
+    }
+  };
+
+  const compressImage = (file) => {
+    return new Promise((resolve, reject) => {
+      new Compressor(file, {
+        quality: 0.6, // Adjust the quality value as needed (0.0 to 1.0)
+        success: (compressedFile) => {
+          resolve(compressedFile);
+        },
+        error: (error) => {
+          reject(error);
+        },
+      });
     });
   };
 
   const removeFile = (file) => {
-    const newFiles = attachments.filter((attach) => attach.name !== file.name);
+    const newFiles = attachments.filter(
+      (attach) => attach.filename !== file.filename
+    );
     setAttachments(newFiles);
   };
 
   return (
-    <div className={`flex flex-col justify-center items-center`}>
-      <div className="flex flex-wrap justify-center items-center my-10 mx-auto w-[80%]">
+    <div>
+      <input
+        type="text"
+        placeholder="Event"
+        value={summary}
+        onChange={(e) => setSummary(e.target.value)}
+        className={`p-2 text-4xl mt-10 mb-5 w-full outline-none bg-opacity-30 duration-200`}
+      />
+      <div className="flex flex-wrap justify-center items-center my-5 mx-auto">
         {colors.map((item, index) => (
           <Color
             key={index}
@@ -220,12 +268,6 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
           />
         ))}
       </div>
-      <input
-        placeholder="New Event"
-        value={summary}
-        onChange={(e) => setSummary(e.target.value)}
-        className={`p-2 mt-10 mb-5 w-full text-center rounded-md shadow-md ${color} outline-none bg-opacity-30 duration-200`}
-      />
       <textarea
         name="description"
         placeholder="Description"
@@ -234,10 +276,10 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
         id="description"
         cols="30"
         rows="10"
-        className="p-3 w-full focus:outline-none rounded-md shadow-md"
+        className="p-2 mt-5 w-full focus:outline-none focus:shadow-sm"
       ></textarea>
       <div className="mt-10 w-full">
-        <div className="w-full p-3 rounded-md shadow-md">
+        <div className="w-full p-3 border-b">
           <div className="flex justify-between items-center">
             <MdLocationPin />
             <Toggle condition={location} setCondition={setLocation} />
@@ -248,7 +290,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
             </div>
           )}
         </div>
-        <div className="w-full p-3 my-5 rounded-md shadow-md">
+        <div className="w-full p-3 my-5 border-b">
           <div className="flex justify-between items-center">
             <FiRepeat />
             <Toggle condition={repeat} setCondition={setRepeat} />
@@ -301,7 +343,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
             </motion.div>
           )}
         </div>
-        <div className="w-full p-3 rounded-md shadow-md">
+        <div className="w-full p-3 border-b">
           <div className="flex justify-between items-center">
             <IoIosAlarm />
             <Toggle condition={reminder} setCondition={setReminder} />
@@ -315,13 +357,47 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
                   openTimeSetter={setReminder}
                 />
               ) : (
-                <p>{reminderTimeString}</p>
+                <>
+                  <div className="mt-5">
+                    <div className="flex justify-between items-center">
+                      <div className="flex justify-center items-center">
+                        <AiFillInfoCircle className="mr-2" />
+                        <p>Only notify</p>
+                      </div>
+                      <Toggle
+                        condition={onlyNotify}
+                        setCondition={setOnlyNotify}
+                      />
+                    </div>
+                  </div>
+                  <p className={`${color} rounded-md shadow-sm px-2 py-1 mt-3`}>
+                    {reminderTimeString}
+                  </p>
+                  <div className="mt-3">
+                    <button
+                      className="py-1 px-3 rounded-md shadow-md bg-cyan-100"
+                      onClick={() => setAddAnotherReminder(true)}
+                    >
+                      Add Another
+                    </button>
+                    {addAnotherReminder &&
+                      (!anotherReminderWhen ? (
+                        <TimeSetter
+                          setDateTime={setAnotherReminderWhen}
+                          setDateTimeString={setAnotherReminderString}
+                          openTimeSetter={setAddAnotherReminder}
+                        />
+                      ) : (
+                        <p>{anotherReminderString}</p>
+                      ))}
+                  </div>
+                </>
               )}
             </div>
           )}
         </div>
       </div>
-      <div className="w-full p-3 mt-5 rounded-md shadow-md">
+      <div className="w-full p-3 mt-5 border-b">
         <div className="flex justify-between items-center">
           <p>All Day Event</p>
           <Toggle condition={allDay} setCondition={setAllDay} />
@@ -330,7 +406,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
       {!allDay && (
         <>
           <div className="my-3 flex justify-center items-center w-full">
-            <div className="w-full mr-1 p-3 rounded-md shadow-md cursor-pointer">
+            <div className="w-full mr-1 p-3 border-b cursor-pointer">
               <div className="flex justify-between items-center">
                 <p>Start</p>
                 <Toggle condition={startTime} setCondition={setStartTime} />
@@ -352,7 +428,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
               )}
             </div>
           </div>
-          <div className="w-full mr-1 p-3 rounded-md shadow-md cursor-pointer">
+          <div className="w-full mr-1 p-3 border-b cursor-pointer">
             <div className="flex justify-between items-center">
               <p>End</p>
               <Toggle condition={endTime} setCondition={setEndTime} />
@@ -375,7 +451,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
           </div>
         </>
       )}
-      <div className="mt-10 mb-20 flex flex-col justify-center items-center">
+      <div className="mt-10 mb-20 flex w-full flex-col justify-center items-center">
         {attachments.length > 0 && (
           <Masonry
             breakpointCols={breakpointColumnsObj}
@@ -408,7 +484,11 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
         )}
         <label className="bg-slate-300 mt-10 p-5 w-full rounded-md flex flex-col justify-center items-center">
           <RiGalleryUploadFill className="text-xl cursor-pointer" />
-          {attachments.length > 0 && <p className="text-xs">Add More</p>}
+          {attachments.length > 0 ? (
+            <p className="text-xs">Add More</p>
+          ) : (
+            <p className="text-[10px]">.jpeg .png .svg .pdf .docx</p>
+          )}
           <input
             type="file"
             accept=".jpeg .png .svg .pdf .docx"
@@ -419,21 +499,21 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
           />
         </label>
       </div>
-      <div className="fixed right-[65vw] bottom-5 flex flex-col justify-center items-center px-2">
+      <div className=" flex flex-col w-full gap-y-5 mb-5 text-center text-xs font-semibold">
+        <button
+          onClick={() => addEvent()}
+          className="px-3 py-2 rounded-md shadow-md bg-gradient-to-r from-lime-200 to-green-200 underline"
+        >
+          save
+        </button>
         <button
           onClick={() => {
             setType(null);
             setAddNewEvent(false);
           }}
-          className="p-3 rounded-full shadow-md bg-gradient-to-r from-red-300 to-red-200"
+          className="px-3 py-2 rounded-md shadow-md bg-gradient-to-tr from-red-200 to-rose-200 underline"
         >
-          <MdCancel />
-        </button>
-        <button
-          onClick={() => addEvent()}
-          className="rounded-full p-3 shadow-md bg-gradient-to-r from-green-300 to-green-200 mt-5"
-        >
-          <BsFillSaveFill />
+          cancel
         </button>
       </div>
     </div>

@@ -1,7 +1,6 @@
 import { useState, useContext } from "react";
 import { createNewList } from "../utils/api.js";
-import { MdCancel } from "react-icons/md";
-import { BsFillSaveFill } from "react-icons/bs";
+import { v4 as uuidv4 } from "uuid";
 import UserContext from "../context/UserContext.jsx";
 import InteractiveContext from "../context/InteractiveContext.jsx";
 import DatesContext from "../context/DatesContext.jsx";
@@ -18,6 +17,7 @@ const AddList = () => {
   const [itemTitle, setItemTitle] = useState("");
   const [title, setTitle] = useState("");
   const [color, setColor] = useState("");
+  let increment = 0;
 
   const createList = () => {
     if (!title) {
@@ -26,6 +26,7 @@ const AddList = () => {
         title: "Add Title",
         text: "You must add a title to your list",
         color: "bg-red-200",
+        hasCancel: false,
         actions: [
           { text: "close", func: () => setSystemNotif({ show: false }) },
         ],
@@ -38,6 +39,7 @@ const AddList = () => {
         title: "Add Color",
         text: "You must add a color to your list",
         color: "bg-red-200",
+        hasCancel: false,
         actions: [
           { text: "close", func: () => setSystemNotif({ show: false }) },
         ],
@@ -48,15 +50,46 @@ const AddList = () => {
   };
 
   const addItemsToList = () => {
-    if (!itemTitle) return;
+    if (!itemTitle) {
+      const newNotif = {
+        show: true,
+        title: "No Items",
+        text: "Please add items",
+        color: "bg-red-200",
+        hasCancel: false,
+        actions: [
+          { text: "close", func: () => setSystemNotif({ show: false }) },
+        ],
+      };
+      return setSystemNotif(newNotif);
+    }
+    const newOrderIndex = listItems.length;
     if (itemTitle.includes(",")) {
       const eachItem = itemTitle.split(",");
-      eachItem.forEach((item) =>
-        setListItems((prev) => [...prev, item.trim()])
-      );
+      eachItem.forEach((item, index) => {
+        setListItems((prev) => [
+          ...prev,
+          {
+            id: uuidv4(),
+            text: item.trim(),
+            orderIndex: newOrderIndex + index + increment,
+            complete: false,
+          },
+        ]);
+        increment += eachItem.length;
+      });
     }
     if (!itemTitle.includes(",")) {
-      setListItems((prev) => [...prev, itemTitle.trim()]);
+      setListItems((prev) => [
+        ...prev,
+        {
+          id: uuidv4(),
+          text: itemTitle.trim(),
+          orderIndex: newOrderIndex + increment,
+          complete: false,
+        },
+      ]);
+      increment++;
     }
     setItemTitle("");
   };
@@ -90,18 +123,17 @@ const AddList = () => {
   };
 
   return (
-    <div className="mt-20 text-center">
+    <div>
       {!addItems ? (
         <div>
-          <h2 className="text-lg">Create a list</h2>
           <input
             type="text"
             value={title}
-            placeholder="Title"
+            placeholder="List"
             onChange={(e) => setTitle(e.target.value)}
-            className={`w-full p-2 rounded-md shadow-md my-5 bg-opacity-80 ${color}`}
+            className={`w-full p-2 text-4xl my-5 bg-opacity-80 focus:outline-none`}
           />
-          <div className="flex flex-wrap items-center justify-center px-5 my-10">
+          <div className="flex flex-wrap items-center justify-center my-5">
             {colors.map((item, index) => (
               <Color
                 key={index}
@@ -112,43 +144,49 @@ const AddList = () => {
               />
             ))}
           </div>
-          <button
-            onClick={() => createList()}
-            className="rounded-md shadow-md py-2 w-[95%] bg-gradient-to-tr from-lime-300 to-emerald-200 absolute bottom-5 left-[2%]"
-          >
-            Create
-          </button>
+          <div className="absolute bottom-4 right-4 left-4">
+            <button
+              onClick={() => createList()}
+              className="rounded-md shadow-md py-2 w-full bg-gradient-to-tr from-lime-300 to-emerald-200 text-xs underline"
+            >
+              create
+            </button>
+            <button
+              onClick={() => {
+                setType(null);
+                setAddNewEvent(false);
+              }}
+              className="px-3 w-full text-xs mt-3 py-2 rounded-md shadow-md bg-gradient-to-tr from-red-200 to-rose-200 underline"
+            >
+              cancel
+            </button>
+          </div>
         </div>
       ) : (
-        <div>
-          <p className="text-lg mb-3">{title}</p>
-          <p className="text-xs text-left">
-            Tip: if you want to add multiple items at a time, just seperate each
-            item with a comma! <br />
-            ex: 'Milk, Eggs, Cereal'
-          </p>
+        <div className="pt-5">
+          <p className="text-4xl p-2">{title}</p>
           <input
             type="text"
             value={itemTitle}
             placeholder="Add new items!!"
             onChange={(e) => setItemTitle(e.target.value)}
-            className="mt-5 rounded-md shadow-md px-3 py-1 w-full"
+            className="mt-5 text-lg px-3 py-1 w-full focus:outline-none focus:shadow-sm"
           />
           <button
             onClick={() => addItemsToList()}
             type="text"
-            className="my-5 py-1 w-full rounded-md shadow-md bg-gradient-to-tr from-lime-300 to-green-200"
+            className="my-5 py-2 w-full rounded-md shadow-md bg-gradient-to-tr from-lime-300 to-green-200 text-xs underline"
           >
             Add
           </button>
           <div className="text-left mb-40">
             {listItems.length > 0 &&
-              listItems.map((item, index) => (
+              listItems.map((item) => (
                 <div
-                  key={index}
+                  key={item.id}
                   className="p-3 border-b border-b-slate-300 flex justify-between items-center"
                 >
-                  <p>{item}</p>
+                  <p>{item.text}</p>
                   <AiFillCloseCircle onClick={() => removeItem(item)} />
                 </div>
               ))}
@@ -156,36 +194,19 @@ const AddList = () => {
           <div className="flex flex-col fixed bottom-5 w-[60%]">
             <button
               onClick={() => setAddItems(false)}
-              className="mb-1 mt-5 py-1 w-full rounded-md shadow-md bg-gradient-to-tr from-rose-300 to-amber-200"
+              className="mb-1 mt-5 py-2 w-full rounded-md shadow-md bg-gradient-to-tr from-rose-300 to-amber-200 text-xs underline"
             >
               Go Back
             </button>
             <button
               onClick={() => addListToDB()}
-              className="my-1 py-1 w-full rounded-md shadow-md bg-gradient-to-tr from-lime-300 to-green-200"
+              className="my-1 py-2 w-full rounded-md shadow-md bg-gradient-to-tr from-lime-300 to-green-200 text-xs underline"
             >
               Complete List
             </button>
           </div>
         </div>
       )}
-      <div className="fixed right-[65vw] bottom-5 flex flex-col justify-center items-center px-2">
-        <button
-          onClick={() => {
-            setType(null);
-            setAddNewEvent(false);
-          }}
-          className="p-3 rounded-full shadow-md bg-gradient-to-r from-red-300 to-red-200"
-        >
-          <MdCancel />
-        </button>
-        <button
-          onClick={() => {}}
-          className="rounded-full p-3 shadow-md bg-gradient-to-r from-green-300 to-green-200 mt-5"
-        >
-          <BsFillSaveFill />
-        </button>
-      </div>
     </div>
   );
 };

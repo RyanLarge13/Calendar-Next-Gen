@@ -2,6 +2,7 @@ import express from "express";
 import {
   fetchUserData,
   loginWithGoogle,
+  loginWithFacebook,
   loginWithPasswordUsername,
   fetchGoogleCalendarEvents,
 } from "../controllers/userControllers.js";
@@ -16,6 +17,7 @@ userRouter.get(
 );
 userRouter.get("/user/data", auth, fetchUserData);
 userRouter.post("/login/google", loginWithGoogle);
+userRouter.post("/login/facebook",loginWithFacebook)
 userRouter.post("/login/classic", loginWithPasswordUsername);
 
 export default userRouter;
