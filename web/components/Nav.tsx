@@ -28,60 +28,62 @@ const Nav = () => {
   ];
 
   return (
-    <header className="max-w-[100vw] fixed top-0 right-0 left-0 flex justify-between items-center bg-white z-10 py-2 px-5 rounded-b-sm shadow-sm">
-      <Link href="/">
-        <Image
+    <>
+      <header className="fixed top-0 right-0 left-0 flex justify-between items-center bg-white bg-opacity-75 backdrop-blur-sm z-10 p-4 rounded-b-md shadow-md">
+        <Link href="/" className="text-3xl">
+          {/*<Image
           src="/assets/favicon.svg"
           alt="logo"
-          width={50}
-          height={50}
+          width={30}
+          height={30}
           className="object-contain my-2 shadow-lg rounded-md"
-        />
-      </Link>
-      <div className="flex gap-x-10">
-        <ul className="hidden justify-center items-center gap-x-10 md:flex">
-          {links.map((link: { href: string; text: string }) => {
-            const isActive = pathname === link.href;
+        />*/}
+          CNG
+        </Link>
+        <div className="flex gap-x-10">
+          <ul className="hidden justify-center items-center gap-x-10 md:flex">
+            {links.map((link: { href: string; text: string }) => {
+              const isActive = pathname === link.href;
 
-            return (
-              <li key={link.text}>
-                <Link
-                  href={link.href}
-                  className={`${isActive ? "underline" : "text-black"}`}
-                >
-                  {link.text}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-        <div
-          className="text-3xl cursor-pointer"
-          onClick={() => setShowNav((prev) => !prev)}
-        >
-          <BiMenuAltRight />
+              return (
+                <li key={link.text}>
+                  <Link
+                    href={link.href}
+                    className={`${isActive ? "underline" : "text-black"}`}
+                  >
+                    {link.text}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+          <div
+            className="text-xl cursor-pointer"
+            onClick={() => setShowNav((prev) => !prev)}
+          >
+            <BiMenuAltRight />
+          </div>
         </div>
-      </div>
+      </header>
       {showNav && (
         <motion.nav
           initial={{ opacity: 0, x: "50%" }}
           animate={{ opacity: 1, x: 0 }}
-          className="fixed left-0 top-0 bottom-0 bg-white z-20 rounded-sm shadow-lg p-5"
+          className="fixed left-0 top-0 bottom-0 bg-white z-[999] rounded-sm shadow-lg p-5"
         >
           <ul>
             {fullLinks.map((link: { href: string; text: string }) => {
               const isActive = pathname === link.href;
 
               return (
-                <li
-                  key={link.text}
-                  className="rounded-md shadow-md bg-gradient-to-tr from-cyan-300 to-cyan-100 my-5 text-xl"
-                >
+                <li key={link.text} className="">
                   <Link
                     href={link.href}
-                    className={`${
-                      isActive ? "underline" : "text-black"
-                    } inline-block p-3`}
+                    className={`rounded-md shadow-md my-5 w-full p-3 inline-block text-xl ${
+                      isActive
+                        ? "bg-gradient-to-tr from-cyan-300 to-cyan-100"
+                        : " bg-gradient-to-tr from-amber-300 to-red-400"
+                    }`}
                   >
                     {link.text}
                   </Link>
@@ -91,7 +93,7 @@ const Nav = () => {
           </ul>
         </motion.nav>
       )}
-    </header>
+    </>
   );
 };
 
