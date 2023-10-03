@@ -1,16 +1,34 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { BiMenuAltRight } from "react-icons/bi";
-import { useState } from "react";
 
 const Nav = () => {
   const [showNav, setShowNav] = useState(false);
+  const pathname = usePathname();
+
+  const fullLinks = [
+    { href: "/", text: "Home" },
+    { href: "/docs", text: "Docs" },
+    { href: "/about", text: "About" },
+    { href: "/contact", text: "Contact" },
+    { href: "/termsofservice", text: "Terms" },
+    { href: "/privacypolicy", text: "Privacy Policy" },
+  ];
+
+  const links = [
+    { href: "/", text: "Home" },
+    { href: "/docs", text: "Docs" },
+    { href: "/about", text: "About" },
+    { href: "/contact", text: "Contact" },
+  ];
 
   return (
-    <header className="fixed top-0 right-0 left-0 flex justify-between items-center bg-white z-10 py-2 px-5 rounded-b-sm shadow-sm">
+    <header className="max-w-[100vw] fixed top-0 right-0 left-0 flex justify-between items-center bg-white z-10 py-2 px-5 rounded-b-sm shadow-sm">
       <Link href="/">
         <Image
           src="/assets/favicon.svg"
@@ -21,23 +39,25 @@ const Nav = () => {
         />
       </Link>
       <div className="flex gap-x-10">
-        <ul className="flex justify-center items-center gap-x-10">
-          <li>
-            <Link href="/">Home</Link>
-          </li>
-          <li>
-            <Link href="docs">Docs</Link>
-          </li>
-          <li>
-            <Link href="/about">About</Link>
-          </li>
-          <li>
-            <Link href="contact">Contact</Link>
-          </li>
+        <ul className="hidden justify-center items-center gap-x-10 md:flex">
+          {links.map((link: { href: string; text: string }) => {
+            const isActive = pathname === link.href;
+
+            return (
+              <li key={link.text}>
+                <Link
+                  href={link.href}
+                  className={`${isActive ? "underline" : "text-black"}`}
+                >
+                  {link.text}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
         <div
           className="text-3xl cursor-pointer"
-          onClick={() => setShowNav(true)}
+          onClick={() => setShowNav((prev) => !prev)}
         >
           <BiMenuAltRight />
         </div>
@@ -46,8 +66,30 @@ const Nav = () => {
         <motion.nav
           initial={{ opacity: 0, x: "50%" }}
           animate={{ opacity: 1, x: 0 }}
-          className="fixed inset-5 bg-white z-20 rounded-sm shadow-lg"
-        ></motion.nav>
+          className="fixed left-0 top-0 bottom-0 bg-white z-20 rounded-sm shadow-lg p-5"
+        >
+          <ul>
+            {fullLinks.map((link: { href: string; text: string }) => {
+              const isActive = pathname === link.href;
+
+              return (
+                <li
+                  key={link.text}
+                  className="rounded-md shadow-md bg-gradient-to-tr from-cyan-300 to-cyan-100 my-5 text-xl"
+                >
+                  <Link
+                    href={link.href}
+                    className={`${
+                      isActive ? "underline" : "text-black"
+                    } inline-block p-3`}
+                  >
+                    {link.text}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </motion.nav>
       )}
     </header>
   );
