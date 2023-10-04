@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { BiMenuAltRight } from "react-icons/bi";
 
 const Nav = () => {
@@ -29,7 +29,7 @@ const Nav = () => {
 
   return (
     <>
-      <header className="fixed top-0 right-0 left-0 flex justify-between items-center bg-white bg-opacity-75 backdrop-blur-sm z-10 p-4 rounded-b-md shadow-md">
+      <header className="fixed top-0 right-0 left-0 flex justify-between items-center bg-[#222] text-white z-10 p-4 rounded-b-md">
         <Link href="/" className="text-3xl">
           {/*<Image
           src="/assets/favicon.svg"
@@ -65,34 +65,45 @@ const Nav = () => {
           </div>
         </div>
       </header>
-      {showNav && (
-        <motion.nav
-          initial={{ opacity: 0, x: "50%" }}
-          animate={{ opacity: 1, x: 0 }}
-          className="fixed left-0 top-0 bottom-0 bg-white z-[999] rounded-sm shadow-lg p-5"
-        >
-          <ul>
-            {fullLinks.map((link: { href: string; text: string }) => {
-              const isActive = pathname === link.href;
+      <AnimatePresence>
+        {showNav && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              exit={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              aria-hidden="true"
+              onClick={() => setShowNav(false)}
+              className="fixed inset-[-20px] bg-black bg-opacity-30 backdrop-blur-sm z-[998]"
+            ></motion.div>
+            <motion.nav
+              initial={{ opacity: 0, x: -50 }}
+              exit={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="fixed left-0 top-2 bottom-2 bg-[#222] z-[999] rounded-r-md shadow-lg p-5"
+            >
+              <ul>
+                {fullLinks.map((link: { href: string; text: string }) => {
+                  const isActive = pathname === link.href;
 
-              return (
-                <li key={link.text} className="">
-                  <Link
-                    href={link.href}
-                    className={`rounded-md shadow-md my-5 w-full p-3 inline-block text-xl ${
-                      isActive
-                        ? "bg-gradient-to-tr from-cyan-300 to-cyan-100"
-                        : " bg-gradient-to-tr from-amber-300 to-red-400"
-                    }`}
-                  >
-                    {link.text}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </motion.nav>
-      )}
+                  return (
+                    <li key={link.text} className="">
+                      <Link
+                        href={link.href}
+                        className={`rounded-md text-white font-semibold my-3 w-full p-2 inline-block text-xl border-b ${
+                          isActive ? "border-cyan-300" : "border-white"
+                        }`}
+                      >
+                        {link.text}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </motion.nav>
+          </>
+        )}
+      </AnimatePresence>
     </>
   );
 };
