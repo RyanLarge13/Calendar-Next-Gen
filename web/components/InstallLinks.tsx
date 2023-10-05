@@ -24,7 +24,7 @@ const InstallLinks = () => {
   ];
   return (
     <div className="flex flex-wrap gap-3 justify-start items-center mt-5 mb-5">
-      {links.map((link: { title: string; icon: string; link: string }) => (
+      {links.map((link) => (
         <a
           href={link.link}
           className="rounded-full inline-block py-3 px-10 shadow-md bg-emerald-100 text-black font-bold"

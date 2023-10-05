@@ -40,7 +40,7 @@ const Nav = () => {
               className="object-contain my-2 shadow-sm rounded-md shadow-emerald-200"
             />
           </Link>
-          <logo className="text-2xl ml-2">CNG</logo>
+          <p className="text-2xl ml-2">CNG</p>
         </div>
         <div className="flex gap-x-10">
           <ul className="hidden justify-center items-center gap-x-10 md:flex">
@@ -51,7 +51,11 @@ const Nav = () => {
                 <li key={link.text}>
                   <Link
                     href={link.href}
-                    className={`${isActive ? "underline" : "text-black"}`}
+                    className={`border-b hover:text-white hover:border-b-emerald-300 duration-300 ${
+                      isActive
+                        ? "text-white border-b-emerald-300"
+                        : "text-slate-200 border-b-slate-200"
+                    }`}
                   >
                     {link.text}
                   </Link>
@@ -95,7 +99,7 @@ const Nav = () => {
                         className={`rounded-sm text-white font-semibold my-3 w-full p-2 inline-block text-xl border-b-2 ${
                           isActive
                             ? "border-emerald-300 text-white"
-                            : "border-slate-200 text-slate-200 hover:text-white hover:border-b-emerald-300"
+                            : "border-slate-200 text-slate-200 hover:text-white hover:border-b-emerald-300 duration-300"
                         }`}
                       >
                         {link.text}

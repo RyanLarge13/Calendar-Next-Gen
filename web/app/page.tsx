@@ -27,7 +27,7 @@ const Home = () => {
           </button>
         </div>
       </section>
-      <section className="bg-[#222] py-3 pl-5 pr-2 text-white">
+      <section className="bg-[#222] py-3 pl-5 pr-2 text-white h-screen">
         <h2 className="text-5xl font-semibold mt-2 mb-3">
           Website or{" "}
           <span className="bg-gradient-to-tr from-emerald-400 to-emerald-100 text-transparent bg-clip-text">
@@ -52,7 +52,7 @@ const Home = () => {
         </a>
         <InstallLinks />
       </section>
-      <section className="bg-black text-white">
+      <section className="bg-black text-white h-screen">
         <h3 className="text-2xl">
           Managing a few reminders and tasks is one thing, but to manage your
           life is another
