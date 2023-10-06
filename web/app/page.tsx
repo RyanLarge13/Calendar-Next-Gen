@@ -12,7 +12,7 @@ const Home = () => {
               {" "}
               Next
             </span>{" "}
-            Generation
+            Gen
           </h1>
           <h2 className="text-3xl mt-3">
             Organize, Create, Manage Deliver - climb your way to the future of
@@ -27,7 +27,10 @@ const Home = () => {
           </button>
         </div>
       </section>
-      <section className="bg-[#222] py-20 pl-5 pr-2 text-white min-h-screen">
+      <section
+        id="web-or-app"
+        className="bg-[#222] py-20 pl-5 pr-2 text-white min-h-screen"
+      >
         <h2 className="text-5xl font-semibold mt-2 mb-3">
           Website or{" "}
           <span className="bg-gradient-to-tr from-emerald-400 to-emerald-100 text-transparent bg-clip-text">
@@ -52,8 +55,66 @@ const Home = () => {
         </a>
         <InstallLinks />
       </section>
-      <section className="bg-black text-white h-screen">
+      <section
+        id="what-can-you-do"
+        className="bg-black text-white min-h-screen py-20 pl-5 pr-2"
+      >
+        <h2 className="text-5xl font-semibold pt-2 mb-3">
+          What Is So{" "}
+          <span className="bg-gradient-to-tr from-emerald-400 to-emerald-100 text-transparent bg-clip-text">
+            Great
+          </span>
+          ??
+        </h2>
+        <p>
+          There is a next generation full of functionality and purpose in this
+          application.. Learn all about how to use this app and the things you
+          can do to take advantage of every bit! Let's dive in..
+        </p>
+        <p>
+          Let's start with a list before we dive in deeper. Here is the major
+          and most popular content you can create with CNG
+        </p>
+        <h3 id="major-functionality" className="text-3xl text-cyan-300 mt-10 mb-3">
+          Major Functionality
+        </h3>
+        <ul className="list-disc text-xl ml-4">
+          <li>Create & manage Events</li>
+          <li>Set Reminders & important notifications</li>
+          <li>
+            Colaborate with groups and set important events with documents and
+            photos
+          </li>
+          <li>Manage, reschedule & link appointments</li>
+          <li>
+            Build a list, generalize it or connect it with your events, or any
+            other content
+          </li>
+          <li>
+            Build tasks as well... But isn't a task the same as a list? Not with
+            CNG
+          </li>
+          <li>
+            Pin sticky notes to your UI and keep important and urgent
+            information up front and in view
+          </li>
+        </ul>
+        <h3
+          id="advanced-features"
+          className="text-3xl text-cyan-300 mt-10 mb-3"
+        >
+          Advanced Features
+        </h3>
+        <ul className="list-disc text-xl ml-4">
+          <li>AI Scheduling</li>
+          <li>Project Mamagment</li>
+          <li>Regimine Creator</li>
+        </ul>
       </section>
+      <section
+        id="events"
+        className="bg-black text-white min-h-screen py-20 pl-5 pr-2"
+      ></section>
     </main>
   );
 };

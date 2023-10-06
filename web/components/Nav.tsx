@@ -112,6 +112,34 @@ const Nav = () => {
                 <a href="https://www.calng.app/">CNG App</a>
               </button>
             </motion.nav>
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              exit={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="fixed right-0 top-2 bg-[#222] z-[999] rounded-l-md shadow-lg p-5 flex flex-col justify-between items-start text-white"
+            >
+              <p>On This Page</p>
+              <ul className="mt-5 flex flex-col justify-center items-start gap-y-2">
+                <li>
+                  <a href="#web-or-app">Web or app</a>
+                </li>
+                <li className="ml-3">
+                  <a href="#browser-links">browser</a>
+                </li>
+                <li className="ml-3">
+                  <a href="#app-links">apps</a>
+                </li>
+                <li>
+                  <a href="#what-can-you-do">Functionality</a>
+                </li>
+                <li className="ml-3">
+                  <a href="#major-functionality">major functionality</a>
+                </li>
+                <li className="ml-3">
+                  <a href="#advanced-features">advanced features</a>
+                </li>
+              </ul>
+            </motion.div>
           </>
         )}
       </AnimatePresence>
