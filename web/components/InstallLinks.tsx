@@ -29,13 +29,13 @@ const InstallLinks = () => {
     <div>
       <div id="browser-links" className="mt-20 mb-10">
         <h3 className="text-3xl font-semibold text-cyan-300 mb-3">Browsers</h3>
-        <p>
+        <p className="max-w-[700px]">
           Calendar Next Gen will work in the browser just fine subtract a handle
           full of functionalities such as native notifications. But in the list
           of browsers below, each of these browsers allow you to natively
           install Calendar Next Gen to whatever device you are using.
         </p>
-        <div className="flex flex-wrap gap-3 justify-center items-center mt-5">
+        <div className="flex flex-wrap gap-3 justify-center items-center mt-20">
           {browserLinks.map((link) => (
             <a
               href={link.link}
@@ -50,10 +50,11 @@ const InstallLinks = () => {
         <h3 className="text-3xl font-semibold text-cyan-300 mb-3">
           App Stores
         </h3>
-        <p>
-          Just click on any of the links below to install CNG with your favorite app store! 
+        <p className="max-w-[700px]">
+          Just click on any of the links below to install CNG with your favorite
+          app store!
         </p>
-        <div className="flex flex-wrap gap-3 justify-center items-center mt-5">
+        <div className="flex flex-wrap gap-3 justify-center items-center mt-20">
           {appStoreLinks.map((link) => (
             <a
               href={link.link}

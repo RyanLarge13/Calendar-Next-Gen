@@ -18,7 +18,7 @@ const Home = () => {
             Organize, Create, Manage Deliver - climb your way to the future of
             <span className="text-cyan-300"> success</span>
           </h2>
-          <p className="mt-3 mb-10">
+          <p className="mt-3 mb-10 max-w-[700px]">
             Become connected and organized. Transform into a more productive
             self and create a life of insync-ness
           </p>
@@ -38,11 +38,11 @@ const Home = () => {
           </span>
           ??
         </h2>
-        <p>
+        <p className="max-w-[700px]">
           Calendar Next Gen is a PWA! A cross platform web app that can be
           installed to <span className="text-cyan-300">ANY</span> device.
         </p>
-        <p className="mt-3">
+        <p className="mt-3 max-w-[700px]">
           This means that no matter where you are or what device you are using
           this application is available to you on the web, or if you choose,
           right on your phone as an app, or a desktop app, even a tablet app!
@@ -66,19 +66,22 @@ const Home = () => {
           </span>
           ??
         </h2>
-        <p>
+        <p className="max-w-[700px]">
           There is a next generation full of functionality and purpose in this
           application.. Learn all about how to use this app and the things you
           can do to take advantage of every bit! Let's dive in..
         </p>
-        <p>
+        <p className="max-w-[700px]">
           Let's start with a list before we dive in deeper. Here is the major
           and most popular content you can create with CNG
         </p>
-        <h3 id="major-functionality" className="text-3xl text-cyan-300 mt-10 mb-3">
+        <h3
+          id="major-functionality"
+          className="text-3xl text-cyan-300 mt-10 mb-3"
+        >
           Major Functionality
         </h3>
-        <ul className="list-disc text-xl ml-4">
+        <ul className="list-disc text-xl ml-4 max-w-[700px]">
           <li>Create & manage Events</li>
           <li>Set Reminders & important notifications</li>
           <li>
@@ -98,6 +101,10 @@ const Home = () => {
             Pin sticky notes to your UI and keep important and urgent
             information up front and in view
           </li>
+          <li>
+            Kanban Boards!? What do I need a kanban board for? Try it out and
+            you will understand
+          </li>
         </ul>
         <h3
           id="advanced-features"
@@ -113,8 +120,71 @@ const Home = () => {
       </section>
       <section
         id="events"
+        className="bg-[#222] text-white min-h-screen py-20 pl-5 pr-2"
+      >
+        <h2 className="bg-gradient-to-tr from-emerald-400 to-emerald-100 text-transparent bg-clip-text text-5xl font-semibold pt-2 mb-3">
+          Events
+        </h2>
+      </section>
+      <section
+        id="lists-tasks"
         className="bg-black text-white min-h-screen py-20 pl-5 pr-2"
-      ></section>
+      >
+        <h2 className="bg-gradient-to-tr from-emerald-400 to-emerald-100 text-transparent bg-clip-text text-5xl font-semibold pt-2 mb-3">
+          List & Tasks
+        </h2>
+      </section>
+      <section
+        id="reminders"
+        className="bg-[#222] text-white min-h-screen py-20 pl-5 pr-2"
+      >
+        <h2 className="bg-gradient-to-tr from-emerald-400 to-emerald-100 text-transparent bg-clip-text text-5xl font-semibold pt-2 mb-3">
+          Reminders
+        </h2>
+      </section>
+      <section
+        id="advanced-features-section"
+        className="bg-black text-white min-h-screen py-20 pl-5 pr-2"
+      >
+        <h2 className="bg-gradient-to-tr from-emerald-400 to-emerald-100 text-transparent bg-clip-text text-5xl font-semibold pt-2 mb-3">
+          Advanced Features
+        </h2>
+      </section>
+      <section
+        id="conclusion"
+        className="bg-[#222] text-white min-h-screen py-20 pl-5 pr-2"
+      >
+        <h2 className="text-5xl font-semibold pt-2 mb-3">
+          Try Out{" "}
+          <span className="bg-gradient-to-tr from-emerald-400 to-emerald-100 text-transparent bg-clip-text">
+            C
+          </span>
+          anlendar{" "}
+          <span className="bg-gradient-to-tr from-emerald-400 to-emerald-100 text-transparent bg-clip-text">
+            N
+          </span>
+          ext{" "}
+          <span className="bg-gradient-to-tr from-emerald-400 to-emerald-100 text-transparent bg-clip-text">
+            G
+          </span>
+          en
+        </h2>
+        <p className="max-w-[700px] mb-2">
+          This application is completely free to use to your desire. Dont forget
+          to read more about what can be done in the{" "}
+          <a href="https://cng-web.vercel.app/docs" className="text-cyan-300">
+            docs
+          </a>
+          . I built this application to give people a great application that
+          actually helps and inspires.
+        </p>
+        <p className="max-w-[700px]">
+          Please note that the charge for advanced features is just to help me
+          continue to build upon this application as support for PWA's grow. It
+          is a one time charge and more of a contribution to me and my work.
+          Every purchase is greatly appriciated.
+        </p>
+      </section>
     </main>
   );
 };
