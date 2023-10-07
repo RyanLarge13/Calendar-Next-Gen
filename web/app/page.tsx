@@ -12,7 +12,7 @@ const Home = () => {
               {" "}
               Next
             </span>{" "}
-            Gen
+            Generation
           </h1>
           <h2 className="text-3xl mt-3">
             Organize, Create, Manage Deliver - climb your way to the future of
