@@ -70,7 +70,11 @@ const SystemNotif = () => {
           </p>
           <div className="mt-3 p-1 border-t flex justify-between items-center">
             {systemNotif.actions?.map((action, index) => (
-              <div key={index} onClick={() => action.func()}>
+              <div
+                key={index}
+                onClick={() => action.func()}
+                className="cursor-pointer"
+              >
                 <p className="text-sm font-semibold">{action.text}</p>
               </div>
             ))}

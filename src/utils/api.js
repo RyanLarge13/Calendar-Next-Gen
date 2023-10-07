@@ -357,6 +357,24 @@ export const createTask = (token, task) => {
   return res;
 };
 
+export const updateTasks = (token, updates) => {
+  const res = Axios.post(
+    `${devUrl}/update/tasks`,
+    { updates },
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+  return res;
+};
+
+export const deleteTask = (token, taskId) => {
+  const res = Axios.delete(`${productionUrl}/delete/task/${taskId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res;
+};
+
 // Friend management
 export const getFriendinfo = (token) => {
   const res = Axios.get(`${productionUrl}/friends/friendinfo`, {

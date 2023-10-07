@@ -11,6 +11,7 @@ import SystemNotif from "../components/SystemNotif";
 import Stickies from "../components/Stickies";
 import AddCircle from "../components/AddCircle";
 import Views from "../components/Views";
+import SideBar from "../components/SideBar";
 
 const MainPage = () => {
   return (
@@ -23,8 +24,11 @@ const MainPage = () => {
               <Search />
               <SystemNotif />
               <Stickies />
-              <div className="overflow-hidden w-full h-full">
-                <Calendar />
+              <div className="flex">
+                <SideBar />
+                <div className="overflow-hidden w-full h-full">
+                  <Calendar />
+                </div>
               </div>
               <AddCircle />
               <Views />

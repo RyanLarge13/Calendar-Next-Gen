@@ -48,11 +48,7 @@ const Header = () => {
       {menu ? (
         <MenuNavigation />
       ) : (
-        <header
-          // initial={{ y: "-100%", opacity: 0 }}
-          // animate={{ y: 0, opacity: 1 }}
-          className="fixed top-0 left-0 right-0 bg-white z-[1] flex justify-between p-5 mb-5 shadow-md"
-        >
+        <header className="fixed top-0 left-0 right-0 bg-white z-[1] flex justify-between p-5 mb-5 shadow-md">
           <RiMenuUnfoldFill
             onClick={() => {
               setShowLogin(false);
