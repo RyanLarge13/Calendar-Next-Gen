@@ -52,7 +52,7 @@ const AgendaView = () => {
           </p>
           <AiFillCalendar />
         </div>
-        <div className="flex justify-between items-start mb-3">
+        <div className="flex justify-between items-center mb-5 mx-20">
           {weekDays.map((day, index) => (
             <p
               key={day}

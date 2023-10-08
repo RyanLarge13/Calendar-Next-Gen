@@ -22,7 +22,7 @@ export const DatesProvider = ({ children }) => {
   const [dateString, setDateString] = useState(``);
   const [paddingDays, setPaddingDays] = useState(null);
   const [openModal, setOpenModal] = useState(false);
-  const [string, setString] = useState("");
+  const [string, setString] = useState(new Date().toLocaleDateString());
   const [secondString, setSecondString] = useState("");
   const [theDay, setTheDay] = useState(new Date());
   const [rowDays, setRowDays] = useState([]);
