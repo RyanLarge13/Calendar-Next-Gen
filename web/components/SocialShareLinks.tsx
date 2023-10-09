@@ -5,7 +5,12 @@ import {
   FacebookShareButton,
   LinkedinShareButton,
 } from "react-share";
-import { AiOutlineShareAlt } from "react-icons/ai";
+import {
+  AiFillFacebook,
+  AiFillTwitterCircle,
+  AiFillLinkedin,
+  AiOutlineShareAlt
+} from "react-icons/ai";
 
 const shareUrl = "https://www.calng.app/";
 const title = "Calendar application of the future generation";
@@ -17,7 +22,9 @@ const SocialShareLinks = () => (
       title={title}
       className="bg-gradient-to-tr from-emerald-400 to-emerald-100 rounded-md shadow-md flex flex-col justify-center items-center"
     >
-      <p className="p-3 pb-0">Twitter</p>
+      <div className="px-10 pt-2 text-2xl">
+        <AiFillTwitterCircle />
+      </div>
       <AiOutlineShareAlt className="text-xl mb-2" />
     </TwitterShareButton>
     <FacebookShareButton
@@ -25,7 +32,9 @@ const SocialShareLinks = () => (
       quote={title}
       className="bg-gradient-to-tr from-emerald-400 to-emerald-100 rounded-md shadow-md flex flex-col justify-center items-center"
     >
-      <p className="p-3 pb-0">Facebook</p>
+      <div className="px-10 pt-2 text-2xl">
+        <AiFillFacebook />
+      </div>
       <AiOutlineShareAlt className="mb-2 text-xl" />
     </FacebookShareButton>
     <LinkedinShareButton
@@ -33,7 +42,9 @@ const SocialShareLinks = () => (
       title={title}
       className="bg-gradient-to-tr from-emerald-400 to-emerald-100 rounded-md shadow-md flex flex-col justify-center items-center"
     >
-      <p className="p-3 pb-0">LinkedIn</p>
+      <div className="px-10 pt-2 text-2xl">
+        <AiFillLinkedin />
+      </div>
       <AiOutlineShareAlt className="mb-2 text-xl" />
     </LinkedinShareButton>
   </div>

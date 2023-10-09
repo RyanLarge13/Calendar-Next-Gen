@@ -1,6 +1,6 @@
 import Image from "next/image";
 import SocialLinks from "@/components/SocialLinks";
-import SocialShareLinks from "@/components/SocialShareLinks"
+import SocialShareLinks from "@/components/SocialShareLinks";
 
 const Footer = () => {
   return (
@@ -13,7 +13,7 @@ const Footer = () => {
         className="rounded-md shadow-md my-20"
       />
       <div className="">
-        <ul className="grid grid-cols-2 place-items-start gap-x-10 gap-y-2 text-lg">
+        <ul className="grid grid-cols-2 place-items-center gap-x-20 gap-y-2 text-lg">
           <li>
             <a href="https://www.calng.app">CNG App</a>
           </li>

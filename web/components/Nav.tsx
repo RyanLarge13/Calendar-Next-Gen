@@ -29,7 +29,7 @@ const Nav = () => {
 
   return (
     <>
-      <header className="fixed top-0 right-0 left-0 flex justify-between items-center bg-[#222] text-white z-10 p-2 px-4 rounded-b-md">
+      <header className="fixed top-0 right-0 left-0 flex justify-between items-center bg-[#222] text-white z-10 p-2 px-4 rounded-b-md shadow-lg">
         <div className="flex justify-center items-center">
           <Link href="/" className="text-3xl">
             <Image
@@ -37,7 +37,7 @@ const Nav = () => {
               alt="logo"
               width={35}
               height={35}
-              className="object-contain my-2 shadow-sm rounded-md shadow-emerald-200"
+              className="object-contain my-2 shadow-md rounded-md"
             />
           </Link>
           <p className="text-2xl ml-2">CNG</p>
