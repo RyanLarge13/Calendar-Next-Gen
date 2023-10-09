@@ -70,6 +70,8 @@ const SideBar = () => {
     const lastDayOfMonth = new Date(newYear, newMonth + 1, 0);
     const tempPaddingDays = firstDayOfMonth.getDay();
     const tempDaysInMonth = lastDayOfMonth.getDate();
+    const dayString = updatedTemporaryDate.toLocaleDateString();
+    setTemporaryString(dayString);
     setTemporaryPaddingDays(tempPaddingDays);
     setTemporaryDaysInMonth(tempDaysInMonth);
   };
@@ -86,6 +88,7 @@ const SideBar = () => {
     setNav(temporaryNav);
     setString(temporaryString);
     setTheDay(new Date(temporaryString));
+    setChange(false);
   };
 
   return (

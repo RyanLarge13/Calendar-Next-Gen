@@ -16,8 +16,8 @@ const AgendaView = () => {
     dateObj,
     paddingDays,
     daysInMonth,
-    dt,
     setString,
+    theDay,
     string,
   } = useContext(DatesContext);
 
@@ -44,7 +44,7 @@ const AgendaView = () => {
       <div className="shadow-md rounded-md p-2">
         <div className="flex justify-between items-center mb-2">
           <p>
-            {new Date(string).toLocaleDateString("en-us", {
+            {theDay.toLocaleDateString("en-us", {
               month: "short",
               day: "numeric",
               year: "numeric",
@@ -69,35 +69,50 @@ const AgendaView = () => {
           ))}
         </div>
         <div className="grid grid-cols-7 gap-1">
-          {[...Array(paddingDays + daysInMonth)].map((_, index) => (
-            <div
-              onClick={() => handleDayClick(index)}
-              key={index}
-              className="relative w-full rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start gap-y-1 cursor-pointer"
-            >
+          {[...Array(paddingDays + daysInMonth)].map((_, index) => {
+            // const dayNumber = index - temporaryPaddingDays + 1;
+            const dateStr = `${month + 1}/${index - paddingDays + 1}/${year}`;
+            const event = events.find((event) => event.date === dateStr);
+
+            return (
               <div
-                className={`text-center text-sm my-1 ${
-                  index - paddingDays + 1 === day &&
-                  month === dateObj.getMonth() &&
-                  year === dateObj.getFullYear() &&
-                  "w-[20px] h-[20px] rounded-full bg-cyan-100 shadow-sm"
-                } ${
-                  string === `${month + 1}/${index - paddingDays + 1}/${year}`
-                    ? "w-[20px] h-[20px] rounded-full bg-red-100 shadow-sm"
-                    : ""
-                }`}
+                onClick={() => handleDayClick(index)}
+                key={index}
+                className="relative w-full rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start gap-y-1 cursor-pointer"
               >
-                <p>{index >= paddingDays && index - paddingDays + 1}</p>
+                <div
+                  className={`text-center text-sm my-1 ${
+                    index - paddingDays + 1 === day &&
+                    month === dateObj.getMonth() &&
+                    year === dateObj.getFullYear() &&
+                    "w-[20px] h-[20px] rounded-full bg-cyan-100 shadow-sm"
+                  } ${
+                    string === `${month + 1}/${index - paddingDays + 1}/${year}`
+                      ? "w-[20px] h-[20px] rounded-full bg-red-100 shadow-sm"
+                      : ""
+                  } ${
+                    event
+                      ? `${event.color} w-[20px] h-[20px] rounded-full shadow-sm`
+                      : ""
+                  }`}
+                >
+                  <p>{index >= paddingDays && index - paddingDays + 1}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
       <div className="mt-10">
         {selectedEvents.length > 0 &&
           selectedEvents.map((event) => (
-            <div className={`${event.color} p-3 rounded-md shadow-md`}>
-              {event.summary}{" "}
+            <div
+              key={event.id}
+              className={`${event.color} p-3 rounded-md shadow-md my-3`}
+            >
+              <p className="bg-white p-2 rounded-md shadow-md">
+                {event.summary}
+              </p>
             </div>
           ))}
       </div>
