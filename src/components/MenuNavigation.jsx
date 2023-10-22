@@ -19,7 +19,7 @@ const MenuNavigation = () => {
     <motion.div
       initial={{ y: "-100%" }}
       animate={{ y: 0 }}
-      className="fixed top-0 right-0 left-0 bg-white z-20 grid grid-cols-4 place-items-center mb-10 shadow-md rounded-md"
+      className="fixed top-0 right-0 left-0 bg-white z-20 grid grid-cols-4 place-items-center mb-10 shadow-md rounded-md cursor-pointer"
     >
       <div
         className={`p-5 w-full flex flex-col items-center justify-center rounded-md ${

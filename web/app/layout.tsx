@@ -1,10 +1,10 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import Nav from "@/components/Nav";
+import Footer from "@/components/Footer"
 
 export const metadata: Metadata = {
-  title:
-    "Calendar Next Gen - the calendar application for the future genertion stay organized and accomplish",
+  title: "Calendar Next Gen - next generation calendar application",
   description:
     "Calendar application of the future generation. Organize, evolve & increase productivity in your life, connect and accomplish",
   icons: {
@@ -22,6 +22,7 @@ export default function RootLayout({
       <body>
         <Nav />
         {children}
+        <Footer />
       </body>
     </html>
   );

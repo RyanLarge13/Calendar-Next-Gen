@@ -152,7 +152,7 @@ const Connections = ({ setOption }) => {
                   />
                   <button
                     onClick={() =>
-                      openCamera ? setOpenCamera(false) : setOpenCamera(false)
+                      openCamera ? setOpenCamera(false) : setOpenCamera(true)
                     }
                     className="px-3 py-2 rounded-md shadow-md bg-white mt-5"
                   >
