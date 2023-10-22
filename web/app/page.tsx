@@ -1,11 +1,17 @@
 import Image from "next/image";
+import HeaderImg from "../public/assets/headerImg.svg";
 import InstallLinks from "@/components/InstallLinks";
 
 const Home = () => {
   return (
     <main>
       <section className="relative text-white bg-black pt-20 h-screen min-h-[600px] flex flex-col justify-end items-start">
-        <div className="pl-6 pb-20 pr-2">
+        <Image
+          src={HeaderImg}
+          alt="header background"
+          className="absolute inset-0 mt-[-5em] opacity-50 object-cover"
+        />
+        <div className="pl-6 pb-20 pr-2 max-w-[600px]">
           <h1 className="text-6xl font-semibold">
             Calendar
             <span className="bg-gradient-to-tr from-emerald-400 to-emerald-100 text-transparent bg-clip-text">
@@ -29,31 +35,33 @@ const Home = () => {
       </section>
       <section
         id="web-or-app"
-        className="bg-[#222] py-20 pl-5 pr-2 text-white min-h-screen"
+        className="bg-[#222] py-20 pl-5 pr-2 lg:px-60 text-white min-h-screen flex flex-col justify-between items-start"
       >
-        <h2 className="text-5xl font-semibold mt-2 mb-3">
-          Website or{" "}
-          <span className="bg-gradient-to-tr from-emerald-400 to-emerald-100 text-transparent bg-clip-text">
-            App
-          </span>
-          ??
-        </h2>
-        <p className="max-w-[700px]">
-          Calendar Next Gen is a PWA! A cross platform web app that can be
-          installed to <span className="text-cyan-300">ANY</span> device.
-        </p>
-        <p className="mt-3 max-w-[700px]">
-          This means that no matter where you are or what device you are using
-          this application is available to you on the web, or if you choose,
-          right on your phone as an app, or a desktop app, even a tablet app!
-        </p>
+        <div>
+          <h2 className="text-5xl font-semibold mt-2 mb-3">
+            Website or{" "}
+            <span className="bg-gradient-to-tr from-emerald-400 to-emerald-100 text-transparent bg-clip-text">
+              App
+            </span>
+            ??
+          </h2>
+          <p className="max-w-[700px]">
+            Calendar Next Gen is a PWA! A cross platform web app that can be
+            installed to <span className="text-cyan-300">ANY</span> device.
+          </p>
+          <p className="mt-3 max-w-[700px]">
+            This means that no matter where you are or what device you are using
+            this application is available to you on the web, or if you choose,
+            right on your phone as an app, or a desktop app, even a tablet app!
+          </p>
+        </div>
+        <InstallLinks />
         <a
           href="https://www.cng-web.vercel.app/docs"
           className="rounded-md shadow-md py-5 px-10 bg-gradient-to-tr from-emerald-400 to-emerald-100 text-black font-bold text-lg inline-block my-3 mt-5"
         >
-          How do I install it?
+          More Ways To Install
         </a>
-        <InstallLinks />
       </section>
       <section
         id="what-can-you-do"

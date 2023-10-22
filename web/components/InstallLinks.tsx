@@ -26,16 +26,21 @@ const InstallLinks = () => {
     { title: "Microsoft", icon: <BsMicrosoft />, link: "" },
   ];
   return (
-    <div>
-      <div id="browser-links" className="mt-20 mb-10">
-        <h3 className="text-3xl font-semibold text-cyan-300 mb-3">Browsers</h3>
-        <p className="max-w-[700px]">
-          Calendar Next Gen will work in the browser just fine subtract a handle
-          full of functionalities such as native notifications. But in the list
-          of browsers below, each of these browsers allow you to natively
-          install Calendar Next Gen to whatever device you are using.
-        </p>
-        <div className="flex flex-wrap gap-3 justify-center items-center mt-20">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-20 gap-y-10 lg:gap-y-0 my-20 mr-2 lg:mr-0">
+      <div
+        id="browser-links"
+        className="bg-gray-700 p-5 rounded-sm shadow-lg flex flex-col justify-between items-start min-h-[350px]"
+      >
+        <div>
+          <h3 className="text-3xl font-semibold text-cyan-300">Browsers</h3>
+          <p className="max-w-[700px] my-5">
+            Calendar Next Gen will work in the browser just fine subtract a
+            handle full of functionalities such as native notifications. But in
+            the list of browsers below, each of these browsers allow you to
+            natively install Calendar Next Gen to whatever device you are using.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-3 justify-center items-center">
           {browserLinks.map((link) => (
             <a
               href={link.link}
@@ -46,15 +51,18 @@ const InstallLinks = () => {
           ))}
         </div>
       </div>
-      <div id="app-links" className="mt-20 mb-10">
-        <h3 className="text-3xl font-semibold text-cyan-300 mb-3">
-          App Stores
-        </h3>
-        <p className="max-w-[700px]">
-          Just click on any of the links below to install CNG with your favorite
-          app store!
-        </p>
-        <div className="flex flex-wrap gap-3 justify-center items-center mt-20">
+      <div
+        id="app-links"
+        className="bg-gray-700 p-5 rounded-sm shadow-lg flex flex-col justify-between items-start"
+      >
+        <div>
+          <h3 className="text-3xl font-semibold text-cyan-300">App Stores</h3>
+          <p className="max-w-[700px] my-5">
+            Just click on any of the links below to install CNG with your
+            favorite app store!
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-3 justify-center items-center">
           {appStoreLinks.map((link) => (
             <a
               href={link.link}

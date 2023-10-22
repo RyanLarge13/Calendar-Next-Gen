@@ -9,7 +9,6 @@ import {
   AiFillFacebook,
   AiFillTwitterCircle,
   AiFillLinkedin,
-  AiOutlineShareAlt
 } from "react-icons/ai";
 
 const shareUrl = "https://www.calng.app/";
@@ -22,30 +21,27 @@ const SocialShareLinks = () => (
       title={title}
       className="bg-gradient-to-tr from-emerald-400 to-emerald-100 rounded-md shadow-md flex flex-col justify-center items-center"
     >
-      <div className="px-10 pt-2 text-2xl">
+      <div className="px-10 py-2 text-2xl">
         <AiFillTwitterCircle />
       </div>
-      <AiOutlineShareAlt className="text-xl mb-2" />
     </TwitterShareButton>
     <FacebookShareButton
       url={shareUrl}
       quote={title}
       className="bg-gradient-to-tr from-emerald-400 to-emerald-100 rounded-md shadow-md flex flex-col justify-center items-center"
     >
-      <div className="px-10 pt-2 text-2xl">
+      <div className="px-10 py-2 text-2xl">
         <AiFillFacebook />
       </div>
-      <AiOutlineShareAlt className="mb-2 text-xl" />
     </FacebookShareButton>
     <LinkedinShareButton
       url={shareUrl}
       title={title}
       className="bg-gradient-to-tr from-emerald-400 to-emerald-100 rounded-md shadow-md flex flex-col justify-center items-center"
     >
-      <div className="px-10 pt-2 text-2xl">
+      <div className="px-10 py-2 text-2xl">
         <AiFillLinkedin />
       </div>
-      <AiOutlineShareAlt className="mb-2 text-xl" />
     </LinkedinShareButton>
   </div>
 );
