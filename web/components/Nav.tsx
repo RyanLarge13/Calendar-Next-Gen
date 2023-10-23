@@ -121,22 +121,52 @@ const Nav = () => {
               <p>On This Page</p>
               <ul className="mt-5 flex flex-col justify-center items-start gap-y-2">
                 <li>
-                  <a href="#web-or-app">Web or app</a>
+                  <a
+                    href="#web-or-app"
+                    className="hover:text-emerald-200 duration-200 font-semibold"
+                  >
+                    Web or app
+                  </a>
                 </li>
                 <li className="ml-3">
-                  <a href="#browser-links">browser</a>
+                  <a
+                    href="#browser-links"
+                    className="hover:text-emerald-200 duration-200"
+                  >
+                    browser
+                  </a>
                 </li>
                 <li className="ml-3">
-                  <a href="#app-links">apps</a>
+                  <a
+                    href="#app-links"
+                    className="hover:text-emerald-200 duration-200"
+                  >
+                    apps
+                  </a>
                 </li>
                 <li>
-                  <a href="#what-can-you-do">Functionality</a>
+                  <a
+                    href="#what-can-you-do"
+                    className="hover:text-emerald-200 duration-200 font-semibold"
+                  >
+                    Functionality
+                  </a>
                 </li>
                 <li className="ml-3">
-                  <a href="#major-functionality">major functionality</a>
+                  <a
+                    href="#major-functionality"
+                    className="hover:text-emerald-200 duration-200"
+                  >
+                    major functionality
+                  </a>
                 </li>
                 <li className="ml-3">
-                  <a href="#advanced-features">advanced features</a>
+                  <a
+                    href="#advanced-features"
+                    className="hover:text-emerald-200 duration-200"
+                  >
+                    advanced features
+                  </a>
                 </li>
               </ul>
             </motion.div>
