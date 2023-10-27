@@ -149,7 +149,9 @@ const MonthView = () => {
                   animate={{
                     opacity: 1,
                   }}
-                  className={`rounded-lg ${event.color} shadow-md p-1 my-1 mx-auto relative`}
+                  className={`rounded-lg ${
+                    event.color
+                  } shadow-md p-1 my-1 mx-auto relative`}
                 >
                   {new Date(event.startDate).toLocaleDateString() ===
                   dateStr ? (

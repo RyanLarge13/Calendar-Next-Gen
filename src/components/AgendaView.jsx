@@ -6,7 +6,7 @@ import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext";
 
 const AgendaView = () => {
-  const { view } = useContext(InteractiveContext);
+  const { view, setEvent } = useContext(InteractiveContext);
   const { events } = useContext(UserContext);
   const {
     month,
@@ -52,7 +52,7 @@ const AgendaView = () => {
           </p>
           <AiFillCalendar />
         </div>
-        <div className="flex justify-between items-center mb-5 mx-20">
+        <div className="grid grid-cols-7 place-items-center">
           {weekDays.map((day, index) => (
             <p
               key={day}
@@ -109,6 +109,7 @@ const AgendaView = () => {
             <div
               key={event.id}
               className={`${event.color} p-3 rounded-md shadow-md my-3`}
+              onClick={() => setEvent(event)}
             >
               <p className="bg-white p-2 rounded-md shadow-md">
                 {event.summary}
