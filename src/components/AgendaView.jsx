@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { weekDays } from "../constants";
 import { AiFillCalendar } from "react-icons/ai";
+import { formatDbText } from "../utils/helpers.js";
 import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext";
@@ -42,8 +43,8 @@ const AgendaView = () => {
   return (
     <div className="p-3">
       <div className="shadow-md rounded-md p-2">
-        <div className="flex justify-between items-center mb-2">
-          <p>
+        <div className="flex justify-between items-center mb-2 font-semibold">
+          <p className="py-1 px-2 bg-cyan-100 rounded-md shadow-md">
             {theDay.toLocaleDateString("en-us", {
               month: "short",
               day: "numeric",
@@ -60,7 +61,7 @@ const AgendaView = () => {
                 index === new Date().getDay() &&
                 new Date(dateString).getMonth() === dateObj.getMonth() &&
                 new Date(dateString).getYear() === dateObj.getYear()
-                  ? "text-cyan-400"
+                  ? "text-cyan-300"
                   : ""
               }`}
             >
@@ -78,21 +79,21 @@ const AgendaView = () => {
               <div
                 onClick={() => handleDayClick(index)}
                 key={index}
-                className="relative w-full rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start gap-y-1 cursor-pointer"
+                className={`${
+                  string === `${month + 1}/${index - paddingDays + 1}/${year}`
+                    ? "shadow-blue-300 scale-[1.1]"
+                    : ""
+                } ${
+                  index - paddingDays + 1 === day &&
+                  month === dateObj.getMonth() &&
+                  year === dateObj.getFullYear() &&
+                  "bg-cyan-100"
+                } duration-200 relative w-full rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start gap-y-1 cursor-pointer`}
               >
                 <div
                   className={`text-center text-sm my-1 ${
-                    index - paddingDays + 1 === day &&
-                    month === dateObj.getMonth() &&
-                    year === dateObj.getFullYear() &&
-                    "w-[20px] h-[20px] rounded-full bg-cyan-100 shadow-sm"
-                  } ${
-                    string === `${month + 1}/${index - paddingDays + 1}/${year}`
-                      ? "w-[20px] h-[20px] rounded-full bg-red-100 shadow-sm"
-                      : ""
-                  } ${
                     event
-                      ? `${event.color} w-[20px] h-[20px] rounded-full shadow-sm`
+                      ? `${event.color} w-[20px] h-[20px] rounded-full shadow-md`
                       : ""
                   }`}
                 >
@@ -108,11 +109,14 @@ const AgendaView = () => {
           selectedEvents.map((event) => (
             <div
               key={event.id}
-              className={`${event.color} p-3 rounded-md shadow-md my-3`}
+              className={`${event.color} p-2 rounded-md shadow-md my-3 shadow-md`}
               onClick={() => setEvent(event)}
             >
               <p className="bg-white p-2 rounded-md shadow-md">
                 {event.summary}
+              </p>
+              <p className="bg-white p-2 rounded-md shadow-md bg-opacity-75 mt-2">
+                {formatDbText(event.description)}
               </p>
             </div>
           ))}
