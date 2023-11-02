@@ -64,14 +64,17 @@
   "shortcuts": [
     {
       "name": "Create Event",
+      "short_name": "Event +", 
       "url": "/",
-      "description": "Create a new event for today"
+      "description": "Create a new event for today, 
+      "icons": [
+        {
+          "src": "android/android-launchericon-192-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        },
+      ], 
     },
-    {
-      "name": "Create Reminder",
-      "url": "/",
-      "description": "Create a new reminder for today"
-    }
   ],
   "share_target": {
     "action": "/",
@@ -82,27 +85,20 @@
       "url": "/"
     }
   },
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "text",
+      "text": "text"
+    }
+  },
   "actions": [
     {
-      "action": "share",
-      "title": "Calng",
-      "icons": [
-        {
-          "src": "android/android-launchericon-192-192.png",
-          "sizes": "192x192",
-          "type": "image/png"
-        }
-      ],
-      "share_target": {
-        "action": "send",
-        "enctype": "application/x-www-form-urlencoded",
-        "method": "GET",
-        "params": {
-          "title": "Calng",
-          "text": "Get productive!",
-          "url": "https://calng.app"
-        }
-      }
+      "name": "calendar", 
+      "method": "GET", 
+      "href": "/"
     }
   ],
   "file_handlers": [
