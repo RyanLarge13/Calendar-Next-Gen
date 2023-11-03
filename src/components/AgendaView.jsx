@@ -112,7 +112,7 @@ const AgendaView = () => {
               className={`${event.color} p-2 rounded-md shadow-md my-3 shadow-md`}
               onClick={() => setEvent(event)}
             >
-              <p className="bg-white p-2 rounded-md shadow-md">
+              <p className="bg-white p-2 rounded-md shadow-md font-semibold">
                 {event.summary}
               </p>
               <p className="bg-white p-2 rounded-md shadow-md bg-opacity-75 mt-2">

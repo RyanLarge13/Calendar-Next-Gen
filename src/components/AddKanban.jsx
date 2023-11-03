@@ -1,15 +1,20 @@
 import { useState, useContext } from "react";
 import { colors } from "../constants.js";
+import {createNewKanban} from "../utils/api.js"
 import Color from "./Color";
+import AddKanbanFolder from "./AddKanbanFolder";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext";
 
 const AddKanban = () => {
   const { setType, setAddNewEvent } = useContext(InteractiveContext);
-  const { setSystemNotif } = useContext(UserContext);
+  const { setSystemNotif, setKanbans } = useContext(UserContext);
 
   const [title, setTitle] = useState("");
   const [color, setColor] = useState("");
+  const [dueDate, setDueDate] = useState("");
+  const [folders, setFolders] = useState([]);
+  const [folderName, setFolderName] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -42,6 +47,22 @@ const AddKanban = () => {
       };
       return setSystemNotif(newError);
     }
+    const newKanban = {
+      title,
+      color,
+      folders,
+    };
+    setKanbans((prev) => [...prev, newKanban]);
+  };
+
+  const addFolder = (e) => {
+    e.preventDefault();
+    const newFolder = {
+      title: folderName,
+      color: "bg-slate-200",
+    };
+    setFolders((prev) => [...prev, newFolder]);
+    setFolderName("");
   };
 
   return (
@@ -65,6 +86,27 @@ const AddKanban = () => {
             index={index}
           />
         ))}
+      </div>
+      <p>Create folders within your project to hold your boards</p>
+      <div>
+        <form onSubmit={(e) => addFolder(e)}>
+          <input
+            placeholder="Folder name"
+            value={folderName}
+            onChange={(e) => setFolderName(e.target.value)}
+            className="my-2 outline-none border-b p-3 rounded-sm"
+          />
+        </form>
+        <div>
+          {folders.length > 0 &&
+            folders.map((folder) => (
+              <AddKanbanFolder
+                folder={folder}
+                setFolders={setFolders}
+                folders={folders}
+              />
+            ))}
+        </div>
       </div>
       <div className="text-center text-xs font-semibold absolute bottom-4 right-4 left-4">
         <button

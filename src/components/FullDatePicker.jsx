@@ -306,7 +306,7 @@ const FullDatePicker = () => {
                   whileInView={{ scale: 1 }}
                   className="h-[60px]"
                 >
-                  {day + 1}
+                  <p className="text-center" >{day + 1}</p>
                 </motion.div>
               ))}
             </div>

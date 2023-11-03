@@ -397,3 +397,18 @@ export const sendFriendRequestByEmail = (userEmail, token) => {
   );
   return res;
 };
+
+// Kanbans
+
+export const createNewKanban = (token, kanban) => {
+  const res = Axios.post(
+    `${productionUrl}/kanban/new`,
+    { kanban },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return res;
+};

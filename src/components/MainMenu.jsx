@@ -49,8 +49,12 @@ const MainMenu = ({ timeOfDay }) => {
                 key={event.id}
                 className={`${event.color} p-3 rounded-md shadow-md`}
               >
-                <p>In {event.diff} days</p>
-                <p className="text-sm bg-white p-2 rounded-md shadow-md">
+                <p className="mb-2">
+                  In{" "}
+                  <span className="text-2xl font-semibold">{event.diff}</span>{" "}
+                  days
+                </p>
+                <p className="text-sm bg-white p-2 rounded-md shadow-md font-semibold">
                   {event.summary}
                 </p>
                 <p className="text-sm mt-2 bg-white bg-opacity-25 p-2 rounded-md shadow-md">

@@ -35,6 +35,7 @@ export const UserProvider = ({ children }) => {
   const [stickies, setStickies] = useState([]);
   const [userTasks, setUserTasks] = useState([]);
   const [friends, setFriends] = useState([]);
+  const [kanbans, setKanbans] = useState([]);
   const [connectionRequests, setConnectionRequests] = useState([]);
   const [friendRequests, setFriendRequests] = useState([]);
   const [localDB, setLocalDB] = useState(null);
@@ -379,6 +380,8 @@ export const UserProvider = ({ children }) => {
         friends,
         stickies,
         userTasks,
+        kanbans,
+        setKanbans,
         qrCodeUrl,
         connectionRequests,
         friendRequests,
