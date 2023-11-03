@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import { colors } from "../constants.js";
-import {createNewKanban} from "../utils/api.js"
+import { createNewKanban } from "../utils/api.js";
 import Color from "./Color";
 import AddKanbanFolder from "./AddKanbanFolder";
 import InteractiveContext from "../context/InteractiveContext";
@@ -52,7 +52,15 @@ const AddKanban = () => {
       color,
       folders,
     };
-    setKanbans((prev) => [...prev, newKanban]);
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      createNewKanban(token, newKanban)
+        .then((res) => {
+          // setKanbans((prev) => [...prev, newKanban]);
+          console.log(res);
+        })
+        .catch((err) => console.log(err));
+    }
   };
 
   const addFolder = (e) => {

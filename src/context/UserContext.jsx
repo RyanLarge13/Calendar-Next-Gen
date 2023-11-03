@@ -29,6 +29,7 @@ export const UserProvider = ({ children }) => {
   );
   const [events, setEvents] = useState([]);
   const [googleEvetns, setGoogleEvents] = useState([]);
+  const [upcoming, setUpcoming] = useState([]);
   const [refresh, setRefresh] = useState(false);
   const [lists, setLists] = useState([]);
   const [reminders, setReminders] = useState([]);
@@ -49,6 +50,24 @@ export const UserProvider = ({ children }) => {
   const updateStatus = () => {
     setIsOnline(navigator.onLine);
   };
+
+  useEffect(() => {
+    const currentDate = new Date();
+    const sevenDaysInMilliseconds = 7 * 24 * 60 * 60 * 1000;
+    const filteredEvents = events
+      .filter((event) => {
+        const eventDate = new Date(event.date);
+        const diff = eventDate - currentDate;
+        return diff >= 0 && diff <= sevenDaysInMilliseconds;
+      })
+      .map((event) => ({
+        ...event,
+        diff: Math.ceil(
+          (new Date(event.date) - currentDate) / (25 * 60 * 60 * 1000)
+        ),
+      }));
+    setUpcoming(filteredEvents.reverse());
+  }, [events]);
 
   useEffect(() => {
     window.addEventListener("online", updateStatus);
@@ -381,10 +400,11 @@ export const UserProvider = ({ children }) => {
         stickies,
         userTasks,
         kanbans,
-        setKanbans,
         qrCodeUrl,
         connectionRequests,
         friendRequests,
+        upcoming,
+        setKanbans,
         setConnectionRequests,
         setFriendRequests,
         setUserTasks,

@@ -71,7 +71,6 @@ const AgendaView = () => {
         </div>
         <div className="grid grid-cols-7 gap-1">
           {[...Array(paddingDays + daysInMonth)].map((_, index) => {
-            // const dayNumber = index - temporaryPaddingDays + 1;
             const dateStr = `${month + 1}/${index - paddingDays + 1}/${year}`;
             const event = events.find((event) => event.date === dateStr);
 

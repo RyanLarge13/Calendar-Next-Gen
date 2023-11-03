@@ -1,33 +1,9 @@
 import { useContext, useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { BsFillArrowRightSquareFill } from "react-icons/bs";
 import UserContext from "../context/UserContext";
 
 const MainMenu = ({ timeOfDay }) => {
-  const { user, events } = useContext(UserContext);
-
-  const [upcoming, setUpcoming] = useState([]);
-
-  useEffect(() => {
-    const currentDate = new Date();
-    const sevenDaysInMilliseconds = 7 * 24 * 60 * 60 * 1000;
-    const futureDate = new Date(
-      currentDate.getTime() + sevenDaysInMilliseconds
-    );
-    const filteredEvents = events
-      .filter((event) => {
-        const eventDate = new Date(event.date);
-        const diff = eventDate - currentDate;
-        return diff >= 0 && diff <= sevenDaysInMilliseconds;
-      })
-      .map((event) => ({
-        ...event,
-        diff: Math.ceil(
-          (new Date(event.date) - currentDate) / (25 * 60 * 60 * 1000)
-        ),
-      }));
-    setUpcoming(filteredEvents);
-  }, [events]);
+  const { user, upcoming } = useContext(UserContext);
 
   return (
     <motion.div

@@ -1,3 +1,4 @@
 export const createNewKanban = (req, res) => {
-  console.log(req.body.kanban);
+  const kanban = req.body.kanban;
+  const folders = kanban.folders;
 };

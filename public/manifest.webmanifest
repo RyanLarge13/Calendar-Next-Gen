@@ -64,17 +64,17 @@
   "shortcuts": [
     {
       "name": "Create Event",
-      "short_name": "Event +", 
+      "short_name": "Event +",
       "url": "/",
-      "description": "Create a new event for today, 
+      "description": "Create a new event for today",
       "icons": [
         {
           "src": "android/android-launchericon-192-192.png",
           "sizes": "192x192",
           "type": "image/png"
-        },
-      ], 
-    },
+        }
+      ]
+    }
   ],
   "share_target": {
     "action": "/",
@@ -85,19 +85,10 @@
       "url": "/"
     }
   },
-  "share_target": {
-    "action": "/share",
-    "method": "POST",
-    "enctype": "multipart/form-data",
-    "params": {
-      "title": "text",
-      "text": "text"
-    }
-  },
   "actions": [
     {
-      "name": "calendar", 
-      "method": "GET", 
+      "name": "calendar",
+      "method": "GET",
       "href": "/"
     }
   ],
