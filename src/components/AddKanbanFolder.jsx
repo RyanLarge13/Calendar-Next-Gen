@@ -48,7 +48,7 @@ const AddKanbanFolder = ({ folder, setFolders, folders }) => {
           ))}
         </div>
       )}
-      <button onContextMenu={() => setEditText(true)}><p>{folder.title}</p><button>
+      <button onContextMenu={() => setEditText(true)}><p>{folder.title}</p></button>
       {!!editColor ? (
         <button onClick={() => {
         setEditColor(false)
