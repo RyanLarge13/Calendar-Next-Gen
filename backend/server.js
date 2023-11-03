@@ -9,6 +9,7 @@ import notifRouter from "./routes/notificationRoutes.js";
 import listRouter from "./routes/listRouter.js";
 import taskRouter from "./routes/taskRouter.js";
 import friendsRouter from "./routes/friendsRouter.js";
+import kanbanRouter from "./routes/kanbanRouter.js";
 import processPushNotifications from "./utils/globalCron.js";
 dotenv.config();
 
@@ -24,13 +25,14 @@ app.use(
   reminderRouter,
   notifRouter,
   listRouter,
-  taskRouter
+  taskRouter,
+  kanbanRouter
 );
 app.use("/friends", friendsRouter);
 
-cron.schedule("*/15 * * * * *", () => {
-  processPushNotifications();
-});
+// cron.schedule("*/15 * * * * *", () => {
+//   processPushNotifications();
+// });
 
 app.listen(PORT, () => {
   console.log(`Your app is listening on port ${PORT}`);
