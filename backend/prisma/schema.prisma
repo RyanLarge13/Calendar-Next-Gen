@@ -188,22 +188,50 @@ model Kanban {
 id String @id @unique @default(uuid())
 title String
 color String
-boards Board[]
+boards Folder[]
 createdAt DateTime @default(now())
 User User   @relation(fields: [userId], references: [id])
 userId String
 }
 
-model Board {
+model Folder {
 id String @id @unique @default(uuid())
 title String
-boardItems BoardItems[]
+color String
+order Int
+private Boolean
+boards Board[]
 Project Kanban  @relation(fields: [projectId], references: [id])
 projectId String
 }
 
-model BoardItems {
+model Board {
 id String @id @unique @default(uuid())
-Board Board @relation(fields: [boardId], references: [id])
-boardId String
+color String
+title String
+description String
+categories Json?
+order Int
+boardItems BoardItem[]
+Board Folder @relation(fields: [folderId], references: [id])
+folderId String
+}
+
+model BoardItem {
+  id String @id @unique @default(uuid())
+  order Int 
+  categories Json?
+  title String
+  description String
+  deadline DateTime
+  checkLists Json?
+  complete Boolean
+  createdAt DateTime @default(now())
+  messages Json?
+  tasks Json?
+  comments Json?
+  discussions Json?
+  attachments Json?
+  BoardItem Board @relation(fields: [boardId], references: [id])
+  boardId String
 }

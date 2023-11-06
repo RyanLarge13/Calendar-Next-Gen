@@ -157,7 +157,7 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
               <p className="font-bold bg-white bg-opacity-50 p-2 rounded-md">
                 {item.summary || item.title}
               </p>
-              <p className="mr-5 text-sm bg-white bg-opacity-30 rounded-md p-2 w-full mt-2">
+              <div className="mr-5 text-sm bg-white bg-opacity-30 rounded-md p-2 w-full mt-2">
                 {formatDbText(item.description || item.notes || "").map(
                   (text, index) => (
                     <p key={index} className="text-[14px]">
@@ -165,7 +165,7 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
                     </p>
                   )
                 )}
-              </p>
+              </div>
             </div>
           ))}
         </div>

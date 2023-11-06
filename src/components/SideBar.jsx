@@ -91,8 +91,8 @@ const SideBar = () => {
   };
 
   return (
-    <div className="hidden xl:block w-[20vw] bg-white min-h-screen max-h-screen overflow-y-auto scrollbar-hide border-r border-slate-200 relative">
-      <div className="w-[17vw] overflow-y-auto p-3 bg-white">
+    <div className="hidden xl:block w-[20vw] bg-white min-h-screen max-h-screen scrollbar-hide border-r border-slate-200 relative">
+      <div className="w-[17vw] fixed top-0 right-0 left-0 p-3 bg-white">
         <div className="flex gap-x-2 justify-start items-end mb-10">
           <img
             src="/favicon.svg"
@@ -187,7 +187,7 @@ const SideBar = () => {
           </button>
         )}
       </div>
-      <div className="mt-10">
+      <div className="overflow-y-auto fixed top-[45vh] bottom-0 left-0 w-[17vw] scrollbar-hide">
         {upcoming.length > 0 &&
           upcoming.map((event) => (
             <div

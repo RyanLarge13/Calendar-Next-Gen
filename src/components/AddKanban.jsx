@@ -107,8 +107,9 @@ const AddKanban = () => {
         </form>
         <div>
           {folders.length > 0 &&
-            folders.map((folder) => (
+            folders.map((folder, index) => (
               <AddKanbanFolder
+                key={index}
                 folder={folder}
                 setFolders={setFolders}
                 folders={folders}
