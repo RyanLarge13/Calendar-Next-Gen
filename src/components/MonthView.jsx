@@ -1,7 +1,8 @@
+import { useContext, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { calendarBlocks } from "../motion";
 import { holidays } from "../constants";
-import { useContext, useState } from "react";
+import { AiFillCheckCircle, AiFillCloseCircle } from "react-icons/ai";
 import { calendar } from "../motion";
 import DatesContext from "../context/DatesContext";
 import UserContext from "../context/UserContext";
@@ -24,10 +25,15 @@ const MonthView = () => {
   } = useContext(DatesContext);
 
   const [selected, setSelected] = useState([]);
+  const [confirmDates, setConfirmDates] = useState(false);
   const [longPressActive, setLongPressActive] = useState(false);
   const [longPressTimeout, setLongPressTimeout] = useState(null);
 
   const targetDate = new Date(dateString);
+
+  useEffect(() => {
+    selected.length > 0 ? setConfirmDates(true) : setConfirmDates(false);
+  }, [selected]);
 
   const getCellStyle = (index) => {
     const isSameMonthAndYear =
@@ -96,6 +102,8 @@ const MonthView = () => {
       });
   };
 
+  const addNewTypeWithDays = () => {};
+
   return (
     <motion.div
       variants={calendar}
@@ -149,9 +157,7 @@ const MonthView = () => {
                   animate={{
                     opacity: 1,
                   }}
-                  className={`rounded-lg ${
-                    event.color
-                  } shadow-md p-1 my-1 mx-auto relative`}
+                  className={`rounded-lg ${event.color} shadow-md p-1 my-1 mx-auto relative`}
                 >
                   {new Date(event.startDate).toLocaleDateString() ===
                   dateStr ? (
@@ -174,6 +180,23 @@ const MonthView = () => {
           </motion.div>
         );
       })}
+      {confirmDates && (
+        <motion.div className="fixed bottom-20 left-[50%] translate-x-[-50%] bg-cyan-100 rounded-md flex justify-between items-center gap-x-20">
+          <button
+            className="text-lg p-5"
+            onClick={() => {
+              setLongPressActive(false);
+              setLongPressTimeout(null)
+              setSelected([]);
+            }}
+          >
+            <AiFillCloseCircle />
+          </button>
+          <button className="text-lg p-5" onClick={() => addNewTypeWithDays()}>
+            <AiFillCheckCircle />
+          </button>
+        </motion.div>
+      )}
     </motion.div>
   );
 };

@@ -14,7 +14,7 @@ import AddSticky from "./AddSticky";
 
 const Modal = () => {
   const { events, holidays } = useContext(UserContext);
-  const { string, setOpenModal, openModal, dateObj } = useContext(DatesContext);
+  const { string, setOpenModal, openModal, dateObj, setSecondString} = useContext(DatesContext);
   const { addNewEvent, setAddNewEvent, type, setType } =
     useContext(InteractiveContext);
 
@@ -57,9 +57,8 @@ const Modal = () => {
         : modalRef.current.scrollTo(0, 0);
     }
     setDayEvents(timedEvents);
+    return () => setSecondString("");
   }, [string, events, addNewEvent]);
-
-  useEffect(() => {}, []);
 
   return (
     <>

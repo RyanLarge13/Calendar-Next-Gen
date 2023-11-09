@@ -208,10 +208,10 @@ const FullDatePicker = () => {
   return (
     <>
       <div
-        className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm"
+        className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm z-[998]"
         onClick={() => setShowFullDatePicker(false)}
       ></div>
-      <div className="fixed top-40 left-[50%] translate-x-[-50%] rounded-md shadow-md bg-white p-5">
+      <div className="fixed top-40 left-[50%] translate-x-[-50%] rounded-md shadow-md bg-white p-5 z-[999]">
         <div className="flex gap-x-3">
           <div>
             <h2 className="text-lg">Month</h2>

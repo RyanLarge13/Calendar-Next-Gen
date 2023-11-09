@@ -1,5 +1,6 @@
 import { useState, useContext, useCallback } from "react";
 import { colors } from "../constants.js";
+import { addNewSticky } from "../utils/api.js";
 import { AiFillInfoCircle } from "react-icons/ai";
 import Color from "./Color";
 import InteractiveContext from "../context/InteractiveContext";
@@ -23,13 +24,23 @@ const AddSticky = () => {
 
   const addSticky = () => {
     if (!runCheck()) return;
-    const newSticky = {
-      title,
-      body: text,
-      color,
-      pin,
-    };
-    setStickies((prev) => [newSticky, ...prev]);
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      const newSticky = {
+        title,
+        body: text,
+        color,
+        pin,
+      };
+      addNewSticky(token, newSticky)
+        .then((res) => {
+          console.log(res);
+          setStickies((prev) => [res.data.sticky, ...prev]);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   };
 
   const runCheck = () => {

@@ -39,3 +39,14 @@ export const formatDbText = (text) => {
     return [text.trim()];
   }
 };
+
+export const getTimeZone = async (lng, lat) => {
+  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+  const response = await fetch(
+    `https://maps.googleapis.com/maps/api/timezone/json?location=${lat},${lng}&timestamp=${Math.floor(
+      Date.now() / 1000
+    )}&key=${apiKey}`
+  );
+  const data = await response.json();
+  return data.timeZoneId;
+};
