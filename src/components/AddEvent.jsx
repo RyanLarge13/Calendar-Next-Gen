@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { motion } from "framer-motion";
 import { colors } from "../constants";
+import { getTimeZone } from "../utils/helpers";
 import { MdLocationPin } from "react-icons/md";
 import { AiFillCloseCircle, AiFillInfoCircle } from "react-icons/ai";
 import { FiRepeat } from "react-icons/fi";
@@ -23,7 +24,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
   const { setEvents, user, isOnline, setReminders, setSystemNotif } =
     useContext(UserContext);
   const { setType } = useContext(InteractiveContext);
-  const { string, setOpenModal } = useContext(DatesContext);
+  const { string, setOpenModal, secondString } = useContext(DatesContext);
 
   // Basic event data
   const [summary, setSummary] = useState("");
@@ -65,6 +66,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
   const [timeZone, setTimeZone] = useState(
     Intl.DateTimeFormat().resolvedOptions().timeZone
   );
+  const [endTimeZone, setEndTimeZone] = useState("");
   // Friends shared with
   const [includedFriends, setIncludedFriends] = useState([]);
 
@@ -103,6 +105,27 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
     }
   }, [passedStartTime]);
 
+  const getEndDate = () => {
+    if (secondString) {
+      const newDate = new Date(secondString);
+      const endDateObj = new Date(endWhen);
+      newDate.setHours(endDateObj.getHours());
+      newDate.setMinutes(endDateObj.getMinutes());
+     // newDate.setTimezoneOffset(() => endTimeZone || timeZone);
+      return newDate;
+    } else {
+      return new Date(string);
+    }
+  };
+
+  useEffect(() => {
+    if (locationObject.coordinates) {
+      const coords = locationObject.coordinates;
+      const endTimeTimeZone = getTimeZone(coords.lng, coords.lat);
+      setEndTimeZone(endTimeTimeZone);
+    }
+  }, [locationObject]);
+
   const addEvent = () => {
     const newEventId = uuidv4();
     if (!runChecks()) return;
@@ -117,7 +140,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
         location: location ? locationObject : undefined,
         date: string,
         startDate: new Date(string),
-        endDate: new Date(string),
+        endDate: getEndDate(),
         nextDate: null,
         attachmentLength: attachments.length,
         reminders: {
@@ -139,7 +162,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
         },
         end: {
           endTime: endTime ? (allDay ? null : endWhen) : null,
-          timeZone,
+          timeZone: endTimeZone ? endTimeZone : timeZone,
         },
         userId: user.id,
       };

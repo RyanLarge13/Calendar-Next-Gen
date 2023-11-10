@@ -14,7 +14,8 @@ import AddSticky from "./AddSticky";
 
 const Modal = () => {
   const { events, holidays } = useContext(UserContext);
-  const { string, setOpenModal, openModal, dateObj, setSecondString} = useContext(DatesContext);
+  const { string, setOpenModal, openModal, dateObj, setSecondString } =
+    useContext(DatesContext);
   const { addNewEvent, setAddNewEvent, type, setType } =
     useContext(InteractiveContext);
 

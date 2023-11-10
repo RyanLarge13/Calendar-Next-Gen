@@ -10,7 +10,8 @@ import InteractiveContext from "../context/InteractiveContext";
 
 const MonthView = () => {
   const { events, setEvents } = useContext(UserContext);
-  const { setMenu, setShowLogin } = useContext(InteractiveContext);
+  const { setMenu, setShowLogin, setAddNewEvent, setType } =
+    useContext(InteractiveContext);
   const {
     paddingDays,
     daysInMonth,
@@ -21,6 +22,7 @@ const MonthView = () => {
     dateString,
     setOpenModal,
     setString,
+    setSecondString,
     dateObj,
   } = useContext(DatesContext);
 
@@ -67,7 +69,8 @@ const MonthView = () => {
       if (selected.length === 1) setLongPressActive(false);
     }
     if (longPressActive && !selected.includes(index)) {
-      setSelected((prevSelected) => [...prevSelected, index]);
+      const sortedSelected = [...selected, index].sort((a, b) => a - b);
+      setSelected(sortedSelected);
     }
     if (!longPressActive) {
       addEvent(`${month + 1}/${index - paddingDays + 1}/${year}`, index);
@@ -102,7 +105,16 @@ const MonthView = () => {
       });
   };
 
-  const addNewTypeWithDays = () => {};
+  const addNewTypeWithDays = () => {
+    const firstDay = selected[0] - paddingDays + 1;
+    const lastDay = selected[selected.length - 1] - paddingDays + 1;
+    setString(`${month + 1}/${firstDay}/${year}`);
+    setSecondString(`${month + 1}/${lastDay}/${year}`);
+    setType("event");
+    setAddNewEvent(true);
+    setOpenModal(true);
+    setSelected([])
+  };
 
   return (
     <motion.div
@@ -186,7 +198,7 @@ const MonthView = () => {
             className="text-lg p-5"
             onClick={() => {
               setLongPressActive(false);
-              setLongPressTimeout(null)
+              setLongPressTimeout(null);
               setSelected([]);
             }}
           >
