@@ -6,9 +6,9 @@ import FacebookLogin from "@greatsumini/react-facebook-login";
 import UserContext from "../context/UserContext";
 
 const SocialLogin = () => {
-  const { setUser, setGoogleToken } = useContext(UserContext);
+  const { setUser, setGoogleToken, setAuthToken } = useContext(UserContext);
 
-  const fbId = "1706883953149148";
+  const fbId = import.meta.env.VITE_FB_ID;
 
   const loginGoogle = useGoogleLogin({
     scope: "https://www.googleapis.com/auth/calendar.events.readonly",
@@ -16,8 +16,11 @@ const SocialLogin = () => {
       setGoogleToken(res.access_token);
     },
     onError: () => {
+      setAuthToken(null);
       setUser(false);
       setGoogleToken(false);
+      localStorage.removeItem("user");
+      localStorage.removeItem("authToken");
     },
   });
 
@@ -26,10 +29,15 @@ const SocialLogin = () => {
       try {
         loginWithFb(response.accessToken)
           .then((res) => {
-            console.log(res);
+            setAuthToken(res.data.token);
+            localStorage.setItem("authToken", res.data.token);
           })
           .catch((err) => {
             console.log(err);
+            setAuthToken(null);
+            setUser(false);
+            localStorage.removeItem("user");
+            localStorage.removeItem("authToken");
           });
       } catch (err) {
         console.log(err);

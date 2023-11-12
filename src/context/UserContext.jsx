@@ -129,28 +129,27 @@ export const UserProvider = ({ children }) => {
         .then((res) => {
           loginWithGoogle(res.data)
             .then((response) => {
-              // const newNotif = {
-              //   show: true,
-              //   title: "Google Events",
-              //   text: "Would you like to import your google calendar events?",
-              //   color: "bg-sky-300",
-              //   hasCancel: true,
-              //   actions: [
-              //     {
-              //       text: "close",
-              //       func: () => setSystemNotif({ show: false }),
-              //     },
-              //     {
-              //       text: "get events",
-              //       func: () =>
-              //         fetchGoogleEvents(response.data.token, googleToken),
-              //     },
-              //   ],
-              // };
-              // setSystemNotif(newNotif);
+              const newNotif = {
+                show: true,
+                title: "Google Events",
+                text: "Would you like to import your google calendar events?",
+                color: "bg-sky-300",
+                hasCancel: true,
+                actions: [
+                  {
+                    text: "close",
+                    func: () => setSystemNotif({ show: false }),
+                  },
+                  {
+                    text: "get events",
+                    func: () =>
+                      fetchGoogleEvents(response.data.token, googleToken),
+                  },
+                ],
+              };
+              setSystemNotif(newNotif);
               setUser(response.data.user);
               setAuthToken(response.data.token);
-              localStorage.setItem("user", JSON.stringify(response.data.user));
               localStorage.setItem("authToken", response.data.token);
             })
             .catch((err) => {
@@ -169,24 +168,27 @@ export const UserProvider = ({ children }) => {
     if (authToken) {
       getUserData(authToken)
         .then((res) => {
-          setUser(res.data.user);
-          generateQrCode(res.data.user.email);
-          if (
-            res.data.user.notifSub?.length < 1 ||
-            res.data.user.notifSub === null
-          ) {
+          const user = res.data.user;
+          const basicUser = {
+            username: user.username,
+            email: user.email,
+            avatarUrl: user.avatarUrl,
+            id: user.id,
+            birthday: user.birthday,
+            createdAt: user.createAt,
+          };
+          setUser(basicUser);
+          localStorage.setItem("user", JSON.stringify(basicUser));
+          if (user.notifSub?.length < 1 || user.notifSub === null) {
             requestPermissonsAndSubscribe(authToken);
           }
-          if (
-            res.data.user.notifSub?.length > 0 &&
-            res.data.user.notifSub !== null
-          ) {
+          if (user.notifSub?.length > 0 && user.notifSub !== null) {
             checkSubscription().then((sub) => {
-              const userHasSub = res.data.user.notifSub.some(
+              const userHasSub = user.notifSub.some(
                 (item) => JSON.parse(item).endpoint === sub.endpoint
               );
               if (userHasSub) {
-                send(authToken, res.data.user.id);
+                send(authToken, user.id);
               }
               if (!userHasSub) {
                 addSubscriptionToUser(sub, authToken)
@@ -205,50 +207,29 @@ export const UserProvider = ({ children }) => {
               }
             });
           }
-          getEvents(res.data.user.username, authToken)
+          setEvents(user.events);
+          const sortedReminders = user.reminders.sort(
+            (a, b) => new Date(a.time) - new Date(b.time)
+          );
+          setReminders(sortedReminders);
+          const sortedLists = user.lists.sort(
+            (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+          );
+          setLists(sortedLists);
+          setKanbans(user.kanbans);
+          setStickies(user.stickies);
+          generateQrCode(user.email);
+          setUserTasks(user.tasks);
+          getFriendinfo(authToken)
             .then((response) => {
-              setEvents(response.data.events);
+              const data = response.data;
+              setFriends(data.userFriends);
+              setFriendRequests(data.friendRequests);
+              setConnectionRequests(data.connectionRequests);
             })
             .catch((err) => {
               console.log(err);
             });
-          getReminders(res.data.user.username, authToken)
-            .then((response) => {
-              const sortedReminders = response.data.reminders.sort(
-                (a, b) => new Date(a.time) - new Date(b.time)
-              );
-              setReminders(sortedReminders);
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-          getAllLists(authToken, res.data.user.username)
-            .then((response) => {
-              const sortedLists = response.data.lists.sort(
-                (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
-              );
-              setLists(sortedLists);
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-      getAllTasks(authToken)
-        .then((response) => {
-          setUserTasks(response.data.tasks);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-      getFriendinfo(authToken)
-        .then((response) => {
-          const data = response.data;
-          setFriends(data.userFriends);
-          setFriendRequests(data.friendRequests);
-          setConnectionRequests(data.connectionRequests);
         })
         .catch((err) => {
           console.log(err);
@@ -271,15 +252,15 @@ export const UserProvider = ({ children }) => {
     setQrCodeUrl(qrCodeDataUrl);
   };
 
-  // const fetchGoogleEvents = (authToken, googleToken) => {
-  //   setSystemNotif({ show: false });
-  //   getGoogleCalendarEvents(authToken, googleToken)
-  //     .then((res) => {
-  //       const events = res.data.events;
-  //       console.log(events);
-  //     })
-  //     .catch((err) => console.log(err));
-  // };
+  const fetchGoogleEvents = (authToken, googleToken) => {
+    setSystemNotif({ show: false });
+    getGoogleCalendarEvents(authToken, googleToken)
+      .then((res) => {
+        const events = res.data.events;
+        console.log(events);
+      })
+      .catch((err) => console.log(err));
+  };
 
   const requestPermissonsAndSubscribe = async (token) => {
     try {
