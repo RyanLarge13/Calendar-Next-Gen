@@ -10,7 +10,7 @@ import "react-quill/dist/quill.snow.css";
 import Toggle from "./Toggle";
 
 const AddSticky = () => {
-  const { stickies, setStickies, setSystemNotif } = useContext(UserContext);
+  const { setStickies, setSystemNotif } = useContext(UserContext);
   const { setType, setAddNewEvent } = useContext(InteractiveContext);
 
   const [title, setTitle] = useState("");

@@ -417,7 +417,7 @@ export const createNewKanban = (token, kanban) => {
 
 export const addNewSticky = (token, sticky) => {
   const res = Axios.post(
-    `${productionUrl}/add/sticky`,
+    `${devUrl}/add/sticky`,
     { sticky },
     { headers: { Authorization: `Bearer ${token}` } }
   );

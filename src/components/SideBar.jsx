@@ -187,7 +187,7 @@ const SideBar = () => {
           </button>
         )}
       </div>
-      <div className="overflow-y-auto fixed top-[45vh] bottom-0 left-0 w-[17vw] scrollbar-hide">
+      <div className="overflow-y-auto fixed top-[55vh] bottom-0 left-0 w-[17vw] scrollbar-hide">
         {upcoming.length > 0 &&
           upcoming.map((event) => (
             <div

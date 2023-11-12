@@ -129,25 +129,25 @@ export const UserProvider = ({ children }) => {
         .then((res) => {
           loginWithGoogle(res.data)
             .then((response) => {
-              const newNotif = {
-                show: true,
-                title: "Google Events",
-                text: "Would you like to import your google calendar events?",
-                color: "bg-sky-300",
-                hasCancel: true,
-                actions: [
-                  {
-                    text: "close",
-                    func: () => setSystemNotif({ show: false }),
-                  },
-                  {
-                    text: "get events",
-                    func: () =>
-                      fetchGoogleEvents(response.data.token, googleToken),
-                  },
-                ],
-              };
-              setSystemNotif(newNotif);
+              // const newNotif = {
+              //   show: true,
+              //   title: "Google Events",
+              //   text: "Would you like to import your google calendar events?",
+              //   color: "bg-sky-300",
+              //   hasCancel: true,
+              //   actions: [
+              //     {
+              //       text: "close",
+              //       func: () => setSystemNotif({ show: false }),
+              //     },
+              //     {
+              //       text: "get events",
+              //       func: () =>
+              //         fetchGoogleEvents(response.data.token, googleToken),
+              //     },
+              //   ],
+              // };
+              // setSystemNotif(newNotif);
               setUser(response.data.user);
               setAuthToken(response.data.token);
               localStorage.setItem("user", JSON.stringify(response.data.user));
@@ -271,15 +271,15 @@ export const UserProvider = ({ children }) => {
     setQrCodeUrl(qrCodeDataUrl);
   };
 
-  const fetchGoogleEvents = (authToken, googleToken) => {
-    setSystemNotif({ show: false });
-    getGoogleCalendarEvents(authToken, googleToken)
-      .then((res) => {
-        const events = res.data.events;
-        console.log(events);
-      })
-      .catch((err) => console.log(err));
-  };
+  // const fetchGoogleEvents = (authToken, googleToken) => {
+  //   setSystemNotif({ show: false });
+  //   getGoogleCalendarEvents(authToken, googleToken)
+  //     .then((res) => {
+  //       const events = res.data.events;
+  //       console.log(events);
+  //     })
+  //     .catch((err) => console.log(err));
+  // };
 
   const requestPermissonsAndSubscribe = async (token) => {
     try {

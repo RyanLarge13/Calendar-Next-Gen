@@ -8,15 +8,16 @@ export const getAllStickies = async (req, res) => {
       where: { userId: id },
     });
     if (!usersStickies) {
-      return res
-        .status(401)
-        .json({
-          message:
-            "An error occurred while fetching your data. Please give us a few seconds to fix the issue and try again.",
-        });
+      return res.status(401).json({
+        message:
+          "An error occurred while fetching your data. Please give us a few seconds to fix the issue and try again.",
+      });
     }
     if (usersStickies) {
-    	return res.status(201).json({message: "Successfully fetched users stickies.",stickies: usersStickies})
+      return res.status(201).json({
+        message: "Successfully fetched users stickies.",
+        stickies: usersStickies,
+      });
     }
   } catch (err) {
     console.log(err);
@@ -27,7 +28,8 @@ export const getAllStickies = async (req, res) => {
 };
 
 export const addNewSticky = async (req, res) => {
-  const sticky = req.body.sticky;
+  const userId = req.user.id;
+  const sticky = { ...req.body.sticky, userId: userId };
   try {
     const newSticky = await prisma.sticky.create({ data: sticky });
     if (!newSticky) {
@@ -37,7 +39,7 @@ export const addNewSticky = async (req, res) => {
       });
     }
     if (newSticky) {
-      return res.status(201).jaon({
+      return res.status(201).json({
         message: "Successfully created your new sticky!",
         sticky: newSticky,
       });
