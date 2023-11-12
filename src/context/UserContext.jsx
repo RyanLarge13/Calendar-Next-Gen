@@ -316,13 +316,14 @@ export const UserProvider = ({ children }) => {
           {
             text: "mark as read",
             func: () => {
-              const updatedNotifications = notifications.map((notif) =>
-                notif.id === notification.id ? { ...notif, read: true } : notif
-              );
-              const sortedNotifications = updatedNotifications.sort(
-                (a, b) => b.time - a.time
-              );
-              setNotifications(sortedNotifications);
+              const updatedNotifications = notifications
+                .map((notif) =>
+                  notif.id === notification.id
+                    ? { ...notif, read: true }
+                    : notif
+                )
+                .sort((a, b) => b.time - a.time);
+              setNotifications(updatedNotifications);
               setSystemNotif({ show: false });
               markAsRead(notification.id);
             },
