@@ -129,25 +129,6 @@ export const UserProvider = ({ children }) => {
         .then((res) => {
           loginWithGoogle(res.data)
             .then((response) => {
-              const newNotif = {
-                show: true,
-                title: "Google Events",
-                text: "Would you like to import your google calendar events?",
-                color: "bg-sky-300",
-                hasCancel: true,
-                actions: [
-                  {
-                    text: "close",
-                    func: () => setSystemNotif({ show: false }),
-                  },
-                  {
-                    text: "get events",
-                    func: () =>
-                      fetchGoogleEvents(response.data.token, googleToken),
-                  },
-                ],
-              };
-              setSystemNotif(newNotif);
               setUser(response.data.user);
               setAuthToken(response.data.token);
               localStorage.setItem("authToken", response.data.token);
@@ -179,6 +160,26 @@ export const UserProvider = ({ children }) => {
           };
           setUser(basicUser);
           localStorage.setItem("user", JSON.stringify(basicUser));
+          if (user.importedGoogleEvents) {
+            const newNotif = {
+              show: true,
+              title: "Google Events",
+              text: "Would you like to import your google calendar events?",
+              color: "bg-sky-300",
+              hasCancel: true,
+              actions: [
+                {
+                  text: "close",
+                  func: () => setSystemNotif({ show: false }),
+                },
+                {
+                  text: "get events",
+                  func: () => fetchGoogleEvents(authToken, googleToken),
+                },
+              ],
+            };
+            setSystemNotif(newNotif);
+          }
           if (user.notifSub?.length < 1 || user.notifSub === null) {
             requestPermissonsAndSubscribe(authToken);
           }
