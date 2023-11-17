@@ -144,7 +144,7 @@ const SideBar = () => {
                 const dateStr = `${
                   temporaryMonth + 1
                 }/${dayNumber}/${temporaryYear}`;
-                const event = events.find((event) => event.date === dateStr);
+                const event = events?.find((event) => event.date === dateStr);
 
                 return (
                   <div

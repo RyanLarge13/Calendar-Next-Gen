@@ -72,7 +72,7 @@ const AgendaView = () => {
         <div className="grid grid-cols-7 gap-1">
           {[...Array(paddingDays + daysInMonth)].map((_, index) => {
             const dateStr = `${month + 1}/${index - paddingDays + 1}/${year}`;
-            const event = events.find((event) => event.date === dateStr);
+            const event = events?.find((event) => event.date === dateStr);
 
             return (
               <div
@@ -108,7 +108,7 @@ const AgendaView = () => {
           selectedEvents.map((event) => (
             <div
               key={event.id}
-              className={`${event.color} p-2 rounded-md shadow-md my-3 shadow-md`}
+              className={`${event.color} p-2 rounded-md my-3 shadow-md`}
               onClick={() => setEvent(event)}
             >
               <p className="bg-white p-2 rounded-md shadow-md font-semibold">

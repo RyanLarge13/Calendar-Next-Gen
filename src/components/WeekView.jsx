@@ -115,7 +115,7 @@ const WeekView = () => {
           <div>
             <div
               ref={(ref) => (dateContainerRefs.current[index] = ref)}
-              className="overflow-x-auto"
+              className="overflow-x-auto scrollbar-hide"
             >
               <div ref={containerWidth} className="flex relative w-[800vw]">
                 {staticTimes.map((time) => (
