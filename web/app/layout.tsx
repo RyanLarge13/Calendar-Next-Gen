@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description:
     "Calendar application of the future generation. Organize, evolve & increase productivity in your life, connect and accomplish",
   icons: {
-    icon: "/assets/favicon.ico",
+    icon: "/assets/favicon.svg",
   },
 };
 

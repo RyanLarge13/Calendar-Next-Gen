@@ -24,6 +24,7 @@ notifications Notification[]
 lists         List[]
 tasks Task[]
 kanbans Kanban[]
+stickies Sticky[]
 friends       Friend[]       @relation(name: "UserToFriends")
 friendRequestsSent    FriendRequest[] @relation(name: "SentFriendRequests")
 friendRequestsReceived FriendRequest[] @relation(name: "ReceivedFriendRequests")
@@ -33,11 +34,12 @@ categories            UserCategory[]
 }
 
 model UserCategory {
-  id       String   @id @unique
-  user     User     @relation(fields: [userId], references: [id])
-  userId   String
-  category Category @relation(fields: [categoryId], references: [id])
-  categoryId String
+id String   @id @unique
+user User     @relation(fields: [userId], references: [id])
+userId String
+category Category @relation(fields: [categoryId], references: [id])
+categoryId String
+@@index([id], name: "userCategoryIndex")
 }
 
 
@@ -46,16 +48,17 @@ id String   @id @default(uuid())
 createdAt DateTime @default(now())
 User User     @relation(name: "UserToFriends", fields: [userId], references: [id])
 userId String
+friendEmail String
 }
 
 model FriendRequest {
-id        String   @id @default(uuid())
+id String   @id @default(uuid())
 createdAt DateTime @default(now())
-sender    User     @relation(name: "SentFriendRequests", fields: [senderId], references: [id])
-senderId  String
+sender User     @relation(name: "SentFriendRequests", fields: [senderId], references: [id])
+senderId String
 recipient User     @relation(name: "ReceivedFriendRequests", fields: [recipientId], references: [id])
 recipientId String
-status    String
+status String
 }
 
 model Event {
@@ -83,8 +86,8 @@ updated DateTime @updatedAt @default(now())
 created DateTime @default(now())
 User User     @relation(fields: [userId], references: [id])
 userId String
-category           Category?      @relation(fields: [categoryId], references: [id]) // Specify fields and references
-  categoryId         String? 
+category Category?      @relation(fields: [categoryId], references: [id]) // Specify fields and references
+categoryId String?
 
 @@index([id], name: "eventIdIndex")
 @@index([userId], name: "userIdRefIndex")
@@ -93,21 +96,21 @@ category           Category?      @relation(fields: [categoryId], references: [i
 model Category {
 id String   @id @unique
 name String
-events   Event[]  // Opposite relation to events
-  users    UserCategory[]
+events Event[]  // Opposite relation to events
+users UserCategory[]
 }
 
 model RepeatEvent {
-  id            String    @id @unique
-  event         Event     @relation(fields: [eventId], references: [id])
-  eventId       String
-  date          String?
-  reminders     Json?
-  nextDate      String?
-  start         Json?
-  end           Json?
+id String    @id @unique
+event Event     @relation(fields: [eventId], references: [id])
+eventId String
+date String?
+reminders Json?
+nextDate String?
+start Json?
+end Json?
 
-  @@index([eventId], name: "eventRepeatIdIndex")
+@@index([eventId], name: "eventRepeatIdIndex")
 }
 
 
@@ -122,64 +125,65 @@ eventId String
 
 
 model Reminder {
-  id          String   @id @unique @default(uuid())
-  title       String
-  notes       String
-  time        String
-  notification Notification[]
-  eventRef    Event?   @relation(fields: [eventRefId], references: [id])
-  eventRefId  String?
-  User        User     @relation(fields: [userId], references: [id])
-  userId      String
+id String   @id @unique @default(uuid())
+title String
+notes String
+time String
+notification Notification[]
+eventRef Event?   @relation(fields: [eventRefId], references: [id])
+eventRefId String?
+User User     @relation(fields: [userId], references: [id])
+userId String
 
-  @@index([userId], name: "userReminderIndex")
+@@index([userId], name: "userReminderIndex")
 }
 
 
 model Notification {
-  id               String   @id @unique @default(uuid())
-  type             String
-  time             String
-  read             Boolean  @default(false)
-  readTime         String?
-  notifData        Json
-  reminderRef      Reminder? @relation(fields: [reminderRefId], references: [id])
-  reminderRefId    String?
-  User             User     @relation(fields: [userId], references: [id])
-  sentNotification Boolean @default(false)
-  sentWebPush      Boolean @default(false)
-  userId           String
+id String   @id @unique @default(uuid())
+type String
+time String
+read Boolean  @default(false)
+readTime String?
+notifData Json
+reminderRef Reminder? @relation(fields: [reminderRefId], references: [id])
+reminderRefId String?
+User User     @relation(fields: [userId], references: [id])
+sentNotification Boolean @default(false)
+sentWebPush Boolean @default(false)
+userId String
 
-  @@index([userId], name: "userNotificationIndex")
+@@index([userId], name: "userNotificationIndex")
 }
 
 
 model List {
-  id       String   @id @unique @default(uuid())
-  title    String
-  items    Json?
-  color    String
-  event   Event?  @relation(fields: [eventId], references: [id])
-  eventId String?
-  User     User     @relation(fields: [userId], references: [id])
-  userId   String
-  updatedAt DateTime @updatedAt @default(now())
+id String   @id @unique @default(uuid())
+title String
+items Json?
+color String
+event Event?  @relation(fields: [eventId], references: [id])
+eventId String?
+User User     @relation(fields: [userId], references: [id])
+userId String
+updatedAt DateTime @updatedAt @default(now())
+@@index([userId], name: "userListIndex")
 }
 
 
 model Task {
-  id           String   @id @unique @default(uuid())
-  date         String
-  color        String
-  tasks        Json
-  completed    Boolean
-  completedDate String
-  event        Event?   @relation(fields: [eventId], references: [id])
-  eventId      String?
-  User         User     @relation(fields: [userId], references: [id])
-  userId       String
+id String   @id @unique @default(uuid())
+date String
+color String
+tasks Json
+completed Boolean
+completedDate String
+event Event?   @relation(fields: [eventId], references: [id])
+eventId String?
+User User     @relation(fields: [userId], references: [id])
+userId String
 
-  @@index([userId], name: "userTaskIndex")
+@@index([userId], name: "userTaskIndex")
 }
 
 
@@ -187,22 +191,62 @@ model Kanban {
 id String @id @unique @default(uuid())
 title String
 color String
-boards Board[]
+boards Folder[]
 createdAt DateTime @default(now())
 User User   @relation(fields: [userId], references: [id])
 userId String
+@@index([userId], name: "userKanbanIndex")
 }
 
-model Board {
+model Folder {
 id String @id @unique @default(uuid())
 title String
-boardItems BoardItems[]
+color String
+order Int
+private Boolean
+boards Board[]
 Project Kanban  @relation(fields: [projectId], references: [id])
 projectId String
 }
 
-model BoardItems {
+model Board {
 id String @id @unique @default(uuid())
-Board Board @relation(fields: [boardId], references: [id])
+color String
+title String
+description String
+categories Json?
+order Int
+boardItems BoardItem[]
+Board Folder @relation(fields: [folderId], references: [id])
+folderId String
+}
+
+model BoardItem {
+id String @id @unique @default(uuid())
+order Int
+categories Json?
+title String
+description String
+deadline DateTime
+checkLists Json?
+complete Boolean
+createdAt DateTime @default(now())
+messages Json?
+tasks Json?
+comments Json?
+discussions Json?
+attachments Json?
+BoardItem Board @relation(fields: [boardId], references: [id])
 boardId String
+}
+
+model Sticky {
+id String @id @unique @default(uuid())
+title String
+body String
+color String
+pin Boolean
+User User   @relation(fields: [userId], references: [id])
+userId String
+@@index([userId], name: "userStickyindex")
 }

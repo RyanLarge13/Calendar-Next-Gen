@@ -29,12 +29,14 @@ export const UserProvider = ({ children }) => {
   );
   const [events, setEvents] = useState([]);
   const [googleEvetns, setGoogleEvents] = useState([]);
+  const [upcoming, setUpcoming] = useState([]);
   const [refresh, setRefresh] = useState(false);
   const [lists, setLists] = useState([]);
   const [reminders, setReminders] = useState([]);
   const [stickies, setStickies] = useState([]);
   const [userTasks, setUserTasks] = useState([]);
   const [friends, setFriends] = useState([]);
+  const [kanbans, setKanbans] = useState([]);
   const [connectionRequests, setConnectionRequests] = useState([]);
   const [friendRequests, setFriendRequests] = useState([]);
   const [localDB, setLocalDB] = useState(null);
@@ -48,6 +50,24 @@ export const UserProvider = ({ children }) => {
   const updateStatus = () => {
     setIsOnline(navigator.onLine);
   };
+
+  useEffect(() => {
+    const currentDate = new Date();
+    const sevenDaysInMilliseconds = 7 * 24 * 60 * 60 * 1000;
+    const filteredEvents = events
+      .filter((event) => {
+        const eventDate = new Date(event.date);
+        const diff = eventDate - currentDate;
+        return diff >= 0 && diff <= sevenDaysInMilliseconds;
+      })
+      .map((event) => ({
+        ...event,
+        diff: Math.ceil(
+          (new Date(event.date) - currentDate) / (25 * 60 * 60 * 1000)
+        ),
+      }));
+    setUpcoming(filteredEvents.reverse());
+  }, [events]);
 
   useEffect(() => {
     window.addEventListener("online", updateStatus);
@@ -109,28 +129,8 @@ export const UserProvider = ({ children }) => {
         .then((res) => {
           loginWithGoogle(res.data)
             .then((response) => {
-              const newNotif = {
-                show: true,
-                title: "Google Events",
-                text: "Would you like to import your google calendar events?",
-                color: "bg-sky-300",
-                hasCancel: true,
-                actions: [
-                  {
-                    text: "close",
-                    func: () => setSystemNotif({ show: false }),
-                  },
-                  {
-                    text: "get events",
-                    func: () =>
-                      fetchGoogleEvents(response.data.token, googleToken),
-                  },
-                ],
-              };
-              setSystemNotif(newNotif);
               setUser(response.data.user);
               setAuthToken(response.data.token);
-              localStorage.setItem("user", JSON.stringify(response.data.user));
               localStorage.setItem("authToken", response.data.token);
             })
             .catch((err) => {
@@ -149,24 +149,47 @@ export const UserProvider = ({ children }) => {
     if (authToken) {
       getUserData(authToken)
         .then((res) => {
-          setUser(res.data.user);
-          generateQrCode(res.data.user.email);
-          if (
-            res.data.user.notifSub?.length < 1 ||
-            res.data.user.notifSub === null
-          ) {
+          const user = res.data.user;
+          const basicUser = {
+            username: user.username,
+            email: user.email,
+            avatarUrl: user.avatarUrl,
+            id: user.id,
+            birthday: user.birthday,
+            createdAt: user.createAt,
+          };
+          setUser(basicUser);
+          localStorage.setItem("user", JSON.stringify(basicUser));
+          if (user.importedGoogleEvents) {
+            const newNotif = {
+              show: true,
+              title: "Google Events",
+              text: "Would you like to import your google calendar events?",
+              color: "bg-sky-300",
+              hasCancel: true,
+              actions: [
+                {
+                  text: "close",
+                  func: () => setSystemNotif({ show: false }),
+                },
+                {
+                  text: "get events",
+                  func: () => fetchGoogleEvents(authToken, googleToken),
+                },
+              ],
+            };
+            setSystemNotif(newNotif);
+          }
+          if (user.notifSub?.length < 1 || user.notifSub === null) {
             requestPermissonsAndSubscribe(authToken);
           }
-          if (
-            res.data.user.notifSub?.length > 0 &&
-            res.data.user.notifSub !== null
-          ) {
+          if (user.notifSub?.length > 0 && user.notifSub !== null) {
             checkSubscription().then((sub) => {
-              const userHasSub = res.data.user.notifSub.some(
+              const userHasSub = user.notifSub.some(
                 (item) => JSON.parse(item).endpoint === sub.endpoint
               );
               if (userHasSub) {
-                send(authToken, res.data.user.id);
+                send(authToken, user.id);
               }
               if (!userHasSub) {
                 addSubscriptionToUser(sub, authToken)
@@ -185,50 +208,29 @@ export const UserProvider = ({ children }) => {
               }
             });
           }
-          getEvents(res.data.user.username, authToken)
+          setEvents(user.events);
+          const sortedReminders = user.reminders.sort(
+            (a, b) => new Date(a.time) - new Date(b.time)
+          );
+          setReminders(sortedReminders);
+          const sortedLists = user.lists.sort(
+            (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+          );
+          setLists(sortedLists);
+          setKanbans(user.kanbans);
+          setStickies(user.stickies);
+          generateQrCode(user.email);
+          setUserTasks(user.tasks);
+          getFriendinfo(authToken)
             .then((response) => {
-              setEvents(response.data.events);
+              const data = response.data;
+              setFriends(data.userFriends);
+              setFriendRequests(data.friendRequests);
+              setConnectionRequests(data.connectionRequests);
             })
             .catch((err) => {
               console.log(err);
             });
-          getReminders(res.data.user.username, authToken)
-            .then((response) => {
-              const sortedReminders = response.data.reminders.sort(
-                (a, b) => new Date(a.time) - new Date(b.time)
-              );
-              setReminders(sortedReminders);
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-          getAllLists(authToken, res.data.user.username)
-            .then((response) => {
-              const sortedLists = response.data.lists.sort(
-                (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
-              );
-              setLists(sortedLists);
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-      getAllTasks(authToken)
-        .then((response) => {
-          setUserTasks(response.data.tasks);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-      getFriendinfo(authToken)
-        .then((response) => {
-          const data = response.data;
-          setFriends(data.userFriends);
-          setFriendRequests(data.friendRequests);
-          setConnectionRequests(data.connectionRequests);
         })
         .catch((err) => {
           console.log(err);
@@ -314,13 +316,14 @@ export const UserProvider = ({ children }) => {
           {
             text: "mark as read",
             func: () => {
-              const updatedNotifications = notifications.map((notif) =>
-                notif.id === notification.id ? { ...notif, read: true } : notif
-              );
-              const sortedNotifications = updatedNotifications.sort(
-                (a, b) => b.time - a.time
-              );
-              setNotifications(sortedNotifications);
+              const updatedNotifications = notifications
+                .map((notif) =>
+                  notif.id === notification.id
+                    ? { ...notif, read: true }
+                    : notif
+                )
+                .sort((a, b) => b.time - a.time);
+              setNotifications(updatedNotifications);
               setSystemNotif({ show: false });
               markAsRead(notification.id);
             },
@@ -379,9 +382,12 @@ export const UserProvider = ({ children }) => {
         friends,
         stickies,
         userTasks,
+        kanbans,
         qrCodeUrl,
         connectionRequests,
         friendRequests,
+        upcoming,
+        setKanbans,
         setConnectionRequests,
         setFriendRequests,
         setUserTasks,

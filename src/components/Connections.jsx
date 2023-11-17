@@ -51,6 +51,10 @@ const Connections = ({ setOption }) => {
         });
     }
   };
+  
+  const acceptRequest = (reqId) => {
+  	
+  };
 
   return (
     <motion.div
@@ -95,7 +99,7 @@ const Connections = ({ setOption }) => {
                 <button className="px-3 py-2 text-xs rounded-md shadow-md bg-red-300 font-semibold">
                   Deny
                 </button>
-                <button className="px-3 py-2 text-xs rounded-md shadow-md bg-lime-300 font-semibold">
+                <button onClick={() => acceptRequest(friendReq.id)} className="px-3 py-2 text-xs rounded-md shadow-md bg-lime-300 font-semibold">
                   Accept
                 </button>
               </div>

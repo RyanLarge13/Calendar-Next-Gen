@@ -78,7 +78,9 @@ const Reminders = () => {
             (reminder) => reminder.id !== res.data.reminderId
           );
           setReminders(newReminders);
-          if (selected.length < 1) {
+          const newSelected = selected.filter((item) => item.id !== id);
+          setSelected(newSelected)
+          if (newSelected.length < 1) {
             return setSelectable(false);
           }
         })

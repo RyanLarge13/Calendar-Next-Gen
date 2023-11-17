@@ -72,8 +72,15 @@ export default defineConfig({
         globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
         runtimeCaching: [
           {
+            urlPattern: /\.(js|css|png|svg|jpeg|jpg)$/, // Cache static assets by file extensions
+            handler: "CacheFirst", // Cache the files on first load
+            options: {
+              cacheName: "static-assets-cache",
+            },
+          },
+          {
             urlPattern:
-              /^https:\/\/calendar-next-gen-production\.up\.railway\.app\//,
+              /^https:\/\/calendar-next-gen-production\.up\.railway\.app\/user\/data/,
             handler: "NetworkFirst",
             options: {
               cacheName: "api-cache",

@@ -1,7 +1,6 @@
 import { useContext, useState, useEffect } from "react";
 import { weekDays } from "../constants";
 import DatesContext from "../context/DatesContext";
-import { AiFillCalendar } from "react-icons/ai";
 import {
   BsFillArrowLeftCircleFill,
   BsFillArrowRightCircleFill,
@@ -9,7 +8,7 @@ import {
 import UserContext from "../context/UserContext";
 
 const SideBar = () => {
-  const { events } = useContext(UserContext);
+  const { events, upcoming } = useContext(UserContext);
   const { dateString, dateObj, setString, setTheDay, setNav } =
     useContext(DatesContext);
 
@@ -92,8 +91,8 @@ const SideBar = () => {
   };
 
   return (
-    <div className="hidden xl:block w-[20vw] bg-white h-screen border-r border-slate-200 relative">
-      <div className="fixed top-20 left-0 bottom-0 w-[17vw] overflow-y-auto p-3">
+    <div className="hidden xl:block w-[20vw] bg-white min-h-screen max-h-screen scrollbar-hide border-r border-slate-200 relative">
+      <div className="w-[17vw] fixed top-0 right-0 left-0 p-3 bg-white">
         <div className="flex gap-x-2 justify-start items-end mb-10">
           <img
             src="/favicon.svg"
@@ -145,7 +144,7 @@ const SideBar = () => {
                 const dateStr = `${
                   temporaryMonth + 1
                 }/${dayNumber}/${temporaryYear}`;
-                const event = events.find((event) => event.date === dateStr);
+                const event = events?.find((event) => event.date === dateStr);
 
                 return (
                   <div
@@ -187,6 +186,26 @@ const SideBar = () => {
             Submit
           </button>
         )}
+      </div>
+      <div className="overflow-y-auto fixed top-[55vh] bottom-0 left-0 w-[17vw] scrollbar-hide">
+        {upcoming.length > 0 &&
+          upcoming.map((event) => (
+            <div
+              key={event.id}
+              className={`${event.color} p-3 rounded-md shadow-md my-5 mx-3`}
+            >
+              <p className="mb-2">
+                In <span className="text-2xl font-semibold">{event.diff}</span>{" "}
+                days
+              </p>
+              <p className="text-sm bg-white p-2 rounded-md shadow-md font-semibold">
+                {event.summary}
+              </p>
+              <p className="text-sm mt-2 bg-white bg-opacity-25 p-2 rounded-md shadow-md">
+                {event.description}
+              </p>
+            </div>
+          ))}
       </div>
     </div>
   );

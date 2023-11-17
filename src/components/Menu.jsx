@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import Reminders from "./Reminders.jsx";
 import Lists from "./Lists.jsx";
 import Tasks from "./Tasks";
+import Kanbans from "./Kanbans"
+import MainMenu from "./MainMenu";
 import { updateList } from "../utils/api.js";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext.jsx";
@@ -28,14 +30,9 @@ const Menu = () => {
             (list) => list.id === lastUpdatedId
           );
           if (listIndex !== -1) {
-            // Remove the list from its current position
             const updatedLists = [...lists];
             const movedList = updatedLists.splice(listIndex, 1)[0];
-
-            // Add the list back to the front of the array
             updatedLists.unshift(movedList);
-
-            // Update the state with the new order
             setLists(updatedLists);
           }
           setListUpdate([]);
@@ -84,55 +81,44 @@ const Menu = () => {
           exit={{ opacity: 0 }}
           className="fixed inset-0 pt-40 z-10 pb-10 px-5 rounded-md bg-white shadow-md overflow-auto"
         >
-          {showCategory === null && (
-            <AnimatePresence>
-              <motion.div
-                initial={{ x: "-10%", opacity: 0 }}
-                exit={{ x: "-10%", opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                className="pt-10"
-              >
-                <h1 className="text-4xl pb-2 font-semibold">{timeOfDay}</h1>
-                {user.username && (
-                  <p className="ml-5 font-semibold">{user.username}</p>
-                )}
-              </motion.div>
-            </AnimatePresence>
-          )}
+          {showCategory === null && <MainMenu timeOfDay={timeOfDay} />}
           {showCategory && (
             <div className="">
               {showCategory === "reminder" && (
-                <AnimatePresence>
-                  <motion.div
-                    initial={{ x: "-10%", opacity: 0 }}
-                    exit={{ x: "-10%", opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                  >
-                    <Reminders />
-                  </motion.div>
-                </AnimatePresence>
+                <motion.div
+                  initial={{ x: "-10%", opacity: 0 }}
+                  exit={{ x: "-10%", opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                >
+                  <Reminders />
+                </motion.div>
               )}
               {showCategory === "todo-list" && (
-                <AnimatePresence>
-                  <motion.div
-                    initial={{ x: "-10%", opacity: 0 }}
-                    exit={{ x: "-10%", opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                  >
-                    <Lists />
-                  </motion.div>
-                </AnimatePresence>
+                <motion.div
+                  initial={{ x: "-10%", opacity: 0 }}
+                  exit={{ x: "-10%", opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                >
+                  <Lists />
+                </motion.div>
               )}
               {showCategory === "task" && (
-                <AnimatePresence>
-                  <motion.div
-                    initial={{ x: "-10%", opacity: 0 }}
-                    exit={{ x: "-10%", opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                  >
-                    <Tasks />
-                  </motion.div>
-                </AnimatePresence>
+                <motion.div
+                  initial={{ x: "-10%", opacity: 0 }}
+                  exit={{ x: "-10%", opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                >
+                  <Tasks />
+                </motion.div>
+              )}
+              {showCategory === "kanban" && (
+                <motion.div
+                  initial={{ x: "-10%", opacity: 0 }}
+                  exit={{ x: "-10%", opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                >
+                  <Kanbans />
+                </motion.div>
               )}
             </div>
           )}

@@ -1,4 +1,4 @@
-import MainPage from "./pages/MainPage";
+import MainPage from "./states/MainPage";
 
 const App = () => {
   return <MainPage />;

@@ -1,7 +1,8 @@
+import { useContext, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { calendarBlocks } from "../motion";
 import { holidays } from "../constants";
-import { useContext, useState } from "react";
+import { AiFillCheckCircle, AiFillCloseCircle } from "react-icons/ai";
 import { calendar } from "../motion";
 import DatesContext from "../context/DatesContext";
 import UserContext from "../context/UserContext";
@@ -9,7 +10,8 @@ import InteractiveContext from "../context/InteractiveContext";
 
 const MonthView = () => {
   const { events, setEvents } = useContext(UserContext);
-  const { setMenu, setShowLogin } = useContext(InteractiveContext);
+  const { setMenu, setShowLogin, setAddNewEvent, setType } =
+    useContext(InteractiveContext);
   const {
     paddingDays,
     daysInMonth,
@@ -20,14 +22,20 @@ const MonthView = () => {
     dateString,
     setOpenModal,
     setString,
+    setSecondString,
     dateObj,
   } = useContext(DatesContext);
 
   const [selected, setSelected] = useState([]);
+  const [confirmDates, setConfirmDates] = useState(false);
   const [longPressActive, setLongPressActive] = useState(false);
   const [longPressTimeout, setLongPressTimeout] = useState(null);
 
   const targetDate = new Date(dateString);
+
+  useEffect(() => {
+    selected.length > 0 ? setConfirmDates(true) : setConfirmDates(false);
+  }, [selected]);
 
   const getCellStyle = (index) => {
     const isSameMonthAndYear =
@@ -61,7 +69,8 @@ const MonthView = () => {
       if (selected.length === 1) setLongPressActive(false);
     }
     if (longPressActive && !selected.includes(index)) {
-      setSelected((prevSelected) => [...prevSelected, index]);
+      const sortedSelected = [...selected, index].sort((a, b) => a - b);
+      setSelected(sortedSelected);
     }
     if (!longPressActive) {
       addEvent(`${month + 1}/${index - paddingDays + 1}/${year}`, index);
@@ -94,6 +103,17 @@ const MonthView = () => {
         );
         return daysDifferenceA - daysDifferenceB;
       });
+  };
+
+  const addNewTypeWithDays = () => {
+    const firstDay = selected[0] - paddingDays + 1;
+    const lastDay = selected[selected.length - 1] - paddingDays + 1;
+    setString(`${month + 1}/${firstDay}/${year}`);
+    setSecondString(`${month + 1}/${lastDay}/${year}`);
+    setType("event");
+    setAddNewEvent(true);
+    setOpenModal(true);
+    setSelected([])
   };
 
   return (
@@ -172,6 +192,23 @@ const MonthView = () => {
           </motion.div>
         );
       })}
+      {confirmDates && (
+        <motion.div className="fixed bottom-20 left-[50%] translate-x-[-50%] bg-cyan-100 rounded-md flex justify-between items-center gap-x-20">
+          <button
+            className="text-lg p-5"
+            onClick={() => {
+              setLongPressActive(false);
+              setLongPressTimeout(null);
+              setSelected([]);
+            }}
+          >
+            <AiFillCloseCircle />
+          </button>
+          <button className="text-lg p-5" onClick={() => addNewTypeWithDays()}>
+            <AiFillCheckCircle />
+          </button>
+        </motion.div>
+      )}
     </motion.div>
   );
 };

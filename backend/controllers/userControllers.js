@@ -13,66 +13,106 @@ const hashPassword = async (password) => {
   return hashedPassword;
 };
 
-export const fetchUserData = (req, res) => {
-  const { username, email, avatarUrl, birthday, id, createAt, notifSub } =
-    req.user;
-  res.status(200).json({
-    message: "Success",
-    user: { username, email, avatarUrl, birthday, id, createAt, notifSub },
-  });
+export const fetchUserData = async (req, res) => {
+  const id = req.user.id;
+  try {
+    const userData = await prisma.user.findUnique({
+      where: {
+        id: id,
+      },
+      include: {
+        events: true,
+        reminders: true,
+        lists: true,
+        tasks: true,
+        kanbans: true,
+        categories: true,
+        stickies: true,
+      },
+    });
+    if (userData) {
+      res.status(200).json({
+        message: "Successfully fetched user data",
+        user: userData,
+      });
+    }
+    if (!userData) {
+      return res.status(401).json({
+        message:
+          "There was a problem fetching your data from the database. Please refresh your page or trying to log back in",
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      message:
+        "There was an error on the server trying to process your data, please refresh and try again",
+    });
+  }
 };
 
 export const loginWithGoogle = async (req, res) => {
   const { id, username, email, avatarUrl } = req.body.user;
-  const exsistingUser = await prisma.user.findUnique({
-    where: {
-      email: email,
-    },
-  });
-  if (exsistingUser) {
-    await bcrypt.compare(id, exsistingUser.password).then((isMatch) => {
-      if (!isMatch) {
-        return res.status(401).json({ message: "Incorrect password" });
-      }
-      const newSignture = signToken(exsistingUser);
-      res.status(201).json({
-        token: newSignture,
-        user: {
+  try {
+    const exsistingUser = await prisma.user.findUnique({
+      where: {
+        email: email,
+      },
+    });
+    if (exsistingUser) {
+      await bcrypt.compare(id, exsistingUser.password).then((isMatch) => {
+        if (!isMatch) {
+          return res.status(401).json({ message: "Incorrect password" });
+        }
+        const userToSign = {
+          id: exsistingUser.id,
           username: exsistingUser.username,
           email: exsistingUser.email,
           avatarUrl: exsistingUser.avatarUrl,
-          birthday: exsistingUser.birthday,
-          id: exsistingUser.id,
-          createdAt: exsistingUser.createAt,
-          notifSub: exsistingUser.notifSub,
-        },
+        };
+        const newSignture = signToken(userToSign);
+        return res.status(201).json({
+          token: newSignture,
+        });
       });
+    }
+    if (!exsistingUser) {
+      const hashedPassword = await hashPassword(id);
+      const newUser = {
+        username,
+        email,
+        password: hashedPassword,
+        avatarUrl,
+      };
+      const createdUser = await prisma.user.create({
+        data: newUser,
+      });
+      if (createdUser) {
+        const userToSign = {
+          id: createdUser.id,
+          username: createdUser.username,
+          email: createdUser.email,
+          avatarUrl: createdUser.avatarUrl,
+        };
+        const newSignture = signToken(userToSign);
+        res.status(201).json({
+          token: newSignture,
+        });
+        return sendSocialWelcomeEmail(email, username, "Google");
+      }
+      if (!createdUser) {
+        return res.statu(401).json({
+          message:
+            "There was a problem with creating a new account on Calng.app. Please refresh the application and try again",
+        });
+      }
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      message:
+        "An error occured on the server and your login attempt could not be completed. Please refresh and try again",
     });
-  }
-  if (!exsistingUser) {
-    const hashedPassword = await hashPassword(id);
-    const newUser = {
-      username,
-      email,
-      password: hashedPassword,
-      avatarUrl,
-    };
-    const createdUser = await prisma.user.create({
-      data: newUser,
-    });
-    const newSignture = signToken(createdUser);
-    res.status(201).json({
-      token: newSignture,
-      user: {
-        username: createdUser.username,
-        email: createdUser.email,
-        avatarUrl: createdUser.avatarUrl,
-        birthday: createdUser.birthday,
-        id: createdUser.id,
-        createdAt: createdUser.createAt,
-      },
-    });
-    sendSocialWelcomeEmail(email, username, "Google");
   }
 };
 
@@ -83,21 +123,56 @@ export const loginWithFacebook = async (req, res) => {
       `https://graph.facebook.com/v12.0/me?fields=id,name,email,picture&access_token=${accessToken}`
     );
     const userData = fbResponse.data;
-    const hashedPassword = await hashPassword(userData.id);
-    const fbUser = {
-      username: userData.name,
-      email: userData.email,
-      password: hashedPassword,
-      avatarUrl: userData.picture.url,
-    };
     const exsistingUser = await prisma.user.findUnique({
       where: { email: userData.email },
     });
     if (exsistingUser) {
+      await bcrypt
+        .compare(userData.id, exsistingUser.password)
+        .then((isMatch) => {
+          if (!isMatch) {
+            return res.status(401).json({ message: "Incorrect password" });
+          }
+          const userToSign = {
+            id: exsistingUser.id,
+            username: exsistingUser.username,
+            email: exsistingUser.email,
+            avatarUrl: exsistingUser.avatarUrl,
+          };
+          const newSignture = signToken(userToSign);
+          return res.status(201).json({
+            token: newSignture,
+          });
+        });
     }
     if (!exsistingUser) {
+      const hashedPassword = await hashPassword(userData.id);
+      const fbUser = {
+        username: userData.name,
+        email: userData.email,
+        password: hashedPassword,
+        avatarUrl: userData.picture.url,
+      };
+      const newFbUser = await prisma.user.create({ data: fbUser });
+      if (newFbUser) {
+        const userToSign = {
+          id: newFbUser.id,
+          username: newFbUser.username,
+          email: newFbUser.email,
+          avatarUrl: newFbUser.avatarUrl,
+        };
+        const newSignture = signToken(userToSign);
+        res.status(201).json({
+          token: newSignture,
+        });
+      }
+      if (!newFbUser) {
+        return res.statu(401).json({
+          message:
+            "There was a problem with creating a new account on Calng.app. Please refresh the application and try again",
+        });
+      }
     }
-    //res.json({ token });
   } catch (error) {
     res.status(500).json({ message: "Authentication failed" });
   }
@@ -105,55 +180,63 @@ export const loginWithFacebook = async (req, res) => {
 
 export const loginWithPasswordUsername = async (req, res) => {
   const { username, email, password, avatarUrl } = req.body;
-  const exsistingUser = await prisma.user.findUnique({
-    where: {
-      email: email,
-    },
-  });
-  if (exsistingUser) {
-    await bcrypt.compare(password, exsistingUser.password).then((isMatch) => {
-      if (!isMatch) {
-        return res.status(401).json({ message: "Incorrect password" });
-      }
-      const newSignture = signToken(exsistingUser);
-      res.status(201).json({
-        token: newSignture,
-        user: {
+  try {
+    const exsistingUser = await prisma.user.findUnique({
+      where: {
+        email: email,
+      },
+    });
+    if (exsistingUser) {
+      await bcrypt.compare(password, exsistingUser.password).then((isMatch) => {
+        if (!isMatch) {
+          return res.status(401).json({ message: "Incorrect password" });
+        }
+        const userToSign = {
+          id: exsistingUser.id,
           username: exsistingUser.username,
           email: exsistingUser.email,
           avatarUrl: exsistingUser.avatarUrl,
-          birthday: exsistingUser.birthday,
-          id: exsistingUser.id,
-          createdAt: exsistingUser.createAt,
-          notifSub: exsistingUser.notifSub,
-        },
+        };
+        const newSignture = signToken(userToSign);
+        res.status(201).json({
+          token: newSignture,
+        });
       });
-    });
-  }
-  if (!exsistingUser) {
-    const hashedPassword = await hashPassword(password);
-    const newUser = {
-      username,
-      email,
-      password: hashedPassword,
-      avatarUrl,
-    };
-    const createdUser = await prisma.user.create({
-      data: newUser,
-    });
-    const newSignture = signToken(createdUser);
-    res.status(201).json({
-      token: newSignture,
-      user: {
-        username: createdUser.username,
-        email: createdUser.email,
-        avatarUrl: createdUser.avatarUrl,
-        birthday: createdUser.birthday,
-        id: createdUser.id,
-        createdAt: createdUser.createAt,
-      },
-    });
-    sendWelcomeEmail(email, username, password);
+    }
+    if (!exsistingUser) {
+      const hashedPassword = await hashPassword(password);
+      const newUser = {
+        username,
+        email,
+        password: hashedPassword,
+        avatarUrl,
+      };
+      const createdUser = await prisma.user.create({
+        data: newUser,
+      });
+      if (createdUser) {
+        const userToSign = {
+          id: createdUser.id,
+          username: createdUser.username,
+          email: createdUser.email,
+          avatarUrl: createdUser.avatarUrl,
+        };
+        const newSignture = signToken(userToSign);
+        res.status(201).json({
+          token: newSignture,
+        });
+        return sendWelcomeEmail(email, username, password);
+      }
+      if (!createdUser) {
+        return res.statu(401).json({
+          message:
+            "There was a problem with creating a new account on Calng.app. Please refresh the applicaiton and try again",
+        });
+      }
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Authentication failed" });
   }
 };
 

@@ -76,15 +76,19 @@ const UsernamePassLogin = () => {
       username,
       email,
       password,
+      avatarUrl: "",
     };
     loginWithPasswordAndUsername(credentials)
       .then((res) => {
-        setUser(res.data.user);
         setAuthToken(res.data.token);
         localStorage.setItem("authToken", res.data.token);
       })
       .catch((err) => {
         console.log(err);
+        setUser(false);
+        setAuthToken(null);
+        localStorage.removeItem("user");
+        localStorage.removeItem("authToken");
       });
   };
 

@@ -359,7 +359,7 @@ export const createTask = (token, task) => {
 
 export const updateTasks = (token, updates) => {
   const res = Axios.post(
-    `${devUrl}/update/tasks`,
+    `${productionUrl}/update/tasks`,
     { updates },
     {
       headers: { Authorization: `Bearer ${token}` },
@@ -394,6 +394,32 @@ export const sendFriendRequestByEmail = (userEmail, token) => {
         Authorization: `Bearer ${token}`,
       },
     }
+  );
+  return res;
+};
+
+// Kanbans
+
+export const createNewKanban = (token, kanban) => {
+  const res = Axios.post(
+    `${productionUrl}/kanban/new`,
+    { kanban },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return res;
+};
+
+// Stickies
+
+export const addNewSticky = (token, sticky) => {
+  const res = Axios.post(
+    `${productionUrl}/add/sticky`,
+    { sticky },
+    { headers: { Authorization: `Bearer ${token}` } }
   );
   return res;
 };

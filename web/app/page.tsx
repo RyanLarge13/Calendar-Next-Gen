@@ -1,6 +1,7 @@
 import Image from "next/image";
 import HeaderImg from "../public/assets/headerImg.svg";
 import InstallLinks from "@/components/InstallLinks";
+import Functionality from "@/components/Functionality";
 
 const Home = () => {
   return (
@@ -9,7 +10,7 @@ const Home = () => {
         <Image
           src={HeaderImg}
           alt="header background"
-          className="absolute inset-0 mt-[-5em] opacity-50 object-cover"
+          className="absolute object-cover opacity-50"
         />
         <div className="pl-6 pb-20 pr-2 max-w-[600px]">
           <h1 className="text-6xl font-semibold">
@@ -65,66 +66,26 @@ const Home = () => {
       </section>
       <section
         id="what-can-you-do"
-        className="bg-black text-white min-h-screen py-20 pl-5 pr-2"
+        className="bg-black text-white min-h-screen py-20 pl-5 pr-2 lg:flex"
       >
-        <h2 className="text-5xl font-semibold pt-2 mb-3">
-          What Is So{" "}
-          <span className="bg-gradient-to-tr from-emerald-400 to-emerald-100 text-transparent bg-clip-text">
-            Great
-          </span>
-          ??
-        </h2>
-        <p className="max-w-[700px]">
-          There is a next generation full of functionality and purpose in this
-          application.. Learn all about how to use this app and the things you
-          can do to take advantage of every bit! Let's dive in..
-        </p>
-        <p className="max-w-[700px]">
-          Let's start with a list before we dive in deeper. Here is the major
-          and most popular content you can create with CNG
-        </p>
-        <h3
-          id="major-functionality"
-          className="text-3xl text-cyan-300 mt-10 mb-3"
-        >
-          Major Functionality
-        </h3>
-        <ul className="list-disc text-xl ml-4 max-w-[700px]">
-          <li>Create & manage Events</li>
-          <li>Set Reminders & important notifications</li>
-          <li>
-            Colaborate with groups and set important events with documents and
-            photos
-          </li>
-          <li>Manage, reschedule & link appointments</li>
-          <li>
-            Build a list, generalize it or connect it with your events, or any
-            other content
-          </li>
-          <li>
-            Build tasks as well... But isn't a task the same as a list? Not with
-            CNG
-          </li>
-          <li>
-            Pin sticky notes to your UI and keep important and urgent
-            information up front and in view
-          </li>
-          <li>
-            Kanban Boards!? What do I need a kanban board for? Try it out and
-            you will understand
-          </li>
-        </ul>
-        <h3
-          id="advanced-features"
-          className="text-3xl text-cyan-300 mt-10 mb-3"
-        >
-          Advanced Features
-        </h3>
-        <ul className="list-disc text-xl ml-4">
-          <li>AI Scheduling</li>
-          <li>Project Mamagment</li>
-          <li>Regimine Creator</li>
-        </ul>
+        <div className="px-10">
+          <h2 className="text-5xl font-semibold pt-2 mb-3">
+            What Is So{" "}
+            <span className="bg-gradient-to-tr from-emerald-400 to-emerald-100 text-transparent bg-clip-text">
+              Great
+            </span>
+            ??
+          </h2>
+          <p className="max-w-[900px]">
+            There is a next generation full of functionality and purpose in this
+            application.. Learn all about how to use this app and the things you
+            can do to take advantage of every bit! Let's dive in..
+          </p>
+          {/* Put information component here */}
+        </div>
+        <div className="px-10">
+          <Functionality />
+        </div>
       </section>
       <section
         id="events"

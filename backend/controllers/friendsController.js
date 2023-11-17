@@ -3,6 +3,53 @@ const prisma = new PrismaClient();
 
 import { validateEmail } from "../utils/helpers.js";
 
+export const acceptRequest = async (req, res) => {
+  const myId = req.user.id;
+  const email = req.params.userEmail;
+  const isValidEmail = validateEmail(email);
+  if (!isValidEmail) {
+    return res.status(400).json({
+      message: `Plesase input a valid email address to send to a friend, our server suggests that "${email}" is not valid`,
+    });
+  }
+  try {
+    const recipient = await prisma.user.findUnique({ where: { email: email } });
+    if (!recipient) {
+      return res.status(404).json({
+        message: `We apologize for the inconvenience, but a user with the email ${email} does not exsist in our records`,
+      });
+    }
+    const requestExists = await prisma.friendRequest.findFirst({
+      where: {
+        recipientId: myId,
+        senderId: recipient.id,
+      },
+    });
+    if (!requestExists) {
+      return res.status(404).json({
+        message: `We apologize for the inconvenience, but the friend request you are looking for does not exsist in our records. If this seems suspicious, please deny the request`,
+      });
+    }
+    const friend = {
+      userId: myId,
+      friendEmail: email,
+    };
+    const newFriend = await prisma.friend.create({ data: friemd });
+    if (!newFriend) {
+      return res
+        .status(500)
+        .json({
+          message: `We apologize for the inconvenience, something went wrong on the server and we could not process your request. Please reload the page and try again.`,
+        });
+    }
+    if (newFriend) {
+    	return res.status(201).json({message: `You and ${recipient.username} are now friends`, friend: {avatarUrl: recipient.avatarUrl,username: recipient.username,email: recipient.email}})
+    }
+  } catch (err) {
+    console.log(ere);
+  }
+};
+
 export const sendRequestFromQrCode = (req, res) => {};
 
 export const sendRequestFromEmail = async (req, res) => {
@@ -83,7 +130,6 @@ export const findUsersRequestsAndFriends = async (req, res) => {
       where: { id: user.id },
       select: { id: true },
     });
-
     if (!foundUser) {
       return res.status(404).json({
         message:
