@@ -5,10 +5,12 @@ import Color from "./Color";
 import AddKanbanFolder from "./AddKanbanFolder";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext";
+import DatesContext from "../context/DatesContext";
 
 const AddKanban = () => {
-  const { setType, setAddNewEvent } = useContext(InteractiveContext);
+  const { setType, setShowCategory, setAddNewEvent, setMenu } = useContext(InteractiveContext);
   const { setSystemNotif, setKanbans } = useContext(UserContext);
+  const {setOpenModal} = useContext(DatesContext)
 
   const [title, setTitle] = useState("");
   const [color, setColor] = useState("");
@@ -56,8 +58,13 @@ const AddKanban = () => {
     if (token) {
       createNewKanban(token, newKanban)
         .then((res) => {
-          // setKanbans((prev) => [...prev, newKanban]);
           console.log(res);
+          setKanbans((prev) => [...prev, res.data.kanban]);
+          setOpenModal(false);
+          setAddNewEvent(false);
+          setType(null);
+          setMenu(true);
+          setShowCategory("kanban");
         })
         .catch((err) => console.log(err));
     }

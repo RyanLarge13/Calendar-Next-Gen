@@ -50,6 +50,9 @@ const UsernamePassLogin = () => {
 
   const checkValidInput = (type) => {
     if (type === "username") {
+      if (typeof username !== "string") {
+        return setValidUserName(null);
+      }
       const usernameRegex = /^[a-zA-Z0-9_-]{3,20}$/;
       const isValid = usernameRegex.test(username);
       if (!username) {
@@ -58,6 +61,9 @@ const UsernamePassLogin = () => {
       setValidUserName(isValid);
     }
     if (type === "password") {
+      if (typeof password !== "string") {
+        return setValidPassword(null);
+      }
       const passwordRegex =
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
       const isValid = passwordRegex.test(password);
@@ -132,7 +138,7 @@ const UsernamePassLogin = () => {
             : validUserName
             ? "shadow-green-200"
             : "shadow-red-200"
-        } w-full p-2 my-2 rounded-md shadow-md`}
+        } w-full p-2 my-2 rounded-md shadow-md focus:outline-none`}
       />
       <input
         onChange={(e) => setEmail(e.target.value)}
@@ -141,7 +147,7 @@ const UsernamePassLogin = () => {
         value={email}
         id="email"
         name="email"
-        className="w-full p-3 rounded-md shadow-md"
+        className="w-full p-3 rounded-md shadow-md focus:outline-none"
       />
       <input
         onChange={(e) => setPassword(e.target.value)}
@@ -157,19 +163,13 @@ const UsernamePassLogin = () => {
             : validPassword
             ? "shadow-green-200"
             : "shadow-red-200"
-        } w-full p-3 my-2 rounded-md shadow-md`}
+        } w-full p-3 my-2 rounded-md shadow-md focus:outline-none`}
       />
       <button
         type="submit"
         className="px-3 py-2 bg-cyan-100 rounded-md shadow-md w-full mt-4"
       >
-        Login
-      </button>
-      <button
-        type="text"
-        className="px-3 py-2 bg-cyan-100 rounded-md shadow-md w-full mt-4"
-      >
-        Sign Up
+        Sign In
       </button>
     </motion.form>
   );

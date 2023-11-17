@@ -92,7 +92,7 @@ export const AddCircle = () => {
                 ? { x: -75, y: -45, scale: 1.25, opacity: 1 }
                 : { x: 0, y: 0, scale: 0 }
             }
-            className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] right-5 bottom-5 bg-gradient-to-r from-green-300 to-lime-200 shadow-md`}
+            className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] right-5 bottom-5 bg-gradient-to-r from-green-300 to-lime-200 shadow-lg`}
           >
             <IoIosAddCircle />
           </motion.div>
