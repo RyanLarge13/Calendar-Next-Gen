@@ -8,13 +8,14 @@ import UserContext from "../context/UserContext";
 import DatesContext from "../context/DatesContext";
 
 const AddKanban = () => {
-  const { setType, setShowCategory, setAddNewEvent, setMenu } = useContext(InteractiveContext);
+  const { setType, setShowCategory, setAddNewEvent, setMenu } =
+    useContext(InteractiveContext);
   const { setSystemNotif, setKanbans } = useContext(UserContext);
-  const {setOpenModal} = useContext(DatesContext)
+  const { setOpenModal } = useContext(DatesContext);
 
   const [title, setTitle] = useState("");
   const [color, setColor] = useState("");
-  const [dueDate, setDueDate] = useState("");
+  // const [dueDate, setDueDate] = useState("");
   const [folders, setFolders] = useState([]);
   const [folderName, setFolderName] = useState("");
 
@@ -49,10 +50,13 @@ const AddKanban = () => {
       };
       return setSystemNotif(newError);
     }
+    const folderWithOrderSet = folders.map((folder, index) => {
+      return { ...folder, order: index };
+    });
     const newKanban = {
       title,
       color,
-      folders,
+      folders: folderWithOrderSet,
     };
     const token = localStorage.getItem("authToken");
     if (token) {
@@ -75,6 +79,7 @@ const AddKanban = () => {
     const newFolder = {
       title: folderName,
       color: "bg-slate-200",
+      private: true,
     };
     setFolders((prev) => [...prev, newFolder]);
     setFolderName("");

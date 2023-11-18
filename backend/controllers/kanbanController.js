@@ -1,3 +1,6 @@
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
+
 const createKanbanFolders = async (kanbanId, folders) => {
   const foldersWithRef = folders.map((folder) => {
     return { ...folder, projectId: kanbanId };
@@ -19,10 +22,13 @@ const createKanbanFolders = async (kanbanId, folders) => {
 };
 
 export const createNewKanban = async (req, res) => {
-  const kanban = req.body.kanban;
-  const folders = kanban.folders;
+  const { title, color } = req.body.kanban;
+  const id = req.user.id;
+  const folders = req.body.kanban.folders;
   try {
-    const newKanban = await prisma.kanban.create({ data: kanban });
+    const newKanban = await prisma.kanban.create({
+      data: { title, color, userId: id },
+    });
     if (newKanban) {
       let kanbanFolders = [];
       if (folders.length > 0) {

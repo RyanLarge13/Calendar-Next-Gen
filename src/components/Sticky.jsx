@@ -76,7 +76,7 @@ const Sticky = ({ sticky }) => {
               height: 150,
               width: 8,
               overflow: "hidden",
-              left:getLeft()
+              left: getLeft(),
             }
       }
       drag={fullScreen ? false : !!minimize ? "y" : !pin}
@@ -100,7 +100,7 @@ const Sticky = ({ sticky }) => {
       }}
     >
       <div
-        className="rounded-t-md bg-slate-100 shadow-md p-2 flex justify-between items-center"
+        className="rounded-t-md bg-slate-100 shadow-md p-2 flex justify-between items-center cursor-pointer"
         onPointerDown={startDrag}
         style={{ touchAction: "none" }}
       >
