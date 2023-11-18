@@ -82,9 +82,9 @@ const ModalHeader = ({ allDayEvents }) => {
       animate={
         event && !addNewEvent
           ? { left: 5, x: x }
-          : { left: "36% lg:left-[65%]", x: x }
+          : { left: "36%", x: x }
       }
-      className="bg-white z-[902] p-2 font-bold lg:left-[65%] shadow-md fixed top-1 right-1 rounded-md"
+      className="bg-white z-[902] p-2 font-bold shadow-md fixed top-1 right-1 rounded-md"
     >
       <div className="flex justify-between items-start">
         <motion.div

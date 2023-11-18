@@ -580,6 +580,3 @@ export const staticYears = [
   "2036",
   "2037",
 ];
-
-//LandingPage
-export const sliders = [{}];

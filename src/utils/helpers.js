@@ -50,3 +50,7 @@ export const getTimeZone = async (lng, lat) => {
   const data = await response.json();
   return data.timeZoneId;
 };
+
+export const validateFormData = (data, rules) => {
+	
+}

@@ -1,17 +1,17 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { AnimatePresence } from "framer-motion";
 import Sticky from "./Sticky";
 import UserContext from "../context/UserContext";
 
 const Stickies = () => {
-  const { stickies, setStickies } = useContext(UserContext);
+  const { stickies } = useContext(UserContext);
 
   return (
-      <AnimatePresence>
-        {stickies.map((sticky) => (
-          <Sticky sticky={sticky} />
-        ))}
-      </AnimatePresence>
+    <AnimatePresence>
+      {stickies.map((sticky) => (
+        <Sticky key={sticky.id} sticky={sticky} />
+      ))}
+    </AnimatePresence>
   );
 };
 

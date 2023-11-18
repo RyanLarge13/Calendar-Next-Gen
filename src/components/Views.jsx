@@ -45,7 +45,7 @@ const Views = () => {
             showLogin
               ? "opacity-0 pointer-events-none"
               : "opacity-100 pointer-events-auto"
-          } p-3 rounded-full flex justify-center items-center bg-gradient-to-tr from-cyan-200 to-cyan-100 shadow-md`}
+          } p-3 rounded-full flex justify-center items-center bg-gradient-to-tr from-cyan-200 to-cyan-100 shadow-lg`}
         >
           {show ? <BsXCircleFill /> : <BsColumnsGap />}
         </div>

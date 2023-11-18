@@ -11,6 +11,7 @@
 body {
   padding-top: constant(safe-area-inset-top); /* iOS 11.0+ */
   padding-top: env(safe-area-inset-top); /* iOS 11.2+ */
+  -webkit-tap-highlight-color: transparent;
 }
 
 ul {
@@ -30,9 +31,6 @@ li {
 .markdown h2 {
   font-size: 2em;
   font-weight: bold;
-}
-
-.markdown p {
 }
 
 .markdown img {
@@ -94,12 +92,8 @@ li {
   );
 }
 
-.scrollbar-hide {
-  scrollbar-width: none;
-}
-
 .scrollbar-hide::-webkit-scrollbar {
-  display: none;
+  width: 0px;
 }
 
 .my-masonry-grid {
