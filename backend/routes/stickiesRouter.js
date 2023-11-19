@@ -9,5 +9,6 @@ const stickiesRouter = express.Router();
 
 stickiesRouter.get("/user/stickies", auth, getAllStickies);
 stickiesRouter.post("/add/sticky", auth, addNewSticky);
+stickiesRouter.delete("/delete/sticky/:stickyId", auth, deleteSticky);
 
 export default stickiesRouter;
