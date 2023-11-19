@@ -1,5 +1,6 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useContext } from "react";
 import { motion, useDragControls } from "framer-motion";
+import { deleteStickyNote } from "../utils/api.js";
 import {
   AiFillPushpin,
   AiFillCloseCircle,
@@ -8,12 +9,15 @@ import {
 import { BiExpand, BiCollapse } from "react-icons/bi";
 import { FaRegWindowMinimize } from "react-icons/fa";
 import { FiMaximize } from "react-icons/fi";
+import UserContext from "../context/UserContext";
 
 const Sticky = ({ sticky }) => {
+  const { setSystemNotif, setStickies } = useContext(UserContext);
+
   const [expand, setExpand] = useState(false);
   const [pin, setPin] = useState(sticky.pin);
   const [fullScreen, setFullScreen] = useState(false);
-  const [minimize, setMinimize] = useState(true);
+  const [minimize, setMinimize] = useState(false);
   //  const [constraintRight, setConstraintRight] = useState(
   //  window.innerWidth - 200
   // );
@@ -36,6 +40,12 @@ const Sticky = ({ sticky }) => {
   //     }
   //   }, [minimize, expand, fullScreen]);
 
+  /* useEffect(() => {
+    setTimeout(() => {
+      setMinimize(true);
+    }, 50);
+  }, []);*/
+
   const startDrag = (e) => {
     controls.start(e);
   };
@@ -51,6 +61,49 @@ const Sticky = ({ sticky }) => {
     if (stickyRef.current) {
       const left = stickyRef.current.getBoundingClientRect().top;
       return -left;
+    }
+  };
+
+  const confirmDelete = (stickyId) => {
+    const newConfirmation = {
+      show: true,
+      title: "Delete sticky",
+      text: "Are you sure you want to delete this sticky note?",
+      color: "bg-red-200",
+      hasCancel: true,
+      actions: [
+        { text: "close", func: () => setSystemNotif({ show: false }) },
+        { text: "delete", func: () => deleteSticky(stickyId) },
+      ],
+    };
+    setSystemNotif(newConfirmation);
+  };
+
+  const deleteSticky = (stickyId) => {
+    setSystemNotif({ show: false });
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+    }
+    if (token) {
+      deleteStickyNote(token, stickyId)
+        .then((res) => {
+          const newStickies = stickies.filter((item) => item.id !== stickyId);
+          setStickies(newStickies);
+          const newSuccess = {
+            show: true,
+            title: "Deleted Sticky",
+            text: "Successfully deleted your sticky note",
+            color: "bg-green-200",
+            hasCancel: false,
+            actions: [
+              { text: "close", func: () => setSystemNotif({ show: false }) },
+              { text: "undo", func: () => {} },
+            ],
+          };
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
   };
 
@@ -74,7 +127,7 @@ const Sticky = ({ sticky }) => {
           : {
               scale: 1,
               height: 150,
-              width: 8,
+              width: 10,
               overflow: "hidden",
               left: getLeft(),
             }
@@ -100,7 +153,7 @@ const Sticky = ({ sticky }) => {
       }}
     >
       <div
-        className="rounded-t-md bg-slate-100 shadow-md p-2 flex justify-between items-center cursor-pointer"
+        className="rounded-t-md bg-slate-100 shadow-lg p-2 flex justify-between items-center cursor-pointer"
         onPointerDown={startDrag}
         style={{ touchAction: "none" }}
       >
@@ -112,9 +165,9 @@ const Sticky = ({ sticky }) => {
             {!!expand ? <BiCollapse /> : <BiExpand />}
           </button>
         </div>
-        <div>
+        <button type="text" onClick={() => confirmDelete(sticky.id)}>
           <AiFillCloseCircle />
-        </div>
+        </button>
       </div>
       {!!expand && (
         <div className="rounded-b-md bg-slate-100 shadow-md p-2 flex justify-between items-center">
@@ -129,7 +182,7 @@ const Sticky = ({ sticky }) => {
       <div
         className={`${
           !!expand ? "mt-20" : "mt-5"
-        } p-2 overflow-y-auto absolute inset-0 z-[-1]`}
+        } p-2 overflow-y-auto scrollbar-hide absolute inset-0 z-[-1]`}
       >
         <h2>{sticky.title}</h2>
         <div dangerouslySetInnerHTML={{ __html: sticky.body }}></div>

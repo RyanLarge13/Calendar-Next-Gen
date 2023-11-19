@@ -105,7 +105,7 @@ const UsernamePassLogin = () => {
       color: "bg-red-300",
       text: `Invalid ${!validUserName && "username"}, ${
         !validPassword && "password"
-      }. Please fill out the form registration for with valid credentials`,
+      }. Please fill out the form registration with valid credentials`,
       hasCancel: true,
       actions: [{ text: "close", func: () => setSystemNotif({ show: false }) }],
     };
