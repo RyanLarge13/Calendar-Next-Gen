@@ -3,6 +3,7 @@ import auth from "../auth/authenticateToken.js";
 import {
   addNewSticky,
   getAllStickies,
+  deleteSticky
 } from "../controllers/stickiesController.js";
 
 const stickiesRouter = express.Router();
