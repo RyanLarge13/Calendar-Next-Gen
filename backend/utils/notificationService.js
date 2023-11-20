@@ -1,6 +1,5 @@
 import WebPush from "web-push";
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import prisma from "./prismaClient.js";
 
 WebPush.setVapidDetails(
   "mailto:ryanlarge@ryanlarge.dev",

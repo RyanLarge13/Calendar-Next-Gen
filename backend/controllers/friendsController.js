@@ -1,5 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import prisma from "../utils/prismaClient.js";
 
 import { validateEmail } from "../utils/helpers.js";
 
@@ -36,14 +35,21 @@ export const acceptRequest = async (req, res) => {
     };
     const newFriend = await prisma.friend.create({ data: friemd });
     if (!newFriend) {
-      return res
-        .status(500)
-        .json({
-          message: `We apologize for the inconvenience, something went wrong on the server and we could not process your request. Please reload the page and try again.`,
-        });
+      return res.status(500).json({
+        message: `We apologize for the inconvenience, something went wrong on the server and we could not process your request. Please reload the page and try again.`,
+      });
     }
     if (newFriend) {
-    	return res.status(201).json({message: `You and ${recipient.username} are now friends`, friend: {avatarUrl: recipient.avatarUrl,username: recipient.username,email: recipient.email}})
+      return res
+        .status(201)
+        .json({
+          message: `You and ${recipient.username} are now friends`,
+          friend: {
+            avatarUrl: recipient.avatarUrl,
+            username: recipient.username,
+            email: recipient.email,
+          },
+        });
     }
   } catch (err) {
     console.log(ere);

@@ -1,8 +1,7 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "../utils/prismaClient.js";
 import { sendNotification } from "../utils/notificationService.js";
 import signToken from "../auth/signToken.js";
 import cron from "node-cron";
-const prisma = new PrismaClient();
 const connectedClients = [];
 
 export const subscribeToNotifications = async (req, res) => {

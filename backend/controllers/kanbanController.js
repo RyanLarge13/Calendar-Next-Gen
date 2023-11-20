@@ -1,5 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import prisma from "../utils/prismaClient.js";
 
 const createKanbanFolders = async (kanbanId, folders) => {
   const foldersWithRef = folders.map((folder) => {

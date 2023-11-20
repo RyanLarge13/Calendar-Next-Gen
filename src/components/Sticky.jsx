@@ -12,39 +12,16 @@ import { FiMaximize } from "react-icons/fi";
 import UserContext from "../context/UserContext";
 
 const Sticky = ({ sticky }) => {
-  const { setSystemNotif, setStickies } = useContext(UserContext);
+  const { setSystemNotif, setStickies, stickies } = useContext(UserContext);
 
   const [expand, setExpand] = useState(false);
   const [pin, setPin] = useState(sticky.pin);
   const [fullScreen, setFullScreen] = useState(false);
   const [minimize, setMinimize] = useState(false);
-  //  const [constraintRight, setConstraintRight] = useState(
-  //  window.innerWidth - 200
-  // );
-  //  const [constraintBottom, setConstraintBottom] = useState(
-  //   window.innerWidth - 200
-  //  );
 
   const stickyRef = useRef(null);
 
   const controls = useDragControls();
-
-  //   useEffect(() => {
-  //     if (stickyRef.current) {
-  //       const elemWidth = stickyRef.current.clientWidth;
-  //       const elemHeight = stickyRef.current.clientHeight;
-  //       const right = window.innerWidth - elemWidth;
-  //       const bottom = window.innerHeight - elemHeight;
-  //       setConstraintRight(right);
-  //       setConstraintBottom(bottom);
-  //     }
-  //   }, [minimize, expand, fullScreen]);
-
-  /* useEffect(() => {
-    setTimeout(() => {
-      setMinimize(true);
-    }, 50);
-  }, []);*/
 
   const startDrag = (e) => {
     controls.start(e);
@@ -100,6 +77,7 @@ const Sticky = ({ sticky }) => {
               { text: "undo", func: () => {} },
             ],
           };
+          setSystemNotif(newSuccess);
         })
         .catch((err) => {
           console.log(err);
@@ -182,10 +160,13 @@ const Sticky = ({ sticky }) => {
       <div
         className={`${
           !!expand ? "mt-20" : "mt-5"
-        } p-2 overflow-y-auto scrollbar-hide absolute inset-0 z-[-1]`}
+        } p-2 overflow-y-auto overflow-x-hidden scrollbar-hide absolute inset-0 z-[-1] break-words`}
       >
         <h2>{sticky.title}</h2>
-        <div dangerouslySetInnerHTML={{ __html: sticky.body }}></div>
+        <div
+          dangerouslySetInnerHTML={{ __html: sticky.body }}
+          className=""
+        ></div>
       </div>
     </motion.div>
   );
