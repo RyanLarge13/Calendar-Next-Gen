@@ -1,5 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import prisma from "../utils/prismaClient.js";
 
 export const getAllStickies = async (req, res) => {
   const { id } = req.user;
@@ -56,21 +55,24 @@ export const addNewSticky = async (req, res) => {
 export const deleteSticky = async (req, res) => {
   const stickyId = req.params.stickyId;
   if (!stickyId) {
-    return res
-      .status(401)
-      .json({
-        messagr: "Please refer to an ID that is valid to your sticky note",
-      });
+    return res.status(401).json({
+      messagr: "Please refer to an ID that is valid to your sticky note",
+    });
   }
   try {
     const deletedSticky = await prisma.sticky.delete({
       where: { id: stickyId },
     });
     if (!deletedSticky) {
-    	return res.status(401).json({message: "We were not capable of deleting your sticky note. Please try to delete your sticky note again"})
+      return res.status(401).json({
+        message:
+          "We were not capable of deleting your sticky note. Please try to delete your sticky note again",
+      });
     }
     if (deletedSticky) {
-    	return res.status(201).json({message:"Successfully deleted your sticky note"})
+      return res
+        .status(201)
+        .json({ message: "Successfully deleted your sticky note" });
     }
   } catch (err) {
     console.log(err);

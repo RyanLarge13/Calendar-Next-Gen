@@ -1,5 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import prisma from "../utils/prismaClient.js";
 
 export const getReminders = async (req, res) => {
   const { id } = req.user;
@@ -18,7 +17,7 @@ export const addNewReminder = async (req, res) => {
   const newReminder = {
     title,
     notes,
-    time, 
+    time,
     userId: id,
   };
   const newNotif = {
@@ -28,7 +27,7 @@ export const addNewReminder = async (req, res) => {
     time,
     notifData: newReminder,
     sentNotification: false,
-    sentWebPush: false, 
+    sentWebPush: false,
     userId: id,
   };
   const returnedReminder = await prisma.reminder.create({

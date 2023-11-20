@@ -8,10 +8,12 @@ import UserContext from "../context/UserContext";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import Toggle from "./Toggle";
+import DatesContext from "../context/DatesContext.jsx";
 
 const AddSticky = () => {
   const { setStickies, setSystemNotif } = useContext(UserContext);
   const { setType, setAddNewEvent } = useContext(InteractiveContext);
+  const { setOpenModal } = useContext(DatesContext);
 
   const [title, setTitle] = useState("");
   const [color, setColor] = useState("");
@@ -34,8 +36,8 @@ const AddSticky = () => {
       };
       addNewSticky(token, newSticky)
         .then((res) => {
-          console.log(res);
           setStickies((prev) => [res.data.sticky, ...prev]);
+          setOpenModal(false);
         })
         .catch((err) => {
           console.log(err);

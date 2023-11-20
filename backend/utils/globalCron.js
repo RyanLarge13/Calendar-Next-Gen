@@ -1,6 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "./prismaClient.js";
 import { sendNotification } from "./notificationService.js";
-const prisma = new PrismaClient();
 
 const processPushNotifications = async () => {
   console.log("Processing global user notifications");

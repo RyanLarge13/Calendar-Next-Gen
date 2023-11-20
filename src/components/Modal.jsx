@@ -78,7 +78,7 @@ const Modal = () => {
         initial={{ x: 100, opacity: 0 }}
         exit={{ x: 200, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
-        className={`bg-white z-[600] rounded-md shadow-lg shadow-purple-200 fixed top-0 bottom-0 right-0 w-[65%] lg:w-[35%] overflow-y-auto scroll-smooth scrollbar-hide`}
+        className={`bg-white z-[600] rounded-md shadow-lg shadow-purple-200 fixed top-0 bottom-0 right-0 w-[65%] overflow-y-auto scroll-smooth scrollbar-hide`}
         ref={modalRef}
       >
         {addNewEvent ? (

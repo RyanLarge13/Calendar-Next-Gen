@@ -425,8 +425,10 @@ export const addNewSticky = (token, sticky) => {
 };
 
 export const deleteStickyNote = (token, stickyId) => {
-	const res = Axios.delete(`${productionUrl}/delete/sticky/${stickyId}`, {headers: {
-		Authorization: `Bearer ${token}`
-	}})
-	return res;
-}
+  const res = Axios.delete(`${productionUrl}/delete/sticky/${stickyId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res;
+};

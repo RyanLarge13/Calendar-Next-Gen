@@ -1,12 +1,10 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "../utils/prismaClient.js";
 import { google } from "googleapis";
 import { getOAuth2Client } from "../utils/helpers.js";
 import signToken from "../auth/signToken.js";
 import bcrypt from "bcryptjs";
 import { sendWelcomeEmail, sendSocialWelcomeEmail } from "../utils/sendMail.js";
 import Axios from "axios";
-
-const prisma = new PrismaClient();
 
 const hashPassword = async (password) => {
   const hashedPassword = await bcrypt.hash(password, 10);
