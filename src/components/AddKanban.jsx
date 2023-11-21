@@ -15,7 +15,6 @@ const AddKanban = () => {
 
   const [title, setTitle] = useState("");
   const [color, setColor] = useState("");
-  // const [dueDate, setDueDate] = useState("");
   const [folders, setFolders] = useState([]);
   const [folderName, setFolderName] = useState("");
 

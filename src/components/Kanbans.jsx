@@ -1,4 +1,5 @@
 import { useContext } from "react";
+import { FaFolder } from "react-icons/fa";
 import UserContext from "../context/UserContext";
 
 const Kanbans = () => {
@@ -7,14 +8,17 @@ const Kanbans = () => {
   const openModalAndSetType = () => {};
 
   return (
-    <div className="mt-5">
+    <div className="mt-5 grid grid-cols-2 place-items-center gap-5">
       {kanbans.length > 0 ? (
         kanbans.map((kanban) => (
           <div
             key={kanban.id}
-            className={`${kanban.color} p-3 rounded-md shadow-md`}
+            className={`${kanban.color} p-2 rounded-md shadow-md h-40 w-full`}
           >
-            <h2>{kanban.title}</h2>
+            <div className="flex justify-between items-center p-2 rounded-md shadow-md bg-white">
+              <h2>{kanban.title}</h2>
+              <FaFolder />
+            </div>
           </div>
         ))
       ) : (
