@@ -1,7 +1,5 @@
 # Welcome Contributors
 
-**_ This is a Nextjs app router static website written in TypeScript _**
-
 In this documentation I will go over exactly how this application is structured both on the files and directories in this code base, how each part of the software communicates relates and modularizes, and the technologies used.
 
 I will split these sections into the 3 major parties involved in creating the complete world of the application
@@ -12,13 +10,30 @@ I will split these sections into the 3 major parties involved in creating the co
 
 ## Table of Contents
 
+- [Web](#web)
+  - [Main Rules](#main-rules)
+  - [app/ Dir Rules](#app-dir-rules)
+    - [Creating Routes](#creating-routes)
+  - [components/ Dir Rules](#components-dir-rules)
+    - [Creating Directories Within Components Dir](#creating-directories-within-components-dir)
+    - [Creating components](#creating-components)
+  - [public/ Dir Rules](#public-dir-rules)
+    - [Nested Assets Dirs](#nested-assets-dirs)
+  - [page.tsx File Rules](#pagetsx-file-rules)
+    - [Project Directory](#project-directory)
+  - [Purposes, Layout, Guidelines](#purposes-layout-guidelines)
+- [page/component.tsx Code Structure](#pagecomponenttsx-code-structure)
+  - [Code Example](#code-example)
+- [Prettier Settings to Configure](#prettier-settings-to-configure)
+
+
 ## Web
+
+**This is a Nextjs app router static website written in TypeScript**
 
 This directory within the code base contains all of the static site code for advertising, developing better SEO and optimization and the documentation for the application
 
-```
-"/Calendar-Next-Gen/web/*"
-```
+**"/Calendar-Next-Gen/web/\*"**
 
 [Go to the dir ->](https://github.com/RyanLarge13/Calendar-Next-Gen/web)
 
@@ -77,8 +92,8 @@ For this website I have listed the frameworks and libraries used for development
 1. Your page component must be a server component.
 2. If there absolutely must be an interactive client side element create a new component and specify "use client" in its file
 3. Your page must have dynamic meta data relevant to the page the user will be viewing
-   **_ - A relavent title _**
-   **_ - A relavent description _**
+   **- A relavent title**
+   **- A relavent description**
 
 #### Project Directory
 
@@ -102,65 +117,57 @@ For this website I have listed the frameworks and libraries used for development
 - `next.config.js`
 - `...configs`
 
-## Purposes, Layout, Guidlines
+### Purposes, Layout, Guidlines
 
 We are using the app directory in Nextjs for this project.
 
 We are using TypeScript as the language of choice.
 
-```
-"web/*"
-```
+**"web/\*"**
 
-### Nextjs
+#### Nextjs
 
 We are using Nextjs app router because of the ease and maintainability when leveraging a file based routing system. This dissolves the need for routers and defining a routing structure from scratch.
 
-### TypeScript
+#### TypeScript
 
 We are using TypeScript in this project. No js pages or components are allowed to be used except with pre-approval
 
-### Tailwindcss
+#### Tailwindcss
 
 We are using tailwind for styling this website. This helps create outstanding maintainability. You are welcome to create reusable styles within a utils/ folder in the root directory.
 
-**_ No css files or modules should be created. Only globals.css should contain traditional css _**
+**No css files or modules should be created. Only globals.css should contain traditional css**
 
-```
-"web/app/*"
-```
+**"web/app/\*"**
 
-### Route/
+#### Route/
 
 Adhere to all standard file naming conventions for readability and orginization
 
-### layout.tsx
+#### layout.tsx
 
 You are welcome to define a new layout.tsx file to maintain global components within a parent route
 
-### page.tsx
+#### page.tsx
 
 Each page will be sent from the server and contain dynamic meta data. The purpose of this is to develop optimal SEO performance
 
-```
-"web/components/*"
-```
+**"web/components/\*"**
 
 In this directory only create component files you know will be reused in more than one place within the app directory or within a layout.tsx file.
 
 If you absolutely have to have a client component you can use this directory to create it as well
 
-```
-"web/public/*"
-```
+**"web/public/\*"**
 
 This is where our assets will be placed for now and nothing else
 
-## page/component.tsx Code Structure
+### page/component.tsx Code Structure
 
 Here I will give rules in layout, formatting and structure for a component that needs to be adhered to when contributing to this code base
 
-### code example
+#### code example
 
 ```
 // app/Home/page.tsx
@@ -220,5 +227,23 @@ export default Home;
 ```
 
 ### prettier settings to configure
+
 ```
+{
+  "singleQuote": false,
+  "semi": false,
+  "tabWidth": 2,
+  "trailingComma": "all",
+  "bracketSpacing": true,
+  "arrowParens": "always",
+  "jsxBracketSameLine": true,
+  "overrides": [
+    {
+      "files": ["*.tsx", "*.ts"],
+      "options": {
+        "parser": "typescript"
+      }
+    }
+  ]
+}
 ```
