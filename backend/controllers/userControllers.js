@@ -23,7 +23,13 @@ export const fetchUserData = async (req, res) => {
         reminders: true,
         lists: true,
         tasks: true,
-        kanbans: true,
+        kanbans: {
+          folders: {
+            boards: {
+              boardItems: true,
+            },
+          },
+        },
         categories: true,
         stickies: true,
       },

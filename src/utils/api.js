@@ -398,7 +398,7 @@ export const sendFriendRequestByEmail = (userEmail, token) => {
   return res;
 };
 
-// Kanbans
+//Kanbans
 
 export const createNewKanban = (token, kanban) => {
   const res = Axios.post(
