@@ -4,7 +4,7 @@ const devUrl = "http://localhost:8080";
 const productionUrl = "https://calendar-next-gen-production.up.railway.app";
 
 export const getUserData = (token) => {
-  const res = Axios.get(`${devUrl}/user/data`, {
+  const res = Axios.get(`${productionUrl}/user/data`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -402,7 +402,7 @@ export const sendFriendRequestByEmail = (userEmail, token) => {
 
 export const createNewKanban = (token, kanban) => {
   const res = Axios.post(
-    `${productionUrl}/kanban/new`,
+    `${devUrl}/kanban/new`,
     { kanban },
     {
       headers: {

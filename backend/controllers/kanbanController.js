@@ -5,7 +5,7 @@ const createKanbanFolders = async (kanbanId, folders) => {
     return { ...folder, projectId: kanbanId };
   });
   try {
-    const newFolders = await prisma.folders.createMany({
+    const newFolders = await prisma.folder.createMany({
       data: foldersWithRef,
     });
     if (newFolders) {
@@ -39,7 +39,7 @@ export const createNewKanban = async (req, res) => {
             ? ". Unfortunately there was a problem creating the folders to your project. Please go into your new Kanban project and try again"
             : " and folders associated with your project"
         }`,
-        kanaban: newKanban,
+        kanban: { ...newKanban, folders: kanbanFolders },
       });
     }
     if (!newKanban) {
