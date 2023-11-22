@@ -4,7 +4,7 @@ const devUrl = "http://localhost:8080";
 const productionUrl = "https://calendar-next-gen-production.up.railway.app";
 
 export const getUserData = (token) => {
-  const res = Axios.get(`${productionUrl}/user/data`, {
+  const res = Axios.get(`${devUrl}/user/data`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
