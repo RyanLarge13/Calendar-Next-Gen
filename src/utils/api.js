@@ -402,7 +402,7 @@ export const sendFriendRequestByEmail = (userEmail, token) => {
 
 export const createNewKanban = (token, kanban) => {
   const res = Axios.post(
-    `${devUrl}/kanban/new`,
+    `${productionUrl}/kanban/new`,
     { kanban },
     {
       headers: {
