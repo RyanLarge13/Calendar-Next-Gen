@@ -258,14 +258,14 @@ export default Home;
 
 ## Calendar Next Gen App
 
-**This is a Nextjs app router static website written in TypeScript**
+**This is a Frontend progressive web application built with React and written in Javascript**
 
-This directory within the code base contains all of the static site code for advertising, developing better SEO and optimization and the documentation for the application
+This directory within the code base contains all of the application code for Calendar Next Gen. This is the actual code that runs the app and is seperate from the server and landing page
 
 **"/Calendar-Next-Gen/src/\*"**
 
 [Go to the dir ->](https://github.com/RyanLarge13/Calendar-Next-Gen/src)
 
-For this website I have linked to the frameworks and libraries used for development in the package.json file
+For this application I have linked to the frameworks and libraries used for development and production in the package.json file
 
 [package.json](https://github.com/RyanLarge13/Calendar-Next-Gen/src/package.json)
