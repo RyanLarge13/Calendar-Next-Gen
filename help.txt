@@ -1,0 +1,38 @@
+
+  Welcome to [0;31mGit Shorts[0m help line...
+Here is a list of commands that can be ran with gs
+
+  COLOR TABLE: 
+  [
+    [0;32mGREEN[0m - gs
+    [0;34mBLUE[0m - command
+    [0;33mYELLOW[0m - arguments || key
+    [0;36mCYAN[0m - arguments || value
+  ]
+
+  CONFIG OPTIONS: 
+  [
+    [0;33mKEY[0m: <username>, [0;36mVALUE[0m: <Your github username> || <false> to ommit
+    [0;33mKEY[0m: <installer>, [0;36mVALUE[0m: <npm, yarn, etc...> || <false> to ommit
+  ]
+
+  [0;32mgs[0m [0;34mclone[0m -- This will clone an exsisting 
+  repository within your github account.
+
+  [0;32mgs[0m [0;34minit[0m [0;33m<repo name>[0m -- This command will initialize a new local 
+  repository and connect it with an exsiting new repo
+  on github.
+
+  [0;32mgs[0m [0;34m-p[0m -- Run git pull to update your local repo
+
+  [0;32mgs[0m [0;34mconf[0m [0;33m<key>[0m [0;36m<value>[0m -- To customize your experience
+  and add or change values to your gs configuration file, use
+  this command to configure each value so gs knows
+  what to use when running your commands. 
+  [0;31mSee config option above..[0m
+
+  [0;32mgs[0m [0;34mcommit[0m -- To commit your working directory and all files within it to the remote repository
+
+  [0;32mgs[0m [0;34m-H[0m -- Print this help page.
+
+  

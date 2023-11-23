@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Reminders from "./Reminders.jsx";
 import Lists from "./Lists.jsx";
 import Tasks from "./Tasks";
-import Kanbans from "./Kanbans"
+import Kanbans from "./Kanbans";
 import MainMenu from "./MainMenu";
 import { updateList } from "../utils/api.js";
 import InteractiveContext from "../context/InteractiveContext";
