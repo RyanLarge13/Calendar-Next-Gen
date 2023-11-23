@@ -68,7 +68,6 @@ const AddReminder = () => {
       userId: user.id,
       sentNotification: false,
       sentWebPush: false,
-      reminderRefId: "",
     };
     if (onlyNotify) {
       return createNotification(newNotification, token)

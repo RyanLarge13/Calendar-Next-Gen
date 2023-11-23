@@ -191,7 +191,7 @@ model Kanban {
 id String @id @unique @default(uuid())
 title String
 color String
-boards Folder[]
+folders Folder[]
 createdAt DateTime @default(now())
 User User   @relation(fields: [userId], references: [id])
 userId String

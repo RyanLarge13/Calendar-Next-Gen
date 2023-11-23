@@ -6,7 +6,7 @@ import {
   AiOutlineQrcode,
   AiOutlineArrowDown,
 } from "react-icons/ai";
-import { sendFriendRequestByEmail } from "../utils/api";
+import { sendFriendRequestByEmail, cancelAFriendRequest } from "../utils/api";
 import QRCodeScanner from "./QRCodeScanner";
 import UserContext from "../context/UserContext";
 
@@ -15,6 +15,7 @@ const Connections = ({ setOption }) => {
     user,
     friends,
     friendRequests,
+    setFriendRequests,
     connectionRequests,
     setFriends,
     qrCodeUrl,
@@ -51,10 +52,35 @@ const Connections = ({ setOption }) => {
         });
     }
   };
-  
-  const acceptRequest = (reqId) => {
-  	
+
+  const cancelFriendRequest = (recipientsEmail) => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+    }
+    if (token) {
+      cancelAFriendRequest(token, recipientsEmail)
+        .then((res) => {
+          const newSuccess = {
+            show: true,
+            title: "Canceled Friend Request", 
+            text: `Your friend request to ${recipientsEmail} was successfully canceled`, 
+            color: "bg-green-300",
+            hasCancel: false, 
+            actions: [{text: "close", func: () => setSystemNotif({show: false})}, {text:"undo", func: () => {}}]
+          };
+          setSystemNotif(newSuccess);
+          const filteredRequests = friendRequests.filter(
+            (req) => req.recipient.email !== recipientsEmail
+          );
+          setFriendRequests(filteredRequests);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   };
+
+  const acceptRequest = (reqId) => {};
 
   return (
     <motion.div
@@ -99,7 +125,10 @@ const Connections = ({ setOption }) => {
                 <button className="px-3 py-2 text-xs rounded-md shadow-md bg-red-300 font-semibold">
                   Deny
                 </button>
-                <button onClick={() => acceptRequest(friendReq.id)} className="px-3 py-2 text-xs rounded-md shadow-md bg-lime-300 font-semibold">
+                <button
+                  onClick={() => acceptRequest(friendReq.id)}
+                  className="px-3 py-2 text-xs rounded-md shadow-md bg-lime-300 font-semibold"
+                >
                   Accept
                 </button>
               </div>
@@ -188,7 +217,12 @@ const Connections = ({ setOption }) => {
               key={connectionReq.recipient.email}
               className="flex justify-between items-end p-3 rounded-md shadow-md my-3 relative bg-slate-100"
             >
-              <button className="absolute px-3 py-2 text-xs top-0 right-0 rounded-md shadow-md bg-red-300 font-semibold">
+              <button
+                onClick={() =>
+                  cancelFriendRequest(connectionReq.recipient.email)
+                }
+                className="absolute px-3 py-2 text-xs top-0 right-0 rounded-md shadow-md bg-red-300 font-semibold"
+              >
                 Cancel Request
               </button>
               <div>
