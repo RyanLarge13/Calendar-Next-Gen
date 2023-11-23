@@ -128,7 +128,10 @@ self.addEventListener("notificationclick", (event) => {
 });
 
 self.addEventListener("message", (event) => {
-  if (event.data.command === "closeNotifications") {
+  if (event.data && event.data.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
+  if (event.data && event.data.command === "closeNotifications") {
     closeOpenNotifications();
   }
 });

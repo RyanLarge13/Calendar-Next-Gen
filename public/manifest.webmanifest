@@ -1,4 +1,5 @@
 {
+  "id": "app.calng.calendarnextgen",
   "name": "Calendar Next Gen",
   "short_name": "CNG",
   "start_url": "/",
@@ -15,7 +16,6 @@
   "display_override": ["window-controls-overlay", "standalone"],
   "categories": ["business", "lifestyle", "productivity", "utilities"],
   "handle_links": "auto",
-  "id": "4a53c2ea-6b81-4c19-b77a-eeb013af1f8a",
   "edge_side_panel.preferred_width": {
     "preferred_width": 100
   },
@@ -44,15 +44,15 @@
       "type": "image/png"
     },
     {
-      "src": "android/android-launchericon-512-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
+      "src": "android/android-launchericon-192-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "android/android-launchericon-512-512.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
+      "type": "image/png"
     },
     {
       "src": "android/android-launchericon-512-512.png",
