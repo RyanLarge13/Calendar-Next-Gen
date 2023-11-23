@@ -19,6 +19,7 @@ const Connections = ({ setOption }) => {
     connectionRequests,
     setFriends,
     qrCodeUrl,
+    setSystemNotif,
   } = useContext(UserContext);
 
   const [pick, setPick] = useState(false);
@@ -53,6 +54,24 @@ const Connections = ({ setOption }) => {
     }
   };
 
+  const confirmCancel = (recipientsEmail) => {
+    const newConfirmation = {
+      show: true,
+      title: "Cancel Request",
+      text: `Are you sure you want to cancel your friend request to ${recipientsEmail}`,
+      color: "bg-purple-200",
+      hasCancel: true,
+      actions: [
+        { text: "close", func: () => setSystemNotif({ show: false }) },
+        {
+          text: "cancel request",
+          func: () => cancelFriendRequest(recipientsEmail),
+        },
+      ],
+    };
+    setSystemNotif(newConfirmation);
+  };
+
   const cancelFriendRequest = (recipientsEmail) => {
     const token = localStorage.getItem("authToken");
     if (!token) {
@@ -62,11 +81,14 @@ const Connections = ({ setOption }) => {
         .then((res) => {
           const newSuccess = {
             show: true,
-            title: "Canceled Friend Request", 
-            text: `Your friend request to ${recipientsEmail} was successfully canceled`, 
+            title: "Canceled Friend Request",
+            text: `Your friend request to ${recipientsEmail} was successfully canceled`,
             color: "bg-green-300",
-            hasCancel: false, 
-            actions: [{text: "close", func: () => setSystemNotif({show: false})}, {text:"undo", func: () => {}}]
+            hasCancel: false,
+            actions: [
+              { text: "close", func: () => setSystemNotif({ show: false }) },
+              { text: "undo", func: () => {} },
+            ],
           };
           setSystemNotif(newSuccess);
           const filteredRequests = friendRequests.filter(
@@ -219,7 +241,7 @@ const Connections = ({ setOption }) => {
             >
               <button
                 onClick={() =>
-                  cancelFriendRequest(connectionReq.recipient.email)
+                  confirmCancel(connectionReq.recipient.email)
                 }
                 className="absolute px-3 py-2 text-xs top-0 right-0 rounded-md shadow-md bg-red-300 font-semibold"
               >
