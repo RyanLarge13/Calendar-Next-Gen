@@ -398,6 +398,14 @@ export const sendFriendRequestByEmail = (userEmail, token) => {
   return res;
 };
 
+export const cancelAFriendRequest = (token, recipientsEmail) => {
+  const res = Axios.delete(
+    `${productionUrl}/cancel/request/email/${recipientsEmail}`,
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return res;
+};
+
 //Kanbans
 
 export const createNewKanban = (token, kanban) => {

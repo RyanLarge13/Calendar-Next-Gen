@@ -40,16 +40,14 @@ export const acceptRequest = async (req, res) => {
       });
     }
     if (newFriend) {
-      return res
-        .status(201)
-        .json({
-          message: `You and ${recipient.username} are now friends`,
-          friend: {
-            avatarUrl: recipient.avatarUrl,
-            username: recipient.username,
-            email: recipient.email,
-          },
-        });
+      return res.status(201).json({
+        message: `You and ${recipient.username} are now friends`,
+        friend: {
+          avatarUrl: recipient.avatarUrl,
+          username: recipient.username,
+          email: recipient.email,
+        },
+      });
     }
   } catch (err) {
     console.log(ere);
@@ -197,6 +195,58 @@ export const findUsersRequestsAndFriends = async (req, res) => {
     console.log(err);
     return res.status(500).json({
       message: `Server error, please try to re-fetch clients connections data`,
+    });
+  }
+};
+
+export const cancelFriendRequest = async (req, res) => {
+  const recipientsEmail = req.params.recipiemtsEmail;
+  const userId = req.user;
+  if (!userId) {
+    return res.status(401).json({
+      message:
+        "There was an error authenticating your request. Please login and try again",
+    });
+  }
+  try {
+    const recipient = await prisma.user.findUnique({
+      where: { email: friendEmail },
+    });
+    if (!recipient) {
+      return res.status(404).json({
+        message:
+          "The user you sent a friend request to does not exsist in our records. If you have a persistent request on your account and keep receiving this error please contact us",
+      });
+    }
+    if (recipient) {
+      const requestForFriendshipExists = await prisma.friendRequest.find({
+        where: { senderId: userId, recipientId: recipient.id },
+      });
+      if (!requestForFriendshipExists) {
+        return res.status(404).json({
+          message:
+            "No friend request has been sent to this user by you. Please refresh your application and see if the friend request still persists. If so, please contact us",
+        });
+      }
+      const deleteRequest = await prisma.friendRequest.delete({
+        where: {
+          senderId: userId,
+          recipientId: recipient.id,
+        },
+      });
+      if (!deleteRequest) {
+        return res.status(500).json({
+          message:
+            "There was a problem canceling your friend request. Please try to cancel your friend request one more time",
+        });
+      }
+      return res.status(200).json({message: `Your friend request was successfully canceled to ${recipientsEmail}`})
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      message:
+        "We apologize, something went wrong with the server. Please give us some time to fix the issue and try canceling your friend request again",
     });
   }
 };
