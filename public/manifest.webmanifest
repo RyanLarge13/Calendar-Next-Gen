@@ -65,7 +65,7 @@
     {
       "name": "Create Event",
       "short_name": "Event +",
-      "url": "/",
+      "url": "/create-event",
       "description": "Create a new event for today",
       "icons": [
         {
