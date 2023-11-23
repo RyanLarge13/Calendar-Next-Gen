@@ -32,8 +32,6 @@ export const InteractiveProvider = ({ children }) => {
         showDatePicker,
         showCategory,
         mainView,
-        currentRoute,
-        setCurrentRoute,
         showFullDatePicker,
         setShowFullDatePicker,
         setShowDatePicker,

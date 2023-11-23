@@ -89,7 +89,7 @@ const AddReminder = () => {
             })}`,
             color: "bg-cyan-100",
             hasCancel: true,
-            action: [
+            actions: [
               { text: "close", func: () => setSystemNotif({ show: false }) },
               { text: "delete notification", func: () => {} },
             ],
