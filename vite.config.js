@@ -21,16 +21,45 @@ export default defineConfig({
         "registerSw.js",
       ],
       manifest: {
+        id: "app.calng.calendarnextgen",
         name: "Calendar Next Gen",
         short_name: "CNG",
-        description:
-          "A next generation calendar application built for the orginized and busy",
         start_url: "/",
         display: "standalone",
-        orientation: "portrait",
         background_color: "#ffffff",
+        lang: "en",
+        scope: "/",
+        description:
+          "A next generation calendar application built for the orginized and busy",
+        orientation: "portrait",
         theme_color: "#ffffff",
         serviceworker: "/sw.js",
+        prefer_related_applications: false,
+        dir: "ltr",
+        display_override: ["window-controls-overlay", "standalone"],
+        categories: ["business", "lifestyle", "productivity", "utilities"],
+        handle_links: "auto",
+        "edge_side_panel.preferred_width": {
+          preferred_width: 100,
+        },
+        launch_handler: {
+          client_mode: "focus-existing",
+        },
+        scope_extensions: [{ origin: "*calng.app" }],
+        screenshots: [
+          {
+            src: "/screenshots/calng-mobile.png",
+            sizes: "509x802",
+            type: "image/jpg",
+            platform: "wide",
+          },
+          {
+            src: "/screenshots/calng-desktop.png",
+            sizes: "1369x799",
+            type: "image/jpg",
+            platform: "wide",
+          },
+        ],
         icons: [
           {
             src: "android/android-launchericon-192-192.png",
@@ -38,6 +67,12 @@ export default defineConfig({
             type: "image/png",
           },
           {
+            src: "android/android-launchericon-192-192.png",
+            sizes: "192x192",
+            type: "image/png",
+            purpose: "any",
+          },
+          {
             src: "android/android-launchericon-512-512.png",
             sizes: "512x512",
             type: "image/png",
@@ -46,7 +81,69 @@ export default defineConfig({
             src: "android/android-launchericon-512-512.png",
             sizes: "512x512",
             type: "image/png",
-            purpose: "any maskable",
+            purpose: "maskable",
+          },
+        ],
+        shortcuts: [
+          {
+            name: "Create Event",
+            short_name: "Event +",
+            url: "/create-event",
+            description: "Create a new event for today",
+            icons: [
+              {
+                src: "android/android-launchericon-192-192.png",
+                sizes: "192x192",
+                type: "image/png",
+              },
+            ],
+          },
+        ],
+        share_target: {
+          action: "/",
+          method: "POST",
+          enctype: "application/x-www-form-urlencoded",
+          params: {
+            title: "Share Event",
+            url: "/",
+          },
+        },
+        actions: [
+          {
+            name: "calendar",
+            method: "GET",
+            href: "/",
+          },
+        ],
+        file_handlers: [
+          {
+            action: "/open-pdf",
+            accept: {
+              "application/pdf": [".pdf"],
+            },
+            icons: [
+              {
+                src: "pdf-icon.png",
+                sizes: "256x256",
+                type: "image/png",
+              },
+            ],
+            launch_type: "single-client",
+          },
+          {
+            action: "/show-model",
+            accept: {
+              "application/sla": ".stl",
+              "application/octet-stream": ".fbx",
+            },
+            icons: [
+              {
+                src: "3d-printer-icon.png",
+                sizes: "256x256",
+                type: "image/png",
+              },
+            ],
+            launch_type: "multiple-clients",
           },
         ],
       },
