@@ -88,7 +88,7 @@ export default defineConfig({
           {
             name: "Create Event",
             short_name: "Event +",
-            url: "/create-event",
+            url: "/",
             description: "Create a new event for today",
             icons: [
               {
