@@ -79,7 +79,7 @@ const Reminders = () => {
           );
           setReminders(newReminders);
           const newSelected = selected.filter((item) => item.id !== id);
-          setSelected(newSelected)
+          setSelected(newSelected);
           if (newSelected.length < 1) {
             return setSelectable(false);
           }
@@ -99,7 +99,7 @@ const Reminders = () => {
   };
 
   return (
-    <motion.div className="p-3">
+    <motion.div className="p-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
       {reminders.length < 1 && (
         <div>
           <div className="rounded-md p-3 shadow-md my-5 flex justify-between items-center">

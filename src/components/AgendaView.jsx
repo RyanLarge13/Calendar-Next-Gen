@@ -114,9 +114,13 @@ const AgendaView = () => {
               <p className="bg-white p-2 rounded-md shadow-md font-semibold">
                 {event.summary}
               </p>
-              <p className="bg-white p-2 rounded-md shadow-md bg-opacity-75 mt-2">
-                {formatDbText(event.description)}
-              </p>
+              <div className="mt-3">
+                {formatDbText(event.description || "").map((text, index) => (
+                  <p key={index} className="text-[14px] font-semibold">
+                    {text}
+                  </p>
+                ))}
+              </div>
             </div>
           ))}
       </div>

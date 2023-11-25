@@ -92,7 +92,7 @@ const SideBar = () => {
   };
 
   return (
-    <div className="hidden xl:block w-[17vw] bg-white max-h-screen scrollbar-hide border-r border-slate-200 fixed top-0 left-0 bottom-0 z-10 p-3 overflow-y-auto scrollbar-hide pt-20">
+    <div className="hidden xl:block w-[17vw] bg-white max-h-screen scrollbar-hide border-r border-slate-200 fixed top-0 left-0 bottom-0 p-3 overflow-y-auto scrollbar-hide pt-20">
       <div className="bg-white bg-opacity-80 backdrop-blur-sm sticky top-0 rounded-md p-2">
         <div className="flex justify-between items-center px-3 mb-3">
           <BsFillArrowLeftCircleFill
@@ -193,7 +193,7 @@ const SideBar = () => {
               </p>
               <div className="mt-3">
                 {formatDbText(event.description || "").map((text, index) => (
-                  <p key={index} className="text-[14px]">
+                  <p key={index} className="text-[14px] font-semibold">
                     {text}
                   </p>
                 ))}
