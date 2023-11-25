@@ -400,7 +400,7 @@ export const sendFriendRequestByEmail = (userEmail, token) => {
 
 export const cancelAFriendRequest = (token, recipientsEmail) => {
   const res = Axios.delete(
-    `${productionUrl}/cancel/request/email/${recipientsEmail}`,
+    `${productionUrl}/friends/cancel/request/email/${recipientsEmail}`,
     { headers: { Authorization: `Bearer ${token}` } }
   );
   return res;

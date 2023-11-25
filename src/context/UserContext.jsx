@@ -28,6 +28,7 @@ export const UserProvider = ({ children }) => {
     localStorage.getItem("authToken") || false
   );
   const [events, setEvents] = useState([]);
+  const [staticEvents, setStaticEvents] = useState([]);
   const [googleEvetns, setGoogleEvents] = useState([]);
   const [upcoming, setUpcoming] = useState([]);
   const [refresh, setRefresh] = useState(false);
@@ -50,6 +51,8 @@ export const UserProvider = ({ children }) => {
   const updateStatus = () => {
     setIsOnline(navigator.onLine);
   };
+
+  useEffect(() => {}, []);
 
   useEffect(() => {
     const currentDate = new Date();
@@ -209,6 +212,7 @@ export const UserProvider = ({ children }) => {
             });
           }
           setEvents(user.events);
+          setStaticEvents(user.events);
           const sortedReminders = user.reminders.sort(
             (a, b) => new Date(a.time) - new Date(b.time)
           );
@@ -387,6 +391,7 @@ export const UserProvider = ({ children }) => {
         connectionRequests,
         friendRequests,
         upcoming,
+        staticEvents,
         setKanbans,
         setConnectionRequests,
         setFriendRequests,

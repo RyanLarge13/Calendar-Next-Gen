@@ -26,7 +26,7 @@ const MainPage = () => {
               <Stickies />
               <div className="flex">
                 <SideBar />
-                <div className="overflow-hidden w-full h-full">
+                <div className="overflow-hidden w-full h-full xl:ml-[17vw]">
                   <Calendar />
                 </div>
               </div>

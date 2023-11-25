@@ -6,6 +6,7 @@ import {
   BsFillArrowRightCircleFill,
 } from "react-icons/bs";
 import UserContext from "../context/UserContext";
+import { formatDbText } from "../utils/helpers";
 
 const SideBar = () => {
   const { events, upcoming } = useContext(UserContext);
@@ -91,18 +92,8 @@ const SideBar = () => {
   };
 
   return (
-    <div className="hidden xl:block w-[20vw] bg-white min-h-screen max-h-screen scrollbar-hide border-r border-slate-200 relative">
-      <div className="w-[17vw] fixed top-0 right-0 left-0 p-3 bg-white">
-        <div className="flex gap-x-2 justify-start items-end mb-10">
-          <img
-            src="/favicon.svg"
-            alt="logo"
-            width={35}
-            height={35}
-            className="rounded-md shadow-md"
-          />
-          <p className="text-xl">CNG</p>
-        </div>
+    <div className="hidden xl:block w-[17vw] bg-white max-h-screen scrollbar-hide border-r border-slate-200 fixed top-0 left-0 bottom-0 z-10 p-3 overflow-y-auto scrollbar-hide pt-20">
+      <div className="bg-white bg-opacity-80 backdrop-blur-sm sticky top-0 rounded-md p-2">
         <div className="flex justify-between items-center px-3 mb-3">
           <BsFillArrowLeftCircleFill
             onClick={() => handleMonthYearChange("minus")}
@@ -119,7 +110,6 @@ const SideBar = () => {
             className="cursor-pointer"
           />
         </div>
-
         <div className="shadow-lg rounded-md p-2">
           <div className="flex justify-between items-start mb-3">
             {weekDays.map((day, index) => (
@@ -160,7 +150,7 @@ const SideBar = () => {
                         `${temporaryMonth + 1}/${
                           index - temporaryPaddingDays + 1
                         }/${temporaryYear}` && "shadow-emerald-300"
-                    } relative w-full rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start gap-y-1 cursor-pointer`}
+                    } relative w-full rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start gap-y-1 cursor-pointer hover:scale-[1.25] duration-200`}
                   >
                     <div
                       className={`text-center text-sm my-1 ${
@@ -187,12 +177,12 @@ const SideBar = () => {
           </button>
         )}
       </div>
-      <div className="overflow-y-auto fixed top-[55vh] bottom-0 left-0 w-[17vw] scrollbar-hide">
+      <div>
         {upcoming.length > 0 &&
           upcoming.map((event) => (
             <div
               key={event.id}
-              className={`${event.color} p-3 rounded-md shadow-md my-5 mx-3`}
+              className={`${event.color} p-3 rounded-md shadow-md my-5`}
             >
               <p className="mb-2">
                 In <span className="text-2xl font-semibold">{event.diff}</span>{" "}
@@ -201,9 +191,13 @@ const SideBar = () => {
               <p className="text-sm bg-white p-2 rounded-md shadow-md font-semibold">
                 {event.summary}
               </p>
-              <p className="text-sm mt-2 bg-white bg-opacity-25 p-2 rounded-md shadow-md">
-                {event.description}
-              </p>
+              <div className="mt-3">
+                {formatDbText(event.description || "").map((text, index) => (
+                  <p key={index} className="text-[14px]">
+                    {text}
+                  </p>
+                ))}
+              </div>
             </div>
           ))}
       </div>

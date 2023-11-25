@@ -6,7 +6,8 @@ import UserContext from "../context/UserContext";
 
 const Search = () => {
   const { filters, setFilters } = useContext(InteractiveContext);
-  const { setSystemNotif, events } = useContext(UserContext);
+  const { setSystemNotif, events, setEvents, staticEvents } =
+    useContext(UserContext);
 
   const [searchText, setSearchText] = useState("");
 
@@ -27,7 +28,7 @@ const Search = () => {
     }
     const unbiasedUserInput = searchText.toLowerCase();
     const filteredEvents = events.filter((event) => {
-      const eventTitle = event.title.toLowerCase();
+      const eventTitle = event.summary.toLowerCase();
       const eventDescription = event.description.toLowerCase();
       return (
         event.date.includes(unbiasedUserInput) ||
@@ -35,7 +36,12 @@ const Search = () => {
         eventDescription.includes(unbiasedUserInput)
       );
     });
-    setNewFilteredEvents(filteredEvents);
+    setEvents(filteredEvents);
+  };
+
+  const clearSearchAndFilters = () => {
+    setSearchText("");
+    setEvents(staticEvents);
   };
 
   return (
@@ -47,26 +53,24 @@ const Search = () => {
           animate={{ y: 0, opacity: 1 }}
           className="fixed top-20 right-0 left-0 bg-white rounded-md shadow-md pt-5 px-5 pb-2 z-10"
         >
-        <form
-          onSubmit={(e) => search(e)}
-        >
-          <div className="flex justify-between items-center">
-            <input
-              className="w-full h-full p-3 outline-none border-none"
-              placeholder="Search events, dates & locations!"
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-            />
-            <button type="submit">
-              <BsSearch className="mr-2" />
-            </button>
-          </div>
+          <form onSubmit={(e) => search(e)}>
+            <div className="flex justify-between items-center">
+              <input
+                className="w-full h-full p-3 outline-none border-none"
+                placeholder="Search events, dates & locations!"
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+              />
+              <button type="submit">
+                <BsSearch className="mr-2" />
+              </button>
+            </div>
           </form>
           <div className="flex justify-between items-center mt-2">
             <button type="text" onClick={() => setFilters(null)}>
               cancel
             </button>
-            <button type="text" onClick={() => setSearchText("")}>
+            <button type="text" onClick={() => clearSearchAndFilters()}>
               clear
             </button>
           </div>
