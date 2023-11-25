@@ -33,7 +33,7 @@ export const acceptRequest = async (req, res) => {
       userId: myId,
       friendEmail: email,
     };
-    const newFriend = await prisma.friend.create({ data: friemd });
+    const newFriend = await prisma.friend.create({ data: friend });
     if (!newFriend) {
       return res.status(500).json({
         message: `We apologize for the inconvenience, something went wrong on the server and we could not process your request. Please reload the page and try again.`,
@@ -200,7 +200,7 @@ export const findUsersRequestsAndFriends = async (req, res) => {
 };
 
 export const cancelFriendRequest = async (req, res) => {
-  const recipientsEmail = req.params.recipiemtsEmail;
+  const recipientsEmail = req.params.recipientsEmail;
   const userId = req.user;
   if (!userId) {
     return res.status(401).json({
@@ -210,7 +210,7 @@ export const cancelFriendRequest = async (req, res) => {
   }
   try {
     const recipient = await prisma.user.findUnique({
-      where: { email: friendEmail },
+      where: { email: recipientsEmail },
     });
     if (!recipient) {
       return res.status(404).json({
@@ -240,7 +240,9 @@ export const cancelFriendRequest = async (req, res) => {
             "There was a problem canceling your friend request. Please try to cancel your friend request one more time",
         });
       }
-      return res.status(200).json({message: `Your friend request was successfully canceled to ${recipientsEmail}`})
+      return res.status(200).json({
+        message: `Your friend request was successfully canceled to ${recipientsEmail}`,
+      });
     }
   } catch (err) {
     console.log(err);
