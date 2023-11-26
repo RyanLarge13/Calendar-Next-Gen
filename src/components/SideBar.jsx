@@ -141,11 +141,6 @@ const SideBar = () => {
                     onClick={() => handleDayClick(index)}
                     key={index}
                     className={`${
-                      dayNumber === dateObj.getDay() &&
-                      temporaryMonth === dateObj.getMonth() &&
-                      temporaryYear === dateObj.getFullYear() &&
-                      "shadow-red-300"
-                    } ${
                       temporaryString ===
                         `${temporaryMonth + 1}/${
                           index - temporaryPaddingDays + 1
