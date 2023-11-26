@@ -48,14 +48,15 @@ const Header = () => {
       {menu ? (
         <MenuNavigation />
       ) : (
-        <header className="fixed top-0 left-0 right-0 bg-white z-[20] flex justify-between p-5 mb-5 shadow-lg rounded-b-lg">
-          <RiMenuUnfoldFill
+        <header className="fixed top-0 left-0 right-0 bg-slate-50 z-[10] flex justify-between p-5 mb-5 shadow-lg rounded-b-lg">
+          <button
             onClick={() => {
               setShowLogin(false);
               setMenu(true);
             }}
-            className="cursor-pointer"
-          />
+          >
+            <RiMenuUnfoldFill />
+          </button>
           {view === "month" && (
             <div className="flex justify-center items-center">
               <BsFillArrowLeftCircleFill
@@ -65,7 +66,7 @@ const Header = () => {
               <motion.h1
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="mx-5"
+                className="mx-5 cursor-pointer"
                 onClick={() => setShowDatePicker(true)}
               >{`${dt.toLocaleString("default", {
                 month: "long",

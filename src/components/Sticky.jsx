@@ -17,7 +17,7 @@ const Sticky = ({ sticky }) => {
   const [expand, setExpand] = useState(false);
   const [pin, setPin] = useState(sticky.pin);
   const [fullScreen, setFullScreen] = useState(false);
-  const [minimize, setMinimize] = useState(false);
+  const [minimize, setMinimize] = useState(true);
 
   const stickyRef = useRef(null);
 
@@ -87,7 +87,7 @@ const Sticky = ({ sticky }) => {
 
   return (
     <motion.div
-      initial={{ scale: 0 }}
+      initial={{ opacity: 0 }}
       exit={{ scale: 0 }}
       animate={
         !minimize
@@ -98,12 +98,12 @@ const Sticky = ({ sticky }) => {
                   top: getTop(),
                   left: getLeft(),
                   width: window.innerWidth,
-                  scale: 1,
+                  opacity: 1,
                 }
-              : { scale: 1, height: 500, width: 250 }
-            : { scale: 1, height: 175, width: 175 }
+              : { opacity: 1, height: 500, width: 250 }
+            : { opacity: 1, height: 175, width: 175 }
           : {
-              scale: 1,
+              opacity: 1,
               height: 150,
               width: 10,
               overflow: "hidden",
@@ -120,7 +120,7 @@ const Sticky = ({ sticky }) => {
         bottom: window.innerHeight - 200,
       }}
       ref={stickyRef}
-      className={`markdown z-[999] shadow-xl rounded-md fixed ${sticky.color}`}
+      className={`markdown z-[999] shadow-xl rounded-md fixed w-[10px] h-[150px] ${sticky.color}`}
       onClick={() => {
         if (!!minimize) {
           if ("vibrate" in navigator) {

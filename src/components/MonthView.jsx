@@ -7,6 +7,7 @@ import { calendar } from "../motion";
 import DatesContext from "../context/DatesContext";
 import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
+import PopUpMonthViewWindow from "./PopUpMonthViewWindow";
 
 const MonthView = () => {
   const { events, setEvents } = useContext(UserContext);
@@ -30,6 +31,10 @@ const MonthView = () => {
   const [confirmDates, setConfirmDates] = useState(false);
   const [longPressActive, setLongPressActive] = useState(false);
   const [longPressTimeout, setLongPressTimeout] = useState(null);
+  const [newPopup, setNewPopup] = useState(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [popupTimeout, setPopupTimeout] = useState(null);
+  const [popupEvents, setPopupEvents] = useState([]);
 
   const targetDate = new Date(dateString);
 
@@ -113,8 +118,44 @@ const MonthView = () => {
     setType("event");
     setAddNewEvent(true);
     setOpenModal(true);
-    setSelected([])
+    setSelected([]);
   };
+
+  const createPopup = (e, eventsToRender) => {
+    const mousePositions = {
+      x: e.clientX,
+      y: e.clientY,
+    };
+    if (popupTimeout) {
+      clearTimeout(popupTimeout);
+    }
+    const timeoutId = setTimeout(() => {
+      setPopupEvents(eventsToRender);
+      setMousePosition(mousePositions);
+      setNewPopup(true);
+    }, 3000);
+    setPopupTimeout(timeoutId);
+  };
+
+  const clearPopup = () => {
+    if (popupTimeout) {
+      clearTimeout(popupTimeout);
+      setPopupTimeout(null);
+    }
+    setPopupEvents([]);
+    setNewPopup(false);
+    setMousePosition({ x: 0, y: 0 });
+  };
+
+  useEffect(() => {
+    return () => {
+      if (popupTimeout) {
+        clearTimeout(popupTimeout);
+        setPopupEvents([]);
+        setNewPopup(false);
+      }
+    };
+  }, [popupTimeout]);
 
   return (
     <motion.div
@@ -123,6 +164,12 @@ const MonthView = () => {
       animate="show"
       className="grid grid-cols-7 min-h-[50vh] h-[83vh] gap-1"
     >
+      {newPopup && (
+        <PopUpMonthViewWindow
+          positions={mousePosition}
+          eventsToRender={popupEvents}
+        />
+      )}
       {[...Array(paddingDays + daysInMonth)].map((_, index) => {
         const isCurrentDate =
           index - paddingDays + 1 === day &&
@@ -134,6 +181,9 @@ const MonthView = () => {
         return (
           <motion.div
             variants={calendarBlocks}
+            whileHover={{ scale: 1.025 }}
+            // onMouseEnter={(e) => createPopup(e, eventsToRender)}
+            // onMouseLeave={() => clearPopup()}
             onContextMenu={(e) => {
               e.preventDefault();
               handleDayLongPress(index);
@@ -150,7 +200,7 @@ const MonthView = () => {
                 index - paddingDays + 1 === day &&
                 month === dateObj.getMonth() &&
                 year === dateObj.getFullYear() &&
-                "w-[25px] h-[25px] rounded-full bg-cyan-100 shadow-sm"
+                "w-[25px] h-[25px] rounded-full bg-cyan-100 shadow-md font-semibold"
               }`}
             >
               <p>{index >= paddingDays && index - paddingDays + 1}</p>

@@ -1,5 +1,6 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import { motion } from "framer-motion";
+import { formatDbText } from "../utils/helpers";
 import UserContext from "../context/UserContext";
 
 const MainMenu = ({ timeOfDay }) => {
@@ -10,7 +11,7 @@ const MainMenu = ({ timeOfDay }) => {
       initial={{ x: "-10%", opacity: 0 }}
       exit={{ x: "-10%", opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
-      className="pt-10"
+      className="pt-10 lg:px-40"
     >
       <h1 className="text-4xl pb-2 font-semibold">{timeOfDay}</h1>
       {user.username && <p className="ml-5 font-semibold">{user.username}</p>}
@@ -33,9 +34,13 @@ const MainMenu = ({ timeOfDay }) => {
                 <p className="text-sm bg-white p-2 rounded-md shadow-md font-semibold">
                   {event.summary}
                 </p>
-                <p className="text-sm mt-2 bg-white bg-opacity-25 p-2 rounded-md shadow-md">
-                  {event.description}
-                </p>
+                <div className="mt-3">
+                  {formatDbText(event.description || "").map((text, index) => (
+                    <p key={index} className="text-[14px] font-semibold">
+                      {text}
+                    </p>
+                  ))}
+                </div>
               </div>
             ))}
         </div>

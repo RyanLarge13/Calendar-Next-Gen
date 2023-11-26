@@ -51,7 +51,7 @@ const Lists = () => {
   };
 
   return (
-    <motion.div className="py-3 relative">
+    <motion.div className="py-3 relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
       {lists.length < 1 && (
         <div className="px-3">
           <div className="rounded-md p-3 shadow-md my-5 flex justify-between items-center">
