@@ -4,6 +4,7 @@ import Reminders from "./Reminders.jsx";
 import Lists from "./Lists.jsx";
 import Tasks from "./Tasks";
 import Kanbans from "./Kanbans";
+//import Stickies from "./Stickies";
 import MainMenu from "./MainMenu";
 import { updateList } from "../utils/api.js";
 import InteractiveContext from "../context/InteractiveContext";
@@ -118,6 +119,16 @@ const Menu = () => {
                   animate={{ x: 0, opacity: 1 }}
                 >
                   <Kanbans />
+                </motion.div>
+              )}
+              {showCategory === "stickynote" && (
+                <motion.div
+                  initial={{ x: "-10%", opacity: 0 }}
+                  exit={{ x: "-10%", opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  className="relative"
+                >
+                 {/* <Stickies />*/} 
                 </motion.div>
               )}
             </div>
