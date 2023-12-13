@@ -92,7 +92,7 @@ const FullDatePicker = () => {
     if (newMonth < staticMonths.length - 1) {
       setNewMonth(newMonth + 1);
       scrollMonthRef.current.scrollTo({
-        top: (newMonth + 1) * 60, // Assuming each item is 60px tall
+        top: (newMonth + 1) * 60,
         behavior: "smooth",
       });
     }
@@ -134,7 +134,7 @@ const FullDatePicker = () => {
       const newYearToSet = Number(staticYears[index + 1]);
       setNewYear(newYearToSet);
       scrollYearRef.current.scrollTo({
-        top: (index + 1) * 60, // Assuming each item is 60px tall
+        top: (index + 1) * 60,
         behavior: "smooth",
       });
     }
@@ -146,7 +146,7 @@ const FullDatePicker = () => {
       const newYearToSet = Number(staticYears[index - 1]);
       setNewYear(newYearToSet);
       scrollYearRef.current.scrollTo({
-        top: (index - 1) * 60, // Assuming each item is 60px tall
+        top: (index - 1) * 60,
         behavior: "smooth",
       });
     }
@@ -207,11 +207,17 @@ const FullDatePicker = () => {
 
   return (
     <>
-      <div
+      <motion.div
+initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
         className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm z-[998]"
         onClick={() => setShowFullDatePicker(false)}
-      ></div>
-      <div className="fixed top-40 left-[50%] translate-x-[-50%] rounded-md shadow-md bg-white p-5 z-[999]">
+      ></motion.div>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.75, x: "-50%" }}
+        animate={{ opacity: 1, scale: 1, x: "-50%" }}
+        className="fixed top-40 left-[50%] translate-x-[-50%] rounded-md shadow-md bg-white p-5 z-[999]"
+      >
         <div className="flex gap-x-3">
           <div>
             <h2 className="text-lg">Month</h2>
@@ -306,7 +312,7 @@ const FullDatePicker = () => {
                   whileInView={{ scale: 1 }}
                   className="h-[60px]"
                 >
-                  <p className="text-center" >{day + 1}</p>
+                  <p className="text-center">{day + 1}</p>
                 </motion.div>
               ))}
             </div>
@@ -327,7 +333,7 @@ const FullDatePicker = () => {
             Okay
           </button>
         </div>
-      </div>
+      </motion.div>
     </>
   );
 };

@@ -219,7 +219,7 @@ export const cancelFriendRequest = async (req, res) => {
       });
     }
     if (recipient) {
-      const requestForFriendshipExists = await prisma.friendRequest.find({
+      const requestForFriendshipExists = await prisma.friendRequest.findFirst({
         where: { senderId: userId, recipientId: recipient.id },
       });
       if (!requestForFriendshipExists) {
