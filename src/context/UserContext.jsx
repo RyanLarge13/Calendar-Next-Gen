@@ -319,18 +319,7 @@ export const UserProvider = ({ children }) => {
           { text: "close", func: () => setSystemNotif({ show: false }) },
           {
             text: "mark as read",
-            func: () => {
-              const updatedNotifications = notifications
-                .map((notif) =>
-                  notif.id === notification.id
-                    ? { ...notif, read: true }
-                    : notif
-                )
-                .sort((a, b) => b.time - a.time);
-              setNotifications(updatedNotifications);
-              setSystemNotif({ show: false });
-              markAsRead(notification.id);
-            },
+            func: () => markAsReadClient(notification.id),
           },
         ],
       });
@@ -350,6 +339,21 @@ export const UserProvider = ({ children }) => {
         serverSentSource.close(); // Close the SSE connection before unloading the window
       }
     });
+  };
+
+  const markAsReadClient = (notifId) => {
+    setNotifications((prevNotifs) => {
+      const updated = prevNotifs.map((notif) => {
+        if (notif.id === notifId) {
+          return { ...notif, read: true };
+        }
+        return notif;
+      });
+      const sorted = updates.sort((a, b) => b.time - a.time);
+      return sorted;
+    });
+    setSystemNotif({ show: false });
+    markAsRead(notification.id);
   };
 
   const openIndexDB = () => {
