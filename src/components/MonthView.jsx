@@ -200,7 +200,7 @@ const MonthView = () => {
                 index - paddingDays + 1 === day &&
                 month === dateObj.getMonth() &&
                 year === dateObj.getFullYear() &&
-                "w-[25px] h-[25px] rounded-full bg-cyan-100 shadow-md font-semibold"
+                "w-[25px] h-[25px] rounded-full bg-cyan-100 shadow-md"
               }`}
             >
               <p>{index >= paddingDays && index - paddingDays + 1}</p>
@@ -243,7 +243,11 @@ const MonthView = () => {
         );
       })}
       {confirmDates && (
-        <motion.div className="fixed bottom-20 left-[50%] translate-x-[-50%] bg-cyan-100 rounded-md flex justify-between items-center gap-x-20">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed bottom-20 left-[50%] translate-x-[-50%] bg-cyan-100 rounded-md flex justify-between items-center gap-x-20"
+        >
           <button
             className="text-lg p-5"
             onClick={() => {
