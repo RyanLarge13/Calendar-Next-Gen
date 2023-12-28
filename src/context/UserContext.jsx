@@ -343,13 +343,10 @@ export const UserProvider = ({ children }) => {
 
   const markAsReadClient = (notifId) => {
     setNotifications((prevNotifs) => {
-      const updated = prevNotifs.map((notif) => {
-        if (notif.id === notifId) {
-          return { ...notif, read: true };
-        }
-        return notif;
-      });
-      const sorted = updates.sort((a, b) => b.time - a.time);
+      const updated = prevNotifs.map((notif) =>
+        notif.id === notifId ? { ...notif, read: true } : notif
+      );
+      const sorted = updated.sort((a, b) => b.time - a.time);
       return sorted;
     });
     setSystemNotif({ show: false });
