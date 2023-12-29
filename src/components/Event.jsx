@@ -1,10 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import { AiFillCloseCircle } from "react-icons/ai";
-import {
-  BsFillArrowLeftCircleFill,
-  BsFillArrowRightCircleFill,
-  BsFillTrashFill,
-} from "react-icons/bs";
+import { BsFillTrashFill } from "react-icons/bs";
 import { FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";
 import { MdLocationPin, MdOutlineDragIndicator } from "react-icons/md";
@@ -15,25 +11,22 @@ import { formatDbText } from "../utils/helpers";
 import GoogleMaps from "./GoogleMaps";
 import Masonry from "react-masonry-css";
 import InteractiveContext from "../context/InteractiveContext";
-import DatesContext from "../context/DatesContext";
 
-const Event = ({ dayEvents }) => {
+const Event = () => {
   const { event, setEvent } = useContext(InteractiveContext);
-  const { dateObj, setString } = useContext(DatesContext);
   const [open, setOpen] = useState(true);
   const [timeLeft, setTimeLeft] = useState(null);
   const [fetchedImages, setFetchedImages] = useState([]);
   const [width, setWidth] = useState(0);
   const [timeInEvent, setTimeInEvent] = useState(0);
-  const [index, setIndex] = useState(dayEvents.indexOf(event));
   const [imagesLoading, setImagesLoading] = useState(false);
 
   const controls = useDragControls();
 
   const breakpointColumnsObj = {
-    default: 4, // Number of columns by default
-    1100: 3, // Number of columns on screens > 1100px
-    700: 2, // Number of columns on screens > 700px
+    default: 4,
+    1100: 3,
+    700: 2,
   };
 
   useEffect(() => {
@@ -81,8 +74,6 @@ const Event = ({ dayEvents }) => {
       if (totalMinutesToStart <= nowMinutes + nowHourMinutes) {
         clearInterval(interval);
         clearInterval(timeLeftInterval);
-        // clearInterval(timeInLeft);
-        // setTimeInEvent(98);
         setWidth(98);
       }
     }
@@ -148,32 +139,6 @@ const Event = ({ dayEvents }) => {
       clearInterval(timeInLeft);
     };
   }, [event]);
-
-  const getPreviousEvent = () => {
-    if (index > 0) {
-      setTimeLeft(null);
-      setEvent(dayEvents[index - 1]);
-      setIndex((prev) => prev - 1);
-    } else {
-      setOpen(false);
-      setTimeout(() => {
-        setEvent(null);
-      }, 100);
-    }
-  };
-
-  const getNextEvent = () => {
-    if (index < dayEvents.length - 1) {
-      setTimeLeft(null);
-      setEvent(dayEvents[index + 1]);
-      setIndex((prev) => prev + 1);
-    } else {
-      setOpen(false);
-      setTimeout(() => {
-        setEvent(null);
-      }, 100);
-    }
-  };
 
   const checkToClose = (e, info) => {
     const end = info.point.y;
@@ -340,16 +305,10 @@ const Event = ({ dayEvents }) => {
               <p className="text-[14px]">No repeated events</p>
             )}
           </div>
-          <div className="sticky top-[50%] right-2 left-2 py-2 flex justify-between items-center text-xl">
-            {index > 0 ? (
-              <BsFillArrowLeftCircleFill onClick={() => getPreviousEvent()} />
-            ) : null}
-            {index < dayEvents.length - 1 ? (
-              <BsFillArrowRightCircleFill onClick={() => getNextEvent()} />
-            ) : null}
-          </div>
           {imagesLoading ? (
-            <p>Loading {event.attachmentLength} images...</p>
+            <p className="font-semibold text-sm">
+              Loading {event.attachmentLength} images...
+            </p>
           ) : (
             fetchedImages.length > 0 && (
               <Masonry

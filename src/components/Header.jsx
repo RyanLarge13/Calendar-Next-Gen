@@ -6,6 +6,7 @@ import {
   BsFillArrowLeftCircleFill,
   BsThreeDotsVertical,
 } from "react-icons/bs";
+import { useNavigate } from "react-router-dom";
 import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
 import DatesContext from "../context/DatesContext";
@@ -17,6 +18,8 @@ const Header = () => {
   const { user } = useContext(UserContext);
   const { menu, setShowDatePicker, setMenu, setShowLogin, view } =
     useContext(InteractiveContext);
+
+  const navigate = useNavigate();
 
   const changeDay = (operand) => {
     const newDay = new Date(theDay);
@@ -45,96 +48,93 @@ const Header = () => {
 
   return (
     <>
-      {menu ? (
-        <MenuNavigation />
-      ) : (
-        <header className="fixed top-0 left-0 right-0 bg-white z-[10] flex justify-between p-5 mb-5 shadow-lg rounded-b-lg">
-          <button
-            onClick={() => {
-              setShowLogin(false);
-              setMenu(true);
-            }}
-          >
-            <RiMenuUnfoldFill />
-          </button>
-          {view === "month" && (
-            <div className="flex justify-center items-center">
-              <BsFillArrowLeftCircleFill
-                onClick={() => setNav((prev) => prev - 1)}
-                className="text-xl cursor-pointer"
-              />
-              <motion.h1
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="mx-5 cursor-pointer"
-                onClick={() => setShowDatePicker(true)}
-              >{`${dt.toLocaleString("default", {
-                month: "long",
-              })} ${dt.getFullYear()}`}</motion.h1>
-              <BsFillArrowRightCircleFill
-                onClick={() => setNav((prev) => prev + 1)}
-                className="text-xl cursor-pointer"
-              />
-            </div>
-          )}
-          {view === "day" && (
-            <div className="flex justify-center items-center">
-              <BsFillArrowLeftCircleFill
-                onClick={() => changeDay("minus")}
-                className="text-xl cursor-pointer"
-              />
-              <h1 className="mx-5">
-                {theDay.toLocaleDateString("en-us", {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                })}
-              </h1>
-              <BsFillArrowRightCircleFill
-                onClick={() => changeDay("plus")}
-                className="text-xl cursor-pointer"
-              />
-            </div>
-          )}
-          {view === "week" && (
-            <div className="flex justify-center items-center">
-              <BsFillArrowLeftCircleFill
-                onClick={() => setWeekOffset((prev) => prev - 1)}
-                className="text-xl cursor-pointer"
-              />
-              <h1 className="mx-5 text-[12px]">
-                {currentWeek[0].toLocaleDateString()} -{" "}
-                {currentWeek[currentWeek.length - 1].toLocaleDateString()}
-              </h1>
-              <BsFillArrowRightCircleFill
-                onClick={() => setWeekOffset((prev) => prev + 1)}
-                className="text-xl cursor-pointer"
-              />
-            </div>
-          )}
-          <div className="w-[25px] h-[25px]">
-            {user ? (
-              <img
-                src={user.avatarUrl}
-                onClick={() => {
-                  setMenu(false);
-                  setShowLogin((prev) => !prev);
-                }}
-                alt="user"
-                className="w-[25px] h-[25px] rounded-full cursor-pointer shadow-md"
-              />
-            ) : (
-              <BsThreeDotsVertical
-                onClick={() => {
-                  setMenu(false);
-                  setShowLogin((prev) => !prev);
-                }}
-                className="cursor-pointer"
-              />
-            )}
+      <header className="fixed top-0 left-0 right-0 bg-white z-[10] flex justify-between p-5 mb-5 shadow-lg rounded-b-lg">
+        <button
+          onClick={() => {
+            setShowLogin(false);
+            setMenu(true);
+            navigate("/menu");
+          }}
+        >
+          <RiMenuUnfoldFill />
+        </button>
+        {view === "month" && (
+          <div className="flex justify-center items-center">
+            <BsFillArrowLeftCircleFill
+              onClick={() => setNav((prev) => prev - 1)}
+              className="text-xl cursor-pointer"
+            />
+            <motion.h1
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="mx-5 cursor-pointer"
+              onClick={() => setShowDatePicker(true)}
+            >{`${dt.toLocaleString("default", {
+              month: "long",
+            })} ${dt.getFullYear()}`}</motion.h1>
+            <BsFillArrowRightCircleFill
+              onClick={() => setNav((prev) => prev + 1)}
+              className="text-xl cursor-pointer"
+            />
           </div>
-        </header>
-      )}
+        )}
+        {view === "day" && (
+          <div className="flex justify-center items-center">
+            <BsFillArrowLeftCircleFill
+              onClick={() => changeDay("minus")}
+              className="text-xl cursor-pointer"
+            />
+            <h1 className="mx-5">
+              {theDay.toLocaleDateString("en-us", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })}
+            </h1>
+            <BsFillArrowRightCircleFill
+              onClick={() => changeDay("plus")}
+              className="text-xl cursor-pointer"
+            />
+          </div>
+        )}
+        {view === "week" && (
+          <div className="flex justify-center items-center">
+            <BsFillArrowLeftCircleFill
+              onClick={() => setWeekOffset((prev) => prev - 1)}
+              className="text-xl cursor-pointer"
+            />
+            <h1 className="mx-5 text-[12px]">
+              {currentWeek[0].toLocaleDateString()} -{" "}
+              {currentWeek[currentWeek.length - 1].toLocaleDateString()}
+            </h1>
+            <BsFillArrowRightCircleFill
+              onClick={() => setWeekOffset((prev) => prev + 1)}
+              className="text-xl cursor-pointer"
+            />
+          </div>
+        )}
+        <div className="w-[25px] h-[25px]">
+          {user ? (
+            <img
+              src={user.avatarUrl}
+              onClick={() => {
+                setMenu(false);
+                setShowLogin((prev) => !prev);
+              }}
+              alt="user"
+              className="w-[25px] h-[25px] rounded-full cursor-pointer shadow-md"
+            />
+          ) : (
+            <BsThreeDotsVertical
+              onClick={() => {
+                setMenu(false);
+                setShowLogin((prev) => !prev);
+              }}
+              className="cursor-pointer"
+            />
+          )}
+        </div>
+      </header>
     </>
   );
 };

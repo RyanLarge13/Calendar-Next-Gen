@@ -13,11 +13,14 @@ import {
 import { CgOptions } from "react-icons/cg";
 import { MdViewAgenda } from "react-icons/md";
 import { TbSwitch3 } from "react-icons/tb";
+import { useNavigate } from "react-router-dom";
 import InteractiveContext from "../context/InteractiveContext";
 
 const Views = () => {
   const { setView, setFilters, showLogin, menu, setMenu } =
     useContext(InteractiveContext);
+
+  const navigate = useNavigate();
 
   const [show, setShow] = useState(false);
 
@@ -31,7 +34,10 @@ const Views = () => {
     <>
       {menu ? (
         <div
-          onClick={() => setMenu(false)}
+          onClick={() => {
+            setMenu(false);
+            navigate("/");
+          }}
           className="fixed cursor-pointer bottom-5 left-5 z-[700] p-3 rounded-full flex justify-center items-center bg-gradient-to-tr from-cyan-200 to-cyan-100 shadow-md"
         >
           <div>

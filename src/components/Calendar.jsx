@@ -1,8 +1,6 @@
 import { useState, useContext, useEffect } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import Modal from "./Modal";
-import ModalHeader from "./ModalHeader";
-import Menu from "./Menu";
+import { motion } from "framer-motion";
+import { Outlet } from "react-router-dom";
 import LoginLogout from "./LoginLogout";
 import Event from "./Event";
 import MonthView from "./MonthView";
@@ -20,60 +18,25 @@ const Calendar = () => {
   const { events, holidays, reminders, weekDays } = useContext(UserContext);
   const { showDatePicker, showFullDatePicker, view, event } =
     useContext(InteractiveContext);
-  const { finish, loading, theDay, openModal, dateString, string, dateObj } =
+  const { finish, loading, theDay, dateString, dateObj } =
     useContext(DatesContext);
 
   const [todaysEvents, setTodaysEvents] = useState([]);
   const [todaysReminders, setTodaysReminder] = useState([]);
-  const [allDayEvents, setAllDayEvents] = useState([]);
 
   useEffect(() => {
     const eventsToday = [...events, ...holidays].filter(
       (item) =>
         new Date(item.date).toLocaleDateString() === theDay.toLocaleDateString()
     );
-    if (string) {
-      const eventsForDay = [...events, ...holidays].filter((event) => {
-        const startDate = new Date(event.startDate);
-        const endDate = new Date(event.endDate);
-        startDate.setHours(0, 0, 0, 0);
-        endDate.setHours(0, 0, 0, 0);
-        for (
-          let currentDate = startDate;
-          currentDate <= endDate;
-          currentDate.setDate(currentDate.getDate() + 1)
-        ) {
-          if (currentDate.toLocaleDateString() === string) {
-            return true; // Event includes the 'string' date
-          }
-        }
-        return false; // Event does not include the 'string' date
-      });
-      const fullDayEvents = eventsForDay.filter((event) => {
-        const startDate = new Date(event.startDate);
-        const endDate = new Date(event.endDate);
-        startDate.setHours(0, 0, 0, 0);
-        endDate.setHours(0, 0, 0, 0);
-        const daysDifference = (endDate - startDate) / (24 * 60 * 60 * 1000);
-        if (
-          daysDifference >= 1 ||
-          event.end.endTime === null ||
-          event.start.startTime === null
-        ) {
-          return true;
-        }
-        return false;
-      });
-      setAllDayEvents(fullDayEvents);
-    }
-    setTodaysEvents(eventsToday);
     const remindersToday = reminders.filter(
       (reminder) =>
         new Date(reminder.time).toLocaleDateString() ===
         theDay.toLocaleDateString()
     );
+    setTodaysEvents(eventsToday);
     setTodaysReminder(remindersToday);
-  }, [theDay, events, reminders, string]);
+  }, [theDay, events, reminders]);
 
   return (
     <main className="px-2 mt-20">
@@ -123,14 +86,10 @@ const Calendar = () => {
         </section>
         {showDatePicker && <DatePicker />}
         {showFullDatePicker && <FullDatePicker />}
-        {openModal || event ? (
-          <ModalHeader allDayEvents={allDayEvents} />
-        ) : null}
-        <AnimatePresence>{openModal && <Modal />}</AnimatePresence>
-        <Menu />
         <LoginLogout />
-        {event && <Event dayEvents={todaysEvents} />}
+        {event && <Event />}
       </section>
+      <Outlet />
     </main>
   );
 };

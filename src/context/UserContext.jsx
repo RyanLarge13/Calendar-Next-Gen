@@ -52,8 +52,6 @@ export const UserProvider = ({ children }) => {
     setIsOnline(navigator.onLine);
   };
 
-  useEffect(() => {}, []);
-
   useEffect(() => {
     const currentDate = new Date();
     const sevenDaysInMilliseconds = 7 * 24 * 60 * 60 * 1000;

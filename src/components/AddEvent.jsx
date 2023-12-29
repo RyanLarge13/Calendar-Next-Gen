@@ -20,10 +20,10 @@ import Toggle from "./Toggle";
 import TimeSetter from "./TimeSetter";
 import SuggestCities from "./SuggestCities";
 
-const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
+const AddEvent = () => {
   const { setEvents, user, isOnline, setReminders, setSystemNotif } =
     useContext(UserContext);
-  const { setType } = useContext(InteractiveContext);
+  const { setType, setAddNewEvent } = useContext(InteractiveContext);
   const { string, setOpenModal, secondString } = useContext(DatesContext);
 
   // Basic event data
@@ -76,42 +76,13 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
     700: 2, // Number of columns on screens > 700px
   };
 
-  useEffect(() => {
-    if (passedStartTime != null) {
-      const splitStartTime = passedStartTime.split(":");
-      const today = new Date(string);
-      const month = today.getMonth();
-      const year = today.getFullYear();
-      const day = today.getDate();
-      const newStartTime = new Date(
-        year,
-        month,
-        day,
-        splitStartTime[0],
-        splitStartTime[1]
-      );
-      const formattedDateString = () => {
-        return `${
-          splitStartTime[0] > 12
-            ? splitStartTime[0] % 12
-            : splitStartTime[0] == 0
-            ? "12"
-            : splitStartTime[0]
-        }:${splitStartTime[1]} ${splitStartTime[0] >= 12 ? "PM" : "AM"}`;
-      };
-      setStartTime(true);
-      setStartWhen(() => newStartTime);
-      setStartTimeString(formattedDateString);
-    }
-  }, [passedStartTime]);
-
   const getEndDate = () => {
     if (secondString) {
       const newDate = new Date(secondString);
       const endDateObj = new Date(endWhen);
       newDate.setHours(endDateObj.getHours());
       newDate.setMinutes(endDateObj.getMinutes());
-     // newDate.setTimezoneOffset(() => endTimeZone || timeZone);
+      // newDate.setTimezoneOffset(() => endTimeZone || timeZone);
       return newDate;
     } else {
       return new Date(string);

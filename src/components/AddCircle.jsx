@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { AiFillSchedule } from "react-icons/ai";
 import { FaStickyNote } from "react-icons/fa";
 import { HiUserGroup } from "react-icons/hi";
+import { useNavigate } from "react-router-dom";
 import {
   BsFillCalendarPlusFill,
   BsFillCalendar2EventFill,
@@ -37,6 +38,8 @@ export const AddCircle = () => {
   const [show, setShow] = useState(false);
   const [showMenuBtns, setShowMenuBtns] = useState(false);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (showLogin) {
       setShow(false);
@@ -52,6 +55,7 @@ export const AddCircle = () => {
     setMenu(false);
     setOpenModal(true);
     setAddNewEvent(true);
+    navigate(`/modal`);
   };
 
   const prepareDelete = (type) => {

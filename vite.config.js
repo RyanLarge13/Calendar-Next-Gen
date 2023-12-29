@@ -80,9 +80,22 @@ export default defineConfig({
         ],
         shortcuts: [
           {
+            name: "Open App",
+            short_name: "Open App",
+            url: "/modal",
+            description: "Open the application",
+            icons: [
+              {
+                src: "android/android-launchericon-192-192.png",
+                sizes: "192x192",
+                type: "image/png",
+              },
+            ],
+          },
+          {
             name: "Create Event",
-            short_name: "Event +",
-            url: "/",
+            short_name: "New Event",
+            url: "/modal",
             description: "Create a new event for today",
             icons: [
               {
@@ -94,9 +107,22 @@ export default defineConfig({
           },
           {
             name: "Create Reminder",
-            short_name: "Reminder +",
-            url: "/",
+            short_name: "New Reminder",
+            url: "/modal",
             description: "Create a new reminder for today",
+            icons: [
+              {
+                src: "android/android-launchericon-192-192.png",
+                sizes: "192x192",
+                type: "image/png",
+              },
+            ],
+          },
+          {
+            name: "Open Menu",
+            short_name: "Menu",
+            url: "/menu",
+            description: "Open user menu",
             icons: [
               {
                 src: "android/android-launchericon-192-192.png",

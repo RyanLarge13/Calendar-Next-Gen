@@ -1,6 +1,7 @@
 import { useContext, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { calendarBlocks } from "../motion";
+import { useNavigate } from "react-router-dom";
 import { holidays } from "../constants";
 import { AiFillCheckCircle, AiFillCloseCircle } from "react-icons/ai";
 import { calendar } from "../motion";
@@ -36,6 +37,7 @@ const MonthView = () => {
   const [popupTimeout, setPopupTimeout] = useState(null);
   const [popupEvents, setPopupEvents] = useState([]);
 
+  const navigate = useNavigate();
   const targetDate = new Date(dateString);
 
   useEffect(() => {
@@ -87,6 +89,7 @@ const MonthView = () => {
     setShowLogin(false);
     setOpenModal(true);
     setString(date);
+    navigate("/modal");
   };
 
   const getIndicesForEvents = (events, dtStr) => {

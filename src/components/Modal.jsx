@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef, useContext } from "react";
 import { motion } from "framer-motion";
 import { staticTimes } from "../constants";
+import { useNavigate } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import DatesContext from "../context/DatesContext";
 import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
@@ -14,13 +16,14 @@ import AddSticky from "./AddSticky";
 
 const Modal = () => {
   const { events, holidays } = useContext(UserContext);
-  const { string, setOpenModal, openModal, dateObj, setSecondString } =
+  const { string, setOpenModal, dateObj, setSecondString } =
     useContext(DatesContext);
   const { addNewEvent, setAddNewEvent, type, setType } =
     useContext(InteractiveContext);
 
+  const navigate = useNavigate();
+
   const [dayEvents, setDayEvents] = useState([]);
-  const [addEventWithStartTime, setAddEventWithStartTime] = useState(null);
   const modalRef = useRef(0);
 
   useEffect(() => {
@@ -65,30 +68,24 @@ const Modal = () => {
     <>
       <motion.div
         initial={{ opacity: 0 }}
-        exit={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         onClick={() => {
           setAddNewEvent(false);
           setOpenModal(false);
           setType(null);
+          navigate("/");
         }}
         className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex z-[10]"
       ></motion.div>
       <motion.div
         initial={{ x: 100, opacity: 0 }}
-        exit={{ x: 200, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         className={`bg-white z-[600] rounded-md shadow-lg shadow-purple-200 fixed top-0 bottom-0 right-0 w-[65%] overflow-y-auto scroll-smooth scrollbar-hide`}
         ref={modalRef}
       >
         {addNewEvent ? (
           <div className="mt-10 mx-2">
-            {type === "event" && (
-              <AddEvent
-                setAddNewEvent={setAddNewEvent}
-                passedStartTime={addEventWithStartTime}
-              />
-            )}
+            {type === "event" && <AddEvent />}
             {type === "reminder" && <AddReminder />}
             {type === "todo-list" && <AddList />}
             {type === "kanban" && <AddKanban />}
@@ -102,7 +99,6 @@ const Modal = () => {
                 <p
                   key={index}
                   onClick={() => {
-                    setAddEventWithStartTime(timeObj.time);
                     setType("event");
                     setAddNewEvent(true);
                   }}
@@ -126,6 +122,7 @@ const Modal = () => {
             </div>
           </div>
         )}
+        <Outlet />
       </motion.div>
     </>
   );

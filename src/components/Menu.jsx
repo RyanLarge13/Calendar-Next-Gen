@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import Reminders from "./Reminders.jsx";
 import Lists from "./Lists.jsx";
 import Tasks from "./Tasks";
@@ -74,68 +74,64 @@ const Menu = () => {
   };
 
   return (
-    <AnimatePresence>
-      {menu && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 pt-40 z-10 pb-10 px-5 rounded-md bg-white shadow-md overflow-auto"
-        >
-          {showCategory === null && <MainMenu timeOfDay={timeOfDay} />}
-          {showCategory && (
-            <div className="">
-              {showCategory === "reminder" && (
-                <motion.div
-                  initial={{ x: "-10%", opacity: 0 }}
-                  exit={{ x: "-10%", opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                >
-                  <Reminders />
-                </motion.div>
-              )}
-              {showCategory === "todo-list" && (
-                <motion.div
-                  initial={{ x: "-10%", opacity: 0 }}
-                  exit={{ x: "-10%", opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                >
-                  <Lists />
-                </motion.div>
-              )}
-              {showCategory === "task" && (
-                <motion.div
-                  initial={{ x: "-10%", opacity: 0 }}
-                  exit={{ x: "-10%", opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                >
-                  <Tasks />
-                </motion.div>
-              )}
-              {showCategory === "kanban" && (
-                <motion.div
-                  initial={{ x: "-10%", opacity: 0 }}
-                  exit={{ x: "-10%", opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                >
-                  <Kanbans />
-                </motion.div>
-              )}
-              {showCategory === "stickynote" && (
-                <motion.div
-                  initial={{ x: "-10%", opacity: 0 }}
-                  exit={{ x: "-10%", opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  className="relative"
-                >
-                 {/* <Stickies />*/} 
-                </motion.div>
-              )}
-            </div>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 pt-40 z-10 pb-10 px-5 rounded-md bg-white shadow-md overflow-auto"
+    >
+      {showCategory === null && <MainMenu timeOfDay={timeOfDay} />}
+      {showCategory && (
+        <div className="">
+          {showCategory === "reminder" && (
+            <motion.div
+              initial={{ x: "-10%", opacity: 0 }}
+              exit={{ x: "-10%", opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+            >
+              <Reminders />
+            </motion.div>
           )}
-        </motion.div>
+          {showCategory === "todo-list" && (
+            <motion.div
+              initial={{ x: "-10%", opacity: 0 }}
+              exit={{ x: "-10%", opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+            >
+              <Lists />
+            </motion.div>
+          )}
+          {showCategory === "task" && (
+            <motion.div
+              initial={{ x: "-10%", opacity: 0 }}
+              exit={{ x: "-10%", opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+            >
+              <Tasks />
+            </motion.div>
+          )}
+          {showCategory === "kanban" && (
+            <motion.div
+              initial={{ x: "-10%", opacity: 0 }}
+              exit={{ x: "-10%", opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+            >
+              <Kanbans />
+            </motion.div>
+          )}
+          {showCategory === "stickynote" && (
+            <motion.div
+              initial={{ x: "-10%", opacity: 0 }}
+              exit={{ x: "-10%", opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              className="relative"
+            >
+              {/* <Stickies />*/}
+            </motion.div>
+          )}
+        </div>
       )}
-    </AnimatePresence>
+    </motion.div>
   );
 };
 
