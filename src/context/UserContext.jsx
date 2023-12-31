@@ -29,7 +29,10 @@ export const UserProvider = ({ children }) => {
   );
   const [events, setEvents] = useState([]);
   const [staticEvents, setStaticEvents] = useState([]);
-  const [googleEvetns, setGoogleEvents] = useState([]);
+  const [googleEvents, setGoogleEvents] = useState([]);
+  const [preferences, setPreferences] = useState(
+    JSON.parse(localStorage.getItem("preferences")) || {}
+  );
   const [upcoming, setUpcoming] = useState([]);
   const [refresh, setRefresh] = useState(false);
   const [lists, setLists] = useState([]);
@@ -51,8 +54,6 @@ export const UserProvider = ({ children }) => {
   const updateStatus = () => {
     setIsOnline(navigator.onLine);
   };
-
-  useEffect(() => {}, []);
 
   useEffect(() => {
     const currentDate = new Date();
@@ -393,6 +394,8 @@ export const UserProvider = ({ children }) => {
         friendRequests,
         upcoming,
         staticEvents,
+        preferences,
+        setPreferences,
         setKanbans,
         setConnectionRequests,
         setFriendRequests,

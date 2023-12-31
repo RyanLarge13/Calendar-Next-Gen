@@ -10,7 +10,7 @@ import InteractiveContext from "../context/InteractiveContext";
 import PopUpMonthViewWindow from "./PopUpMonthViewWindow";
 
 const MonthView = () => {
-  const { events, setEvents } = useContext(UserContext);
+  const { events, preferences } = useContext(UserContext);
   const { setMenu, setShowLogin, setAddNewEvent, setType } =
     useContext(InteractiveContext);
   const {
@@ -47,12 +47,14 @@ const MonthView = () => {
       targetDate.getMonth() === dateObj.getMonth() &&
       targetDate.getFullYear() === dateObj.getFullYear();
     if (isSameMonthAndYear && rowDays.includes(index)) {
-      return { backgroundColor: "rgba(0, 0, 0, 0.1)" };
+      return {
+        backgroundColor: preferences.darkMode ? "#111" : "rgba(0, 0, 0, 0.1)",
+      };
     }
     if (selected.includes(index)) {
       return { backgroundColor: "#cffaf" };
     } else {
-      return { backgroundColor: "#fff" };
+      return { backgroundColor: preferences.darkMode ? "#222" : "#fff" };
     }
   };
 
@@ -182,8 +184,8 @@ const MonthView = () => {
           <motion.div
             variants={calendarBlocks}
             whileHover={{ scale: 1.025 }}
-            // onMouseEnter={(e) => createPopup(e, eventsToRender)}
-            // onMouseLeave={() => clearPopup()}
+            onMouseEnter={(e) => createPopup(e, eventsToRender)}
+            onMouseLeave={() => clearPopup()}
             onContextMenu={(e) => {
               e.preventDefault();
               handleDayLongPress(index);
@@ -191,7 +193,9 @@ const MonthView = () => {
             onClick={() => handleDayClick(index)}
             key={index}
             style={getCellStyle(index)}
-            className={`relative w-full rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start gap-y-1 cursor-pointer ${
+            className={`relative w-full ${
+              preferences.darkMode ? "shadow-slate-700" : "shadow-slate-200"
+            } rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start gap-y-1 cursor-pointer ${
               isCurrentDate && "shadow-cyan-400 shadow-md"
             }`}
           >
@@ -203,7 +207,13 @@ const MonthView = () => {
                 "w-[25px] h-[25px] rounded-full bg-cyan-100 shadow-md"
               }`}
             >
-              <p>{index >= paddingDays && index - paddingDays + 1}</p>
+              <p
+                className={`${
+                  preferences.darkMode ? "text-white" : "text-black"
+                }`}
+              >
+                {index >= paddingDays && index - paddingDays + 1}
+              </p>
             </div>
             <div
               className={`w-full absolute inset-0 pt-8 overflow-y-clip ${

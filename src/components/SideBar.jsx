@@ -9,7 +9,7 @@ import UserContext from "../context/UserContext";
 import { formatDbText } from "../utils/helpers";
 
 const SideBar = () => {
-  const { events, upcoming } = useContext(UserContext);
+  const { events, upcoming, preferences } = useContext(UserContext);
   const { dateString, dateObj, setString, setTheDay, setNav } =
     useContext(DatesContext);
 
@@ -92,8 +92,16 @@ const SideBar = () => {
   };
 
   return (
-    <div className="hidden xl:block w-[17vw] bg-white max-h-screen scrollbar-hide border-r border-slate-200 fixed top-0 left-0 bottom-0 p-3 overflow-y-auto scrollbar-hide pt-20">
-      <div className="bg-white bg-opacity-80 backdrop-blur-sm sticky top-0 rounded-md p-2">
+    <div
+      className={`hidden xl:block w-[17vw] ${
+        preferences.darkMode ? "bg-[#222]" : "bg-white"
+      } max-h-screen scrollbar-hide border-r border-slate-200 fixed top-0 left-0 bottom-0 p-3 overflow-y-auto scrollbar-hide pt-20`}
+    >
+      <div
+        className={`${
+          preferences.darkMode ? "bg-[#222] text-white" : "bg-white text-black"
+        } bg-opacity-80 backdrop-blur-sm sticky top-0 rounded-md p-2`}
+      >
         <div className="flex justify-between items-center px-3 mb-3">
           <BsFillArrowLeftCircleFill
             onClick={() => handleMonthYearChange("minus")}

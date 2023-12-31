@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import UserContext from "../context/UserContext";
 
 const Settings = ({ setOption }) => {
-  const { user } = useContext(UserContext);
+  const { user, preferences, setPreferences } = useContext(UserContext);
 
   const finish = (e, info) => {
     const dragDistance = info.offset.y;
@@ -15,6 +15,15 @@ const Settings = ({ setOption }) => {
     if (dragDistance < cancelThreshold) {
       return;
     }
+  };
+
+  const setTheme = () => {
+    const newPreferences = {
+      ...preferences,
+      darkMode: !preferences.darkMode,
+    };
+    localStorage.setItem("preferences", JSON.stringify(newPreferences));
+    setPreferences(newPreferences);
   };
 
   return (
@@ -29,6 +38,9 @@ const Settings = ({ setOption }) => {
       className="fixed inset-0 bg-white z-50 p-5"
     >
       <h2 className="text-4xl pb-2 border-b">Settings</h2>
+      <button onClick={() => setTheme()}>
+        {preferences.darkMode ? "Light Theme" : "Dark Theme"}
+      </button>
     </motion.div>
   );
 };

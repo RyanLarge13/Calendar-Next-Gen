@@ -17,7 +17,8 @@ import UserContext from "../context/UserContext";
 import FullDatePicker from "./FullDatePicker";
 
 const Calendar = () => {
-  const { events, holidays, reminders, weekDays } = useContext(UserContext);
+  const { events, holidays, reminders, weekDays, preferences } =
+    useContext(UserContext);
   const { showDatePicker, showFullDatePicker, view, event } =
     useContext(InteractiveContext);
   const { finish, loading, theDay, openModal, dateString, string, dateObj } =
@@ -76,7 +77,11 @@ const Calendar = () => {
   }, [theDay, events, reminders, string]);
 
   return (
-    <main className="px-2 mt-20">
+    <main
+      className={`px-2 pt-20 h-screen ${
+        preferences.darkMode ? "bg-[#222]" : "bg-white"
+      }`}
+    >
       <section>
         <div className="grid grid-cols-7 gap-2 justify-center items-center my-5">
           {view === "month" &&
@@ -84,10 +89,12 @@ const Calendar = () => {
               <p
                 key={day}
                 className={`${
+                  preferences.darkMode ? "text-white" : "text-black"
+                } ${
                   index === new Date().getDay() &&
                   new Date(dateString).getMonth() === dateObj.getMonth() &&
                   new Date(dateString).getYear() === dateObj.getYear()
-                    ? "bg-cyan-400 bg-clip-text text-transparent font-semibold border-b-2 rounded-md"
+                    ? "text-cyan-300 font-semibold border-b-2 rounded-md"
                     : ""
                 } mx-2 text-center`}
               >

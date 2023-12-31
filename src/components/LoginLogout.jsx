@@ -27,6 +27,7 @@ const LoginLogout = () => {
     setReminders,
     setLists,
     setSystemNotif,
+    preferences,
   } = useContext(UserContext);
 
   const [regularLogin, setRegularLogin] = useState(false);
@@ -117,7 +118,11 @@ const LoginLogout = () => {
               animate={
                 showNotifs ? { y: "85%", opacity: 1 } : { y: 0, opacity: 1 }
               }
-              className="p-3 fixed bottom-0 left-0 right-0 rounded-md shadow-md bg-white z-10"
+              className={`p-3 fixed bottom-0 left-0 right-0 rounded-md shadow-md z-10 ${
+                preferences.darkMode
+                  ? "bg-[#222] text-white"
+                  : "bg-white text-black"
+              }`}
             >
               {user ? (
                 <div>
