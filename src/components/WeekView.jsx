@@ -8,7 +8,7 @@ import { AiOutlinePlusCircle } from "react-icons/ai";
 import { BsFillCalendarDayFill } from "react-icons/bs";
 
 const WeekView = () => {
-  const { events, holidays } = useContext(UserContext);
+  const { events, holidays, preferences } = useContext(UserContext);
   const { setEvent, setAddNewEvent, setType } = useContext(InteractiveContext);
   const {
     currentWeek,
@@ -122,7 +122,11 @@ const WeekView = () => {
                   <motion.div
                     key={time.string}
                     whileTap={{ backgroundColor: "#ddd" }}
-                    className="border-l h-[20vh] flex justify-start items-start text-[11px] w-full"
+                    className={`border-l h-[20vh] flex justify-start items-start text-[11px] w-full ${
+                      preferences.darkMode
+                        ? "bg-[#222] text-white"
+                        : "bg-white text-black"
+                    }`}
                   >
                     <p>{time.string}</p>
                   </motion.div>

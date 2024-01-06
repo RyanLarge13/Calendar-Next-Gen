@@ -10,7 +10,7 @@ import DatesContext from "../context/DatesContext";
 const AddKanban = () => {
   const { setType, setShowCategory, setAddNewEvent, setMenu } =
     useContext(InteractiveContext);
-  const { setSystemNotif, setKanbans } = useContext(UserContext);
+  const { setSystemNotif, setKanbans, preferences } = useContext(UserContext);
   const { setOpenModal } = useContext(DatesContext);
 
   const [title, setTitle] = useState("");
@@ -91,7 +91,9 @@ const AddKanban = () => {
           type="text"
           placeholder="Kanban"
           value={title}
-          className={`p-2 w-full focus:outline-none text-4xl bg-opacity-30 mt-5`}
+          className={`p-2 w-full focus:outline-none text-4xl bg-opacity-30 mt-5 bg-transparent ${
+            preferences.darkMode ? "text-white" : "text-black"
+          }`}
           onChange={(e) => setTitle(e.target.value)}
         />
       </form>
@@ -113,7 +115,9 @@ const AddKanban = () => {
             placeholder="Folder name"
             value={folderName}
             onChange={(e) => setFolderName(e.target.value)}
-            className="my-2 outline-none border-b p-3 rounded-sm"
+            className={`my-2 outline-none border-b p-3 bg-transparent rounded-sm ${
+              preferences.darkMode ? "text-white" : "text-black"
+            }`}
           />
         </form>
         <div>
@@ -128,7 +132,7 @@ const AddKanban = () => {
             ))}
         </div>
       </div>
-      <div className="text-center text-xs font-semibold absolute bottom-4 right-4 left-4">
+      <div className="text-center text-xs font-semibold absolute bottom-4 right-4 left-4 text-black">
         <button
           onClick={() => saveKanban()}
           className="w-full px-3 py-2 rounded-md shadow-md bg-gradient-to-r from-lime-200 to-green-200 underline"

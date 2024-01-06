@@ -35,6 +35,7 @@ const MonthView = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [popupTimeout, setPopupTimeout] = useState(null);
   const [popupEvents, setPopupEvents] = useState([]);
+  const [hoverDay, setHoverDay] = useState(null);
 
   const targetDate = new Date(dateString);
 
@@ -125,7 +126,15 @@ const MonthView = () => {
     setSelected([]);
   };
 
-  const createPopup = (e, eventsToRender) => {
+  const createPopup = (e, eventsToRender, index) => {
+    const theHoverDay = `${month + 1}/${index - paddingDays + 1}/${year}`;
+    if (popupTimeout) {
+      clearTimeout(popupTimeout);
+      setPopupTimeout(null);
+    }
+    setNewPopup(false);
+    setPopupEvents([]);
+    setMousePosition({ x: 0, y: 0 });
     const mousePositions = {
       x: e.clientX,
       y: e.clientY,
@@ -136,19 +145,10 @@ const MonthView = () => {
     const timeoutId = setTimeout(() => {
       setPopupEvents(eventsToRender);
       setMousePosition(mousePositions);
+      setHoverDay(theHoverDay);
       setNewPopup(true);
-    }, 3000);
+    }, 2000);
     setPopupTimeout(timeoutId);
-  };
-
-  const clearPopup = () => {
-    if (popupTimeout) {
-      clearTimeout(popupTimeout);
-      setPopupTimeout(null);
-    }
-    setPopupEvents([]);
-    setNewPopup(false);
-    setMousePosition({ x: 0, y: 0 });
   };
 
   useEffect(() => {
@@ -172,6 +172,7 @@ const MonthView = () => {
         <PopUpMonthViewWindow
           positions={mousePosition}
           eventsToRender={popupEvents}
+          day={hoverDay}
         />
       )}
       {[...Array(paddingDays + daysInMonth)].map((_, index) => {
@@ -186,8 +187,7 @@ const MonthView = () => {
           <motion.div
             variants={calendarBlocks}
             whileHover={{ scale: 1.025 }}
-            onMouseEnter={(e) => createPopup(e, eventsToRender)}
-            onMouseLeave={() => clearPopup()}
+            onMouseEnter={(e) => createPopup(e, eventsToRender, index)}
             onContextMenu={(e) => {
               e.preventDefault();
               handleDayLongPress(index);

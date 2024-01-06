@@ -11,7 +11,7 @@ import { FaRegWindowMinimize } from "react-icons/fa";
 import { FiMaximize } from "react-icons/fi";
 import UserContext from "../context/UserContext";
 
-const Sticky = ({ sticky }) => {
+const Sticky = ({ sticky, index }) => {
   const { setSystemNotif, setStickies, stickies } = useContext(UserContext);
 
   const [expand, setExpand] = useState(false);
@@ -36,8 +36,8 @@ const Sticky = ({ sticky }) => {
 
   const getTop = () => {
     if (stickyRef.current) {
-      const left = stickyRef.current.getBoundingClientRect().top;
-      return -left;
+      const top = stickyRef.current.getBoundingClientRect().top;
+      return -top;
     }
   };
 
@@ -108,6 +108,7 @@ const Sticky = ({ sticky }) => {
               width: 10,
               overflow: "hidden",
               left: getLeft(),
+              top: index * 50,
             }
       }
       drag={fullScreen ? false : !!minimize ? "y" : !pin}

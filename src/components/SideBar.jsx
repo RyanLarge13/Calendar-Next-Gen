@@ -153,7 +153,11 @@ const SideBar = () => {
                         `${temporaryMonth + 1}/${
                           index - temporaryPaddingDays + 1
                         }/${temporaryYear}` && "shadow-emerald-300"
-                    } relative w-full rounded-sm shadow-slate-700 shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start gap-y-1 cursor-pointer hover:scale-[1.25] duration-200`}
+                    } relative w-full rounded-sm ${
+                      preferences.darkMode
+                        ? "shadow-slate-700"
+                        : "shadow-slate-200"
+                    } shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start gap-y-1 cursor-pointer hover:scale-[1.25] duration-200`}
                   >
                     <div
                       className={`text-center text-sm my-1 ${

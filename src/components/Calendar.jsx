@@ -78,7 +78,7 @@ const Calendar = () => {
 
   return (
     <main
-      className={`px-2 pt-20 h-screen ${
+      className={`px-2 pt-[65px] h-screen overflow-y-auto scrollbar-hide ${
         preferences.darkMode ? "bg-[#222]" : "bg-white"
       }`}
     >

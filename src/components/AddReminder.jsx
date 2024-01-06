@@ -10,7 +10,7 @@ import DatesContext from "../context/DatesContext";
 const AddReminder = () => {
   const { setMenu, setAddNewEvent, setType, setShowCategory } =
     useContext(InteractiveContext);
-  const { reminders, user, setReminders, setSystemNotif } =
+  const { reminders, user, setReminders, setSystemNotif, preferences } =
     useContext(UserContext);
   const { setOpenModal } = useContext(DatesContext);
 
@@ -120,7 +120,9 @@ const AddReminder = () => {
     <div>
       <input
         placeholder="Reminder"
-        className="p-2 text-4xl w-full focus:outline-none my-5"
+        className={`p-2 text-4xl w-full focus:outline-none my-5 ${
+          preferences.darkMode ? "bg-[#222] text-white" : "bg-white text-black"
+        }`}
         onChange={(e) => setTitle(e.target.value)}
       />
       <textarea
@@ -128,7 +130,9 @@ const AddReminder = () => {
         cols="30"
         rows="10"
         placeholder="Notes..."
-        className="my-5 w-full p-2 focus:outline-none focus:shadow-sm"
+        className={`my-5 w-full p-2 focus:outline-none focus:shadow-sm ${
+          preferences.darkMode ? "bg-[#222] text-white" : "bg-white text-black"
+        }`}
       ></textarea>
       <div className="my-2 p-3 border-b">
         <div className="flex justify-between items-center">
@@ -158,7 +162,7 @@ const AddReminder = () => {
           <Toggle condition={onlyNotify} setCondition={setOnlyNotify} />
         </div>
       </div>
-      <div className="absolute bottom-4 right-4 left-4 text-xs font-semibold">
+      <div className="absolute bottom-4 right-4 left-4 text-xs font-semibold text-black">
         <button
           onClick={() => addAReminder()}
           className="px-3 py-2 rounded-md shadow-md bg-gradient-to-r from-lime-200 to-green-200 underline w-full"
