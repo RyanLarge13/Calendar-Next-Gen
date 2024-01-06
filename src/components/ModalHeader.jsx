@@ -16,19 +16,19 @@ import InteractiveContext from "../context/InteractiveContext";
 const ModalHeader = ({ allDayEvents }) => {
   const { string, setString, secondString, setSecondString } =
     useContext(DatesContext);
-  const { user, events, setEvents, holidays, setSystemNotif } =
+  const { user, events, setEvents, holidays, setSystemNotif, preferences } =
     useContext(UserContext);
   const { addNewEvent, event, setEvent, setShowFullDatePicker } =
     useContext(InteractiveContext);
 
   const [showAllDayEvents, setShowAllDayEvents] = useState(true);
-  const [x, setX] = useState("110%");
+  // const [x, setX] = useState("110%");
 
-  useEffect(() => {
-    setTimeout(() => {
-      setX(0);
-    }, 750);
-  }, []);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     setX(0);
+  //   }, 750);
+  // }, []);
 
   useEffect(() => {
     if (event) {
@@ -78,13 +78,13 @@ const ModalHeader = ({ allDayEvents }) => {
 
   return (
     <motion.div
-      initial={{ x: "110%" }}
-      animate={
-        event && !addNewEvent
-          ? { left: 5, x: x }
-          : { left: "36%", x: x }
-      }
-      className="bg-white z-[902] p-2 font-bold shadow-md fixed top-1 right-1 rounded-md"
+      initial={{ y: -100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1, transition: { delay: 0.2 } }}
+      className={`${
+        preferences.darkMode ? "bg-[#222] text-white" : "bg-white text-black"
+      } z-[902] w-[59%] lg:w-[39%] p-2 font-bold shadow-md fixed top-1 right-1 rounded-md ${
+        event ? "w-[99%] lg:w-[99%]" : ""
+      }`}
     >
       <div className="flex justify-between items-start">
         <motion.div

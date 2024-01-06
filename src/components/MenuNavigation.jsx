@@ -11,19 +11,27 @@ import {
 import { IoIosAlarm } from "react-icons/io";
 import InteractiveContext from "../context/InteractiveContext";
 import { useContext } from "react";
+import UserContext from "../context/UserContext";
 
 const MenuNavigation = () => {
   const { showCategory, setShowCategory } = useContext(InteractiveContext);
+  const { preferences } = useContext(UserContext);
 
   return (
     <motion.div
       initial={{ y: "-100%" }}
       animate={{ y: 0 }}
-      className="fixed top-0 right-0 left-0 bg-white z-20 grid grid-cols-4 place-items-center mb-10 shadow-md rounded-md cursor-pointer"
+      className={`fixed top-0 right-0 left-0 ${
+        preferences.darkMode ? "bg-[#222]" : "bg-white"
+      } z-20 grid grid-cols-4 place-items-center mb-10 shadow-md rounded-md cursor-pointer`}
     >
       <div
         className={`p-5 w-full flex flex-col items-center justify-center rounded-md ${
-          showCategory === "reminder" ? "bg-cyan-100" : "bg-white"
+          showCategory === "reminder"
+            ? "bg-cyan-100"
+            : preferences.darkMode
+            ? "bg-[#222] text-white"
+            : "bg-white"
         }`}
         onClick={() =>
           setShowCategory((prev) => (prev === "reminder" ? null : "reminder"))
@@ -34,7 +42,11 @@ const MenuNavigation = () => {
       </div>
       <div
         className={`p-5 w-full flex flex-col items-center justify-center rounded-md ${
-          showCategory === "todo-list" ? "bg-cyan-100" : "bg-white"
+          showCategory === "todo-list"
+            ? "bg-cyan-100"
+            : preferences.darkMode
+            ? "bg-[#222] text-white"
+            : "bg-white"
         }`}
         onClick={() =>
           setShowCategory((prev) => (prev === "todo-list" ? null : "todo-list"))
@@ -45,7 +57,11 @@ const MenuNavigation = () => {
       </div>
       <div
         className={`p-5 w-full flex flex-col items-center justify-center rounded-md ${
-          showCategory === "task" ? "bg-cyan-100" : "bg-white"
+          showCategory === "task"
+            ? "bg-cyan-100"
+            : preferences.darkMode
+            ? "bg-[#222] text-white"
+            : "bg-white"
         }`}
         onClick={() =>
           setShowCategory((prev) => (prev !== "task" ? "task" : null))
@@ -56,7 +72,11 @@ const MenuNavigation = () => {
       </div>
       <div
         className={`p-5 w-full flex flex-col items-center justify-center rounded-md ${
-          showCategory === "kanban" ? "bg-cyan-100" : "bg-white"
+          showCategory === "kanban"
+            ? "bg-cyan-100"
+            : preferences.darkMode
+            ? "bg-[#222] text-white"
+            : "bg-white"
         }`}
         onClick={() =>
           setShowCategory((prev) => (prev !== "kanban" ? "kanban" : null))
@@ -67,7 +87,11 @@ const MenuNavigation = () => {
       </div>
       <div
         className={`p-5 w-full flex flex-col items-center justify-center rounded-md ${
-          showCategory === "event" ? "bg-cyan-100" : "bg-white"
+          showCategory === "event"
+            ? "bg-cyan-100"
+            : preferences.darkMode
+            ? "bg-[#222] text-white"
+            : "bg-white"
         }`}
         onClick={() =>
           setShowCategory((prev) => (prev !== "event" ? "event" : null))
@@ -78,7 +102,11 @@ const MenuNavigation = () => {
       </div>
       <div
         className={`p-5 w-full flex flex-col items-center justify-center rounded-md ${
-          showCategory === "groupevent" ? "bg-cyan-100" : "bg-white"
+          showCategory === "groupevent"
+            ? "bg-cyan-100"
+            : preferences.darkMode
+            ? "bg-[#222] text-white"
+            : "bg-white"
         }`}
         onClick={() =>
           setShowCategory((prev) =>
@@ -91,7 +119,11 @@ const MenuNavigation = () => {
       </div>
       <div
         className={`p-5 w-full flex flex-col items-center justify-center rounded-md ${
-          showCategory === "stickynote" ? "bg-cyan-100" : "bg-white"
+          showCategory === "stickynote"
+            ? "bg-cyan-100"
+            : preferences.darkMode
+            ? "bg-[#222] text-white"
+            : "bg-white"
         }`}
         onClick={() =>
           setShowCategory((prev) =>
@@ -104,7 +136,11 @@ const MenuNavigation = () => {
       </div>
       <div
         className={`p-5 w-full flex flex-col items-center justify-center rounded-md ${
-          showCategory === "appointment" ? "bg-cyan-100" : "bg-white"
+          showCategory === "appointment"
+            ? "bg-cyan-100"
+            : preferences.darkMode
+            ? "bg-[#222] text-white"
+            : "bg-white"
         }`}
         onClick={() =>
           setShowCategory((prev) =>

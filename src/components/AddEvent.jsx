@@ -21,8 +21,14 @@ import TimeSetter from "./TimeSetter";
 import SuggestCities from "./SuggestCities";
 
 const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
-  const { setEvents, user, isOnline, setReminders, setSystemNotif } =
-    useContext(UserContext);
+  const {
+    setEvents,
+    user,
+    isOnline,
+    setReminders,
+    setSystemNotif,
+    preferences,
+  } = useContext(UserContext);
   const { setType } = useContext(InteractiveContext);
   const { string, setOpenModal, secondString } = useContext(DatesContext);
 
@@ -111,7 +117,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
       const endDateObj = new Date(endWhen);
       newDate.setHours(endDateObj.getHours());
       newDate.setMinutes(endDateObj.getMinutes());
-     // newDate.setTimezoneOffset(() => endTimeZone || timeZone);
+      // newDate.setTimezoneOffset(() => endTimeZone || timeZone);
       return newDate;
     } else {
       return new Date(string);
@@ -278,7 +284,9 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
         placeholder="Event"
         value={summary}
         onChange={(e) => setSummary(e.target.value)}
-        className={`p-2 text-4xl mt-10 mb-5 w-full outline-none bg-opacity-30 duration-200`}
+        className={`p-2 text-4xl mt-10 mb-5 w-full outline-none duration-200 ${
+          preferences.darkMode ? "bg-[#222]" : "bg-white"
+        }`}
       />
       <div className="flex flex-wrap justify-center items-center my-5 mx-auto">
         {colors.map((item, index) => (
@@ -299,7 +307,9 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
         id="description"
         cols="30"
         rows="10"
-        className="p-2 mt-5 w-full focus:outline-none focus:shadow-sm"
+        className={`p-2 mt-5 w-full focus:outline-none focus:shadow-sm ${
+          preferences.darkMode ? "bg-[#222]" : "bg-white"
+        }`}
       ></textarea>
       <div className="mt-10 w-full">
         <div className="w-full p-3 border-b">
@@ -505,7 +515,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
             ))}
           </Masonry>
         )}
-        <label className="bg-slate-300 mt-10 p-5 w-full rounded-md flex flex-col justify-center items-center">
+        <label className="bg-slate-300 mt-10 p-5 w-full rounded-md flex flex-col justify-center items-center text-black">
           <RiGalleryUploadFill className="text-xl cursor-pointer" />
           {attachments.length > 0 ? (
             <p className="text-xs">Add More</p>
@@ -522,7 +532,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
           />
         </label>
       </div>
-      <div className=" flex flex-col w-full gap-y-5 mb-5 text-center text-xs font-semibold">
+      <div className=" flex flex-col w-full gap-y-5 mb-5 text-center text-xs font-semibold text-black">
         <button
           onClick={() => addEvent()}
           className="px-3 py-2 rounded-md shadow-md bg-gradient-to-r from-lime-200 to-green-200 underline"

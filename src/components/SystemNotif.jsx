@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import UserContext from "../context/UserContext";
 
 const SystemNotif = () => {
-  const { systemNotif, setSystemNotif } = useContext(UserContext);
+  const { systemNotif, setSystemNotif, preferences } = useContext(UserContext);
 
   const notifTimeoutRef = useRef(null);
 
@@ -39,7 +39,11 @@ const SystemNotif = () => {
           initial={{ y: -50, opacity: 0 }}
           exit={{ x: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="fixed top-10 z-[999] p-3  pb-0 rounded-md shadow-md bg-white w-[90vw] left-[5vw] max-w-[400px]"
+          className={`fixed top-10 z-[999] p-3  pb-0 rounded-md shadow-md w-[90vw] left-[5vw] max-w-[400px] ${
+            preferences.darkMode
+              ? "bg-[#222] text-white"
+              : "bg-white text-black"
+          }`}
           onPointerDown={() =>
             !systemNotif.hasCancel
               ? setSystemNotif({ ...systemNotif, hasCancel: true })

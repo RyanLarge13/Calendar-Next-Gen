@@ -13,7 +13,7 @@ import AddTask from "./AddTask";
 import AddSticky from "./AddSticky";
 
 const Modal = () => {
-  const { events, holidays } = useContext(UserContext);
+  const { events, holidays, preferences } = useContext(UserContext);
   const { string, setOpenModal, openModal, dateObj, setSecondString } =
     useContext(DatesContext);
   const { addNewEvent, setAddNewEvent, type, setType } =
@@ -78,7 +78,9 @@ const Modal = () => {
         initial={{ x: 100, opacity: 0 }}
         exit={{ x: 200, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
-        className={`bg-white z-[600] rounded-md shadow-lg shadow-purple-200 fixed top-0 bottom-0 right-0 w-[65%] overflow-y-auto scroll-smooth scrollbar-hide`}
+        className={`${
+          preferences.darkMode ? "bg-[#222] text-white" : "bg-white text-black"
+        } z-[600] rounded-md shadow-lg shadow-purple-200 fixed top-0 bottom-0 right-0 w-[65%] lg:w-[40%] overflow-y-auto scroll-smooth scrollbar-hide`}
         ref={modalRef}
       >
         {addNewEvent ? (

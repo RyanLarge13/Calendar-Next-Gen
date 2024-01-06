@@ -20,6 +20,7 @@ const Connections = ({ setOption }) => {
     setFriends,
     qrCodeUrl,
     setSystemNotif,
+    preferences,
   } = useContext(UserContext);
 
   const [pick, setPick] = useState(false);
@@ -113,7 +114,9 @@ const Connections = ({ setOption }) => {
       initial={{ opacity: 0, y: 50 }}
       exit={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
-      className="fixed inset-0 bg-white z-50 p-5 overflow-y-auto scrollbar-hide"
+      className={`fixed inset-0 z-50 p-5 lg:left-[60%] scrollbar-hide ${
+        preferences.darkMode ? "bg-[#222] text-white" : "bg-white text-black"
+      }`}
     >
       <div className="relative">
         <h2 className="text-4xl pb-2 border-b">Connections</h2>
@@ -240,9 +243,7 @@ const Connections = ({ setOption }) => {
               className="flex justify-between items-end p-3 rounded-md shadow-md my-3 relative bg-slate-100"
             >
               <button
-                onClick={() =>
-                  confirmCancel(connectionReq.recipient.email)
-                }
+                onClick={() => confirmCancel(connectionReq.recipient.email)}
                 className="absolute px-3 py-2 text-xs top-0 right-0 rounded-md shadow-md bg-red-300 font-semibold"
               >
                 Cancel Request

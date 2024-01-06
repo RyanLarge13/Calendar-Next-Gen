@@ -48,7 +48,9 @@ const MonthView = () => {
       targetDate.getFullYear() === dateObj.getFullYear();
     if (isSameMonthAndYear && rowDays.includes(index)) {
       return {
-        backgroundColor: preferences.darkMode ? "#111" : "rgba(0, 0, 0, 0.1)",
+        backgroundColor: preferences.darkMode
+          ? "#1b1b1b"
+          : "rgba(0, 0, 0, 0.1)",
       };
     }
     if (selected.includes(index)) {
@@ -203,17 +205,14 @@ const MonthView = () => {
               className={`text-center text-sm my-1 ${
                 index - paddingDays + 1 === day &&
                 month === dateObj.getMonth() &&
-                year === dateObj.getFullYear() &&
-                "w-[25px] h-[25px] rounded-full bg-cyan-100 shadow-md"
+                year === dateObj.getFullYear()
+                  ? "w-[25px] h-[25px] rounded-full bg-cyan-100 shadow-md text-black"
+                  : preferences.darkMode
+                  ? "text-white"
+                  : "text-black"
               }`}
             >
-              <p
-                className={`${
-                  preferences.darkMode ? "text-white" : "text-black"
-                }`}
-              >
-                {index >= paddingDays && index - paddingDays + 1}
-              </p>
+              <p>{index >= paddingDays && index - paddingDays + 1}</p>
             </div>
             <div
               className={`w-full absolute inset-0 pt-8 overflow-y-clip ${
