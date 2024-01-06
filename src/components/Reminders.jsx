@@ -135,7 +135,7 @@ const Reminders = () => {
                   dateObj.toLocaleDateString()
                 ? ""
                 : "bg-slate-200"
-            } p-2 relative rounded-md my-5`}
+            } p-2 relative rounded-md my-5 text-black`}
             style={{ fontSize: 11 }}
             onPointerDown={() => startTime(reminder.id)}
             onPointerUp={() => stopTime(reminder.id)}

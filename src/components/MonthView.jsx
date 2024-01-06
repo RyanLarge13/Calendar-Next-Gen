@@ -10,7 +10,7 @@ import InteractiveContext from "../context/InteractiveContext";
 import PopUpMonthViewWindow from "./PopUpMonthViewWindow";
 
 const MonthView = () => {
-  const { events, setEvents } = useContext(UserContext);
+  const { events, preferences } = useContext(UserContext);
   const { setMenu, setShowLogin, setAddNewEvent, setType } =
     useContext(InteractiveContext);
   const {
@@ -35,6 +35,7 @@ const MonthView = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [popupTimeout, setPopupTimeout] = useState(null);
   const [popupEvents, setPopupEvents] = useState([]);
+  const [hoverDay, setHoverDay] = useState(null);
 
   const targetDate = new Date(dateString);
 
@@ -47,12 +48,16 @@ const MonthView = () => {
       targetDate.getMonth() === dateObj.getMonth() &&
       targetDate.getFullYear() === dateObj.getFullYear();
     if (isSameMonthAndYear && rowDays.includes(index)) {
-      return { backgroundColor: "rgba(0, 0, 0, 0.1)" };
+      return {
+        backgroundColor: preferences.darkMode
+          ? "#1b1b1b"
+          : "rgba(0, 0, 0, 0.1)",
+      };
     }
     if (selected.includes(index)) {
       return { backgroundColor: "#cffaf" };
     } else {
-      return { backgroundColor: "#fff" };
+      return { backgroundColor: preferences.darkMode ? "#222" : "#fff" };
     }
   };
 
@@ -121,7 +126,15 @@ const MonthView = () => {
     setSelected([]);
   };
 
-  const createPopup = (e, eventsToRender) => {
+  const createPopup = (e, eventsToRender, index) => {
+    const theHoverDay = `${month + 1}/${index - paddingDays + 1}/${year}`;
+    if (popupTimeout) {
+      clearTimeout(popupTimeout);
+      setPopupTimeout(null);
+    }
+    setNewPopup(false);
+    setPopupEvents([]);
+    setMousePosition({ x: 0, y: 0 });
     const mousePositions = {
       x: e.clientX,
       y: e.clientY,
@@ -132,19 +145,10 @@ const MonthView = () => {
     const timeoutId = setTimeout(() => {
       setPopupEvents(eventsToRender);
       setMousePosition(mousePositions);
+      setHoverDay(theHoverDay);
       setNewPopup(true);
-    }, 3000);
+    }, 2000);
     setPopupTimeout(timeoutId);
-  };
-
-  const clearPopup = () => {
-    if (popupTimeout) {
-      clearTimeout(popupTimeout);
-      setPopupTimeout(null);
-    }
-    setPopupEvents([]);
-    setNewPopup(false);
-    setMousePosition({ x: 0, y: 0 });
   };
 
   useEffect(() => {
@@ -168,6 +172,7 @@ const MonthView = () => {
         <PopUpMonthViewWindow
           positions={mousePosition}
           eventsToRender={popupEvents}
+          day={hoverDay}
         />
       )}
       {[...Array(paddingDays + daysInMonth)].map((_, index) => {
@@ -182,8 +187,7 @@ const MonthView = () => {
           <motion.div
             variants={calendarBlocks}
             whileHover={{ scale: 1.025 }}
-            // onMouseEnter={(e) => createPopup(e, eventsToRender)}
-            // onMouseLeave={() => clearPopup()}
+            onMouseEnter={(e) => createPopup(e, eventsToRender, index)}
             onContextMenu={(e) => {
               e.preventDefault();
               handleDayLongPress(index);
@@ -191,7 +195,9 @@ const MonthView = () => {
             onClick={() => handleDayClick(index)}
             key={index}
             style={getCellStyle(index)}
-            className={`relative w-full rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start gap-y-1 cursor-pointer ${
+            className={`relative w-full ${
+              preferences.darkMode ? "shadow-slate-700" : "shadow-slate-200"
+            } rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start gap-y-1 cursor-pointer ${
               isCurrentDate && "shadow-cyan-400 shadow-md"
             }`}
           >
@@ -199,8 +205,11 @@ const MonthView = () => {
               className={`text-center text-sm my-1 ${
                 index - paddingDays + 1 === day &&
                 month === dateObj.getMonth() &&
-                year === dateObj.getFullYear() &&
-                "w-[25px] h-[25px] rounded-full bg-cyan-100 shadow-md"
+                year === dateObj.getFullYear()
+                  ? "w-[25px] h-[25px] rounded-full bg-cyan-100 shadow-md text-black"
+                  : preferences.darkMode
+                  ? "text-white"
+                  : "text-black"
               }`}
             >
               <p>{index >= paddingDays && index - paddingDays + 1}</p>

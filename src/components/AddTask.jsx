@@ -12,7 +12,7 @@ const AddTask = () => {
   const { setType, setAddNewEvent, setMenu, setShowCategory } =
     useContext(InteractiveContext);
   const { string, setOpenModal } = useContext(DatesContext);
-  const { user, setUserTasks } = useContext(UserContext);
+  const { user, setUserTasks, preferences } = useContext(UserContext);
 
   const [tasks, setTasks] = useState([]);
   const [title, setTitle] = useState("");
@@ -97,19 +97,23 @@ const AddTask = () => {
             index={index}
           />
         ))}
-        <form onSubmit={addTask}>
-          <input
-            value={title}
-            placeholder="Task"
-            onChange={(e) => setTitle(e.target.value)}
-            className="w-full focus:outline-none text-4xl p-2 my-5"
-          />
-        </form>
       </div>
+      <form onSubmit={addTask}>
+        <input
+          value={title}
+          placeholder="Task"
+          onChange={(e) => setTitle(e.target.value)}
+          className={`w-full focus:outline-none text-4xl p-2 my-5 ${
+            preferences.darkMode
+              ? "bg-[#222] text-white"
+              : "bg-white text-black"
+          }`}
+        />
+      </form>
       <button
         type="submit"
         onClick={addTask}
-        className="w-full text-xs underline rounded-md shadow-md bg-gradient-to-r from-green-300 to-lime-200 py-2"
+        className="w-full text-xs underline rounded-md shadow-md bg-gradient-to-r from-green-300 to-lime-200 py-2 text-black"
       >
         Add
       </button>
@@ -122,7 +126,11 @@ const AddTask = () => {
                   onChange={(e) => handleChecked(e, task.id)}
                   type="checkbox"
                   value={task.text}
-                  className="text-black"
+                  className={`${
+                    preferences.darkMode
+                      ? "bg-[#222] text-white"
+                      : "bg-white text-black"
+                  }`}
                 />
                 <div className=" ml-5 w-full flex justify-between items-center">
                   <p
@@ -142,7 +150,7 @@ const AddTask = () => {
             </div>
           ))}
       </div>
-      <div className="fixed bottom-4 right-4 w-[60%] text-xs">
+      <div className="fixed bottom-4 right-4 w-[60%] lg:w-[39%] text-xs text-black">
         <button
           onClick={() => addTasks()}
           className="w-full px-3 py-2 rounded-md shadow-md bg-gradient-to-r from-lime-200 to-green-200 underline"

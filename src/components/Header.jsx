@@ -14,7 +14,7 @@ import MenuNavigation from "./MenuNavigation";
 const Header = () => {
   const { dt, setNav, theDay, setTheDay, currentWeek, setWeekOffset } =
     useContext(DatesContext);
-  const { user } = useContext(UserContext);
+  const { user, preferences } = useContext(UserContext);
   const { menu, setShowDatePicker, setMenu, setShowLogin, view } =
     useContext(InteractiveContext);
 
@@ -48,7 +48,13 @@ const Header = () => {
       {menu ? (
         <MenuNavigation />
       ) : (
-        <header className="fixed top-0 left-0 right-0 bg-white z-[10] flex justify-between p-5 mb-5 shadow-lg rounded-b-lg">
+        <header
+          className={`${
+            preferences.darkMode
+              ? "bg-[#222] text-white"
+              : "bg-white text-black"
+          } fixed top-0 left-0 right-0 z-[10] flex justify-between p-5 mb-5 shadow-lg rounded-b-lg`}
+        >
           <button
             onClick={() => {
               setShowLogin(false);

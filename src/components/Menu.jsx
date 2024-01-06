@@ -14,7 +14,7 @@ import DatesContext from "../context/DatesContext.jsx";
 const Menu = () => {
   const { menu, listUpdate, setListUpdate, showCategory } =
     useContext(InteractiveContext);
-  const { lists, setLists, user } = useContext(UserContext);
+  const { lists, setLists, user, preferences } = useContext(UserContext);
   const { dateObj } = useContext(DatesContext);
 
   const [timeOfDay, setTimeOfDay] = useState(null);
@@ -80,7 +80,11 @@ const Menu = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 pt-40 z-10 pb-10 px-5 rounded-md bg-white shadow-md overflow-auto"
+          className={`fixed inset-0 pt-40 z-10 pb-10 px-5 rounded-md shadow-md overflow-auto ${
+            preferences.darkMode
+              ? "bg-[#222] text-white"
+              : "bg-white text-black"
+          }`}
         >
           {showCategory === null && <MainMenu timeOfDay={timeOfDay} />}
           {showCategory && (
@@ -128,7 +132,7 @@ const Menu = () => {
                   animate={{ x: 0, opacity: 1 }}
                   className="relative"
                 >
-                 {/* <Stickies />*/} 
+                  {/* <Stickies />*/}
                 </motion.div>
               )}
             </div>

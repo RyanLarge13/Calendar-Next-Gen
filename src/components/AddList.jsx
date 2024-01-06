@@ -9,7 +9,8 @@ import Color from "./Color";
 import { colors } from "../constants.js";
 
 const AddList = () => {
-  const { user, setLists, setSystemNotif } = useContext(UserContext);
+  const { user, setLists, setSystemNotif, preferences } =
+    useContext(UserContext);
   const { setMenu, setType, setAddNewEvent } = useContext(InteractiveContext);
   const { setOpenModal } = useContext(DatesContext);
   const [addItems, setAddItems] = useState(false);
@@ -131,7 +132,11 @@ const AddList = () => {
             value={title}
             placeholder="List"
             onChange={(e) => setTitle(e.target.value)}
-            className={`w-full p-2 text-4xl my-5 bg-opacity-80 focus:outline-none`}
+            className={`w-full p-2 text-4xl my-5 bg-opacity-80 focus:outline-none ${
+              preferences.darkMode
+                ? "bg-[#222] text-white"
+                : "bg-white text-black"
+            }`}
           />
           <div className="flex flex-wrap items-center justify-center my-5">
             {colors.map((item, index) => (
@@ -144,7 +149,7 @@ const AddList = () => {
               />
             ))}
           </div>
-          <div className="absolute bottom-4 right-4 left-4">
+          <div className="absolute bottom-4 right-4 left-4 text-black">
             <button
               onClick={() => createList()}
               className="rounded-md shadow-md py-2 w-full bg-gradient-to-tr from-lime-300 to-emerald-200 text-xs underline"
@@ -170,12 +175,16 @@ const AddList = () => {
             value={itemTitle}
             placeholder="Add new items!!"
             onChange={(e) => setItemTitle(e.target.value)}
-            className="mt-5 text-lg px-3 py-1 w-full focus:outline-none focus:shadow-sm"
+            className={`mt-5 text-lg px-3 py-1 w-full focus:outline-none focus:shadow-sm ${
+              preferences.darkMode
+                ? "bg-[#222] text-white"
+                : "bg-white text-black"
+            }`}
           />
           <button
             onClick={() => addItemsToList()}
             type="text"
-            className="my-5 py-2 w-full rounded-md shadow-md bg-gradient-to-tr from-lime-300 to-green-200 text-xs underline"
+            className="my-5 py-2 w-full rounded-md shadow-md bg-gradient-to-tr from-lime-300 to-green-200 text-xs underline text-black"
           >
             Add
           </button>
@@ -191,7 +200,7 @@ const AddList = () => {
                 </div>
               ))}
           </div>
-          <div className="flex flex-col fixed bottom-5 w-[60%]">
+          <div className="flex flex-col fixed bottom-5 w-[60%] lg:w-[39%] text-black">
             <button
               onClick={() => setAddItems(false)}
               className="mb-1 mt-5 py-2 w-full rounded-md shadow-md bg-gradient-to-tr from-rose-300 to-amber-200 text-xs underline"

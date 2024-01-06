@@ -8,7 +8,7 @@ import UserContext from "../context/UserContext";
 
 const AgendaView = () => {
   const { view, setEvent } = useContext(InteractiveContext);
-  const { events } = useContext(UserContext);
+  const { events, preferences } = useContext(UserContext);
   const {
     month,
     year,
@@ -44,14 +44,16 @@ const AgendaView = () => {
     <div className="p-3">
       <div className="shadow-md rounded-md p-2">
         <div className="flex justify-between items-center mb-2 font-semibold">
-          <p className="py-1 px-2 bg-cyan-100 rounded-md shadow-md">
+          <p className={`py-1 px-2 bg-cyan-100 rounded-md shadow-md`}>
             {theDay.toLocaleDateString("en-us", {
               month: "short",
               day: "numeric",
               year: "numeric",
             })}
           </p>
-          <AiFillCalendar />
+          <AiFillCalendar
+            className={`${preferences.darkMode ? "text-white" : "text-black"}`}
+          />
         </div>
         <div className="grid grid-cols-7 place-items-center">
           {weekDays.map((day, index) => (
@@ -63,7 +65,7 @@ const AgendaView = () => {
                 new Date(dateString).getYear() === dateObj.getYear()
                   ? "text-cyan-300"
                   : ""
-              }`}
+              } ${preferences.darkMode ? "text-white" : "text-black"}`}
             >
               {day.split("")[0]}
             </p>
@@ -85,14 +87,17 @@ const AgendaView = () => {
                 } ${
                   index - paddingDays + 1 === day &&
                   month === dateObj.getMonth() &&
-                  year === dateObj.getFullYear() &&
-                  "bg-cyan-100"
+                  year === dateObj.getFullYear()
+                    ? "bg-cyan-100 text-black"
+                    : preferences.darkMode
+                    ? "text-white"
+                    : "text-black"
                 } duration-200 relative w-full rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start gap-y-1 cursor-pointer`}
               >
                 <div
                   className={`text-center text-sm my-1 ${
                     event
-                      ? `${event.color} w-[20px] h-[20px] rounded-full shadow-md`
+                      ? `${event.color} w-[20px] h-[20px] rounded-full shadow-md text-black`
                       : ""
                   }`}
                 >

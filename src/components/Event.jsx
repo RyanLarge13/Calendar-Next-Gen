@@ -16,10 +16,12 @@ import GoogleMaps from "./GoogleMaps";
 import Masonry from "react-masonry-css";
 import InteractiveContext from "../context/InteractiveContext";
 import DatesContext from "../context/DatesContext";
+import UserContext from "../context/UserContext";
 
 const Event = ({ dayEvents }) => {
   const { event, setEvent } = useContext(InteractiveContext);
   const { dateObj, setString } = useContext(DatesContext);
+  const { preferences } = useContext(UserContext);
   const [open, setOpen] = useState(true);
   const [timeLeft, setTimeLeft] = useState(null);
   const [fetchedImages, setFetchedImages] = useState([]);
@@ -199,13 +201,19 @@ const Event = ({ dayEvents }) => {
       onDragEnd={checkToClose}
       initial={{ y: "100%" }}
       animate={open ? { y: 0 } : { y: "110%" }}
-      className="z-[901] fixed inset-3 top-[7%] rounded-md bg-white overflow-y-auto"
+      className={`z-[901] fixed inset-3 top-[7%] rounded-md ${
+        preferences.darkMode ? "bg-[#222]" : "bg-white"
+      } overflow-y-auto`}
     >
       <div className={`${event.color} min-h-full bg-opacity-20`}>
         <div
           onPointerDown={startDrag}
           style={{ touchAction: "none" }}
-          className="px-3 py-5 sticky top-0 right-0 left-0 z-20 bg-white rounded-md shadow-md flex justify-between items-center"
+          className={`px-3 py-5 sticky top-0 right-0 left-0 z-20 ${
+            preferences.darkMode
+              ? "bg-[#222] text-white"
+              : "bg-white text-black"
+          } rounded-md shadow-md flex justify-between items-center`}
         >
           <button
             onClick={() => {

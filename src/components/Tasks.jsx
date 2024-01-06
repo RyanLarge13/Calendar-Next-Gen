@@ -97,7 +97,7 @@ const Tasks = () => {
         userTasks.map((task, taskIndex) => (
           <div
             key={task.id}
-            className={`p-3 my-5 rounded-md shadow-md ${task.color}`}
+            className={`p-3 my-5 rounded-md shadow-md ${task.color} text-black`}
           >
             <div className="mb-3 flex justify-end items-center gap-x-3">
               <BsPenFill />

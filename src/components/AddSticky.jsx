@@ -11,7 +11,7 @@ import Toggle from "./Toggle";
 import DatesContext from "../context/DatesContext.jsx";
 
 const AddSticky = () => {
-  const { setStickies, setSystemNotif } = useContext(UserContext);
+  const { setStickies, setSystemNotif, preferences } = useContext(UserContext);
   const { setType, setAddNewEvent } = useContext(InteractiveContext);
   const { setOpenModal } = useContext(DatesContext);
 
@@ -98,7 +98,9 @@ const AddSticky = () => {
         placeholder="Sticky"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        className={`p-2 text-4xl mt-10 mb-5 w-full outline-none bg-opacity-30 duration-200`}
+        className={`p-2 text-4xl mt-10 mb-5 w-full outline-none bg-opacity-30 duration-200 ${
+          preferences.darkMode ? "bg-[#222] text-white" : "bg-white text-black"
+        }`}
       />
       <div className="flex flex-wrap items-center justify-center my-5">
         {colors.map((item, index) => (
@@ -125,7 +127,7 @@ const AddSticky = () => {
         </div>
         <Toggle condition={pin} setCondition={setPin} />
       </div>
-      <div className="text-xs font-semibold mb-3">
+      <div className="text-xs font-semibold mb-3 text-black">
         <button
           onClick={addSticky}
           className="w-full py-2 rounded-md shadow-md bg-gradient-to-r from-lime-200 to-green-200 underline"

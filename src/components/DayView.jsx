@@ -4,10 +4,13 @@ import { staticTimes } from "../constants.js";
 import { formatDbText } from "../utils/helpers.js";
 import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
+import UserContext from "../context/UserContext.jsx";
 
 const DayView = ({ todaysEvents, todaysReminders }) => {
   const { setEvent } = useContext(InteractiveContext);
   const { theDay, dateObj } = useContext(DatesContext);
+  const { preferences } = useContext(UserContext);
+
   const [time, setTime] = useState(dateObj.toLocaleTimeString());
   const [height, setheight] = useState(0);
   const [combinedArray, setCombinedArray] = useState([]);
@@ -124,10 +127,18 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
                   backgroundColor: `${
                     times.includes(staticTime.string.trim())
                       ? "#67e8f9"
+                      : preferences.darkMode
+                      ? "#222"
                       : "#fff"
                   }`,
                 }}
-                className={`${index === 0 ? "border-b border-t" : "border-b"}`}
+                className={`${index === 0 ? "border-b border-t" : "border-b"} ${
+                  times.includes(staticTime.string.trim())
+                    ? "text-black"
+                    : preferences.darkMode
+                    ? "text-white"
+                    : "text-black"
+                }`}
               >
                 <p className="text-[11px]">{staticTime.string}</p>
               </motion.div>

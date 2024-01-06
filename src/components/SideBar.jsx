@@ -9,7 +9,7 @@ import UserContext from "../context/UserContext";
 import { formatDbText } from "../utils/helpers";
 
 const SideBar = () => {
-  const { events, upcoming } = useContext(UserContext);
+  const { events, upcoming, preferences } = useContext(UserContext);
   const { dateString, dateObj, setString, setTheDay, setNav } =
     useContext(DatesContext);
 
@@ -92,8 +92,16 @@ const SideBar = () => {
   };
 
   return (
-    <div className="hidden xl:block w-[17vw] bg-white max-h-screen scrollbar-hide border-r border-slate-200 fixed top-0 left-0 bottom-0 p-3 overflow-y-auto scrollbar-hide pt-20">
-      <div className="bg-white bg-opacity-80 backdrop-blur-sm sticky top-0 rounded-md p-2">
+    <div
+      className={`hidden xl:block w-[17vw] ${
+        preferences.darkMode ? "bg-[#222] border-none" : "bg-white"
+      } max-h-screen scrollbar-hide border-r border-slate-200 fixed top-0 left-0 bottom-0 p-3 overflow-y-auto scrollbar-hide pt-20`}
+    >
+      <div
+        className={`${
+          preferences.darkMode ? "bg-[#222] text-white" : "bg-white text-black"
+        } bg-opacity-80 backdrop-blur-sm sticky top-0 rounded-md p-2`}
+      >
         <div className="flex justify-between items-center px-3 mb-3">
           <BsFillArrowLeftCircleFill
             onClick={() => handleMonthYearChange("minus")}
@@ -145,13 +153,19 @@ const SideBar = () => {
                         `${temporaryMonth + 1}/${
                           index - temporaryPaddingDays + 1
                         }/${temporaryYear}` && "shadow-emerald-300"
-                    } relative w-full rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start gap-y-1 cursor-pointer hover:scale-[1.25] duration-200`}
+                    } relative w-full rounded-sm ${
+                      preferences.darkMode
+                        ? "shadow-slate-700"
+                        : "shadow-slate-200"
+                    } shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start gap-y-1 cursor-pointer hover:scale-[1.25] duration-200`}
                   >
                     <div
                       className={`text-center text-sm my-1 ${
                         event
-                          ? `${event.color} w-[20px] h-[20px] rounded-full shadow-sm`
-                          : ""
+                          ? `${event.color} w-[20px] h-[20px] rounded-full shadow-sm text-black`
+                          : preferences.darkMode
+                          ? "text-white"
+                          : "text-black"
                       }`}
                     >
                       <p>{dayNumber > 0 ? dayNumber : ""}</p>
@@ -162,15 +176,13 @@ const SideBar = () => {
             )}
           </div>
         </div>
-        {change && (
-          <button
-            type="button"
-            onClick={() => submitChange()}
-            className="px-3 py-2 rounded-md shadow-md mt-5 bg-gradient-to-tr from-cyan-300 to-cyan-100 text-xs font-semibold"
-          >
-            Submit
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={() => (change ? submitChange() : null)}
+          className="px-3 py-2 rounded-md shadow-md mt-5 bg-gradient-to-tr from-cyan-300 to-cyan-100 text-xs font-semibold text-black"
+        >
+          Submit
+        </button>
       </div>
       <div>
         {upcoming.length > 0 &&

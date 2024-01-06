@@ -24,7 +24,7 @@ const MainMenu = ({ timeOfDay }) => {
             upcoming.map((event) => (
               <div
                 key={event.id}
-                className={`${event.color} p-3 rounded-md shadow-md`}
+                className={`${event.color} p-3 rounded-md shadow-md my-5 text-black`}
               >
                 <p className="mb-2">
                   In{" "}

@@ -27,6 +27,7 @@ const LoginLogout = () => {
     setReminders,
     setLists,
     setSystemNotif,
+    preferences,
   } = useContext(UserContext);
 
   const [regularLogin, setRegularLogin] = useState(false);
@@ -117,14 +118,20 @@ const LoginLogout = () => {
               animate={
                 showNotifs ? { y: "85%", opacity: 1 } : { y: 0, opacity: 1 }
               }
-              className="p-3 fixed bottom-0 left-0 right-0 rounded-md shadow-md bg-white z-10"
+              className={`p-3 fixed bottom-0 left-0 right-0 rounded-md shadow-md z-10 lg:right-[50%] ${
+                preferences.darkMode
+                  ? "bg-[#222] text-white"
+                  : "bg-white text-black"
+              }`}
             >
               {user ? (
                 <div>
-                  <div className="flex justify-between items-center bg-cyan-100 rounded-md shadow-md p-2 mb-5">
+                  <div
+                    className={`flex justify-between items-center bg-cyan-100 rounded-md shadow-md p-2 mb-5 text-black`}
+                  >
                     <BiLogOutCircle
                       onClick={() => confirmLogout()}
-                      className="text-xl abolute left-2 top-2 cursor-pointer"
+                      className="text-xl left-2 top-2 cursor-pointer"
                     />
                     <div
                       onClick={() => setShowNotifs((prev) => !prev)}
@@ -165,7 +172,7 @@ const LoginLogout = () => {
                       alt="CNG logo"
                       className="w-[75px] h-[75px] rounded-md mt-3 mb-2"
                     />
-                    <h3 className="text-xs">sign in to calendat next gen</h3>
+                    <h3 className="text-xs">sign in to calendar next gen</h3>
                   </div> */}
                   {!regularLogin && (
                     <motion.div

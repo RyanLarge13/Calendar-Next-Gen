@@ -8,8 +8,8 @@ const Stickies = () => {
 
   return (
     <AnimatePresence>
-      {stickies.map((sticky) => (
-        <Sticky key={sticky.id} sticky={sticky} />
+      {stickies.map((sticky, index) => (
+        <Sticky key={sticky.id} sticky={sticky} index={index} />
       ))}
     </AnimatePresence>
   );

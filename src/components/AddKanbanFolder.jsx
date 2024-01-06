@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { motion } from "framer-motion";
 import { colors } from "../constants.js";
 import { AiFillFolder, AiFillCheckCircle } from "react-icons/ai";
 import Color from "./Color";
+import UserContext from "../context/UserContext.jsx";
 
 const AddKanbanFolder = ({ folder, setFolders, folders }) => {
+  const { preferences } = useContext(UserContext);
+
   const [editColor, setEditColor] = useState(false);
   const [editText, setEditText] = useState(false);
   const [color, setColor] = useState(folder.color);
@@ -36,7 +39,11 @@ const AddKanbanFolder = ({ folder, setFolders, folders }) => {
       className={`flex justify-between items-center p-3 rounded-md shadow-md my-3 bg-opacity-20 ${color} relative`}
     >
       {editColor && (
-        <div className="absolute bottom-[110%] left-0 rounded-md shadow-md bg-white flex flex-wrap justify-center items-center gap-1 p-3">
+        <div
+          className={`absolute bottom-[110%] left-0 md:right-[50%] rounded-md shadow-md flex flex-wrap justify-center items-center gap-1 p-3 ${
+            preferences.darkMode ? "bg-[#222]" : "bg-white"
+          }`}
+        >
           {colors.map((col, index) => (
             <Color
               key={index}
@@ -48,11 +55,16 @@ const AddKanbanFolder = ({ folder, setFolders, folders }) => {
           ))}
         </div>
       )}
-      <button onContextMenu={() => setEditText(true)}><p>{folder.title}</p></button>
+      <button onContextMenu={() => setEditText(true)}>
+        <p>{folder.title}</p>
+      </button>
       {!!editColor ? (
-        <button onClick={() => {
-        setEditColor(false)
-        editFolderColor()}}>
+        <button
+          onClick={() => {
+            setEditColor(false);
+            editFolderColor();
+          }}
+        >
           <AiFillCheckCircle />
         </button>
       ) : (

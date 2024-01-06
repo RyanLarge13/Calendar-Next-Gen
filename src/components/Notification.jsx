@@ -10,7 +10,7 @@ import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext";
 
 const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
-  const { notifications, setNotifications, setSystemNotif } =
+  const { notifications, setNotifications, setSystemNotif, preferences } =
     useContext(UserContext);
   const { showNotifs, setShowNotifs } = useContext(InteractiveContext);
 
@@ -125,10 +125,14 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
           onDragEnd={checkToClose}
           exit={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="pt-3 pb-10 px-5 rounded-b-md shadow-md fixed top-0 bottom-0 right-0 left-0 z-20 max-h-[75vh] overflow-y-auto bg-cyan-100"
+          className="pt-3 pb-10 px-5 rounded-b-md shadow-md fixed inset-0 z-20 lg:left-[60%] overflow-y-auto bg-cyan-100"
         >
           <div
-            className="absolute bottom-0 right-0 left-0 p-5 rounded-md bg-white flex justify-between items-center pointer-events-auto"
+            className={`absolute bottom-0 right-0 left-0 p-5 rounded-md flex justify-between items-center pointer-events-auto ${
+              preferences.darkMode
+                ? "bg-[#222] text-white"
+                : "bg-white text-black"
+            }`}
             style={{ touchAction: "none" }}
             onPointerDown={startDrag}
           >
