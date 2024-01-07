@@ -97,14 +97,14 @@ export const sendRequestFromEmail = async (req, res) => {
       if (existingRequest) {
         return res
           .status(400)
-          .json({ message: `Friend request to ${email} already exsists` });
+          .json({ message: `Friend request to ${email} already exists` });
       }
       const newFriendRequest = await prisma.friendRequest.create({
         data: newRequest,
       });
       if (!newFriendRequest) {
         return res.status(500).json({
-          message: `There was an issue proccessing your friend request to the user with an email of ${email}. Please try to send the request again to the same user if you see the email is correct`,
+          message: `There was an issue processing your friend request to the user with an email of ${email}. Please try to send the request again to the same user if you see the email is correct`,
         });
       }
       if (newFriendRequest) {
@@ -114,6 +114,7 @@ export const sendRequestFromEmail = async (req, res) => {
             email: recipient.email,
             sentTime: newFriendRequest.createdAt,
             status: newFriendRequest.status,
+            avatarUrl: newFriendRequest.avatarUrl,
           },
         });
       }
@@ -137,24 +138,15 @@ export const findUsersRequestsAndFriends = async (req, res) => {
     if (!foundUser) {
       return res.status(404).json({
         message:
-          "Please log back in or refresh your application. An issue occured fetching your personal data",
+          "Please log back in or refresh your application. An issue occurred fetching your personal data",
       });
     }
     const userFriends = await prisma.user
       .findUnique({
         where: { id: user.id },
       })
-      .friends({
-        select: {
-          User: {
-            select: {
-              username: true,
-              email: true,
-              avatarUrl: true,
-            },
-          },
-        },
-      });
+      .friends();
+    console.log(userFriends);
     const userFriendRequestsReceived = await prisma.user
       .findUnique({
         where: { id: user.id },
@@ -199,9 +191,91 @@ export const findUsersRequestsAndFriends = async (req, res) => {
   }
 };
 
+export const acceptFriendRequest = async (req, res) => {
+  const userId = req.user.id;
+  const userEmail = req.user.email;
+  const userAvatar = req.user.avatarUrl;
+  const requestEmail = req.body.requestEmail;
+  if (!userId) {
+    return res.status(401).json({
+      message:
+        "There was an error authenticating your request. Please login and try again",
+    });
+  }
+  try {
+    const requester = await prisma.user.findUnique({
+      where: { email: requestEmail },
+    });
+    if (!requester) {
+      return res.status(404).json({
+        message:
+          "We are sorry, but no user with that email exists in our records. If this friend request is from an unknown user, do not reply and contact support",
+      });
+    }
+    const existingRequest = await prisma.friendRequest.findFirst({
+      where: {
+        OR: [
+          {
+            senderId: requester.id,
+            recipientId: userId,
+          },
+          {
+            senderId: userId,
+            recipientId: requester.id,
+          },
+        ],
+      },
+    });
+    if (!existingRequest) {
+      return res.status(404).json({
+        message:
+          "No friend request exists to you from this user. Please refresh and if you continue to have issues, contact support",
+      });
+    }
+    const newFriendConnections = [
+      {
+        userId: userId,
+        friendEmail: requester.email,
+        friendAvatar: requester.avatarUrl,
+      },
+      {
+        userId: requester.id,
+        friendEmail: userEmail,
+        friendAvatar: userAvatar,
+      },
+    ];
+    const newFriendships = await prisma.friend.createMany({
+      data: newFriendConnections,
+    });
+    if (!newFriendships) {
+      return res.status(500).json({
+        message:
+          "There was a problem accepting this friend request and we apologize but you will need to refresh and try again",
+      });
+    }
+    const deleteRequest = await prisma.friendRequest.delete({
+      where: { id: existingRequest.id },
+    });
+    return res.status(200).json({
+      message: `You have successfully become friends with ${requestEmail}`,
+      friendship: {
+        userId: requester.id,
+        friendEmail: requester.email,
+        friendAvatar: requester.avatarUrl,
+      },
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      message:
+        "We apologize, something went wrong with the server. Please give us some time to fix the issue and try canceling your friend request again",
+    });
+  }
+};
+
 export const cancelFriendRequest = async (req, res) => {
   const recipientsEmail = req.params.recipientsEmail;
-  const userId = req.user;
+  const userId = req.user.id;
   if (!userId) {
     return res.status(401).json({
       message:
@@ -213,10 +287,6 @@ export const cancelFriendRequest = async (req, res) => {
       where: { email: recipientsEmail },
     });
     if (!recipient) {
-      return res.status(404).json({
-        message:
-          "The user you sent a friend request to does not exsist in our records. If you have a persistent request on your account and keep receiving this error please contact us",
-      });
     }
     if (recipient) {
       const requestForFriendshipExists = await prisma.friendRequest.findFirst({
@@ -230,8 +300,7 @@ export const cancelFriendRequest = async (req, res) => {
       }
       const deleteRequest = await prisma.friendRequest.delete({
         where: {
-          senderId: userId,
-          recipientId: recipient.id,
+          id: requestForFriendshipExists.id,
         },
       });
       if (!deleteRequest) {

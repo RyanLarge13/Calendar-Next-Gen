@@ -398,6 +398,15 @@ export const sendFriendRequestByEmail = (userEmail, token) => {
   return res;
 };
 
+export const acceptFriendRequest = (token, requestEmail) => {
+  const res = Axios.post(
+    `${productionUrl}/friends/accept/request`,
+    { requestEmail: requestEmail },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return res;
+};
+
 export const cancelAFriendRequest = (token, recipientsEmail) => {
   const res = Axios.delete(
     `${productionUrl}/friends/cancel/request/email/${recipientsEmail}`,

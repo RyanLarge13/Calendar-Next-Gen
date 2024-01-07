@@ -100,6 +100,7 @@ const createNotification = async (event) => {
 
 const createReminder = async (event) => {
   const newReminder = {
+    eventRefId: event.id,
     title: event.summary,
     notes: event.description,
     time: event.reminders.when,
@@ -159,13 +160,13 @@ export const addEvent = async (req, res) => {
   const user = req.user;
   let reminder;
   const repeatEvents = await addMultipleEvents(newEvent);
-  if (newEvent.reminders.reminder) {
-    reminder = await createReminder(newEvent);
-  }
   const createdEvent = await prisma.event.create({
     data: { ...newEvent, id: newEvent.id },
   });
   if (createdEvent) {
+    if (newEvent.reminders.reminder) {
+      reminder = await createReminder(newEvent);
+    }
     return res.json({
       message: "Successfully added new event",
       user: {
@@ -191,6 +192,9 @@ export const getAttachments = async (req, res) => {
 
 export const deleteEvent = async (req, res) => {
   const id = req.params.eventId;
+  const deletedReminders = await prisma.reminder.deleteMany({
+    where: { eventRefId: id },
+  });
   const deletedEvent = await prisma.event.delete({
     where: {
       id: id,

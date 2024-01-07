@@ -127,7 +127,6 @@ const MonthView = () => {
   };
 
   const createPopup = (e, eventsToRender, index) => {
-    const theHoverDay = `${month + 1}/${index - paddingDays + 1}/${year}`;
     if (popupTimeout) {
       clearTimeout(popupTimeout);
       setPopupTimeout(null);
@@ -135,19 +134,21 @@ const MonthView = () => {
     setNewPopup(false);
     setPopupEvents([]);
     setMousePosition({ x: 0, y: 0 });
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (isMobile) {
+      return;
+    }
     const mousePositions = {
       x: e.clientX,
       y: e.clientY,
     };
-    if (popupTimeout) {
-      clearTimeout(popupTimeout);
-    }
     const timeoutId = setTimeout(() => {
+      const theHoverDay = `${month + 1}/${index - paddingDays + 1}/${year}`;
       setPopupEvents(eventsToRender);
       setMousePosition(mousePositions);
       setHoverDay(theHoverDay);
       setNewPopup(true);
-    }, 2000);
+    }, 1000);
     setPopupTimeout(timeoutId);
   };
 
