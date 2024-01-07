@@ -5,7 +5,8 @@ import {
   sendRequestFromQrCode,
   sendRequestFromEmail,
   findUsersRequestsAndFriends,
-  cancelFriendRequest
+  cancelFriendRequest,
+  acceptFriendRequest,
 } from "../controllers/friendsController.js";
 
 const friendsRouter = express.Router();
@@ -17,6 +18,11 @@ friendsRouter.post(
   sendRequestFromQrCode
 );
 friendsRouter.post("/add/request/email/:userEmail", auth, sendRequestFromEmail);
-friendsRouter.delete("/cancel/request/email/:recipientsEmail", auth, cancelFriendRequest)
+friendsRouter.post("/accept/request", auth, acceptFriendRequest);
+friendsRouter.delete(
+  "/cancel/request/email/:recipientsEmail",
+  auth,
+  cancelFriendRequest
+);
 
 export default friendsRouter;

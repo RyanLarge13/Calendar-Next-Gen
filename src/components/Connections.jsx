@@ -1,33 +1,15 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext } from "react";
 import { motion } from "framer-motion";
-import { IoIosAddCircle } from "react-icons/io";
-import {
-  AiOutlineMail,
-  AiOutlineQrcode,
-  AiOutlineArrowDown,
-} from "react-icons/ai";
-import { sendFriendRequestByEmail, cancelAFriendRequest } from "../utils/api";
-import QRCodeScanner from "./QRCodeScanner";
+import { AiOutlineArrowDown } from "react-icons/ai";
 import UserContext from "../context/UserContext";
+import FriendRequest from "./FriendRequest";
+import ConnectionRequests from "./ConnectionRequests";
+import Friends from "./Friends";
 
 const Connections = ({ setOption }) => {
-  const {
-    user,
-    friends,
-    friendRequests,
-    setFriendRequests,
-    connectionRequests,
-    setFriends,
-    qrCodeUrl,
-    setSystemNotif,
-    preferences,
-  } = useContext(UserContext);
+  const { preferences } = useContext(UserContext);
 
-  const [pick, setPick] = useState(false);
-  const [qrOptions, setQrOptions] = useState(false);
-  const [emailAdd, setEmailAdd] = useState(false);
-  const [email, setEmail] = useState("");
-  const [openCamera, setOpenCamera] = useState(false);
+  const [options, setOptions] = useState(0);
 
   const finish = (e, info) => {
     const dragDistance = info.offset.y;
@@ -40,70 +22,6 @@ const Connections = ({ setOption }) => {
       return;
     }
   };
-
-  const addFriendByEmail = (e) => {
-    e.preventDefault();
-    const token = localStorage.getItem("authToken");
-    if (token) {
-      sendFriendRequestByEmail(email, token)
-        .then((res) => {
-          console.log(res);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
-  };
-
-  const confirmCancel = (recipientsEmail) => {
-    const newConfirmation = {
-      show: true,
-      title: "Cancel Request",
-      text: `Are you sure you want to cancel your friend request to ${recipientsEmail}`,
-      color: "bg-purple-200",
-      hasCancel: true,
-      actions: [
-        { text: "close", func: () => setSystemNotif({ show: false }) },
-        {
-          text: "cancel request",
-          func: () => cancelFriendRequest(recipientsEmail),
-        },
-      ],
-    };
-    setSystemNotif(newConfirmation);
-  };
-
-  const cancelFriendRequest = (recipientsEmail) => {
-    const token = localStorage.getItem("authToken");
-    if (!token) {
-    }
-    if (token) {
-      cancelAFriendRequest(token, recipientsEmail)
-        .then((res) => {
-          const newSuccess = {
-            show: true,
-            title: "Canceled Friend Request",
-            text: `Your friend request to ${recipientsEmail} was successfully canceled`,
-            color: "bg-green-300",
-            hasCancel: false,
-            actions: [
-              { text: "close", func: () => setSystemNotif({ show: false }) },
-              { text: "undo", func: () => {} },
-            ],
-          };
-          setSystemNotif(newSuccess);
-          const filteredRequests = friendRequests.filter(
-            (req) => req.recipient.email !== recipientsEmail
-          );
-          setFriendRequests(filteredRequests);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
-  };
-
-  const acceptRequest = (reqId) => {};
 
   return (
     <motion.div
@@ -118,160 +36,35 @@ const Connections = ({ setOption }) => {
         preferences.darkMode ? "bg-[#222] text-white" : "bg-white text-black"
       }`}
     >
-      <div className="relative">
+      <div className="flex justify-between items-center">
         <h2 className="text-4xl pb-2 border-b">Connections</h2>
-        <div
-          onClick={() => setOption(null)}
-          className="absolute top-0 bottom-0 right-0 text-lg"
-        >
+        <button onClick={() => setOption(null)}>
           <AiOutlineArrowDown />
-        </div>
+        </button>
       </div>
-      <div className="mt-50">
-        <p>Friend Requests</p>
-        {friendRequests.length > 0 ? (
-          friendRequests.map((friendReq) => (
-            <div
-              key={friendReq.sender.email}
-              className="p-3 rounded-md shadow-md my-3"
-            >
-              <div className="flex justify-between items-end">
-                <img
-                  src={friendReq.sender.avatarUrl}
-                  alt="users avatar"
-                  className="w-[50px] h-[50px] rounded-full shadow-md"
-                />
-                <div className="text-right">
-                  <p className="text-sm mt-2">{friendReq.sender.username}</p>
-                  <p className="text-sm">{friendReq.sender.email}</p>
-                </div>
-              </div>
-              <div className="mt-3 flex justify-between items-center">
-                <button className="px-3 py-2 text-xs rounded-md shadow-md bg-red-300 font-semibold">
-                  Deny
-                </button>
-                <button
-                  onClick={() => acceptRequest(friendReq.id)}
-                  className="px-3 py-2 text-xs rounded-md shadow-md bg-lime-300 font-semibold"
-                >
-                  Accept
-                </button>
-              </div>
-            </div>
-          ))
-        ) : (
-          <p>No friend requests</p>
-        )}
+      <div className="my-5 flex justify-between items-center">
+        <button
+          onClick={() => setOptions(0)}
+          className={`${options === 0 ? "underline" : ""}`}
+        >
+          Friends
+        </button>
+        <button
+          onClick={() => setOptions(1)}
+          className={`${options === 1 ? "underline" : ""}`}
+        >
+          Friend Requests
+        </button>
+        <button
+          onClick={() => setOptions(2)}
+          className={`${options === 2 ? "underline" : ""}`}
+        >
+          Connection Requests
+        </button>
       </div>
-      <div className="mt-5">
-        <p>Your Friends</p>
-        <div className="mt-3">
-          {friends.length > 0 ? (
-            friends.map((friend) => <div></div>)
-          ) : (
-            <div className="p-5 flex flex-col justify-center items-center bg-cyan-100 shadow-md rounded-md">
-              <p>No friends</p>
-              <button
-                type="button"
-                className="flex flex-col justify-center items-center mt-3 py-1 px-3 rounded-md shadow-md bg-white"
-                onClick={() => setPick(true)}
-              >
-                <p>Create Connection</p>
-                <IoIosAddCircle />
-              </button>
-              {pick && (
-                <motion.div className="my-3 flex justify-center items-center">
-                  <button
-                    onClick={() => {
-                      setEmailAdd(false);
-                      setQrOptions(true);
-                    }}
-                    className="px-3 py-2 rounded-md shadow-md mx-3 bg-white text-lg"
-                  >
-                    <AiOutlineQrcode />
-                  </button>
-                  <button
-                    onClick={() => {
-                      setQrOptions(false);
-                      setEmailAdd(true);
-                    }}
-                    className="px-3 py-2 rounded-md shadow-md mx-3 bg-white text-lg"
-                  >
-                    <AiOutlineMail />
-                  </button>
-                </motion.div>
-              )}
-              {qrOptions && (
-                <div className="flex flex-col justify-center items-center">
-                  <img
-                    src={qrCodeUrl}
-                    alt="user qr code"
-                    className="w-40 h-40 rounded-md shadow-md"
-                  />
-                  <button
-                    onClick={() =>
-                      openCamera ? setOpenCamera(false) : setOpenCamera(true)
-                    }
-                    className="px-3 py-2 rounded-md shadow-md bg-white mt-5"
-                  >
-                    {openCamera ? "cancel" : "Or Scan Your Friends!"}
-                  </button>
-                  {openCamera && <QRCodeScanner />}
-                </div>
-              )}
-              {emailAdd && (
-                <form
-                  onSubmit={(e) => addFriendByEmail(e)}
-                  className="w-full px-3"
-                >
-                  <input
-                    placeholder="Users Email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="p-3 rounded-md shadow-md bg-white focus:outline-none w-full"
-                  />
-                </form>
-              )}
-            </div>
-          )}
-        </div>
-        {connectionRequests.length > 0 ? (
-          connectionRequests.map((connectionReq) => (
-            <div
-              key={connectionReq.recipient.email}
-              className="flex justify-between items-end p-3 rounded-md shadow-md my-3 relative bg-slate-100"
-            >
-              <button
-                onClick={() => confirmCancel(connectionReq.recipient.email)}
-                className="absolute px-3 py-2 text-xs top-0 right-0 rounded-md shadow-md bg-red-300 font-semibold"
-              >
-                Cancel Request
-              </button>
-              <div>
-                <img
-                  src={connectionReq.recipient.avatarUrl}
-                  alt="users avatar"
-                  className="w-[50px] h-[50px] rounded-full shadow-md"
-                />
-                <p className="text-sm mt-2">STATUS: pending</p>
-              </div>
-              <div className="text-right">
-                <p className="text-sm mt-2 font-semibold">
-                  {connectionReq.recipient.username}
-                </p>
-                <p className="text-sm">
-                  <a href={`mailto:${connectionReq.recipient.email}`}>
-                    {connectionReq.recipient.email}
-                  </a>
-                </p>
-              </div>
-            </div>
-          ))
-        ) : (
-          <p>No connection requests sent out</p>
-        )}
-      </div>
+      {options === 0 && <Friends />}
+      {options === 1 && <FriendRequest />}
+      {options === 2 && <ConnectionRequests />}
     </motion.div>
   );
 };

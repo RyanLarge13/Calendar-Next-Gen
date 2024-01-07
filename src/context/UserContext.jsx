@@ -70,7 +70,7 @@ export const UserProvider = ({ children }) => {
           (new Date(event.date) - currentDate) / (25 * 60 * 60 * 1000)
         ),
       }));
-    setUpcoming(filteredEvents.reverse());
+    setUpcoming(filteredEvents);
   }, [events]);
 
   useEffect(() => {
@@ -229,6 +229,7 @@ export const UserProvider = ({ children }) => {
           getFriendinfo(authToken)
             .then((response) => {
               const data = response.data;
+              console.log(data.userFriends);
               setFriends(data.userFriends);
               setFriendRequests(data.friendRequests);
               setConnectionRequests(data.connectionRequests);

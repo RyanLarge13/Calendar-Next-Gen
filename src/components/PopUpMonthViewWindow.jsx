@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { useContext } from "react";
+import { formatDbText } from "../utils/helpers";
 import UserContext from "../context/UserContext";
 import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
@@ -32,26 +33,31 @@ const PopUpMonthViewWindow = ({ positions, eventsToRender, day }) => {
         preferences.darkMode ? "bg-[#222]" : "bg-white"
       }`}
     >
-      {eventsToRender && eventsToRender.length > 0 ? (
-        eventsToRender.map((event) => (
-          <div
-            key={event.id}
-            className={`rounded-lg ${event.color} shadow-md p-2 my-2 w-40`}
-          >
-            <p className="text-sm font-semibold overflow-hidden">
-              {event.summary}
-            </p>
-            <p className="text-xs">{event.description}</p>
-          </div>
-        ))
-      ) : (
-        <button
-          onClick={() => addEvent()}
-          className={`${preferences.darkMode ? "text-white" : "text-black"}`}
-        >
-          Add event
-        </button>
-      )}
+      {eventsToRender && eventsToRender.length > 0
+        ? eventsToRender.map((event) => (
+            <div
+              key={event.id}
+              className={`rounded-lg ${event.color} shadow-md p-2 my-2 w-40`}
+            >
+              <p className="text-sm font-semibold overflow-hidden">
+                {event.summary}
+              </p>
+              <div>
+                {formatDbText(event.description || "").map((text, index) => (
+                  <p key={index} className="text-xs">
+                    {text}
+                  </p>
+                ))}
+              </div>
+            </div>
+          ))
+        : null}
+      <button
+        onClick={() => addEvent()}
+        className={`${preferences.darkMode ? "text-white" : "text-black"}`}
+      >
+        Add event
+      </button>
     </motion.div>
   );
 };

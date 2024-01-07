@@ -7,10 +7,12 @@ import {
 } from "react-icons/bs";
 import InteractiveContext from "../context/InteractiveContext";
 import DatesContext from "../context/DatesContext";
+import UserContext from "../context/UserContext";
 
 const FullDatePicker = () => {
   const { setShowFullDatePicker, setAddNewEvent, setType } =
     useContext(InteractiveContext);
+  const { preferences } = useContext(UserContext);
   const {
     setUpdatedDate,
     setNav,
@@ -208,7 +210,7 @@ const FullDatePicker = () => {
   return (
     <>
       <motion.div
-initial={{ opacity: 0 }}
+        initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm z-[998]"
         onClick={() => setShowFullDatePicker(false)}
@@ -216,7 +218,9 @@ initial={{ opacity: 0 }}
       <motion.div
         initial={{ opacity: 0, scale: 0.75, x: "-50%" }}
         animate={{ opacity: 1, scale: 1, x: "-50%" }}
-        className="fixed top-40 left-[50%] translate-x-[-50%] rounded-md shadow-md bg-white p-5 z-[999]"
+        className={`fixed top-40 left-[50%] translate-x-[-50%] rounded-md shadow-md p-5 z-[999] ${
+          preferences.darkMode ? "bg-[#222] text-white" : "bg-white text-black"
+        }`}
       >
         <div className="flex gap-x-3">
           <div>
@@ -226,7 +230,7 @@ initial={{ opacity: 0 }}
               className="text-sm mt-1 mb-2 p-3 flex justify-center items-center bg-cyan-100 rounded-md shadow-md"
               onClick={() => decreaseMonth()}
             >
-              <BsFillArrowUpCircleFill />
+              <BsFillArrowUpCircleFill className="text-black" />
             </motion.div>
             <div
               className="overflow-y-scroll max-h-[60px] text-[40px] scrollbar-hide"
@@ -251,7 +255,7 @@ initial={{ opacity: 0 }}
               className="text-sm mt-2 mb-1 p-3 flex justify-center items-center bg-cyan-100 rounded-md shadow-md"
               onClick={() => increaseMonth()}
             >
-              <BsFillArrowDownCircleFill />
+              <BsFillArrowDownCircleFill className="text-black" />
             </motion.div>
           </div>
           <div>
@@ -261,7 +265,7 @@ initial={{ opacity: 0 }}
               className="text-sm mt-1 mb-2 p-3 flex justify-center items-center bg-cyan-100 rounded-md shadow-md"
               onClick={() => decreaseYear()}
             >
-              <BsFillArrowUpCircleFill />
+              <BsFillArrowUpCircleFill className="text-black" />
             </motion.div>
             <div
               className="overflow-y-scroll max-h-[60px] text-[40px] scrollbar-hide"
@@ -286,7 +290,7 @@ initial={{ opacity: 0 }}
               className="text-sm mt-2 mb-1 p-3 flex justify-center items-center bg-cyan-100 rounded-md shadow-md"
               onClick={() => increaseYear()}
             >
-              <BsFillArrowDownCircleFill />
+              <BsFillArrowDownCircleFill className="text-black" />
             </motion.div>
           </div>
         </div>
@@ -297,7 +301,7 @@ initial={{ opacity: 0 }}
             className="text-sm mt-1 mb-2 p-3 flex justify-center items-center bg-cyan-100 rounded-md shadow-md"
             onClick={() => decreaseDay()}
           >
-            <BsFillArrowUpCircleFill />
+            <BsFillArrowUpCircleFill className="text-black" />
           </motion.div>
           <div
             className="overflow-y-scroll max-h-[60px] text-[40px] scrollbar-hide flex justify-center items-start"
@@ -322,7 +326,7 @@ initial={{ opacity: 0 }}
             className="text-sm mt-2 mb-1 p-3 flex justify-center items-center bg-cyan-100 rounded-md shadow-md"
             onClick={() => increaseDay()}
           >
-            <BsFillArrowDownCircleFill />
+            <BsFillArrowDownCircleFill className="text-black" />
           </motion.div>
         </div>
         <div className="flex justify-between items-center mt-5 border-t p-3">
