@@ -80,7 +80,7 @@ const Modal = () => {
         animate={{ x: 0, opacity: 1 }}
         className={`${
           preferences.darkMode ? "bg-[#222] text-white" : "bg-white text-black"
-        } z-[600] rounded-md shadow-lg shadow-purple-200 fixed top-0 bottom-0 right-0 w-[65%] lg:w-[40%] overflow-y-auto scroll-smooth scrollbar-hide`}
+        } z-[600] rounded-md shadow-lg shadow-purple-200 fixed top-0 bottom-0 right-0 w-[65%] lg:w-[30%] overflow-y-auto scroll-smooth scrollbar-hide`}
         ref={modalRef}
       >
         {addNewEvent ? (

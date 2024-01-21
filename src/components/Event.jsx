@@ -22,7 +22,6 @@ const Event = ({ dayEvents }) => {
   const { event, setEvent } = useContext(InteractiveContext);
   const { dateObj, setString } = useContext(DatesContext);
   const { preferences } = useContext(UserContext);
-  const [open, setOpen] = useState(true);
   const [timeLeft, setTimeLeft] = useState(null);
   const [fetchedImages, setFetchedImages] = useState([]);
   const [width, setWidth] = useState(0);
@@ -83,8 +82,6 @@ const Event = ({ dayEvents }) => {
       if (totalMinutesToStart <= nowMinutes + nowHourMinutes) {
         clearInterval(interval);
         clearInterval(timeLeftInterval);
-        // clearInterval(timeInLeft);
-        // setTimeInEvent(98);
         setWidth(98);
       }
     }
@@ -157,10 +154,7 @@ const Event = ({ dayEvents }) => {
       setEvent(dayEvents[index - 1]);
       setIndex((prev) => prev - 1);
     } else {
-      setOpen(false);
-      setTimeout(() => {
-        setEvent(null);
-      }, 100);
+      setEvent(null);
     }
   };
 
@@ -170,20 +164,14 @@ const Event = ({ dayEvents }) => {
       setEvent(dayEvents[index + 1]);
       setIndex((prev) => prev + 1);
     } else {
-      setOpen(false);
-      setTimeout(() => {
-        setEvent(null);
-      }, 100);
+      setEvent(null);
     }
   };
 
   const checkToClose = (e, info) => {
     const end = info.point.y;
     if (end > window.innerHeight / 2) {
-      setOpen(false);
-      setTimeout(() => {
-        setEvent(null);
-      }, 100);
+      setEvent(null);
     }
   };
 
@@ -200,8 +188,8 @@ const Event = ({ dayEvents }) => {
       dragListener={false}
       onDragEnd={checkToClose}
       initial={{ y: "100%" }}
-      animate={open ? { y: 0 } : { y: "110%" }}
-      className={`z-[901] fixed inset-3 top-[7%] rounded-md ${
+      animate={{ y: 0 }}
+      className={`z-[901] fixed inset-3 lg:inset-40 top-[7%] rounded-md ${
         preferences.darkMode ? "bg-[#222]" : "bg-white"
       } overflow-y-auto`}
     >
@@ -217,10 +205,7 @@ const Event = ({ dayEvents }) => {
         >
           <button
             onClick={() => {
-              setOpen(false);
-              setTimeout(() => {
-                setEvent(false);
-              }, 500);
+              setEvent(false);
             }}
           >
             <AiFillCloseCircle />
