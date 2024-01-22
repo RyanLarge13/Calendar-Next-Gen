@@ -1,7 +1,8 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useCallback } from "react";
 import ListItems from "./ListItems";
 import { deleteList } from "../utils/api";
 import { motion } from "framer-motion";
+import { FaSortAlphaDown } from "react-icons/fa";
 import {
   BsFillTrashFill,
   BsFillPenFill,
@@ -19,6 +20,7 @@ const Lists = () => {
   const { setMenu, setType, setAddNewEvent } = useContext(InteractiveContext);
 
   const [addItems, setAddItems] = useState([]);
+  const [sortOrder, setSortOrder] = useState(false);
 
   const deleteEntireList = (listId) => {
     setSystemNotif({ show: false });
@@ -36,6 +38,14 @@ const Lists = () => {
   };
 
   const sortItems = (items) => {
+    if (sortOrder === 1) {
+      const newSort = items.sort((a, b) => (a.text > b.text ? 1 : -1));
+      return newSort;
+    }
+    if (sortOrder === 0) {
+      const newSort = items.sort((a, b) => (b.text > a.text ? 1 : -1));
+      return newSort;
+    }
     const newSort = items.sort((a, b) => a.orderIndex - b.orderIndex);
     return newSort;
   };
@@ -48,6 +58,20 @@ const Lists = () => {
     setMenu(false);
     setOpenModal(true);
     setAddNewEvent(true);
+  };
+
+  const initializeSort = () => {
+    setSort((prev) => {
+      if (prev === false) {
+        return 0;
+      }
+      if (prev === 0) {
+        return 1;
+      }
+      if (prev === 1) {
+        return false;
+      }
+    });
   };
 
   return (
@@ -87,6 +111,9 @@ const Lists = () => {
                   className="text-lg cursor-pointer"
                 />
               )}
+              <button onClick={() => initializeSort()}>
+                <FaSortAlphaDown />
+              </button>
               <BsFillShareFill />
               <BsFillPenFill />
               <BsFillTrashFill
