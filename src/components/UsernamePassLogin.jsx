@@ -5,7 +5,8 @@ import { loginWithPasswordAndUsername } from "../utils/api";
 import UserContext from "../context/UserContext";
 
 const UsernamePassLogin = () => {
-  const { setUser, setAuthToken, setSystemNotif } = useContext(UserContext);
+  const { setUser, setAuthToken, setSystemNotif, preferences } =
+    useContext(UserContext);
 
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -138,7 +139,9 @@ const UsernamePassLogin = () => {
             : validUserName
             ? "shadow-green-200"
             : "shadow-red-200"
-        } w-full p-2 my-2 rounded-md shadow-md focus:outline-none`}
+        } w-full p-2 my-2 rounded-md shadow-md focus:outline-none ${
+          preferences.darkMode ? "bg-transparent" : "bg-white"
+        }`}
       />
       <input
         onChange={(e) => setEmail(e.target.value)}
@@ -147,7 +150,9 @@ const UsernamePassLogin = () => {
         value={email}
         id="email"
         name="email"
-        className="w-full p-3 rounded-md shadow-md focus:outline-none"
+        className={`w-full p-3 rounded-md shadow-md focus:outline-none ${
+          preferences.darkMode ? "bg-transparent" : "bg-white"
+        }`}
       />
       <input
         onChange={(e) => setPassword(e.target.value)}
@@ -163,7 +168,9 @@ const UsernamePassLogin = () => {
             : validPassword
             ? "shadow-green-200"
             : "shadow-red-200"
-        } w-full p-3 my-2 rounded-md shadow-md focus:outline-none`}
+        } w-full p-3 my-2 rounded-md shadow-md focus:outline-none ${
+          preferences.darkMode ? "bg-transparent" : "bg-white"
+        }`}
       />
       <button
         type="submit"

@@ -26,6 +26,10 @@ const Menu = () => {
       updateClientLists();
       updateList(token, [...listUpdate])
         .then((res) => {
+          setListUpdate([]);
+        })
+        .catch((err) => {
+          console.log(err);
           const lastUpdatedId = listUpdate[listUpdate.length - 1].listId;
           const listIndex = lists.findIndex(
             (list) => list.id === lastUpdatedId
@@ -36,10 +40,6 @@ const Menu = () => {
             updatedLists.unshift(movedList);
             setLists(updatedLists);
           }
-          setListUpdate([]);
-        })
-        .catch((err) => {
-          console.log(err);
         });
     }
   }, [menu]);

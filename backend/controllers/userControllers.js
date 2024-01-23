@@ -198,6 +198,11 @@ export const loginWithPasswordUsername = async (req, res) => {
     });
     if (exsistingUser) {
       await bcrypt.compare(password, exsistingUser.password).then((isMatch) => {
+        if (!isMatch && exsistingUser.username !== username) {
+          return res
+            .status(401)
+            .json({ message: "An account already exists with this email" });
+        }
         if (!isMatch) {
           return res.status(401).json({ message: "Incorrect password" });
         }

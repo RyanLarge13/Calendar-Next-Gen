@@ -1,7 +1,13 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { AiFillCloseCircle, AiFillPlusCircle } from "react-icons/ai";
 import { Reorder } from "framer-motion";
+import {
+  FaSortAlphaDownAlt,
+  FaSortAlphaUp,
+  FaSortAmountDown,
+  FaSortAmountUp,
+} from "react-icons/fa";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext";
 
@@ -10,6 +16,33 @@ const ListItems = ({ addItems, listId, items }) => {
   const { setSystemNotif } = useContext(UserContext);
   const [indexes, setIndexes] = useState(items);
   const [newItemText, setNewItemText] = useState("");
+  const [sortOrder, setSortOrder] = useState(1);
+
+  useEffect(() => {
+    const itemsCopy = [...items];
+    if (sortOrder === 1) {
+      const newSort = itemsCopy.sort((a, b) => a.orderIndex - b.orderIndex);
+      setIndexes(newSort);
+    }
+    if (sortOrder === 2) {
+      const newSort = itemsCopy.sort((a, b) =>
+        a.text.toLowerCase() > b.text.toLowerCase() ? 1 : -1
+      );
+      setIndexes(newSort);
+    }
+    if (sortOrder === 3) {
+      const newSort = itemsCopy.sort((a, b) =>
+        b.text.toLowerCase() > a.text.toLowerCase() ? 1 : -1
+      );
+      setIndexes(newSort);
+    }
+    if (sortOrder === 4) {
+      const newSort = itemsCopy
+        .sort((a, b) => a.orderIndex - b.orderIndex)
+        .reverse();
+      setIndexes(newSort);
+    }
+  }, [sortOrder]);
 
   const removeItem = (item) => {
     const newList = indexes.filter((i) => i.id !== item.id);
@@ -85,14 +118,37 @@ const ListItems = ({ addItems, listId, items }) => {
 
   return (
     <>
+      <div className="mb-2 bg-white rounded-md shadow-md p-3 flex justify-start items-center gap-x-3">
+        <button onClick={() => setSortOrder(2)}>
+          <FaSortAlphaUp />
+        </button>
+        <button onClick={() => setSortOrder(3)}>
+          <FaSortAlphaDownAlt />
+        </button>
+        <button onClick={() => setSortOrder(1)}>
+          <FaSortAmountDown />
+        </button>
+        <button onClick={() => setSortOrder(4)}>
+          <FaSortAmountUp />
+        </button>
+      </div>
       {addItems.includes(listId) && (
         <div className="flex justify-between items-center p-3 rounded-md shadow-md">
-          <input
-            className="rounded-md shadow-md px-3 py-2 outline-none"
-            placeholder="New Item"
-            value={newItemText}
-            onChange={(e) => setNewItemText(e.target.value)}
-          />
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              addNewItem();
+            }}
+          >
+            <input
+              type="text"
+              className="rounded-md shadow-md px-3 py-2 outline-none"
+              placeholder="New Item"
+              value={newItemText}
+              onChange={(e) => setNewItemText(e.target.value)}
+              autoFocus={true}
+            />
+          </form>
           <AiFillPlusCircle
             onClick={() => addNewItem()}
             className="text-lg cursor-pointer"

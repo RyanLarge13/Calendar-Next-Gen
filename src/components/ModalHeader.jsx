@@ -82,7 +82,7 @@ const ModalHeader = ({ allDayEvents }) => {
       animate={{ y: 0, opacity: 1, transition: { delay: 0.2 } }}
       className={`${
         preferences.darkMode ? "bg-[#222] text-white" : "bg-white text-black"
-      } z-[902] w-[59%] lg:w-[39%] p-2 font-bold shadow-md fixed top-1 right-1 rounded-md ${
+      } z-[902] w-[59%] lg:w-[29%] p-2 font-bold shadow-md fixed top-1 right-1 rounded-md ${
         event ? "w-[99%] lg:w-[99%]" : ""
       }`}
     >

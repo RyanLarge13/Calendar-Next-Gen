@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import ListItems from "./ListItems";
 import { deleteList } from "../utils/api";
-import { motion } from "framer-motion";
+import { Reorder, motion } from "framer-motion";
 import {
   BsFillTrashFill,
   BsFillPenFill,
@@ -9,6 +9,7 @@ import {
 } from "react-icons/bs";
 import { BiListMinus, BiListPlus } from "react-icons/bi";
 import { IoIosAddCircle } from "react-icons/io";
+import Masonry from "react-masonry-css";
 import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
 import DatesContext from "../context/DatesContext";
@@ -19,6 +20,12 @@ const Lists = () => {
   const { setMenu, setType, setAddNewEvent } = useContext(InteractiveContext);
 
   const [addItems, setAddItems] = useState([]);
+
+  const breakpointColumnsObj = {
+    default: 3, // Number of columns by default
+    1100: 2, // Number of columns on screens > 1100px
+    700: 1, // Number of columns on screens > 700px
+  };
 
   const deleteEntireList = (listId) => {
     setSystemNotif({ show: false });
@@ -35,10 +42,10 @@ const Lists = () => {
       });
   };
 
-  const sortItems = (items) => {
-    const newSort = items.sort((a, b) => a.orderIndex - b.orderIndex);
-    return newSort;
-  };
+  // const sortItems = (items) => {
+  //   const newSort = items.sort((a, b) => a.orderIndex - b.orderIndex);
+  //   return newSort;
+  // };
 
   const openModalAndSetType = () => {
     if (!string) {
@@ -51,7 +58,7 @@ const Lists = () => {
   };
 
   return (
-    <motion.div className="py-3 relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+    <motion.div className="py-3 relative">
       {lists.length < 1 && (
         <div className="px-3">
           <div className="rounded-md p-3 shadow-md my-5 flex justify-between items-center">
@@ -65,58 +72,78 @@ const Lists = () => {
           </div>
         </div>
       )}
-      {lists.map((list) => (
-        <div
-          key={list.id}
-          className={`my-5 mr-10 p-3 rounded-md shadow-md ${list.color} text-black`}
-        >
-          <div className="mb-2 bg-white rounded-md shadow-md p-3 flex justify-between items-center">
-            <p className="font-semibold mr-2">{list.title}</p>
-            <div className="flex gap-x-3 text-sm">
-              {!addItems.includes(list.id) ? (
-                <BiListPlus
-                  onClick={() => setAddItems((prev) => [...prev, list.id])}
-                  className="text-lg cursor-pointer"
-                />
-              ) : (
-                <BiListMinus
+      <Reorder.Group
+        values={lists}
+        onReorder={setLists}
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+        // comment out grid styles if using masonry
+      >
+        {/* <Masonry
+          breakpointCols={breakpointColumnsObj}
+          className="my-masonry-grid"
+          columnClassName="my-masonry-grid_column"
+        > */}
+        {lists.map((list) => (
+          <Reorder.Item
+            key={list.id}
+            value={list}
+            drag
+            layoutScroll
+            style={{ overflowY: "scroll" }}
+            className={`my-5 max-h-[700px] scrollbar-hide p-3 rounded-md shadow-md ${list.color} text-black`}
+          >
+            <div className="mb-2 bg-white rounded-md shadow-md p-3 flex justify-between items-center">
+              <p className="font-semibold mr-2">{list.title}</p>
+              <div className="flex gap-x-3 text-sm">
+                {!addItems.includes(list.id) ? (
+                  <BiListPlus
+                    onClick={() => setAddItems((prev) => [...prev, list.id])}
+                    className="text-lg cursor-pointer"
+                  />
+                ) : (
+                  <BiListMinus
+                    onClick={() => {
+                      const newIds = addItems.filter((i) => i !== list.id);
+                      setAddItems(newIds);
+                    }}
+                    className="text-lg cursor-pointer"
+                  />
+                )}
+                <BsFillShareFill />
+                <BsFillPenFill />
+                <BsFillTrashFill
                   onClick={() => {
-                    const newIds = addItems.filter((i) => i !== list.id);
-                    setAddItems(newIds);
+                    const newNotif = {
+                      show: true,
+                      title: "Delete List",
+                      text: `Are you sure you want to delete this list ${list.title}?`,
+                      color: "bg-red-300",
+                      hasCancel: true,
+                      actions: [
+                        {
+                          text: "cancel",
+                          func: () => setSystemNotif({ show: false }),
+                        },
+                        {
+                          text: "delete",
+                          func: () => deleteEntireList(list.id),
+                        },
+                      ],
+                    };
+                    setSystemNotif(newNotif);
                   }}
-                  className="text-lg cursor-pointer"
                 />
-              )}
-              <BsFillShareFill />
-              <BsFillPenFill />
-              <BsFillTrashFill
-                onClick={() => {
-                  const newNotif = {
-                    show: true,
-                    title: "Delete List",
-                    text: `Are you sure you want to delete this list ${list.title}?`,
-                    color: "bg-red-300",
-                    hasCancel: true,
-                    actions: [
-                      {
-                        text: "cancel",
-                        func: () => setSystemNotif({ show: false }),
-                      },
-                      { text: "delete", func: () => deleteEntireList(list.id) },
-                    ],
-                  };
-                  setSystemNotif(newNotif);
-                }}
-              />
+              </div>
             </div>
-          </div>
-          <ListItems
-            addItems={addItems}
-            listId={list.id}
-            items={sortItems(list?.items)}
-          />
-        </div>
-      ))}
+            <ListItems
+              addItems={addItems}
+              listId={list.id}
+              items={list?.items}
+            />
+          </Reorder.Item>
+        ))}
+        {/* </Masonry> */}
+      </Reorder.Group>
     </motion.div>
   );
 };

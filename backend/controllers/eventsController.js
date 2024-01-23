@@ -1,28 +1,40 @@
 import prisma from "../utils/prismaClient.js";
+import { v4 as v4 } from "uuid";
 
 const addMultipleEvents = async (newEvent) => {
   const howOften = newEvent.repeats.howOften;
   if (!howOften) return [];
   const repeats = [];
   let date = new Date(newEvent.date);
+  let endDate = new Date(newEvent.endDate);
   for (let i = 0; i < newEvent.repeats.interval; i++) {
     const nextEventDate = new Date(date);
+    const nextEventEndDate = new Date(endDate);
     let nextDate;
+    let nextEndDate;
     if (howOften === "Daily") {
       nextDate = nextEventDate.setDate(date.getDate() + 1);
+      nextEndDate = nextEventEndDate.setDate(date.getDate() + 1);
     } else if (howOften === "Weekly") {
       nextDate = nextEventDate.setDate(date.getDate() + 7);
+      nextEndDate = nextEventEndDate.setDate(date.getDate() + 7);
     } else if (howOften === "Bi Weekly") {
       nextDate = nextEventDate.setDate(date.getDate() + 14);
+      nextEndDate = nextEventEndDate.setDate(date.getDate() + 14);
     } else if (howOften === "Monthly") {
       nextDate = nextEventDate.setMonth(date.getMonth() + 1);
+      nextEndDate = nextEventEndDate.setDate(date.getMonth() + 1);
       // Calculate the number of days to add based on the month change
       const daysToAdd = nextEventDate.getDate() - date.getDate();
       nextDate = new Date(
         nextEventDate.getTime() + daysToAdd * 24 * 60 * 60 * 1000
       );
+      nextEndDate = new Date(
+        nextEventDate.getTime() + daysToAdd * 24 * 60 * 60 * 1000
+      );
     } else if (howOften === "Yearly") {
       nextDate = nextEventDate.setFullYear(date.getFullYear() + 1);
+      nextEndDate = nextEventEndDate.setDate(date.getFullYear() + 1);
       // Calculate the number of days to add based on the year change
       const daysToAdd =
         nextEventDate.getDate() -
@@ -41,8 +53,11 @@ const addMultipleEvents = async (newEvent) => {
       );
       const nextEvent = {
         ...newEvent,
-        id: newEvent.id,
-        date: new Date(date).toLocaleDateString(),
+        id: v4(),
+        parentId: newEvent.id,
+        date: new Date(nextDate).toLocaleDateString(),
+        startDate: new Date(nextDate),
+        endDate: new Date(nextEndDate),
         // nextDate: new Date(nextDate),
         reminders: {
           when: reminderTime,
@@ -56,8 +71,11 @@ const addMultipleEvents = async (newEvent) => {
       // Reminders are disabled
       const nextEvent = {
         ...newEvent,
-        id: newEvent.id,
-        date: new Date(date).toLocaleDateString(),
+        id: v4(),
+        parentId: newEvent.id,
+        date: new Date(nextDate).toLocaleDateString(),
+        startDate: new Date(nextDate),
+        endDate: new Date(nextEndDate),
         // nextDate: new Date(nextDate),
       };
       repeats.push(nextEvent);
@@ -65,10 +83,10 @@ const addMultipleEvents = async (newEvent) => {
     }
   }
   // Save to the database using Prisma
-  console.log(repeats);
   await prisma.event.createMany({
     data: repeats,
   });
+  return repeats;
 };
 
 export const getEvents = async (req, res) => {
@@ -159,11 +177,11 @@ export const addEvent = async (req, res) => {
   const newEvent = req.body.event;
   const user = req.user;
   let reminder;
-  const repeatEvents = await addMultipleEvents(newEvent);
   const createdEvent = await prisma.event.create({
     data: { ...newEvent, id: newEvent.id },
   });
   if (createdEvent) {
+    const repeatEvents = await addMultipleEvents(createdEvent);
     if (newEvent.reminders.reminder) {
       reminder = await createReminder(newEvent);
     }
@@ -177,8 +195,7 @@ export const addEvent = async (req, res) => {
         id: user.id,
         createdAt: user.createAt,
       },
-      event: [createdEvent],
-      repeats: repeatEvents,
+      event: [createdEvent, ...repeatEvents],
       reminders: reminder,
     });
   }

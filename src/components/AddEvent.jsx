@@ -288,7 +288,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
           preferences.darkMode ? "bg-[#222]" : "bg-white"
         }`}
       />
-      <div className="flex flex-wrap justify-center items-center my-5 mx-auto">
+      <div className="flex flex-wrap justify-center items-center my-5">
         {colors.map((item, index) => (
           <Color
             key={index}

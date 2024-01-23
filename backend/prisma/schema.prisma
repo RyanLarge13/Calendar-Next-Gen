@@ -64,6 +64,7 @@ status String
 
 model Event {
 id String   @id @unique
+parentId String?
 kind String?
 summary String
 description String?
@@ -89,6 +90,8 @@ User User     @relation(fields: [userId], references: [id])
 userId String
 category Category?      @relation(fields: [categoryId], references: [id]) // Specify fields and references
 categoryId String?
+parentEvent  Event?    @relation("ChildEvents", fields: [parentId], references: [id], onDelete: Cascade)
+childEvents  Event[]   @relation("ChildEvents")
 
 @@index([id], name: "eventIdIndex")
 @@index([userId], name: "userIdRefIndex")
