@@ -15,9 +15,17 @@ import processPushNotifications from "./utils/globalCron.js";
 dotenv.config();
 
 const PORT = process.env.PORT || 8080;
+const corsOptions = {
+  origin: [
+    "https://calng.app",
+    "http://localhost:5173",
+    "https://calendar-next-gen.vercel.app",
+  ],
+  optionsSuccessStatus: 200,
+};
 
 const app = express();
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json({ limit: "500mb" }));
 app.use(
   "/",
@@ -32,8 +40,8 @@ app.use(
 );
 app.use("/friends", friendsRouter);
 
- cron.schedule("*/15 * * * * *", () => {
-   processPushNotifications();
+cron.schedule("*/15 * * * * *", () => {
+  processPushNotifications();
 });
 
 app.listen(PORT, () => {
