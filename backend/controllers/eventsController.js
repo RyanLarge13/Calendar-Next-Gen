@@ -70,6 +70,17 @@ const addMultipleEvents = async (newEvent) => {
           reminderTimeString: newReminderTime.toLocaleTimeString(),
         },
       };
+      // const newNotif = {
+      //   type: "event",
+      //   read: false,
+      //   readTime: null,
+      //   time: nextStartDate.toString(),
+      //   notifData: newReminder,
+      //   sentNotification: false,
+      //   sentWebPush: false,
+      //   userId: newEvent.userId,
+      // };
+      // createNotification(newNotif)
       repeats.push(nextEvent);
       // const newReminder = {
       //   eventRefId: newEvent.id,
@@ -109,7 +120,6 @@ const addMultipleEvents = async (newEvent) => {
   await prisma.event.createMany({
     data: repeats,
   });
-  repeats.forEach((e) => createReminder(e));
   return repeats;
 };
 
@@ -129,7 +139,7 @@ export const getEvents = async (req, res) => {
 //     type: "event",
 //     read: false,
 //     readTime: null,
-//     time: when,
+//     time: when.toString(),
 //     notifData: newNotif,
 //     sentNotification: false,
 //     sentWebPush: false,

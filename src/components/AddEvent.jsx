@@ -149,6 +149,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
         endDate: getEndDate(),
         nextDate: null,
         attachmentLength: attachments.length,
+        onlyNotify: onlyNotify,
         reminders: {
           reminder,
           reminderTimeString: reminder ? reminderTimeString : null,
