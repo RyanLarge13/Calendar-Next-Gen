@@ -125,7 +125,11 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
           onDragEnd={checkToClose}
           exit={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="pt-3 pb-10 px-5 rounded-b-md shadow-md fixed inset-0 z-20 lg:left-[60%] overflow-y-auto bg-cyan-100"
+          className={`pt-3 pb-10 px-5 rounded-b-md shadow-md fixed inset-0 z-20 lg:left-[60%] overflow-y-auto ${
+            preferences.darkMode
+              ? "bg-[#222] text-white"
+              : "bg-white text-black"
+          }`}
         >
           <div
             className={`absolute bottom-0 right-0 left-0 p-5 rounded-md flex justify-between items-center pointer-events-auto ${
