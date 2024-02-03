@@ -93,7 +93,7 @@ export const fetchAttachments = async (eventId) => {
 
 export const postEvent = (event, token) => {
   const res = Axios.post(
-    `${productionUrl}/new/event`,
+    `${devUrl}/new/event`,
     { event: event },
     {
       headers: {

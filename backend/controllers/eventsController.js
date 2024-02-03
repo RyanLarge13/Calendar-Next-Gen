@@ -3,89 +3,113 @@ import { v4 as v4 } from "uuid";
 
 const addMultipleEvents = async (newEvent) => {
   const howOften = newEvent.repeats.howOften;
-  if (!howOften) return [];
+  if (!howOften || howOften < 1) return [];
+
   const repeats = [];
-  let date = new Date(newEvent.date);
+  let startDate = new Date(newEvent.startDate);
   let endDate = new Date(newEvent.endDate);
-  for (let i = 0; i < newEvent.repeats.interval; i++) {
-    const nextEventDate = new Date(date);
+
+  for (let i = 1; i <= newEvent.repeats.interval - 1; i++) {
+    const nextEventStartDate = new Date(startDate);
     const nextEventEndDate = new Date(endDate);
-    let nextDate;
+    let nextStartDate;
     let nextEndDate;
+
     if (howOften === "Daily") {
-      nextDate = nextEventDate.setDate(date.getDate() + 1);
-      nextEndDate = nextEventEndDate.setDate(date.getDate() + 1);
-    } else if (howOften === "Weekly") {
-      nextDate = nextEventDate.setDate(date.getDate() + 7);
-      nextEndDate = nextEventEndDate.setDate(date.getDate() + 7);
-    } else if (howOften === "Bi Weekly") {
-      nextDate = nextEventDate.setDate(date.getDate() + 14);
-      nextEndDate = nextEventEndDate.setDate(date.getDate() + 14);
-    } else if (howOften === "Monthly") {
-      nextDate = nextEventDate.setMonth(date.getMonth() + 1);
-      nextEndDate = nextEventEndDate.setDate(date.getMonth() + 1);
-      // Calculate the number of days to add based on the month change
-      const daysToAdd = nextEventDate.getDate() - date.getDate();
-      nextDate = new Date(
-        nextEventDate.getTime() + daysToAdd * 24 * 60 * 60 * 1000
-      );
-      nextEndDate = new Date(
-        nextEventDate.getTime() + daysToAdd * 24 * 60 * 60 * 1000
-      );
-    } else if (howOften === "Yearly") {
-      nextDate = nextEventDate.setFullYear(date.getFullYear() + 1);
-      nextEndDate = nextEventEndDate.setDate(date.getFullYear() + 1);
-      // Calculate the number of days to add based on the year change
-      const daysToAdd =
-        nextEventDate.getDate() -
-        date.getDate() +
-        (nextEventDate.getMonth() - date.getMonth()) * 30;
-      nextDate = new Date(
-        nextEventDate.getTime() + daysToAdd * 24 * 60 * 60 * 1000
-      );
+      nextStartDate = nextEventStartDate.setDate(startDate.getDate() + i);
+      nextEndDate = nextEventEndDate.setDate(endDate.getDate() + i);
     }
-    // Check if reminders are enabled
-    if (newEvent.reminders.reminder) {
-      let reminderTime = new Date(newEvent.reminders.when);
-      reminderTime = new Date(
-        reminderTime.getTime() +
-          i * newEvent.repeats.interval * 24 * 60 * 60 * 1000
+    if (howOften === "Weekly") {
+      nextStartDate = nextEventStartDate.setDate(startDate.getDate() + 7 * i);
+      nextEndDate = nextEventEndDate.setDate(endDate.getDate() + 7 * i);
+    }
+    if (howOften === "Bi Weekly") {
+      nextStartDate = nextEventStartDate.setDate(startDate.getDate() + 14 * i);
+      nextEndDate = nextEventEndDate.setDate(endDate.getDate() + 14 * i);
+    }
+    if (howOften === "Monthly") {
+      nextStartDate = nextEventStartDate.setMonth(startDate.getMonth() + i);
+      nextEndDate = nextEventEndDate.setMonth(endDate.getMonth() + i);
+    }
+    if (howOften === "Yearly") {
+      nextStartDate = nextEventStartDate.setFullYear(
+        startDate.getFullYear() + i
       );
+      nextEndDate = nextEventEndDate.setFullYear(endDate.getFullYear() + i);
+    }
+    if (newEvent.reminders.reminder) {
+      const reminderTime = new Date(newEvent.reminders.when);
+      let reminderDate = new Date(reminderTime); // Create a copy of reminderTime
+
+      if (howOften === "Daily") {
+        reminderDate.setDate(reminderDate.getDate() + i);
+      }
+      if (howOften === "Weekly") {
+        reminderDate.setDate(reminderDate.getDate() + 7 * i);
+      }
+      if (howOften === "Bi Weekly") {
+        reminderDate.setDate(reminderDate.getDate() + 14 * i);
+      }
+      if (howOften === "Monthly") {
+        reminderDate.setMonth(reminderDate.getMonth() + i);
+      }
+      if (howOften === "Yearly") {
+        reminderDate.setFullYear(reminderDate.getFullYear() + i);
+      }
+      const newReminderTime = reminderDate;
       const nextEvent = {
         ...newEvent,
         id: v4(),
         parentId: newEvent.id,
-        date: new Date(nextDate).toLocaleDateString(),
-        startDate: new Date(nextDate),
+        date: new Date(nextStartDate).toLocaleDateString(),
+        startDate: new Date(nextStartDate),
         endDate: new Date(nextEndDate),
-        // nextDate: new Date(nextDate),
+        // nextStartDate: new Date(nextStartDate),
         reminders: {
-          when: reminderTime,
-          reminderTimeString: reminderTime.toLocaleTimeString(),
+          when: newReminderTime,
+          reminderTimeString: newReminderTime.toLocaleTimeString(),
         },
       };
       repeats.push(nextEvent);
-      date = new Date(nextDate);
-      await createNotification(nextEvent);
+      // const newReminder = {
+      //   eventRefId: newEvent.id,
+      //   title: newEvent.summary,
+      //   notes: newEvent.description,
+      //   time: newReminderTime,
+      //   userId: newEvent.userId,
+      // };
+      // const newNotif = {
+      //   type: "event",
+      //   read: false,
+      //   readTime: null,
+      //   time: newReminderTime,
+      //   notifData: newReminder,
+      //   sentNotification: false,
+      //   sentWebPush: false,
+      //   userId: event.userId,
+      // };
+      // createNotification(newReminderTime, newNotif, newEvent.userId);
+      // createReminder(nextEvent);
     } else {
       // Reminders are disabled
       const nextEvent = {
         ...newEvent,
         id: v4(),
         parentId: newEvent.id,
-        date: new Date(nextDate).toLocaleDateString(),
-        startDate: new Date(nextDate),
+        date: new Date(nextStartDate).toLocaleDateString(),
+        startDate: new Date(nextStartDate),
         endDate: new Date(nextEndDate),
-        // nextDate: new Date(nextDate),
+        // nextStartDate: new Date(nextStartDate),
       };
       repeats.push(nextEvent);
-      date = new Date(nextDate);
+      // date = new Date(nextStartDate);
     }
   }
   // Save to the database using Prisma
   await prisma.event.createMany({
     data: repeats,
   });
+  repeats.forEach((e) => createReminder(e));
   return repeats;
 };
 
@@ -100,35 +124,35 @@ export const getEvents = async (req, res) => {
   res.status(200).json({ events: usersEvents, message: "Success" });
 };
 
-const createNotification = async (event) => {
-  const newNotif = {
-    type: "event",
-    read: false,
-    readTime: null,
-    time: event.reminders.when,
-    notifData: newReminder,
-    sentNotification: false,
-    sentWebPush: false,
-    userId: event.userId,
-  };
-  await prisma.notification.create({
-    data: newNotif,
-  });
-};
+// const createNotification = async (when, newNotif, userId) => {
+//   const newNotif = {
+//     type: "event",
+//     read: false,
+//     readTime: null,
+//     time: when,
+//     notifData: newNotif,
+//     sentNotification: false,
+//     sentWebPush: false,
+//     userId: userId,
+//   };
+//   await prisma.notification.create({
+//     data: newNotif,
+//   });
+// };
 
 const createReminder = async (event) => {
   const newReminder = {
     eventRefId: event.id,
     title: event.summary,
     notes: event.description,
-    time: event.reminders.when,
+    time: event.reminders.when.toString(),
     userId: event.userId,
   };
   const newNotif = {
     type: "event",
     read: false,
     readTime: null,
-    time: event.reminders.when,
+    time: event.reminders.when.toString(),
     notifData: newReminder,
     sentNotification: false,
     sentWebPush: false,
