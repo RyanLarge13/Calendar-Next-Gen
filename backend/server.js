@@ -18,6 +18,7 @@ const PORT = process.env.PORT || 8080;
 const corsOptions = {
   origin: [
     "https://calng.app",
+    "https://www.calng.app",
     "http://localhost:5173",
     "https://calendar-next-gen.vercel.app",
   ],
