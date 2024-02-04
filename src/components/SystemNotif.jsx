@@ -39,7 +39,7 @@ const SystemNotif = () => {
           initial={{ y: -50, opacity: 0 }}
           exit={{ x: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className={`fixed top-10 z-[999] p-3  pb-0 rounded-md shadow-md w-[90vw] left-[5vw] max-w-[400px] ${
+          className={`will-change-transform fixed top-10 z-[999] p-3  pb-0 rounded-md shadow-md w-[90vw] left-[5vw] max-w-[400px] ${
             preferences.darkMode
               ? "bg-[#222] text-white"
               : "bg-white text-black"
