@@ -1,4 +1,5 @@
 import { useContext, useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { weekDays } from "../constants";
 import DatesContext from "../context/DatesContext";
 import {
@@ -27,6 +28,9 @@ const SideBar = () => {
   );
   const [temporaryPaddingDays, setTemporaryPaddingDays] = useState(0);
   const [temporaryDaysInMonth, setTemporaryDaysInMonth] = useState(0);
+  const [sideBarWidth, setSideBarWidth] = useState(400);
+
+  const screenWidth = window.innerWidth;
 
   useEffect(() => {
     const firstDayOfMonth = new Date(temporaryYear, temporaryMonth, 1);
@@ -91,12 +95,27 @@ const SideBar = () => {
     setChange(false);
   };
 
+  const changeWidth = (e, info) => {
+    const x = info.point.x;
+    setSideBarWidth(x);
+  };
+
   return (
     <div
-      className={`hidden xl:block w-[17vw] ${
+      style={{ width: `${sideBarWidth}px` }}
+      className={`hidden xl:block ${
         preferences.darkMode ? "bg-[#222] border-none" : "bg-white"
-      } max-h-screen scrollbar-hide border-r border-slate-200 fixed top-0 left-0 bottom-0 p-3 overflow-y-auto scrollbar-hide pt-20`}
+      } max-h-screen scrollbar-hide border-r border-slate-200 bottom-0 p-3 overflow-y-auto scrollbar-hide pt-20`}
     >
+      <motion.div
+        drag="x"
+        onDrag={changeWidth}
+        dragMomentum={false}
+        animate={{ transition: { type: "linear" } }}
+        className="fixed left-[350px] z-[999] top-0 bottom-0 h-screen w-2 flex justify-center items-center bg-black overflow-visible"
+      >
+        <div className="w-4 h-6 rounded-md bg-red-500"></div>
+      </motion.div>
       <div
         className={`${
           preferences.darkMode ? "bg-[#222] text-white" : "bg-white text-black"
