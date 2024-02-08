@@ -3,8 +3,8 @@ export const calendar = {
   show: {
     opacity: 1,
     transition: {
-      duration: 0.1,
-      staggerChildren: 0.03,
+      duration: 0.01,
+      staggerChildren: 0.02,
     },
   },
 };

@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useContext } from "react";
 import { formatDbText } from "../utils/helpers";
+import { BsFillCalendar2EventFill } from "react-icons/bs";
 import UserContext from "../context/UserContext";
 import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
@@ -54,9 +55,13 @@ const PopUpMonthViewWindow = ({ positions, eventsToRender, day }) => {
         : null}
       <button
         onClick={() => addEvent()}
-        className={`${preferences.darkMode ? "text-white" : "text-black"}`}
+        className={`${
+          preferences.darkMode
+            ? "text-white bg-black rounded-md p-3"
+            : "text-black bg-slate-100 rounded-md p-3"
+        } text-sm`}
       >
-        Add event
+        <BsFillCalendar2EventFill />
       </button>
     </motion.div>
   );

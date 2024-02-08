@@ -121,7 +121,9 @@ const Sticky = ({ sticky, index }) => {
         bottom: window.innerHeight - 200,
       }}
       ref={stickyRef}
-      className={`markdown z-[999] shadow-xl rounded-md fixed w-[10px] h-[150px] ${sticky.color}`}
+      className={`markdown z-[999] shadow-xl rounded-md fixed w-[10px] h-[150px] ${
+        sticky.color
+      } ${minimize ? "text-transparent" : "text-black"}`}
       onClick={() => {
         if (!!minimize) {
           if ("vibrate" in navigator) {
@@ -132,7 +134,9 @@ const Sticky = ({ sticky, index }) => {
       }}
     >
       <div
-        className="rounded-t-md bg-slate-100 shadow-lg p-2 flex justify-between items-center cursor-pointer"
+        className={`${
+          minimize ? "bg-transparent" : "bg-slate-100"
+        } rounded-t-md shadow-lg p-2 flex justify-between items-center cursor-pointer`}
         onPointerDown={startDrag}
         style={{ touchAction: "none" }}
       >
@@ -149,7 +153,11 @@ const Sticky = ({ sticky, index }) => {
         </button>
       </div>
       {!!expand && (
-        <div className="rounded-b-md bg-slate-100 shadow-md p-2 flex justify-between items-center">
+        <div
+          className={`${
+            minimize ? "bg-transparent" : "bg-slate-100"
+          } rounded-b-md shadow-md p-2 flex justify-between items-center`}
+        >
           <button onClick={() => setFullScreen((prev) => !prev)}>
             <FiMaximize />
           </button>

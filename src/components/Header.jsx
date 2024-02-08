@@ -64,7 +64,7 @@ const Header = () => {
             <RiMenuUnfoldFill />
           </button>
           {view === "month" && (
-            <div className="flex justify-center items-center">
+            <div className="flex justify-between items-center w-60">
               <BsFillArrowLeftCircleFill
                 onClick={() => setNav((prev) => prev - 1)}
                 className="text-xl cursor-pointer"

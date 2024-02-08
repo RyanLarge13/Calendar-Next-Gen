@@ -36,8 +36,20 @@ const MonthView = () => {
   const [popupTimeout, setPopupTimeout] = useState(null);
   const [popupEvents, setPopupEvents] = useState([]);
   const [hoverDay, setHoverDay] = useState(null);
+  const [renderPopup, setRenderPopup] = useState(false);
 
   const targetDate = new Date(dateString);
+
+  useEffect(() => {
+    if (!renderPopup) {
+      setNewPopup(false);
+      setMousePosition({ x: 0, y: 0 });
+      setRenderPopup(false);
+      setHoverDay(null);
+      setPopupEvents([]);
+      clearTimeout(popupTimeout);
+    }
+  }, [renderPopup]);
 
   useEffect(() => {
     selected.length > 0 ? setConfirmDates(true) : setConfirmDates(false);
@@ -135,7 +147,7 @@ const MonthView = () => {
     setPopupEvents([]);
     setMousePosition({ x: 0, y: 0 });
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    if (isMobile) {
+    if (isMobile || !renderPopup) {
       return;
     }
     const mousePositions = {
@@ -168,6 +180,8 @@ const MonthView = () => {
       initial="hidden"
       animate="show"
       className="grid grid-cols-7 min-h-[50vh] h-[83vh] gap-1"
+      onMouseLeave={() => setRenderPopup(false)}
+      onMouseEnter={() => setRenderPopup(true)}
     >
       {newPopup && (
         <PopUpMonthViewWindow
