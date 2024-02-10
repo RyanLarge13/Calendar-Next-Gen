@@ -2,8 +2,8 @@ import { useState, useEffect, useContext } from "react";
 import { motion } from "framer-motion";
 import { colors } from "../constants";
 import { getTimeZone } from "../utils/helpers";
-import { MdLocationPin, MdFreeCancellation} from "react-icons/md";
-import {BsFillCalendarPlusFill} from "react-icons/bs"
+import { MdLocationPin, MdFreeCancellation } from "react-icons/md";
+import { BsFillCalendarPlusFill } from "react-icons/bs";
 import { AiFillCloseCircle, AiFillInfoCircle } from "react-icons/ai";
 import { FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";
@@ -47,10 +47,6 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
   const [reminder, setReminder] = useState(false);
   const [reminderTimeString, setReminderTimeString] = useState("");
   const [when, setWhen] = useState(null);
-  const [extraReminders, setExtraReminders] = useState([]);
-  const [addAnotherReminder, setAddAnotherReminder] = useState(false);
-  const [anotherReminderWhen, setAnotherReminderWhen] = useState(null);
-  const [anotherReminderString, setAnotherReminderString] = useState("");
   const [onlyNotify, setOnlyNotify] = useState(false);
   // repeats
   const [repeat, setRepeat] = useState(false);
@@ -154,6 +150,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
           reminder,
           reminderTimeString: reminder ? reminderTimeString : null,
           when: reminder ? when : null,
+          onlyNotify: onlyNotify,
         },
         repeats: {
           repeat,
@@ -408,22 +405,9 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
                     {reminderTimeString}
                   </p>
                   <div className="mt-3">
-                    <button
-                      className="py-1 px-3 rounded-md shadow-md bg-cyan-100"
-                      onClick={() => setAddAnotherReminder(true)}
-                    >
+                    <button className="py-1 px-3 rounded-md shadow-md bg-cyan-100">
                       Add Another
                     </button>
-                    {addAnotherReminder &&
-                      (!anotherReminderWhen ? (
-                        <TimeSetter
-                          setDateTime={setAnotherReminderWhen}
-                          setDateTimeString={setAnotherReminderString}
-                          openTimeSetter={setAddAnotherReminder}
-                        />
-                      ) : (
-                        <p>{anotherReminderString}</p>
-                      ))}
                   </div>
                 </>
               )}
@@ -516,8 +500,10 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
             ))}
           </Masonry>
         )}
-        <label className="mt-10 p-5 w-full flex flex-col justify-center
-        items-center border-b">
+        <label
+          className="mt-10 p-5 w-full flex flex-col justify-center
+        items-center border-b"
+        >
           <RiGalleryUploadFill className="text-xl cursor-pointer" />
           {attachments.length > 0 ? (
             <p className="text-xs">Add More</p>

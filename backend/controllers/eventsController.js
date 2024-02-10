@@ -168,11 +168,17 @@ const createReminder = async (event) => {
     sentWebPush: false,
     userId: event.userId,
   };
+  if (event.reminders.onlyNotify) {
+    await prisma.notification.create({
+      data: newNotif,
+    });
+    return [];
+  }
   const reminder = await prisma.reminder.create({
     data: newReminder,
   });
   await prisma.notification.create({
-    data: newNotif,
+    data: { ...newNotif, reminderRefId: reminder.id },
   });
   return reminder;
 };

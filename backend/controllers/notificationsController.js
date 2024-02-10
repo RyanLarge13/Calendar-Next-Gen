@@ -18,6 +18,10 @@ export const subscribeToNotifications = async (req, res) => {
       const payload = JSON.stringify({
         title: "Welcome!",
         body: "Thank you for subscribing to notifications with Calng!",
+        data: {
+          notifType: "system",
+          time: new Date(),
+        },
       });
       sendNotification(payload, [subscription]);
       const newSignture = signToken(updatedUser);
@@ -81,10 +85,14 @@ const processNotifications = async (userId, res) => {
       },
       take: 25,
     });
+    let delay = 3000;
     const notificationIdsToUpdate = [];
     for (const notification of notifications) {
       if (new Date(notification.time) <= new Date()) {
-        sendSSEEventToClient(userId, notification);
+        setTimeout(() => {
+          sendSSEEventToClient(userId, notification);
+        }, delay);
+        delay += 3000;
         notificationIdsToUpdate.push(notification.id);
       }
     }

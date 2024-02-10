@@ -21,13 +21,21 @@ const Calendar = () => {
     useContext(UserContext);
   const { showDatePicker, showFullDatePicker, view, event } =
     useContext(InteractiveContext);
-  const { finish, loading, theDay, openModal, dateString, string, dateObj } =
-    useContext(DatesContext);
+  const {
+    finish,
+    loading,
+    theDay,
+    openModal,
+    dateString,
+    setNav,
+    string,
+    dateObj,
+  } = useContext(DatesContext);
 
   const [todaysEvents, setTodaysEvents] = useState([]);
   const [todaysReminders, setTodaysReminder] = useState([]);
   const [allDayEvents, setAllDayEvents] = useState([]);
-  
+
   const containerRef = useRef(null);
 
   useEffect(() => {
@@ -78,9 +86,31 @@ const Calendar = () => {
     setTodaysReminder(remindersToday);
   }, [theDay, events, reminders, string]);
 
+  let deltaX = null;
+  const checkScroll = (e) => {
+    const currentX = e.deltaX;
+    if (!deltaX) {
+      deltaX = currentX;
+      return;
+    }
+    if (view !== "month") {
+      return;
+    }
+    if (currentX > deltaX) {
+      setNav((prev) => prev + 1);
+      deltaX = null;
+      return;
+    } else if (currentX < deltaX) {
+      setNav((prev) => prev - 1);
+      deltaX = null;
+      return;
+    }
+    deltaX = currentX;
+  };
+
   return (
     <main
-    ref={containerRef} 
+      ref={containerRef}
       className={`px-2 pt-[65px] h-screen overflow-y-auto scrollbar-hide ${
         preferences.darkMode ? "bg-[#222]" : "bg-white"
       }`}
@@ -109,6 +139,7 @@ const Calendar = () => {
           {!loading ? (
             <motion.div
               drag={view === "month" && "x"}
+              onWheel={checkScroll}
               dragSnapToOrigin={true}
               dragTransition={{ bounceStiffness: 100, bounceDamping: 10 }}
               onDragEnd={(e, info) => finish(e, info)}

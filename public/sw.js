@@ -51,25 +51,99 @@ self.addEventListener("push", (event) => {
     };
   }
   const { title, body, data } = payload;
-  event.waitUntil(
-    self.registration.showNotification(title, {
-      body: formatDbText(body || ""),
-      data,
-      icon: "./favicon.svg",
-      badge: "./badge.svg",
-      vibrate: [100, 100, 100],
-      actions: [
-        { action: "delete-notif", title: "Delete", type: "button" },
-        { action: "mark-as-read", title: "Mark as Read", type: "button" },
-      ],
-    })
-  );
+  const { notifType, time } = data;
+  if (notifType === "event") {
+    return event.waitUntil(
+      self.registration.showNotification(title, {
+        body: `${formatDbText(body || "")} \n @${new Date(
+          time
+        ).toLocaleTimeString("en-US")}`,
+        data,
+        icon: "./favicon.svg",
+        badge: "./badge.svg",
+        vibrate: [100, 100, 100],
+        actions: [
+          { action: "delete-notif", title: "Delete", type: "button" },
+          { action: "mark-as-read", title: "Mark as Read", type: "button" },
+          { action: "open-app", title: "Open App", type: "button" },
+        ],
+      })
+    );
+  }
+  if (notifType === "reminder") {
+    return event.waitUntil(
+      self.registration.showNotification(title, {
+        body: `${formatDbText(body || "")} \n @${new Date(
+          time
+        ).toLocaleTimeString("en-US")}`,
+        data,
+        icon: "./favicon.svg",
+        badge: "./badge.svg",
+        vibrate: [100, 100, 100],
+        actions: [
+          { action: "delete-notif", title: "Delete", type: "button" },
+          { action: "mark-as-read", title: "Mark as Read", type: "button" },
+          { action: "open-app", title: "Open App", type: "button" },
+        ],
+      })
+    );
+  }
+  if (notifType === "system") {
+    return event.waitUntil(
+      self.registration.showNotification(title, {
+        body: `${formatDbText(body || "")} \n @${new Date(
+          time
+        ).toLocaleTimeString("en-US")}`,
+        data,
+        icon: "./favicon.svg",
+        badge: "./badge.svg",
+        vibrate: [100, 100, 100],
+        actions: [
+          { action: "close-notif", title: "Close", type: "button" },
+          { action: "open-app", title: "Open App", type: "button" },
+        ],
+      })
+    );
+  }
 });
+
+const openApp = (event) => {
+  event.notification.close();
+  event.waitUntil(
+    clients
+      .matchAll({
+        type: "window",
+        includeUncontrolled: true,
+      })
+      .then((clientList) => {
+        let matchingWindow = null;
+        for (const client of clientList) {
+          if (client.url === "https://www.calng.app") {
+            matchingWindow = client;
+            if (client.focused) {
+              return client.focus();
+            }
+          }
+        }
+        if (matchingWindow) {
+          return matchingWindow.focus();
+        }
+        return clients.openWindow("https://www.calng.app");
+      })
+  );
+};
 
 self.addEventListener("notificationclick", (event) => {
   event.preventDefault();
   const notifId = event.notification.data.id;
+  if (event.action === "close-notif") {
+    event.notification.close();
+  }
+  if (event.action === "open-app") {
+    openApp(event);
+  }
   if (event.action === "mark-as-read") {
+    event.notification.close();
     fetch("https://calendar-next-gen-production.up.railway.app/mark-as-read", {
       method: "POST",
       headers: {
@@ -79,7 +153,7 @@ self.addEventListener("notificationclick", (event) => {
         notifId: notifId,
       }),
     })
-      .then((response) => {
+      .then(() => {
         event.notification.close();
       })
       .catch((error) => {
@@ -88,6 +162,7 @@ self.addEventListener("notificationclick", (event) => {
       });
   }
   if (event.action === "delete-notif") {
+    event.notification.close();
     fetch(
       `https://calendar-next-gen-production.up.railway.app/delete-notif/notification/${notifId}`,
       {
@@ -100,7 +175,7 @@ self.addEventListener("notificationclick", (event) => {
         }),
       }
     )
-      .then((response) => {
+      .then(() => {
         event.notification.close();
       })
       .catch((error) => {
@@ -108,22 +183,7 @@ self.addEventListener("notificationclick", (event) => {
         console.log(`Error marking notification as read: ${error}`);
       });
   } else {
-    event.notification.close();
-    event.waitUntil(
-      clients
-        .matchAll({
-          type: "window",
-          includeUncontrolled: true,
-        })
-        .then((clientList) => {
-          for (const client of clientList) {
-            if (client.url === "https://www.calng.app") {
-              return client.focus();
-            }
-          }
-          return clients.openWindow("https://www.calng.app");
-        })
-    );
+    openApp(event);
   }
 });
 
