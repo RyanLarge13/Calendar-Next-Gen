@@ -1,10 +1,13 @@
 import { useContext } from "react";
 import { motion } from "framer-motion";
 import { formatDbText } from "../utils/helpers";
+import { MdOutlineOpenInNew } from "react-icons/md";
 import UserContext from "../context/UserContext";
+import InteractiveContext from "../context/InteractiveContext";
 
 const MainMenu = ({ timeOfDay }) => {
     const { user, upcoming } = useContext(UserContext);
+    const { setEvent } = useContext(InteractiveContext);
 
     return (
         <motion.div
@@ -26,20 +29,35 @@ const MainMenu = ({ timeOfDay }) => {
                         upcoming.map(event => (
                             <div
                                 key={event.id}
-                                className={`${event.color} p-3 rounded-md shadow-md my-5 text-black`}
+                                className={`p-3 rounded-md shadow-lg my-5 relative pl-5`}
                             >
-                                {event.diff === 0 ? (
-                                    <p className="mb-2 font-semibold">Today</p>
+                                <button
+                                    className="absolute top-0 right-0"
+                                    onClick={() => setEvent(event)}
+                                >
+                                    <MdOutlineOpenInNew />
+                                </button>
+                                <div
+                                    className={`${event.color} absolute left-0 top-0 bottom-0 w-2 rounded-md`}
+                                ></div>
+                                {event.diff < 1 && event.diff >= 0 ? (
+                                    <p className="text-2xl font-semibold mb-2">
+                                        today
+                                    </p>
+                                ) : event.diff >= 1 && event.diff < 2 ? (
+                                    <p className="text-2xl font-semibold mb-2">
+                                        Tomorrow
+                                    </p>
                                 ) : (
                                     <p className="mb-2">
                                         In{" "}
                                         <span className="text-2xl font-semibold">
                                             {event.diff}
                                         </span>{" "}
-                                        {event.diff === 1 ? "day" : "days"}
+                                        days
                                     </p>
                                 )}
-                                <p className="text-sm bg-white p-2 rounded-md shadow-md font-semibold">
+                                <p className="text-sm p-2font-semibold">
                                     {event.summary}
                                 </p>
                                 <div className="mt-3">

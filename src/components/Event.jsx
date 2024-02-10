@@ -148,26 +148,6 @@ const Event = ({ dayEvents }) => {
     };
   }, [event]);
 
-  const getPreviousEvent = () => {
-    if (index > 0) {
-      setTimeLeft(null);
-      setEvent(dayEvents[index - 1]);
-      setIndex((prev) => prev - 1);
-    } else {
-      setEvent(null);
-    }
-  };
-
-  const getNextEvent = () => {
-    if (index < dayEvents.length - 1) {
-      setTimeLeft(null);
-      setEvent(dayEvents[index + 1]);
-      setIndex((prev) => prev + 1);
-    } else {
-      setEvent(null);
-    }
-  };
-
   const checkToClose = (e, info) => {
     const end = info.point.y;
     if (end > window.innerHeight / 2) {
@@ -332,14 +312,6 @@ const Event = ({ dayEvents }) => {
             ) : (
               <p className="text-[14px]">No repeated events</p>
             )}
-          </div>
-          <div className="sticky top-[50%] right-2 left-2 py-2 flex justify-between items-center text-xl">
-            {index > 0 ? (
-              <BsFillArrowLeftCircleFill onClick={() => getPreviousEvent()} />
-            ) : null}
-            {index < dayEvents.length - 1 ? (
-              <BsFillArrowRightCircleFill onClick={() => getNextEvent()} />
-            ) : null}
           </div>
           {imagesLoading ? (
             <p>Loading {event.attachmentLength} images...</p>

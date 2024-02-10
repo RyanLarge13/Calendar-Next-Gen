@@ -124,6 +124,7 @@ export const DatesProvider = ({ children }) => {
         dateString,
         rowDays,
         dateObj,
+        setUpdatedDate
       }}
     >
       {children}

@@ -1,7 +1,8 @@
+import React from "react"
 import MainPage from "./states/MainPage";
 
 const App = () => {
   return <MainPage />;
 };
 
-export default App;
+export default React.memo(App);

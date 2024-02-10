@@ -81,7 +81,8 @@ const Menu = () => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className={`fixed inset-0 pt-40 z-10 pb-10 px-5 rounded-md shadow-md overflow-auto ${
+                    className={`fixed inset-0 pt-40 z-10 pb-10 px-5 rounded-md
+                    will-change-transform shadow-md overflow-auto ${
                         preferences.darkMode
                             ? "bg-[#222] text-white"
                             : "bg-white text-black"

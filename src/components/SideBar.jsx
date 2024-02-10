@@ -199,7 +199,7 @@ const SideBar = () => {
                   days
                 </p>
               )}
-              <p className="text-sm bg-white p-2font-semibold">
+              <p className="text-sm p-2 font-semibold">
                 {event.summary}
               </p>
               <div className="mt-3">
