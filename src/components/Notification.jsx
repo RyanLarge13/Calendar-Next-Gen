@@ -126,7 +126,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                     exit={{ y: -50, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     className={`pt-3 pb-10 px-5 rounded-b-md shadow-md fixed
-                    inset-0 z-20 lg:left-[60%] will-change-transform overflow-y-auto ${
+                    inset-0 z-20 lg:left-[60%] max-h-screen will-change-transform overflow-y-auto ${
                         preferences.darkMode ? "bg-[#222] text-white" : "bg-white"
                     }`}
                 >
