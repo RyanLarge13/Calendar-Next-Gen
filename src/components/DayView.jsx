@@ -6,7 +6,7 @@ import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext.jsx";
 
-const DayView = ({ todaysEvents, todaysReminders }) => {
+const DayView = ({ todaysEvents, todaysReminders, containerRef}) => {
   const { setEvent } = useContext(InteractiveContext);
   const { theDay, dateObj } = useContext(DatesContext);
   const { preferences } = useContext(UserContext);
@@ -34,13 +34,16 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
 
   const calcDayEventHeight = (start, end) => {
     if (!start || !end) {
-      return null;
+      return 500;
     } else {
       if (dayViewContainer.current) {
         const duration = end.getTime() - start.getTime();
         const containerHeight = dayViewContainer.current.clientHeight;
         const componentHeight =
           (duration / (24 * 60 * 60 * 1000)) * containerHeight;
+          if (componentHeight <= 0) {
+            return 500;
+          }
         return componentHeight;
       }
     }
@@ -54,13 +57,16 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
         startTime.getMinutes() * 60 +
         startTime.getSeconds();
       const percentage = (timeInSeconds / (24 * 3600)) * 100;
+      if (percentage <= 0) {
+        return 0;
+      }
       return (percentage * containerHeight) / 100;
     }
     return 0;
   };
 
   useEffect(() => {
-    return window.scrollTo({ top: height, behavior: "smooth" });
+   return containerRef.current.scrollTo({ top: height, behavior: "smooth" });
   }, [height]);
 
   const getTime = () => {
@@ -103,7 +109,7 @@ const DayView = ({ todaysEvents, todaysReminders }) => {
             animate={{ top: height }}
             className="absolute right-0 z-[200] translate-y-[-50%]"
           >
-            <div className="w-[20px] h-[20px] rounded-full shadow-md bg-lime-200 after:w-20 after:h-[2px] after:bg-black after:absolute after:top-[50%] after:z-[-1] after:left-[-350%]">
+            <div className="w-[20px] h-[20px] rounded-full shadow-md bg-cyan-300 after:w-20 after:h-[2px] after:bg-black after:absolute after:top-[50%] after:z-[-1] after:left-[-350%]">
               <p className="absolute px-1 shadow-md bg-white rounded-md left-[-375%] top-[-50%]">
                 {time}
               </p>

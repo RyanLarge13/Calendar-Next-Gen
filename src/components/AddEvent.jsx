@@ -2,7 +2,8 @@ import { useState, useEffect, useContext } from "react";
 import { motion } from "framer-motion";
 import { colors } from "../constants";
 import { getTimeZone } from "../utils/helpers";
-import { MdLocationPin } from "react-icons/md";
+import { MdLocationPin, MdFreeCancellation} from "react-icons/md";
+import {BsFillCalendarPlusFill} from "react-icons/bs"
 import { AiFillCloseCircle, AiFillInfoCircle } from "react-icons/ai";
 import { FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";
@@ -312,7 +313,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
         }`}
       ></textarea>
       <div className="mt-10 w-full">
-        <div className="w-full p-3 border-b">
+        <div className="w-full p-3 border-b ">
           <div className="flex justify-between items-center">
             <MdLocationPin />
             <Toggle condition={location} setCondition={setLocation} />
@@ -515,7 +516,8 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
             ))}
           </Masonry>
         )}
-        <label className="bg-slate-300 mt-10 p-5 w-full rounded-md flex flex-col justify-center items-center text-black">
+        <label className="mt-10 p-5 w-full flex flex-col justify-center
+        items-center border-b">
           <RiGalleryUploadFill className="text-xl cursor-pointer" />
           {attachments.length > 0 ? (
             <p className="text-xs">Add More</p>
@@ -532,21 +534,21 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
           />
         </label>
       </div>
-      <div className=" flex flex-col w-full gap-y-5 mb-5 text-center text-xs font-semibold text-black">
-        <button
-          onClick={() => addEvent()}
-          className="px-3 py-2 rounded-md shadow-md bg-gradient-to-r from-lime-200 to-green-200 underline"
-        >
-          save
-        </button>
+      <div className="flex justify-between px-5 items-center w-full mb-5 font-semibold text-black">
         <button
           onClick={() => {
             setType(null);
             setAddNewEvent(false);
           }}
-          className="px-3 py-2 rounded-md shadow-md bg-gradient-to-tr from-red-200 to-rose-200 underline"
+          className="p-3 rounded-full shadow-md bg-gradient-to-tr from-red-200 to-rose-200"
         >
-          cancel
+          <MdFreeCancellation />
+        </button>
+        <button
+          onClick={() => addEvent()}
+          className="p-3 rounded-full shadow-md bg-gradient-to-r from-lime-200 to-green-200"
+        >
+          <BsFillCalendarPlusFill />
         </button>
       </div>
     </div>

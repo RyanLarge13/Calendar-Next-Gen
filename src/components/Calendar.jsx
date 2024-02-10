@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useRef, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Modal from "./Modal";
 import ModalHeader from "./ModalHeader";
@@ -27,6 +27,8 @@ const Calendar = () => {
   const [todaysEvents, setTodaysEvents] = useState([]);
   const [todaysReminders, setTodaysReminder] = useState([]);
   const [allDayEvents, setAllDayEvents] = useState([]);
+  
+  const containerRef = useRef(null);
 
   useEffect(() => {
     const eventsToday = [...events, ...holidays].filter(
@@ -78,6 +80,7 @@ const Calendar = () => {
 
   return (
     <main
+    ref={containerRef} 
       className={`px-2 pt-[65px] h-screen overflow-y-auto scrollbar-hide ${
         preferences.darkMode ? "bg-[#222]" : "bg-white"
       }`}
@@ -117,6 +120,7 @@ const Calendar = () => {
                   <DayView
                     todaysEvents={todaysEvents}
                     todaysReminders={todaysReminders}
+                    containerRef={containerRef}
                   />
                 )}
                 {view === "week" && <WeekView />}

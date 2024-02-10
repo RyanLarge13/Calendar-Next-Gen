@@ -10,9 +10,11 @@ import { BiExpand, BiCollapse } from "react-icons/bi";
 import { FaRegWindowMinimize } from "react-icons/fa";
 import { FiMaximize } from "react-icons/fi";
 import UserContext from "../context/UserContext";
+import InteractiveContext from "../context/InteractiveContext"
 
 const Sticky = ({ sticky, index }) => {
     const { setSystemNotif, setStickies, stickies } = useContext(UserContext);
+    const {event} = useContext(InteractiveContext)
 
     const [expand, setExpand] = useState(true);
     const [pin, setPin] = useState(sticky.pin);
@@ -95,7 +97,7 @@ const Sticky = ({ sticky, index }) => {
             initial={{ opacity: 0 }}
             exit={{ scale: 0 }}
             animate={
-                !minimize
+                event ? {opacity: 0} : !minimize
                     ? expand
                         ? fullScreen
                             ? {
@@ -126,7 +128,8 @@ const Sticky = ({ sticky, index }) => {
                 bottom: window.innerHeight - 200
             }}
             ref={stickyRef}
-            className={`markdown z-[999] shadow-xl rounded-md fixed w-[10px] h-[150px] ${
+            className={`markdown z-[999] shadow-xl rounded-md fixed
+            w-[10px] h-[150px] ${
                 sticky.color
             } ${minimize ? "text-transparent" : "text-black"}`}
             onClick={() => {

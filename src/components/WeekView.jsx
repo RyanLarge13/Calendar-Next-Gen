@@ -60,18 +60,23 @@ const WeekView = () => {
 
   const calcDayEventWidth = (start, end) => {
     if (!start || !end) {
-      return null;
-    } else {
+      return 5000;
+    } 
       if (containerWidth.current) {
         const duration = end.getTime() - start.getTime();
         const width = containerWidth.current.clientWidth;
         const componentWidth = (duration / (24 * 60 * 60 * 1000)) * width;
+        if (componentWidth <= 0) {
+          return 500;
+        }
         return componentWidth;
       }
-    }
   };
 
   const fromLeft = (startTime) => {
+    if (!startTime) {
+      return 0
+    }
     if (containerWidth.current) {
       const width = containerWidth.current.clientWidth;
       const timeInSeconds =
@@ -137,10 +142,10 @@ const WeekView = () => {
                       key={weekEvent.id}
                       style={{
                         width: `${calcDayEventWidth(
-                          new Date(weekEvent.start.startTime),
-                          new Date(weekEvent.end.endTime)
+                          new Date(weekEvent?.start?.startTime),
+                          new Date(weekEvent?.end?.endTime)
                         )}px`,
-                        left: fromLeft(new Date(weekEvent.start.startTime)),
+                        left: fromLeft(new Date(weekEvent?.start?.startTime)),
                       }}
                       className={`absolute top-5 bottom-2 event-item rounded-md shadow-md p-2 ${weekEvent.color}`}
                       onClick={() => setEvent(weekEvent)}
