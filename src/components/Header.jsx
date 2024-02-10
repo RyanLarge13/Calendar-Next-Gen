@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { motion } from "framer-motion";
 import { RiMenuUnfoldFill } from "react-icons/ri";
+import { Tooltip } from "react-tooltip";
 import {
   BsFillArrowRightCircleFill,
   BsFillArrowLeftCircleFill,
@@ -64,7 +65,12 @@ const Header = () => {
             <RiMenuUnfoldFill />
           </button>
           {view === "month" && (
-            <div className="flex justify-between items-center w-60">
+            <div
+              data-tooltip-content="choose date"
+              data-tooltip-id="date-picker"
+              className="flex justify-between items-center w-60"
+            >
+              <Tooltip id="date-picker" />
               <BsFillArrowLeftCircleFill
                 onClick={() => setNav((prev) => prev - 1)}
                 className="text-xl cursor-pointer"

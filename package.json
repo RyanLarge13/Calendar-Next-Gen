@@ -31,7 +31,7 @@
     "react-loading": "^2.0.3",
     "react-masonry-css": "^1.0.16",
     "react-quill": "^2.0.0",
-    "react-tooltip": "^5.21.1",
+    "react-tooltip": "^5.26.0",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

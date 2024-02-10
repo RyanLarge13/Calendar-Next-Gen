@@ -177,7 +177,9 @@ const SideBar = () => {
           upcoming.map((event) => (
             <div
               key={event.id}
-              className={`p-3 rounded-md shadow-lg my-5 relative pl-5`}
+              className={`${
+                preferences.darkMode ? "text-white" : "text-black"
+              } p-3 rounded-md shadow-lg my-5 relative pl-5`}
             >
               <button
                 className="absolute top-0 right-0"
@@ -199,9 +201,7 @@ const SideBar = () => {
                   days
                 </p>
               )}
-              <p className="text-sm p-2 font-semibold">
-                {event.summary}
-              </p>
+              <p className="text-sm p-2 font-semibold">{event.summary}</p>
               <div className="mt-3">
                 {formatDbText(event.description || "").map((text, index) => (
                   <p key={index} className="text-[14px] font-semibold">

@@ -168,8 +168,8 @@ const Event = ({ dayEvents }) => {
       dragListener={false}
       onDragEnd={checkToClose}
       initial={{ y: "100%" }}
-      animate={{ y: 0}} 
-      className={`z-[901] will-change-transform fixed inset-3 lg:inset-40 top-[7%] rounded-md ${
+      animate={{ y: 0 }}
+      className={`z-[901] will-change-transform fixed inset-3 top-[7%] rounded-md ${
         preferences.darkMode ? "bg-[#222]" : "bg-white"
       } overflow-y-auto`}
     >
