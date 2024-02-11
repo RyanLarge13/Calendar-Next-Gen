@@ -148,6 +148,9 @@ const MonthView = () => {
       clearTimeout(popupTimeout);
       setPopupTimeout(null);
     }
+    if (index - paddingDays < 0) {
+      return;
+    }
     setNewPopup(false);
     setPopupEvents([]);
     setMousePosition({ x: 0, y: 0 });
