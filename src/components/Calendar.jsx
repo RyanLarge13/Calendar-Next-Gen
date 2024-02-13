@@ -168,7 +168,7 @@ const Calendar = () => {
         {openModal || event ? (
           <ModalHeader allDayEvents={allDayEvents} />
         ) : null}
-        <AnimatePresence>{openModal && <Modal />}</AnimatePresence>
+        <AnimatePresence>{openModal && <Modal allDayEvents={allDayEvents} />}</AnimatePresence>
         <Menu />
         <LoginLogout />
         {event && <Event dayEvents={todaysEvents} />}

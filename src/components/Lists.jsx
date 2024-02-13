@@ -9,6 +9,7 @@ import {
 } from "react-icons/bs";
 import { BiListMinus, BiListPlus } from "react-icons/bi";
 import { IoIosAddCircle } from "react-icons/io";
+import { RiFileCopy2Line } from "react-icons/ri";
 import Masonry from "react-masonry-css";
 import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
@@ -52,6 +53,21 @@ const Lists = () => {
         setAddNewEvent(true);
     };
 
+    const copyAsPlainText = items => {
+        let listString = "";
+        for (let i = 0; i < items.length; i++) {
+            listString += `${i + 1}. ${items[i].text.trim()}\n\n`;
+        }
+        navigator.clipboard
+            .writeText(listString)
+            .then(() => {
+                console.log("clipped");
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    };
+
     return (
         <motion.div className="py-3 relative">
             {lists.length < 1 && (
@@ -89,11 +105,18 @@ const Lists = () => {
                         value={list}
                         drag
                         className={`scrollbar-hide p-3 rounded-md
-            shadow-md ${list.color} my-5 mx-0 mr-7 md:mr-0 pr-10 md:pr-3 text-black`}
+            shadow-md ${list.color} my-5 mx-0 mr-7 md:mr-0 pr-10 md:pr-3
+            text-black list-none`}
                     >
                         <div className="mb-2 bg-white rounded-md shadow-md p-3 flex justify-between items-center">
                             <p className="font-semibold mr-2">{list.title}</p>
                             <div className="flex gap-x-3 text-sm">
+                                <button
+                                    onClick={() => copyAsPlainText(list.items)}
+                                >
+                                    {" "}
+                                    <RiFileCopy2Line />
+                                </button>
                                 {!addItems.includes(list.id) ? (
                                     <BiListPlus
                                         onClick={() =>

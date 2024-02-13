@@ -21,7 +21,7 @@ import UserContext from "../context/UserContext";
 const Event = ({ dayEvents }) => {
   const { event, setEvent } = useContext(InteractiveContext);
   const { dateObj, setString } = useContext(DatesContext);
-  const { preferences } = useContext(UserContext);
+  const { preferences, lists} = useContext(UserContext);
   const [timeLeft, setTimeLeft] = useState(null);
   const [fetchedImages, setFetchedImages] = useState([]);
   const [width, setWidth] = useState(0);
@@ -312,6 +312,10 @@ const Event = ({ dayEvents }) => {
             ) : (
               <p className="text-[14px]">No repeated events</p>
             )}
+          </div>
+          <div>{
+            lists.filter((aList) => aList.eventId === event.id).map((list) => <div>{list.title}</div>)
+          }
           </div>
           {imagesLoading ? (
             <p>Loading {event.attachmentLength} images...</p>

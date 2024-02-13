@@ -78,6 +78,7 @@ reminders Json?
 repeats Json?
 remindersLinked Reminder[]
 repeatEvents RepeatEvent[]
+notif Notification[]
 lists List[]
 tasks Task[]
 attachments Attachment[]
@@ -152,6 +153,8 @@ readTime String?
 notifData Json
 reminderRef Reminder? @relation(fields: [reminderRefId], references: [id], onDelete: Cascade)
 reminderRefId String?
+eventRef Event?   @relation(fields: [eventRefId], references: [id], onDelete: Cascade)
+eventRefId String?
 User User     @relation(fields: [userId], references: [id])
 sentNotification Boolean @default(false)
 sentWebPush Boolean @default(false)

@@ -133,7 +133,8 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                     }`}
         >
           <div
-            className={`absolute bottom-0 right-0 left-0 p-5 rounded-md flex justify-between items-center pointer-events-auto ${
+            className={`absolute bottom-0 right-0 left-0 p-5 rounded-md flex
+            justify-between items-center z-[999] pointer-events-auto ${
               preferences.darkMode
                 ? "bg-[#222] text-white"
                 : "bg-white text-black"
