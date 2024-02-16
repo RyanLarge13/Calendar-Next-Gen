@@ -360,7 +360,7 @@ export const createTask = (token, task) => {
 export const updateTasks = (token, updates) => {
   const res = Axios.post(
     `${productionUrl}/update/tasks`,
-    { updates },
+    { taskUpdates },
     {
       headers: { Authorization: `Bearer ${token}` },
     }

@@ -98,7 +98,7 @@ const Tasks = () => {
         <p>
          {new Date(task.date).toLocaleDateString("en-US", {
           month: "short",
-          day: "numeric", 
+          day: "numeric",
           year: "numeric"
          })}
         </p>
@@ -107,7 +107,7 @@ const Tasks = () => {
         </p>
        </div>
       </div>
-      <TaskItems items={task.tasks} />
+      <TaskItems task={task} />
      </div>
     ))
    )}

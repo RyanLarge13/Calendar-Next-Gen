@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import { AiFillCloseCircle, AiFillPlusCircle } from "react-icons/ai";
 import {
  FaSortAlphaDownAlt,
@@ -6,13 +7,46 @@ import {
  FaSortAmountDown,
  FaSortAmountUp
 } from "react-icons/fa";
+import InteractiveContext from "../context/InteractiveContext"
 
-const TaskItems = ({ items }) => {
- const [itemsCopy, setItemsCopy] = useState(items);
+const TaskItems = ({ task }) => {
+ const {taskUpdates, setTaskUpdates} = useContext(InteractiveContext)
+ const [itemsCopy, setItemsCopy] = useState(task.tasks);
  const [newTaskText, setNewTaskText] = useState("");
- const [taskUpdates, setTaskUpdates] = useState([])
 
- const addNewTaskItem = () => {};
+ const update = () => {
+  const newUpdate = {
+   taskId: task.id,
+   taskItems: itemsCopy
+  };
+  setTaskUpdates(updates => {
+   const includes = updates.some(u => u.taskId === task.id);
+   let updatedUpdates;
+   if (includes) {
+    updatedUpdates = updates.map(u => {
+     if (u.taskId === newUpdate.taskId) {
+      return newUpdate;
+     } else {
+      return u;
+     }
+    });
+   } else {
+    updatedUpdates = [...updates, newUpdate];
+   }
+   return updatedUpdates;
+  });
+ };
+
+ const addNewTaskItem = () => {
+  const newTask = {
+   id: uuidv4(),
+   text: newTaskText,
+   complete: false
+  };
+  itemsCopy.push(newTask);
+  setNewTaskText("");
+  update();
+ };
 
  const handleChecked = (e, myTask) => {
   const newCheck = e.target.checked;
@@ -23,11 +57,13 @@ const TaskItems = ({ items }) => {
    return itm;
   });
   setItemsCopy(newItems);
+  update();
  };
 
  const removeTaskItem = myTask => {
   const newTasks = itemsCopy.filter(itm => itm.id !== myTask.id);
   setItemsCopy(newTasks);
+  update();
  };
 
  return (
@@ -50,7 +86,7 @@ const TaskItems = ({ items }) => {
     <form
      onSubmit={e => {
       e.preventDefault();
-      addNewItem();
+      addNewTaskItem();
      }}
      className="w-full mr-3"
     >
