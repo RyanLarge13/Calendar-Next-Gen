@@ -91,8 +91,8 @@ User User     @relation(fields: [userId], references: [id])
 userId String
 category Category?      @relation(fields: [categoryId], references: [id]) // Specify fields and references
 categoryId String?
-parentEvent  Event?    @relation("ChildEvents", fields: [parentId], references: [id], onDelete: Cascade)
-childEvents  Event[]   @relation("ChildEvents")
+parentEvent Event?    @relation("ChildEvents", fields: [parentId], references: [id], onDelete: Cascade)
+childEvents Event[]   @relation("ChildEvents")
 
 @@index([id], name: "eventIdIndex")
 @@index([userId], name: "userIdRefIndex")
@@ -134,6 +134,7 @@ id String   @id @unique @default(uuid())
 title String
 notes String
 time String
+groupId String?
 notification Notification[]
 eventRef Event?   @relation(fields: [eventRefId], references: [id], onDelete: Cascade)
 eventRefId String?
@@ -151,6 +152,7 @@ time String
 read Boolean  @default(false)
 readTime String?
 notifData Json
+groupId String?
 reminderRef Reminder? @relation(fields: [reminderRefId], references: [id], onDelete: Cascade)
 reminderRefId String?
 eventRef Event?   @relation(fields: [eventRefId], references: [id], onDelete: Cascade)
