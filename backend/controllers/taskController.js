@@ -38,6 +38,7 @@ export const updateTasks = async (req, res) => {
   };
   updateAllTasks()
    .then(() => {
+    console.log(res)
     return res.status(201).json({ message: "Tasks successfully updated" });
    })
    .catch(err => {
