@@ -152,7 +152,7 @@ time String
 read Boolean  @default(false)
 readTime String?
 notifData Json
-groupId String?
+//groupId String?
 reminderRef Reminder? @relation(fields: [reminderRefId], references: [id], onDelete: Cascade)
 reminderRefId String?
 eventRef Event?   @relation(fields: [eventRefId], references: [id], onDelete: Cascade)
