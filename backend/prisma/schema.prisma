@@ -155,8 +155,8 @@ notifData Json
 //groupId String?
 reminderRef Reminder? @relation(fields: [reminderRefId], references: [id], onDelete: Cascade)
 reminderRefId String?
-eventRef Event?   @relation(fields: [eventRefId], references: [id], onDelete: Cascade)
-eventRefId String?
+//eventRef Event?   @relation(fields: [eventRefId], references: [id], onDelete: Cascade)
+//eventRefId String?
 User User     @relation(fields: [userId], references: [id])
 sentNotification Boolean @default(false)
 sentWebPush Boolean @default(false)
