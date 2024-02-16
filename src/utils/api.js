@@ -1,8 +1,8 @@
 import Axios from "axios";
 
 const devUrl = "http://localhost:8080";
-// const productionUrl = "https://calendar-next-gen-production.up.railway.app";
-const productionUrl = "http://localhost:8080";
+const productionUrl = "https://calendar-next-gen-production.up.railway.app";
+// const productionUrl = "http://localhost:8080";
 
 export const getUserData = (token) => {
   const res = Axios.get(`${productionUrl}/user/data`, {
