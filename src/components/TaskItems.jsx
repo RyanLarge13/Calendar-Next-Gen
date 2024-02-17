@@ -17,10 +17,10 @@ const TaskItems = ({ task }) => {
     console.log(task);
   }, []);
 
-  const update = () => {
+  const update = (newItems) => {
     const newUpdate = {
       taskId: task.id,
-      taskItems: itemsCopy,
+      taskItems: newItems,
     };
     setTaskUpdates((updates) => {
       const includes = updates.some((u) => u.taskId === task.id);
@@ -46,9 +46,10 @@ const TaskItems = ({ task }) => {
       text: newTaskText,
       complete: false,
     };
-    setItemsCopy((prev) => [...prev, newTask]);
+    const newItems = [...itemsCopy, newTask];
+    setItemsCopy(newItems);
     setNewTaskText("");
-    update();
+    update(newItems);
   };
 
   const handleChecked = (e, myTask) => {
@@ -60,13 +61,13 @@ const TaskItems = ({ task }) => {
       return itm;
     });
     setItemsCopy(newItems);
-    update();
+    update(newItems);
   };
 
   const removeTaskItem = (myTask) => {
     const newTasks = itemsCopy.filter((itm) => itm.id !== myTask.id);
     setItemsCopy(newTasks);
-    update();
+    update(newTasks);
   };
 
   return (

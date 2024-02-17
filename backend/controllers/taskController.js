@@ -40,7 +40,7 @@ export const updateTasks = async (req, res) => {
   }
   try {
     const updateAllTasks = async () => {
-      for (const update in taskUpdates) {
+      for (const update of taskUpdates) {
         const { taskId, taskItems } = update;
         await prisma.task.updateMany({
           where: { id: taskId },

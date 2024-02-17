@@ -20,7 +20,8 @@ const Menu = () => {
     setTaskUpdates,
     showCategory,
   } = useContext(InteractiveContext);
-  const { lists, setLists, user, preferences } = useContext(UserContext);
+  const { lists, setLists, user, userTasks, preferences, setUserTasks } =
+    useContext(UserContext);
   const { dateObj } = useContext(DatesContext);
 
   const [timeOfDay, setTimeOfDay] = useState(null);
@@ -48,12 +49,13 @@ const Menu = () => {
           }
         });
     }
-  }, [menu]);
+  }, [menu, showCategory]);
 
   useEffect(() => {
     if (taskUpdates.length < 1) return;
     if (taskUpdates.length > 0) {
       const token = localStorage.getItem("authToken");
+      updateClientTasks();
       updateTasks(token, taskUpdates)
         .then((res) => {
           console.log(res);
@@ -63,7 +65,7 @@ const Menu = () => {
           console.log(err);
         });
     }
-  }, [menu]);
+  }, [menu, showCategory]);
 
   useEffect(() => {
     const hours = dateObj.getHours();
@@ -92,6 +94,19 @@ const Menu = () => {
       return list;
     });
     setLists(updatedLists);
+  };
+
+  const updateClientTasks = () => {
+    const updatedTasks = userTasks.map((tsk) => {
+      const foundUpdate = taskUpdates.find(
+        (update) => update.taskId === tsk.id
+      );
+      if (foundUpdate) {
+        return { ...tsk, tasks: foundUpdate.taskItems };
+      }
+      return tsk;
+    });
+    setUserTasks(updatedTasks);
   };
 
   return (

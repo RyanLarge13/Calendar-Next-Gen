@@ -41,7 +41,6 @@ export const updateList = async (req, res) => {
   const updateLists = async () => {
     for (const update of lists) {
       const { listId, listItems } = update;
-
       await prisma.list.updateMany({
         where: { id: listId },
         data: { items: listItems },
