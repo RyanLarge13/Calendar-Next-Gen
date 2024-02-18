@@ -1,13 +1,13 @@
 import { motion } from "framer-motion";
 import { useContext } from "react";
-import { formatDbText } from "../utils/helpers";
+import { formatDbText, formatTime } from "../utils/helpers";
 import {
   BsFillCalendar2EventFill,
   BsAlarmFill,
   BsListTask,
 } from "react-icons/bs";
 import { Tooltip } from "react-tooltip";
-import UserContext from "../context/UserContext";
+import UserContext, { UserProvider } from "../context/UserContext";
 import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
 
@@ -35,11 +35,18 @@ const PopUpMonthViewWindow = ({ positions, eventsToRender, day }) => {
         left: `${positions.x}px`,
         transform: "translate(-17vw, -17vh)",
       }}
-      className={`absolute p-2 z-[900] shadow-lg rounded-md min-h-60 min-w-60 max-h-40 overflow-y-auto scrollbar-hide ${
+      className={`absolute p-2 z-[900] shadow-lg rounded-md min-h-[100px] min-w-80 max-h-40 overflow-y-auto scrollbar-hide ${
         preferences.darkMode ? "bg-[#222]" : "bg-white"
       }`}
     >
       <Tooltip id="add-btn" />
+      <p
+        className={`${
+          preferences.darkMode ? "text-white" : "text-black"
+        } text-sm`}
+      >
+        {formatTime(new Date(day))}
+      </p>
       {eventsToRender && eventsToRender.length > 0
         ? eventsToRender.map((event) => (
             <div

@@ -168,6 +168,7 @@ userId String
 
 model List {
 id String   @id @unique @default(uuid())
+order Int? @default(0)
 title String
 items Json?
 color String
