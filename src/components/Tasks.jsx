@@ -82,18 +82,9 @@ const Tasks = () => {
     userTasks.map((task, taskIndex) => (
      <div
       key={task.id}
-      className={`p-3 my-5 rounded-md shadow-md ${task.color} text-black`}
+      className={`p-3 my-5 md:mx-3 lg:mx-5 rounded-md shadow-md ${task.color} text-black`}
      >
       <div className="rounded-md shadow-md bg-white p-2 mb-2">
-       <div className="mb-3 flex justify-end items-center gap-x-3 w-full">
-        <button onClick={() => editTitle(task)}>
-         <BsPenFill />
-        </button>
-        <BsShareFill />
-        <button onClick={() => confirmDeleteTask(task.id)}>
-         <BsTrashFill />
-        </button>
-       </div>
        <div className="flex justify-between items-center">
         <p>
          {new Date(task.date).toLocaleDateString("en-US", {
@@ -102,9 +93,15 @@ const Tasks = () => {
           year: "numeric"
          })}
         </p>
-        <p className="font-semibold">
-         {task.tasks.filter(tsk => tsk.complete).length} / {task.tasks.length}
-        </p>
+        <div className="mb-3 flex justify-center items-center gap-x-3">
+         <button onClick={() => editTitle(task)}>
+          <BsPenFill />
+         </button>
+         <BsShareFill />
+         <button onClick={() => confirmDeleteTask(task.id)}>
+          <BsTrashFill />
+         </button>
+        </div>
        </div>
       </div>
       <TaskItems task={task} />
