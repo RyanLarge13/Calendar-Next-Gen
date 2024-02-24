@@ -23,9 +23,9 @@ const Event = ({ dayEvents }) => {
  const { dateObj, setString } = useContext(DatesContext);
  const { preferences, lists } = useContext(UserContext);
  const [timeLeft, setTimeLeft] = useState(null);
- const [fetchedImages, setFetchedImages] = useState([]);
  const [width, setWidth] = useState(0);
  const [timeInEvent, setTimeInEvent] = useState(0);
+ const [fetchedImages, setFetchedImages] = useState([]);
  const [index, setIndex] = useState(dayEvents.indexOf(event));
  const [imagesLoading, setImagesLoading] = useState(false);
 
