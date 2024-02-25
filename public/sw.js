@@ -36,8 +36,7 @@ const formatDbText = (text) => {
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
   if (
-    url.origin === "https://calendar-next-gen-production.up.railway.app" &&
-    url.pathname === "/user/data"
+    url.origin === "https://calendar-next-gen-production.up.railway.app"
   ) {
     event.respondWith(
       caches.open("api-cache").then((cache) => {
