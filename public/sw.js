@@ -11,7 +11,7 @@ cleanupOutdatedCaches();
 precacheAndRoute(self.__WB_MANIFEST);
 
 registerRoute(
-  /^https:\/\/calendar-next-gen-production\.up\.railway\.app\//,
+  /^https:\/\/calendar-next-gen-production\.up\.railway\.app\/user\/data/,
   new CacheFirst({
     cacheName: "api-cache",
   })
@@ -36,20 +36,26 @@ const formatDbText = (text) => {
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
   if (
-    url.origin ===
-    "https://calendar-next-gen-production.up.railway.app/user/data"
+    url.origin === "https://calendar-next-gen-production.up.railway.app" &&
+    url.pathname === "/user/data"
   ) {
     event.respondWith(
       caches.open("api-cache").then((cache) => {
-        return fetch(event.request.clone())
-          .then((response) => {
-            // Update cache with the latest response
-            cache.put(event.request, response.clone());
-            return response;
-          })
-          .catch(() => {
-            return caches.match(event.request);
-          });
+        return cache.match(event.request).then((cachedResponse) => {
+          const fetchPromise = fetch(event.request)
+            .then((networkResponse) => {
+              // Update cache with the latest response
+              cache.put(event.request, networkResponse.clone());
+              return networkResponse;
+            })
+            .catch(() => {
+              return (
+                cachedResponse || caches.match(new Request("offline.html"))
+              );
+            });
+
+          return cachedResponse || fetchPromise;
+        });
       })
     );
   }
