@@ -1,7 +1,7 @@
 import { precacheAndRoute, cleanupOutdatedCaches } from "workbox-precaching";
 import { clientsClaim } from "workbox-core";
 import { registerRoute } from "workbox-routing";
-import { NetworkFirst } from "workbox-strategies";
+import { CacheFirst, NetworkFirst } from "workbox-strategies";
 
 self.skipWaiting();
 clientsClaim();
@@ -12,7 +12,7 @@ precacheAndRoute(self.__WB_MANIFEST);
 
 registerRoute(
   /^https:\/\/calendar-next-gen-production\.up\.railway\.app\//,
-  new NetworkFirst({
+  new CacheFirst({
     cacheName: "api-cache",
   })
 );
