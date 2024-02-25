@@ -185,7 +185,7 @@ export default defineConfig({
           {
             urlPattern:
               /^https:\/\/calendar-next-gen-production\.up\.railway\.app\/user\/data/,
-            handler: "StaleWhileRevalidate",
+            handler: "NetworkFirst",
             options: {
               cacheName: "api-cache",
             },

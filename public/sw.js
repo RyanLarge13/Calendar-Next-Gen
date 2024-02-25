@@ -1,11 +1,7 @@
 import { precacheAndRoute, cleanupOutdatedCaches } from "workbox-precaching";
 import { clientsClaim } from "workbox-core";
 import { registerRoute } from "workbox-routing";
-import {
-  CacheFirst,
-  NetworkFirst,
-  StaleWhileRevalidate,
-} from "workbox-strategies";
+import { NetworkFirst } from "workbox-strategies";
 
 self.skipWaiting();
 clientsClaim();
@@ -16,26 +12,7 @@ precacheAndRoute(self.__WB_MANIFEST);
 
 registerRoute(
   /^https:\/\/calendar-next-gen-production\.up\.railway\.app\/user\/data/,
-  async ({ request, event }) => {
-    const cachedResponse = await caches.match(request);
-    const networkResponsePromise = fetch(request);
-    event.respondWith(
-      (async function () {
-        if (cachedResponse) {
-          return cachedResponse;
-        }
-        const networkResponse = await networkResponsePromise;
-        const responseClone = networkResponse.clone();
-        event.waitUntil(
-          caches.open("api-cache").then((cache) => {
-            return cache.put(request, responseClone);
-          })
-        );
-        return networkResponse;
-      })()
-    );
-    return networkResponsePromise;
-  }
+  new NetworkFirst({ cacheName: "api-cache" })
 );
 
 const formatDbText = (text) => {
