@@ -33,6 +33,28 @@ const formatDbText = (text) => {
   }
 };
 
+self.addEventListener("fetch", (event) => {
+  const url = new URL(event.request.url);
+  if (
+    url.origin ===
+    "https://calendar-next-gen-production.up.railway.app/user/data"
+  ) {
+    event.respondWith(
+      caches.open("api-cache").then((cache) => {
+        return fetch(event.request.clone())
+          .then((response) => {
+            // Update cache with the latest response
+            cache.put(event.request, response.clone());
+            return response;
+          })
+          .catch(() => {
+            return caches.match(event.request);
+          });
+      })
+    );
+  }
+});
+
 self.addEventListener("push", (event) => {
   let payload = {};
   if (event.data) {
@@ -55,7 +77,7 @@ self.addEventListener("push", (event) => {
   if (notifType === "event") {
     return event.waitUntil(
       self.registration.showNotification(title, {
-        body: `${formatDbText(body || "")} \n @${new Date(
+        body: `${formatDbText(body || "")} \n ${new Date(
           time
         ).toLocaleTimeString("en-US")}`,
         data,
