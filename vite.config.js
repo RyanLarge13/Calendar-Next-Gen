@@ -177,7 +177,7 @@ export default defineConfig({
         runtimeCaching: [
           {
             urlPattern: /\.(js|css|png|svg|jpeg|jpg)$/, // Cache static assets by file extensions
-            handler: "CacheFirst", // Cache the files on first load
+            handler: "StaleWhileRevalidate", // Cache the files on first load
             options: {
               cacheName: "static-assets-cache",
             },
@@ -185,7 +185,7 @@ export default defineConfig({
           {
             urlPattern:
               /^https:\/\/calendar-next-gen-production\.up\.railway\.app\/user\/data/,
-            handler: "CacheFirst",
+            handler: "StaleWhileRevalidate",
             options: {
               cacheName: "api-cache",
             },
