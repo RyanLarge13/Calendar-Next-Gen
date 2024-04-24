@@ -257,7 +257,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
   const compressImage = (file) => {
     return new Promise((resolve, reject) => {
       new Compressor(file, {
-        quality: 0.6, // Adjust the quality value as needed (0.0 to 1.0)
+        quality: 0.1, // Adjust the quality value as needed (0.0 to 1.0)
         success: (compressedFile) => {
           resolve(compressedFile);
         },
