@@ -1,4 +1,4 @@
-import { useState, useContext, useCallback } from "react";
+import { useState, useContext } from "react";
 import { colors } from "../constants.js";
 import { addNewSticky } from "../utils/api.js";
 import { AiFillInfoCircle } from "react-icons/ai";

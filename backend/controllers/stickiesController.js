@@ -52,11 +52,47 @@ export const addNewSticky = async (req, res) => {
   }
 };
 
+export const updateSticky = async (req, res) => {
+  const user = req.user;
+  if (!user) {
+    return res
+      .status(401)
+      .json({ message: "Please log back in to update your sticky note" });
+  }
+  const stickyId = req.body.stickyId;
+  const stickyHtml = req.body.stickyHtml;
+  if (!stickyId) {
+    return res
+      .status(400)
+      .json({ message: "Please provide the sticky that needs to be updated" });
+  }
+  if (!stickyHtml) {
+    return res.status(400).json({ message: "No new changes made" });
+  }
+  try {
+    const updatedSticky = await prisma.sticky.update({
+      where: { id: stickyId },
+      data: { body: stickyHtml },
+    });
+    if (!updatedSticky) {
+      return res.status(500).json({
+        message:
+          "There was a problem updating your note. Please try again later and if the issue persists contact CNG.",
+      });
+    }
+    return res
+      .status(201)
+      .json({ message: "Successfully updated your sticky note" });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 export const deleteSticky = async (req, res) => {
   const stickyId = req.params.stickyId;
   if (!stickyId) {
     return res.status(401).json({
-      messagr: "Please refer to an ID that is valid to your sticky note",
+      message: "Please refer to an ID that is valid to your sticky note",
     });
   }
   try {
