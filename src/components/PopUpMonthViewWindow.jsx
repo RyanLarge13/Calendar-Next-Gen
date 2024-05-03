@@ -6,7 +6,6 @@ import {
   BsAlarmFill,
   BsListTask,
 } from "react-icons/bs";
-import { Tooltip } from "react-tooltip";
 import UserContext, { UserProvider } from "../context/UserContext";
 import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
@@ -39,11 +38,12 @@ const PopUpMonthViewWindow = ({ positions, eventsToRender, day }) => {
         preferences.darkMode ? "bg-[#222]" : "bg-white"
       }`}
     >
-      <Tooltip id="add-btn" />
       <p
         className={`${
-          preferences.darkMode ? "text-white" : "text-black"
-        } text-sm`}
+          preferences.darkMode
+            ? "text-white bg-black"
+            : "text-black bg-slate-100"
+        } text-sm p-1 rounded-md mb-2`}
       >
         {formatTime(new Date(day))}
       </p>
@@ -68,8 +68,6 @@ const PopUpMonthViewWindow = ({ positions, eventsToRender, day }) => {
         : null}
       <div className="flex justify-start items-center gap-x-1">
         <button
-          data-tooltip-id="add-btn"
-          data-tooltip-content="add event"
           onClick={() => openModalAndSetType("event")}
           className={`${
             preferences.darkMode
@@ -80,8 +78,6 @@ const PopUpMonthViewWindow = ({ positions, eventsToRender, day }) => {
           <BsFillCalendar2EventFill />
         </button>
         <button
-          data-tooltip-id="add-btn"
-          data-tooltip-content="add reminder"
           onClick={() => openModalAndSetType("reminder")}
           className={`${
             preferences.darkMode
@@ -92,8 +88,6 @@ const PopUpMonthViewWindow = ({ positions, eventsToRender, day }) => {
           <BsAlarmFill />
         </button>
         <button
-          data-tooltip-id="add-btn"
-          data-tooltip-content="add tasks"
           onClick={() => openModalAndSetType("task")}
           className={`${
             preferences.darkMode

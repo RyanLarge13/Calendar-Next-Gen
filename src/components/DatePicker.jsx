@@ -140,13 +140,13 @@ const DatePicker = () => {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm"
+        className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm z-[900]"
         onClick={() => setShowDatePicker(false)}
       ></motion.div>
       <motion.div
         initial={{ opacity: 0, scale: 0.75, x: "-50%" }}
         animate={{ opacity: 1, scale: 1, x: "-50%" }}
-        className={`fixed top-40 left-[50%] translate-x-[-50%] rounded-md shadow-md p-5 ${
+        className={`fixed top-40 left-[50%] translate-x-[-50%] rounded-md shadow-md p-5 z-[999] ${
           preferences.darkMode ? "bg-[#222] text-white" : "bg-white text-black"
         }`}
       >

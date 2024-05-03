@@ -33,7 +33,7 @@ const Kanbans = () => {
           </aside>
         </div>
       ) : (
-        <div className="mt-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 place-items-center gap-5 text-black">
+        <div className="mt-5 p-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 place-items-center gap-5 text-black">
           {kanbans.length > 0 ? (
             kanbans.map((kanban) => (
               <Kanban
