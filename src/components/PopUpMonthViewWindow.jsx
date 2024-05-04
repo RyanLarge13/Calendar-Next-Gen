@@ -37,6 +37,7 @@ const PopUpMonthViewWindow = ({ positions, eventsToRender, day }) => {
       className={`absolute p-2 z-[900] shadow-lg rounded-md min-h-[100px] min-w-80 max-h-40 overflow-y-auto scrollbar-hide ${
         preferences.darkMode ? "bg-[#222]" : "bg-white"
       }`}
+      onWheel={(e) => e.stopPropagation()}
     >
       <p
         className={`${

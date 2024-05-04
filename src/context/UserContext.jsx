@@ -237,7 +237,6 @@ export const UserProvider = ({ children }) => {
           getFriendinfo(authToken)
             .then((response) => {
               const data = response.data;
-              console.log(data.userFriends);
               setFriends(data.userFriends);
               setFriendRequests(data.friendRequests);
               setConnectionRequests(data.connectionRequests);

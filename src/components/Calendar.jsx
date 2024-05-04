@@ -86,26 +86,18 @@ const Calendar = () => {
     setTodaysReminder(remindersToday);
   }, [theDay, events, reminders, string]);
 
-  let deltaX = null;
   const checkScroll = (e) => {
-    const currentX = e.deltaX;
-    if (!deltaX) {
-      deltaX = currentX;
-      return;
-    }
     if (view !== "month") {
       return;
     }
-    if (currentX > deltaX) {
+    const offset = e.deltaY;
+    if (offset > 0) {
       setNav((prev) => prev + 1);
-      deltaX = null;
       return;
-    } else if (currentX < deltaX) {
+    } else if (offset < 0) {
       setNav((prev) => prev - 1);
-      deltaX = null;
       return;
     }
-    deltaX = currentX;
   };
 
   return (

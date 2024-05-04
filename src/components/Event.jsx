@@ -8,6 +8,7 @@ import { FaExternalLinkAlt } from "react-icons/fa";
 import { motion, useDragControls } from "framer-motion";
 import { fetchAttachments } from "../utils/api";
 import { formatDbText, formatTime } from "../utils/helpers";
+import ListItems from "./ListItems";
 import GoogleMaps from "./GoogleMaps";
 import Masonry from "react-masonry-css";
 import InteractiveContext from "../context/InteractiveContext";
@@ -16,11 +17,16 @@ import UserContext from "../context/UserContext";
 const Event = ({ dayEvents }) => {
   const { event, setEvent } = useContext(InteractiveContext);
   const { preferences, lists } = useContext(UserContext);
+
   const [timeLeft, setTimeLeft] = useState(null);
   const [width, setWidth] = useState(0);
   const [timeInEvent, setTimeInEvent] = useState(0);
   const [fetchedImages, setFetchedImages] = useState([]);
   const [imagesLoading, setImagesLoading] = useState(false);
+  const [addItems, setAddItems] = useState([]);
+  const [eventLists, setEventLists] = useState(
+    lists.filter((list) => list.eventId === event.id)
+  );
 
   const controls = useDragControls();
 
@@ -287,25 +293,26 @@ const Event = ({ dayEvents }) => {
             )}
           </div>
           <div>
-            {lists
-              .filter((aList) => aList.eventId === event.id)
-              .map((list) => (
-                <div
-                  key={list.id}
-                  className={`scrollbar-hide p-3 rounded-md
+            {eventLists.map((list) => (
+              <div
+                key={list.id}
+                className={`scrollbar-hide p-3 rounded-md
             shadow-md ${list.color} my-5 mx-0 mr-7 md:mr-0 pr-10 md:pr-3
             text-black list-none`}
-                >
-                  <div className="mb-2 bg-white rounded-md shadow-md p-3 flex justify-between items-center">
-                    <p className="font-semibold mr-2">{list.title}</p>
-                    <div className="flex gap-x-3 text-sm">
-                      <button onClick={() => {}}></button>
-                    </div>
+              >
+                <div className="mb-2 bg-white rounded-md shadow-md p-3 flex justify-between items-center">
+                  <p className="font-semibold mr-2">{list.title}</p>
+                  <div className="flex gap-x-3 text-sm">
+                    <button onClick={() => {}}></button>
                   </div>
-                  {/* <ListItems addItems={addItems} listId={list.id} items={list?.items}
-        />*/}
                 </div>
-              ))}
+                <ListItems
+                  addItems={addItems}
+                  listId={list.id}
+                  items={list?.items}
+                />
+              </div>
+            ))}
           </div>
           {imagesLoading ? (
             <p>Loading {event.attachmentLength} images...</p>
