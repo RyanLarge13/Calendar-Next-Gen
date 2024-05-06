@@ -265,4 +265,38 @@ export const deleteEvent = async (req, res) => {
   }
 };
 
-export const deleteManyEvents = () => {};
+export const deleteManyEvents = async (req, res) => {
+  const user = req.user;
+  if (!user) {
+    return res
+      .status(401)
+      .json({ message: "Please log back in to make this request" });
+  }
+  const eventId = req.params.eventId;
+  if (!eventId) {
+    return res
+      .status(400)
+      .json({ message: "Please choose an event you would like to delete" });
+  }
+  const eventParentId = req.params.eventParentId;
+  if (!eventParentId || eventParentId === null) {
+    console.log("No parent id");
+    const deletedEvent = await prisma.event.deleteMany({
+      where: { id: eventId },
+    });
+    const deletedRepeats = await prisma.event.deleteMany({
+      where: { parentId: eventId },
+    });
+  } else {
+    console.log("Parent id");
+    const deletedParent = await prisma.event.deleteMany({
+      where: { id: eventParentId },
+    });
+    const deletedRepeats = await prisma.event.deleteMany({
+      where: { parentId: eventParentId },
+    });
+  }
+  return res.status(200).json({
+    message: "Successfully deleted your event and all following events",
+  });
+};

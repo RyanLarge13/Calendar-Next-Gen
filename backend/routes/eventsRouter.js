@@ -1,5 +1,5 @@
 import express from "express";
-import prisma from "../utils/prismaClient.js"
+import prisma from "../utils/prismaClient.js";
 import auth from "../auth/authenticateToken.js";
 import authorizeDelete from "../middleware/authorizeDelete.js";
 import {
@@ -8,6 +8,7 @@ import {
   addEvent,
   deleteEvent,
   createAttachments,
+  deleteManyEvents,
 } from "../controllers/eventsController.js";
 
 const eventsRouter = express.Router();
@@ -21,6 +22,11 @@ eventsRouter.delete(
   auth,
   authorizeDelete("eventId", prisma.event),
   deleteEvent
+);
+eventsRouter.delete(
+  "/:username/delete/events/:eventId/:eventParentId",
+  auth,
+  deleteManyEvents
 );
 
 export default eventsRouter;

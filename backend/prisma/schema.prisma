@@ -89,9 +89,9 @@ updated DateTime @updatedAt @default(now())
 created DateTime @default(now())
 User User     @relation(fields: [userId], references: [id])
 userId String
-category Category?      @relation(fields: [categoryId], references: [id]) // Specify fields and references
+category Category?      @relation(fields: [categoryId], references: [id])
 categoryId String?
-parentEvent Event?    @relation("ChildEvents", fields: [parentId], references: [id], onDelete: Cascade)
+parentEvent Event?    @relation("ChildEvents", fields: [parentId], references: [id])
 childEvents Event[]   @relation("ChildEvents")
 
 @@index([id], name: "eventIdIndex")

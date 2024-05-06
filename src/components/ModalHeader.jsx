@@ -1,6 +1,6 @@
 import { useState, useContext, useEffect } from "react";
 import { motion } from "framer-motion";
-import { deleteEvent } from "../utils/api.js";
+import { deleteEvent, deleteRepeats } from "../utils/api.js";
 import { AiFillPlusCircle } from "react-icons/ai";
 import {
   BsFillArrowDownCircleFill,
@@ -46,9 +46,7 @@ const ModalHeader = ({ allDayEvents }) => {
     const authToken = localStorage.getItem("authToken");
     deleteEvent(user.username, event.id, authToken)
       .then((res) => {
-        const filteredEvents = events.filter(
-          (e) => e.id !== res.data.eventId && e.parentId !== res.data.eventId
-        );
+        const filteredEvents = events.filter((e) => e.id !== res.data.eventId);
         setEvent(null);
         setEvents(filteredEvents);
         if (allDayEvents.length > 0) {
@@ -56,6 +54,29 @@ const ModalHeader = ({ allDayEvents }) => {
         }
       })
       .catch((err) => console.log(err));
+  };
+
+  const deleteAllEvents = () => {
+    try {
+      const token = localStorage.getItem("authToken");
+      deleteRepeats(user.username, event.id, event.parentId, token)
+        .then((res) => {
+          console.log(res);
+          const filteredEvents = events.filter(
+            (e) => e.id !== res.data.eventId && e.parentId !== res.data.eventId
+          );
+          setEvent(null);
+          setEvents(filteredEvents);
+          if (allDayEvents.length > 0) {
+            setShowAllDayEvents(true);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const switchDays = (e, info) => {
@@ -144,25 +165,49 @@ const ModalHeader = ({ allDayEvents }) => {
                   <BsFillPenFill className="cursor-pointer" />
                   <BsFillTrashFill
                     onClick={() => {
+                      const actions = event.repeats.repeat
+                        ? [
+                            {
+                              text: "cancel",
+                              func: () => setSystemNotif({ show: false }),
+                            },
+                            {
+                              text: "delete all",
+                              func: () => {
+                                setSystemNotif({ show: false });
+                                deleteAllEvents();
+                              },
+                            },
+                            {
+                              text: "delete",
+                              func: () => {
+                                setSystemNotif({ show: false });
+                                deleteAnEvent();
+                              },
+                            },
+                          ]
+                        : [
+                            {
+                              text: "cancel",
+                              func: () => setSystemNotif({ show: false }),
+                            },
+                            {
+                              text: "delete",
+                              func: () => {
+                                setSystemNotif({ show: false });
+                                deleteAnEvent();
+                              },
+                            },
+                          ];
                       const newConfirmation = {
                         show: true,
                         title: `Delete ${event.summary}`,
-                        text: "Are you sure you want to delete this event?",
+                        text: event.repeats.repeat
+                          ? "Delete all repeat events or just this one?"
+                          : "Are you sure you want to delete this event?",
                         color: "bg-red-200",
                         hasCancel: true,
-                        actions: [
-                          {
-                            text: "cancel",
-                            func: () => setSystemNotif({ show: false }),
-                          },
-                          {
-                            text: "delete",
-                            func: () => {
-                              setSystemNotif({ show: false });
-                              deleteAnEvent();
-                            },
-                          },
-                        ],
+                        actions: actions,
                       };
                       setSystemNotif(newConfirmation);
                     }}

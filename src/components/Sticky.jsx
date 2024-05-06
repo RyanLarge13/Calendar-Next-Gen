@@ -214,10 +214,10 @@ const Sticky = ({ sticky, index }) => {
       >
         {!edit ? (
           <>
-            <h2>{sticky.title}</h2>
+            <h2 className="mb-5 border-b border-b-black">{sticky.title}</h2>
             <div
               dangerouslySetInnerHTML={{ __html: sticky.body }}
-              className=""
+              className="markdown"
             ></div>
           </>
         ) : (

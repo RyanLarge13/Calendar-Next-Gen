@@ -126,6 +126,18 @@ export const deleteEvent = (username, eventId, token) => {
   return res;
 };
 
+export const deleteRepeats = (username, eventId, eventParentId, token) => {
+  const res = Axios.delete(
+    `${devUrl}/${username}/delete/events/${eventId}/${eventParentId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return res;
+};
+
 export const updateEvent = (event, token) => {
   Axios.get(`${productionUrl}/${username}/events`)
     .then((res) => {
