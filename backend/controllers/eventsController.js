@@ -279,23 +279,23 @@ export const deleteManyEvents = async (req, res) => {
       .json({ message: "Please choose an event you would like to delete" });
   }
   const eventParentId = req.params.eventParentId;
-  if (!eventParentId || eventParentId === null) {
-    console.log("No parent id");
-    const deletedEvent = await prisma.event.deleteMany({
-      where: { id: eventId },
-    });
+  if (!eventParentId || eventParentId === null || eventParentId === "null") {
     const deletedRepeats = await prisma.event.deleteMany({
       where: { parentId: eventId },
     });
-  } else {
-    console.log("Parent id");
-    const deletedParent = await prisma.event.deleteMany({
-      where: { id: eventParentId },
+    const deletedEvent = await prisma.event.deleteMany({
+      where: { id: eventId },
     });
-    const deletedRepeats = await prisma.event.deleteMany({
-      where: { parentId: eventParentId },
+    return res.status(200).json({
+      message: "Successfully deleted your event and all following events",
     });
   }
+  const deletedRepeats = await prisma.event.deleteMany({
+    where: { parentId: eventParentId },
+  });
+  const deletedParent = await prisma.event.deleteMany({
+    where: { id: eventParentId },
+  });
   return res.status(200).json({
     message: "Successfully deleted your event and all following events",
   });

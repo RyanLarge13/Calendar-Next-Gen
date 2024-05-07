@@ -61,10 +61,18 @@ const ModalHeader = ({ allDayEvents }) => {
       const token = localStorage.getItem("authToken");
       deleteRepeats(user.username, event.id, event.parentId, token)
         .then((res) => {
-          console.log(res);
-          const filteredEvents = events.filter(
-            (e) => e.id !== res.data.eventId && e.parentId !== res.data.eventId
-          );
+          const filteredEvents = events.filter((e) => {
+            if (e.id === event.id || e.id === event.parentId) {
+              return;
+            }
+            if (e.repeats.repeat && e.parentId === event.parentId) {
+              return;
+            }
+            if (e.parentId === event.id) {
+              return;
+            }
+            return e;
+          });
           setEvent(null);
           setEvents(filteredEvents);
           if (allDayEvents.length > 0) {
