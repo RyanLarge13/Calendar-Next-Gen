@@ -72,9 +72,9 @@ const PopUpMonthViewWindow = ({ positions, eventsToRender, day }) => {
           onClick={() => openModalAndSetType("event")}
           className={`${
             preferences.darkMode
-              ? "text-white bg-black rounded-md p-3"
-              : "text-black bg-slate-100 rounded-md p-3"
-          } text-sm`}
+              ? "text-white bg-black rounded-md p-3 hover:bg-slate-700"
+              : "text-black bg-slate-100 rounded-md p-3 hover:bg-slate-200"
+          } text-sm duration-200`}
         >
           <BsFillCalendar2EventFill />
         </button>
@@ -82,9 +82,9 @@ const PopUpMonthViewWindow = ({ positions, eventsToRender, day }) => {
           onClick={() => openModalAndSetType("reminder")}
           className={`${
             preferences.darkMode
-              ? "text-white bg-black rounded-md p-3"
-              : "text-black bg-slate-100 rounded-md p-3"
-          } text-sm`}
+              ? "text-white bg-black rounded-md p-3 hover:bg-slate-700"
+              : "text-black bg-slate-100 rounded-md p-3 hover:bg-slate-200"
+          } text-sm duration-200`}
         >
           <BsAlarmFill />
         </button>
@@ -92,9 +92,9 @@ const PopUpMonthViewWindow = ({ positions, eventsToRender, day }) => {
           onClick={() => openModalAndSetType("task")}
           className={`${
             preferences.darkMode
-              ? "text-white bg-black rounded-md p-3"
-              : "text-black bg-slate-100 rounded-md p-3"
-          } text-sm`}
+              ? "text-white bg-black rounded-md p-3 hover:bg-slate-700"
+              : "text-black bg-slate-100 rounded-md p-3 hover:bg-slate-200"
+          } text-sm duration-200`}
         >
           <BsListTask />
         </button>
