@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { colors } from "../constants";
 import { getTimeZone } from "../utils/helpers";
 import { MdLocationPin, MdFreeCancellation } from "react-icons/md";
-import { BsFillCalendarPlusFill } from "react-icons/bs";
+import { BsAlarmFill, BsFillCalendarPlusFill } from "react-icons/bs";
 import { AiFillCloseCircle, AiFillInfoCircle } from "react-icons/ai";
 import { FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";
@@ -48,6 +48,8 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
   const [reminderTimeString, setReminderTimeString] = useState("");
   const [when, setWhen] = useState(null);
   const [onlyNotify, setOnlyNotify] = useState(false);
+  const [multiReminders, setMultiReminders] = useState([]);
+  const [addAnother, setAddAnother] = useState(false);
   // repeats
   const [repeat, setRepeat] = useState(false);
   const [howOften, setHowOften] = useState(false);
@@ -148,6 +150,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
         attachmentLength: attachments.length,
         reminders: {
           reminder,
+          multiReminders: reminder ? multiReminders : [],
           reminderTimeString: reminder ? reminderTimeString : null,
           when: reminder ? when : null,
           onlyNotify: onlyNotify,
@@ -273,6 +276,22 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
       (attach) => attach.filename !== file.filename
     );
     setAttachments(newFiles);
+  };
+
+  let newMultiReminder = {};
+  const setAnotherWhen = (when, iteration) => {
+    const realTime = when();
+    if (iteration === 1) {
+      newMultiReminder.time = realTime;
+    }
+    if (iteration === 2) {
+      newMultiReminder.when = realTime;
+      const newMultiReminders = [...multiReminders, newMultiReminder];
+      newMultiReminders.sort((a, b) => new Date(a.when) - new Date(b.when));
+      setMultiReminders(newMultiReminders);
+      setAddAnother(false);
+      newMultiReminder = {};
+    }
   };
 
   return (
@@ -404,8 +423,29 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
                   <p className={`${color} rounded-md shadow-sm px-2 py-1 mt-3`}>
                     {reminderTimeString}
                   </p>
+                  {multiReminders.length > 0 &&
+                    multiReminders.map((reminder, index) => (
+                      <p
+                        className={`${color} rounded-md shadow-sm px-2 py-1 mt-3`}
+                        key={index}
+                      >
+                        {reminder.time}
+                      </p>
+                    ))}
+                  {addAnother && (
+                    <TimeSetter
+                      setDateTime={(newWhen) => setAnotherWhen(newWhen, 2)}
+                      setDateTimeString={(newTimeString) =>
+                        setAnotherWhen(newTimeString, 1)
+                      }
+                      openTimeSetter={setAddAnother}
+                    />
+                  )}
                   <div className="mt-3">
-                    <button className="py-1 px-3 rounded-md shadow-md bg-cyan-100">
+                    <button
+                      onClick={() => setAddAnother(true)}
+                      className="py-1 px-3 rounded-md shadow-md bg-cyan-100"
+                    >
                       Add Another
                     </button>
                   </div>

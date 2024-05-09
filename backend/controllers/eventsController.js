@@ -183,6 +183,44 @@ const createReminder = async (event) => {
   return reminder;
 };
 
+const createMultipleReminders = async (event) => {
+  const reminderData = event.reminders.multiReminders;
+  const pendingNotifications = [];
+  const newObject = reminderData.map((rem) => {
+    const newNotif = {
+      type: "event",
+      read: false,
+      readTime: null,
+      time: rem.when.toString(),
+      notifData: newReminder,
+      sentNotification: false,
+      sentWebPush: false,
+      userId: event.userId,
+    };
+    pendingNotifications.push(newNotif);
+    return {
+      eventRefId: event.id,
+      title: event.summary,
+      notes: event.description,
+      time: rem.when.toString(),
+      userId: event.userId,
+    };
+  });
+  if (event.reminders.onlyNotify) {
+    await prisma.notification.createMany({
+      data: pendingNotifications,
+    });
+    return [];
+  }
+  const multiReminders = await prisma.reminder.createMany({
+    data: newObject,
+  });
+  await prisma.notification.createMany({
+    data: pendingNotifications,
+  });
+  return multiReminders;
+};
+
 export const createAttachments = async (req, res) => {
   const newEventId = req.params.newEventId;
   const { attachments } = req.body;
@@ -217,6 +255,7 @@ export const addEvent = async (req, res) => {
   const newEvent = req.body.event;
   const user = req.user;
   let reminder;
+  let multiReminders;
   const createdEvent = await prisma.event.create({
     data: { ...newEvent, id: newEvent.id },
   });
@@ -224,6 +263,12 @@ export const addEvent = async (req, res) => {
     const repeatEvents = await addMultipleEvents(createdEvent);
     if (newEvent.reminders.reminder) {
       reminder = await createReminder(newEvent);
+    }
+    if (
+      newEvent.reminders.reminder &&
+      newEvent.reminders.multiReminders.length > 0
+    ) {
+      multiReminders = await createMultipleReminders(newEvent);
     }
     return res.json({
       message: "Successfully added new event",
