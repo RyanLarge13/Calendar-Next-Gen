@@ -24,7 +24,7 @@
   <link rel="apple-touch-icon" href="ios/180.png" sizes="180x180" />
   <link rel="mask-icon" href="/android/android-launchericon-512-512.png" color="#FFFFFF" />
   <link rel="manifest" href="/manifest.webmanifest" />
-  <meta name="theme-color" content="#ffffff" />
+  <meta name="theme-color" content="#ffffff" id="theme-color-meta" />
   <title>Calendar Next Gen - next generation calendar application</title>
 </head>
 <!-- Google tag (gtag.js) -->
@@ -38,6 +38,30 @@
   gtag('js', new Date());
 
   gtag('config', 'G-S452L8QKB4');
+</script>
+
+<script>
+  const updateThemeColor = () => {
+    const meta = document.getElementById("theme-color-meta");
+    if (!meta) {
+      console.log("Error: no meta tag element present for theme")
+      return;
+    }
+    const preferences = localStorage.getItem("preferences");
+    if (preferences) {
+      try {
+        const parsedPrefs = JSON.parse(preferences);
+        const darkMode = parsedPrefs.darkMode;
+        meta.setAttribute("content", darkMode ? "#222222" : "#FFFFFF");
+        console.log("Set theme color")
+      } catch (err) {
+        console.log(`Could not parse storage. Error: ${err}`);
+      }
+    } else {
+      console.log("No preferences");
+    }
+  }
+  document.addEventListener("DOMContentLoaded", updateThemeColor);
 </script>
 
 <body>
