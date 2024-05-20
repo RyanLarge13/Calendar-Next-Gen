@@ -20,6 +20,10 @@ const Settings = ({ setOption }) => {
   };
 
   const setTheme = () => {
+    const meta = document.getElementById("theme-color-meta");
+    if (meta) {
+     meta.setAttribute("content", preferences.darkMode ? "#FFFFFF" : "#222222")
+    }
     const newPreferences = {
       ...preferences,
       darkMode: !preferences.darkMode,
