@@ -19,8 +19,14 @@ import FullDatePicker from "./FullDatePicker";
 const Calendar = () => {
   const { events, holidays, reminders, weekDays, preferences } =
     useContext(UserContext);
-  const { showDatePicker, showFullDatePicker, view, event } =
-    useContext(InteractiveContext);
+  const {
+    showDatePicker,
+    showFullDatePicker,
+    view,
+    event,
+    setAddNewEvent,
+    setType,
+  } = useContext(InteractiveContext);
   const {
     finish,
     loading,
@@ -30,6 +36,7 @@ const Calendar = () => {
     setNav,
     string,
     dateObj,
+    setOpenModal,
   } = useContext(DatesContext);
 
   const [todaysEvents, setTodaysEvents] = useState([]);
@@ -37,6 +44,28 @@ const Calendar = () => {
   const [allDayEvents, setAllDayEvents] = useState([]);
 
   const containerRef = useRef(null);
+
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.addEventListener("message", (event) => {
+        if (event.data && event.data.action) {
+          const action = event.data.action;
+          switch (action) {
+            case "/new/event":
+              setType("event");
+              setOpenModal(true);
+              setAddNewEvent(true);
+              break;
+            case "/new/reminder":
+              setType("reminder");
+              setOpenModal(true);
+              setAddNewEvent(true);
+              break;
+          }
+        }
+      });
+    }
+  }, []);
 
   useEffect(() => {
     const eventsToday = [...events, ...holidays].filter(

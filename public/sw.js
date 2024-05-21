@@ -31,6 +31,24 @@ const formatDbText = (text) => {
   }
 };
 
+self.addEventListener("fetch", (event) => {
+  const url = new URL(event.request.url);
+  if (url.pathname.startsWith("/new/")) {
+    event.respondWith(async () => {
+      const allClients = await clients.matchAll({ type: "window" });
+      if (allClients.length === 0) {
+        const newClient = await clients.openWindow("/");
+        if (newClient) {
+          newClient.postMessage({ action: url.pathname });
+        }
+      } else {
+        allClients[0].focus();
+        allClients[0].postMessage({ action: url.pathname });
+      }
+    })();
+  }
+});
+
 self.addEventListener("push", (event) => {
   let payload = {};
   if (event.data) {
@@ -116,7 +134,10 @@ const openApp = (event) => {
       .then((clientList) => {
         let matchingWindow = null;
         for (const client of clientList) {
-          if (client.url === "https://www.calng.app") {
+          if (
+            client.url === "https://www.calng.app/" ||
+            client.url === "https://www.calng.app"
+          ) {
             matchingWindow = client;
             if (client.focused) {
               return client.focus();
@@ -126,7 +147,7 @@ const openApp = (event) => {
         if (matchingWindow) {
           return matchingWindow.focus();
         }
-        return clients.openWindow("https://www.calng.app");
+        return clients.openWindow("https://www.calng.app/");
       })
   );
 };

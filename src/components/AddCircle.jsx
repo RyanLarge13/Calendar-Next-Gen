@@ -49,7 +49,9 @@ export const AddCircle = () => {
     }
     setShow(false);
     setType(type);
-    setMenu(false);
+    if (menu) {
+      setMenu(false);
+    }
     setOpenModal(true);
     setAddNewEvent(true);
   };
