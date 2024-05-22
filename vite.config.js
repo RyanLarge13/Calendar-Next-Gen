@@ -80,9 +80,9 @@ export default defineConfig({
         ],
         shortcuts: [
           {
-            name: "Create Event",
+            name: "New Event",
             short_name: "Event +",
-            url: "/new/event",
+            url: "/event",
             description: "Create a new event for today",
             icons: [
               {
@@ -93,9 +93,9 @@ export default defineConfig({
             ],
           },
           {
-            name: "Create Reminder",
+            name: "New Reminder",
             short_name: "Reminder +",
-            url: "/new/reminder",
+            url: "/reminder",
             description: "Create a new reminder for today",
             icons: [
               {
