@@ -39,7 +39,7 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       (async () => {
         const allClients = await clients.matchAll({ type: "window" });
-        console.log(`Opening app sessions: ${JsON.stringify(allClients)}`);
+        console.log(`Opening app sessions: ${JSON.stringify(allClients)}`);
         if (allClients.length === 0) {
           const newClient = await clients.openWindow("/");
           if (newClient) {
