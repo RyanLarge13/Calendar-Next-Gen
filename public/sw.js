@@ -48,7 +48,6 @@ self.addEventListener("fetch", event => {
     }
    } else {
     console.log("Posting message to existing client");
-    allClients[0].focus();
     allClients[0].postMessage({ action: url.pathname });
    }
    return new Response("Completed client instance and message", {
