@@ -52,9 +52,9 @@ self.addEventListener("fetch", event => {
     allClients[0].postMessage({ action: url.pathname });
    }
    return new Response("Completed client instance and message", {
-    headers: {"Content-Type": "text/plain"}
+    headers: { "Content-Type": "text/plain" }
    });
-  })();
+  });
  }
 });
 
