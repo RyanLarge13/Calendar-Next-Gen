@@ -37,7 +37,7 @@ self.addEventListener("fetch", event => {
  console.log(`url: ${url}`);
  if (url.pathname.startsWith("/new/")) {
   console.log("url starts with /new/");
-  event.respondWith(async () => {
+  event.respondWith((async () => {
    const allClients = await clients.matchAll({ type: "window" });
    console.log(`Opening app sessions: ${allClients}`);
    if (allClients.length === 0) {
@@ -54,7 +54,7 @@ self.addEventListener("fetch", event => {
    return new Response("Completed client instance and message", {
     headers: { "Content-Type": "text/plain" }
    });
-  });
+  })());
  }
 });
 
