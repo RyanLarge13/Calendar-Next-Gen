@@ -43,14 +43,17 @@ self.addEventListener("fetch", event => {
    if (allClients.length === 0) {
     const newClient = await clients.openWindow("/");
     if (newClient) {
-     console.log("Posting message to new client")
+     console.log("Posting message to new client");
      newClient.postMessage({ action: url.pathname });
     }
    } else {
-     console.log("Posting message to existing client")
+    console.log("Posting message to existing client");
     allClients[0].focus();
     allClients[0].postMessage({ action: url.pathname });
    }
+   return new Response("Completed client instance and message", {
+    headers: {"Content-Type": "text/plain"}
+   });
   })();
  }
 });
