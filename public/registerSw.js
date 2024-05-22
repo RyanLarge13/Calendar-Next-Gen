@@ -5,10 +5,10 @@ if ("serviceWorker" in navigator && "PushManager" in window) {
  window.addEventListener("load", async () => {
   try {
    const existingRegistration = await navigator.serviceWorker.getRegistration();
-  /* if (existingRegistration) {
+   if (existingRegistration) {
     console.log("SW Previously registered");
     return;
-   } */
+   } 
    const registration = await navigator.serviceWorker.register("./sw.js");
    console.log("Service Worker registered:", registration);
   } catch (error) {
