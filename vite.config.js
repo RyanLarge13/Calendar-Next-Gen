@@ -52,6 +52,7 @@ export default defineConfig({
             sizes: "509x802",
             type: "image/jpg",
             platform: "wide",
+            form_factor: "wide",
           },
           {
             src: "/screenshots/calng-desktop.png",
@@ -75,7 +76,7 @@ export default defineConfig({
             src: "android/android-launchericon-512-512.png",
             sizes: "512x512",
             type: "image/png",
-            purpose: "maskable any",
+            // purpose: "maskable any",
           },
         ],
         shortcuts: [

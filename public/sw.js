@@ -51,9 +51,14 @@ self.addEventListener("fetch", (event) => {
           }
         } else {
           console.log("Posting message to existing client");
+          try {
+            await allClients[0].focus();
+          } catch (err) {
+            console.log(err);
+          }
           await allClients[0].postMessage({ action: url.pathname });
         }
-        return Response.redirect("/", 302);
+        return new Response(null, { status: 204 });
       })()
     );
   }
