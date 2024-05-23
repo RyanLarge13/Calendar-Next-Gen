@@ -1,5 +1,6 @@
 import { useState, useContext, useRef, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useLocation } from "react-router-dom";
 import Modal from "./Modal";
 import ModalHeader from "./ModalHeader";
 import Menu from "./Menu";
@@ -44,33 +45,20 @@ const Calendar = () => {
   const [allDayEvents, setAllDayEvents] = useState([]);
 
   const containerRef = useRef(null);
+  const location = useLocation();
 
   useEffect(() => {
-    if ("serviceWorker" in navigator) {
-      console.log("sw I navigator");
-      navigator.serviceWorker.addEventListener("message", (event) => {
-        console.log("message event");
-        if (event.data && event.data.action) {
-          const action = event.data.action;
-          console.log(`event data and action: ${action}`);
-          switch (action) {
-            case "/event":
-              setType("event");
-              setOpenModal(true);
-              setAddNewEvent(true);
-              break;
-            case "/reminder":
-              setType("reminder");
-              setOpenModal(true);
-              setAddNewEvent(true);
-              break;
-          }
-          return;
-        }
-        console.log("no event data");
-      });
+    if (location.pathname === "/newevent") {
+      setType("event");
+      setOpenModal(true);
+      setAddNewEvent(true);
     }
-  }, []);
+    if (location.pathname === "/newreminder") {
+      setType("reminder");
+      setOpenModal(true);
+      setAddNewEvent(true);
+    }
+  }, [location]);
 
   useEffect(() => {
     const eventsToday = [...events, ...holidays].filter(

@@ -31,39 +31,6 @@ const formatDbText = (text) => {
   }
 };
 
-self.addEventListener("fetch", (event) => {
-  const url = new URL(event.request.url);
-  console.log(`url intercepted: ${url}`);
-  if (url.pathname === "/event" || url.pathname === "/reminder") {
-    console.log("url starts with reminder or event");
-    event.respondWith(
-      (async () => {
-        const allClients = await clients.matchAll({
-          type: "window",
-          includeUncontrolled: true,
-        });
-        console.log(`Opening app sessions: ${JSON.stringify(allClients)}`);
-        if (allClients.length === 0) {
-          const newClient = await clients.openWindow("/");
-          if (newClient) {
-            console.log("Posting message to new client");
-            await newClient.postMessage({ action: url.pathname });
-          }
-        } else {
-          console.log("Posting message to existing client");
-          try {
-            await allClients[0].focus();
-          } catch (err) {
-            console.log(err);
-          }
-          await allClients[0].postMessage({ action: url.pathname });
-        }
-        return new Response(null, { status: 204 });
-      })()
-    );
-  }
-});
-
 self.addEventListener("push", (event) => {
   let payload = {};
   if (event.data) {

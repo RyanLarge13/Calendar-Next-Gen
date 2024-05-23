@@ -41,12 +41,9 @@
         const parsedPrefs = JSON.parse(preferences);
         const darkMode = parsedPrefs.darkMode;
         meta.setAttribute("content", darkMode ? "#222222" : "#FFFFFF");
-        console.log("Set theme color");
       } catch (err) {
         console.log(`Could not parse storage. Error: ${err}`);
       }
-    } else {
-      console.log("No preferences");
     }
   };
   document.addEventListener("DOMContentLoaded", updateThemeColor);

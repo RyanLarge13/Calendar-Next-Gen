@@ -11,12 +11,6 @@ if ("serviceWorker" in navigator && "PushManager" in window) {
       }
       const registration = await navigator.serviceWorker.register("./sw.js");
       console.log("Service Worker registered:", registration);
-      if (registration.waiting) {
-        registration.waiting.postMessage({ type: "SKIP_WAITING" });
-      }
-      navigator.serviceWorker.addEventListener("controllerchange", () => {
-        window.location.reload();
-      });
     } catch (error) {
       console.error("Service Worker registration failed:", error);
     }
