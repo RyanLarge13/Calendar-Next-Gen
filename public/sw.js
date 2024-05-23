@@ -38,7 +38,10 @@ self.addEventListener("fetch", (event) => {
     console.log("url starts with reminder or event");
     event.respondWith(
       (async () => {
-        const allClients = await clients.matchAll({ type: "window" });
+        const allClients = await clients.matchAll({
+          type: "window",
+          includeUncontrolled: true,
+        });
         console.log(`Opening app sessions: ${JSON.stringify(allClients)}`);
         if (allClients.length === 0) {
           const newClient = await clients.openWindow("/");
@@ -221,6 +224,7 @@ self.addEventListener("message", (event) => {
   }
   if (event.data && event.data.command === "closeNotifications") {
     closeOpenNotifications();
+    console.log("CLosing notifications");
   }
 });
 
