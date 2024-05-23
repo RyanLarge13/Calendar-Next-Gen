@@ -1,36 +1,19 @@
 <!doctype html>
 <html lang="en">
- <head>
+
+<head>
   <meta charset="UTF-8" />
-  <meta
-   name="viewport"
-   content="width=device-width, height=device-height, initial-scale=1"
-  />
-  <meta
-   name="description"
-   content="Calendar application of the future generation. Organize, evolve & increase productivity in your life, connect and accomplish"
-  />
-  <meta
-   name="keywords"
-   content="calendar, organize, productivity, utility, kanban, boards, reminders, lists, tasks, projects, friends, sticky notes, group events, sticky, notes, group, events, google, appointments, schedule, plan, connect, collaborate"
-  />
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1" />
+  <meta name="description" content="Calendar application of the future generation. Organize, evolve & increase productivity in your life, connect and accomplish" />
+  <meta name="keywords" content="calendar, organize, productivity, utility, kanban, boards, reminders, lists, tasks, projects, friends, sticky notes, group events, sticky, notes, group, events, google, appointments, schedule, plan, connect, collaborate" />
   <meta name="author" content="Ryan Hudson Large" />
   <meta name="robots" content="index, follow" />
   <meta property="og:title" content="CNG" />
-  <meta
-   property="og:description"
-   content="Next generation calendar application - for the organized"
-  />
-  <meta
-   property="og:image"
-   content="https://calng.app/screenshots/calng-desktop.png"
-  />
+  <meta property="og:description" content="Next generation calendar application - for the organized" />
+  <meta property="og:image" content="https://calng.app/screenshots/calng-desktop.png" />
   <meta property="og:url" content="https://www.calng.app" />
   <meta name="twitter:title" content="CNG" />
-  <meta
-   name="twitter:description"
-   content="Next generation calendar application - for the organized"
-  />
+  <meta name="twitter:description" content="Next generation calendar application - for the organized" />
   <meta name="twitter:image" content="https://calng.app/screenshots/calng-desktop.png" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="language" content="en" />
@@ -39,58 +22,40 @@
   <link rel="canonical" href="https://www.calng.app/" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="apple-touch-icon" href="ios/180.png" sizes="180x180" />
-  <link
-   rel="mask-icon"
-   href="/android/android-launchericon-512-512.png"
-   color="#FFFFFF"
-  />
+  <link rel="mask-icon" href="/android/android-launchericon-512-512.png" color="#FFFFFF" />
   <link rel="manifest" href="/manifest.webmanifest" />
   <meta name="theme-color" content="#ffffff" id="theme-color-meta" />
   <title>Calendar Next Gen - next generation calendar application</title>
- </head>
- <!-- Google tag (gtag.js) -->
- <script
-  async
-  src="https://www.googletagmanager.com/gtag/js?id=G-S452L8QKB4"
- ></script>
- <script>
-  window.dataLayer = window.dataLayer || [];
+</head>
 
-  function gtag() {
-   dataLayer.push(arguments);
-  }
-  gtag("js", new Date());
-
-  gtag("config", "G-S452L8QKB4");
- </script>
-
- <script>
+<script>
   const updateThemeColor = () => {
-   const meta = document.getElementById("theme-color-meta");
-   if (!meta) {
-    console.log("Error: no meta tag element present for theme");
-    return;
-   }
-   const preferences = localStorage.getItem("preferences");
-   if (preferences) {
-    try {
-     const parsedPrefs = JSON.parse(preferences);
-     const darkMode = parsedPrefs.darkMode;
-     meta.setAttribute("content", darkMode ? "#222222" : "#FFFFFF");
-     console.log("Set theme color");
-    } catch (err) {
-     console.log(`Could not parse storage. Error: ${err}`);
+    const meta = document.getElementById("theme-color-meta");
+    if (!meta) {
+      console.log("Error: no meta tag element present for theme");
+      return;
     }
-   } else {
-    console.log("No preferences");
-   }
+    const preferences = localStorage.getItem("preferences");
+    if (preferences) {
+      try {
+        const parsedPrefs = JSON.parse(preferences);
+        const darkMode = parsedPrefs.darkMode;
+        meta.setAttribute("content", darkMode ? "#222222" : "#FFFFFF");
+        console.log("Set theme color");
+      } catch (err) {
+        console.log(`Could not parse storage. Error: ${err}`);
+      }
+    } else {
+      console.log("No preferences");
+    }
   };
   document.addEventListener("DOMContentLoaded", updateThemeColor);
- </script>
+</script>
 
- <body>
+<body>
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDiuGgH0ZJmVHBCrTqdMKv5Qon5WJ4eKVk   &libraries=places"></script>
- </body>
+</body>
+
 </html>

@@ -30,10 +30,10 @@ export default defineConfig({
         lang: "en",
         scope: "/",
         description:
-          "A next generation calendar application built for the orginized and busy",
+          "A next generation calendar application built for the organized and busy",
         orientation: "portrait",
         theme_color: "#ffffff",
-        serviceworker: "/sw.js",
+        serviceWorker: "/sw.js",
         prefer_related_applications: false,
         dir: "ltr",
         display_override: ["window-controls-overlay", "standalone"],
@@ -169,33 +169,33 @@ export default defineConfig({
           ],
         },
       ],
-      workbox: {
-        injectRegister: false,
-        clientsClaim: true,
-        skipWaiting: true,
-        globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
-        runtimeCaching: [
-          {
-            urlPattern: /\.(js|css|png|svg|jpeg|jpg)$/, // Cache static assets by file extensions
-            handler: "StaleWhileRevalidate", // Cache the files on first load
-            options: {
-              cacheName: "static-assets-cache",
-            },
-          },
-          {
-            urlPattern:
-              /^https:\/\/calendar-next-gen-production\.up\.railway\.app\/user\/data/,
-            handler: "NetworkFirst",
-            options: {
-              cacheName: "api-cache",
-            },
-          },
-        ],
-      },
+      // workbox: {
+      //   injectRegister: false,
+      //   clientsClaim: true,
+      //   skipWaiting: true,
+      //   globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
+      //   runtimeCaching: [
+      //     {
+      //       urlPattern: /\.(js|css|png|svg|jpeg|jpg)$/, // Cache static assets by file extensions
+      //       handler: "StaleWhileRevalidate", // Cache the files on first load
+      //       options: {
+      //         cacheName: "static-assets-cache",
+      //       },
+      //     },
+      //     {
+      //       urlPattern:
+      //         /^https:\/\/calendar-next-gen-production\.up\.railway\.app\/user\/data/,
+      //       handler: "NetworkFirst",
+      //       options: {
+      //         cacheName: "api-cache",
+      //       },
+      //     },
+      //   ],
+      // },
     }),
   ],
   base: "/",
-  build: {
-    sourcemap: true,
-  },
+  // build: {
+  //   sourcemap: true,
+  // },
 });

@@ -53,10 +53,7 @@ self.addEventListener("fetch", (event) => {
           console.log("Posting message to existing client");
           await allClients[0].postMessage({ action: url.pathname });
         }
-        return new Response(null, {
-          status: 204,
-          statusText: "No Content",
-        });
+        return Response.redirect("/", 302);
       })()
     );
   }

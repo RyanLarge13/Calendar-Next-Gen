@@ -7,10 +7,10 @@
   "background_color": "#ffffff",
   "lang": "en",
   "scope": "/",
-  "description": "A next generation calendar application built for the orginized and busy",
+  "description": "A next generation calendar application built for the organized and busy",
   "orientation": "portrait",
   "theme_color": "#ffffff",
-  "serviceworker": "/sw.js",
+  "serviceWorker": "/sw.js",
   "prefer_related_applications": false,
   "dir": "ltr",
   "display_override": ["window-controls-overlay", "standalone"],
@@ -57,7 +57,7 @@
   ],
   "shortcuts": [
     {
-      "name": "Create Event",
+      "name": "New Event",
       "short_name": "Event +",
       "url": "/event",
       "description": "Create a new event for today",
@@ -70,7 +70,7 @@
       ]
     },
     {
-      "name": "Create Reminder",
+      "name": "New Reminder",
       "short_name": "Reminder +",
       "url": "/reminder",
       "description": "Create a new reminder for today",
