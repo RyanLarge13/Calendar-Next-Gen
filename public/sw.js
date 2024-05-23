@@ -53,8 +53,9 @@ self.addEventListener("fetch", (event) => {
           console.log("Posting message to existing client");
           await allClients[0].postMessage({ action: url.pathname });
         }
-        return new Response("Completed client instance and message", {
-          headers: { "Content-Type": "text/plain" },
+        return new Response(null, {
+          status: 204,
+          statusText: "No Content",
         });
       })()
     );
