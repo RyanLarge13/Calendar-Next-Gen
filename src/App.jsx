@@ -6,10 +6,9 @@ const App = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<MainPage />}>
-          <Route path="/newevent" element={null} />
-          <Route path="/newreminder" element={null} />
-        </Route>
+        <Route path="/" element={<MainPage />} />
+        <Route path="/newevent" element={<MainPage />} />
+        <Route path="/newreminder" element={<MainPage />} />
       </Routes>
     </Router>
   );
