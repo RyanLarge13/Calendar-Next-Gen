@@ -76,7 +76,7 @@ export default defineConfig({
             src: "android/android-launchericon-512-512.png",
             sizes: "512x512",
             type: "image/png",
-            // purpose: "maskable any",
+            purpose: "maskable any",
           },
         ],
         shortcuts: [
