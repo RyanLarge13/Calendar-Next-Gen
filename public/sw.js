@@ -32,7 +32,7 @@ const formatDbText = (text) => {
 };
 
 self.addEventListener("fetch", (event) => {
-  console.log(`SW fetch event logging: ${event}`);
+  console.log(`SW fetch event logging: ${JSON.stringify(event)}`);
 });
 
 self.addEventListener("push", (event) => {
