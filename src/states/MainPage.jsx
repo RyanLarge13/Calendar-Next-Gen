@@ -12,7 +12,6 @@ import Stickies from "../components/Stickies";
 import AddCircle from "../components/AddCircle";
 import Views from "../components/Views";
 import SideBar from "../components/SideBar";
-import { Outlet } from "react-router-dom";
 
 const MainPage = () => {
   return (
@@ -33,7 +32,6 @@ const MainPage = () => {
               </div>
               <AddCircle />
               <Views />
-              <Outlet />
             </InteractiveProvider>
           </DatesProvider>
         </UserProvider>

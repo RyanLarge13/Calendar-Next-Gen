@@ -1,6 +1,5 @@
 import { useState, useContext, useRef, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useLocation } from "react-router-dom";
 import Modal from "./Modal";
 import ModalHeader from "./ModalHeader";
 import Menu from "./Menu";
@@ -20,14 +19,8 @@ import FullDatePicker from "./FullDatePicker";
 const Calendar = () => {
   const { events, holidays, reminders, weekDays, preferences } =
     useContext(UserContext);
-  const {
-    showDatePicker,
-    showFullDatePicker,
-    view,
-    event,
-    setAddNewEvent,
-    setType,
-  } = useContext(InteractiveContext);
+  const { showDatePicker, showFullDatePicker, view, event } =
+    useContext(InteractiveContext);
   const {
     finish,
     loading,
@@ -37,7 +30,6 @@ const Calendar = () => {
     setNav,
     string,
     dateObj,
-    setOpenModal,
   } = useContext(DatesContext);
 
   const [todaysEvents, setTodaysEvents] = useState([]);
@@ -45,20 +37,6 @@ const Calendar = () => {
   const [allDayEvents, setAllDayEvents] = useState([]);
 
   const containerRef = useRef(null);
-  const location = useLocation();
-
-  useEffect(() => {
-    if (location.pathname === "/newevent") {
-      setType("event");
-      setOpenModal(true);
-      setAddNewEvent(true);
-    }
-    if (location.pathname === "/newreminder") {
-      setType("reminder");
-      setOpenModal(true);
-      setAddNewEvent(true);
-    }
-  }, [location]);
 
   useEffect(() => {
     const eventsToday = [...events, ...holidays].filter(

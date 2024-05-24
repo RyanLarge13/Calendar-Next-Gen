@@ -83,21 +83,8 @@ export default defineConfig({
           {
             name: "New Event",
             short_name: "Event +",
-            url: "/newevent",
+            url: "/",
             description: "Create a new event for today",
-            icons: [
-              {
-                src: "android/android-launchericon-192-192.png",
-                sizes: "192x192",
-                type: "image/png",
-              },
-            ],
-          },
-          {
-            name: "New Reminder",
-            short_name: "Reminder +",
-            url: "/newreminder",
-            description: "Create a new reminder for today",
             icons: [
               {
                 src: "android/android-launchericon-192-192.png",
@@ -177,8 +164,8 @@ export default defineConfig({
         globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
         runtimeCaching: [
           {
-            urlPattern: /\.(js|css|png|svg|jpeg|jpg)$/, // Cache static assets by file extensions
-            handler: "StaleWhileRevalidate", // Cache the files on first load
+            urlPattern: /\.(js|css|png|svg|jpeg|jpg)$/,
+            handler: "StaleWhileRevalidate",
             options: {
               cacheName: "static-assets-cache",
             },
