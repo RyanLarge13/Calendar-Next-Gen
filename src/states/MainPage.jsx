@@ -31,7 +31,7 @@ const MainPage = () => {
       setAddNewEvent(true);
     }
     if (location.pathname === "/reminder") {
-      setType("event");
+      setType("reminder");
       if (menu) {
         setMenu(false);
       }
