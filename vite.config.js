@@ -83,8 +83,21 @@ export default defineConfig({
           {
             name: "New Event",
             short_name: "Event +",
-            url: "/",
+            url: "/event",
             description: "Create a new event for today",
+            icons: [
+              {
+                src: "android/android-launchericon-192-192.png",
+                sizes: "192x192",
+                type: "image/png",
+              },
+            ],
+          },
+          {
+            name: "New Reminder",
+            short_name: "Reminder +",
+            url: "/reminder",
+            description: "Create a new reminder for today",
             icons: [
               {
                 src: "android/android-launchericon-192-192.png",
