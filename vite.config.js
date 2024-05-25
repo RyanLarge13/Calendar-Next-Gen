@@ -76,7 +76,6 @@ export default defineConfig({
             src: "android/android-launchericon-512-512.png",
             sizes: "512x512",
             type: "image/png",
-            purpose: "maskable any",
           },
         ],
         shortcuts: [
@@ -87,7 +86,7 @@ export default defineConfig({
             description: "Create a new event for today",
             icons: [
               {
-                src: "android/android-launchericon-192-192.png",
+                src: "shortcut-plus.svg",
                 sizes: "192x192",
                 type: "image/png",
               },
@@ -100,7 +99,7 @@ export default defineConfig({
             description: "Create a new reminder for today",
             icons: [
               {
-                src: "android/android-launchericon-192-192.png",
+                src: "shortcut-plus.svg",
                 sizes: "192x192",
                 type: "image/png",
               },
