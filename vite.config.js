@@ -86,7 +86,7 @@ export default defineConfig({
             description: "Create a new event for today",
             icons: [
               {
-                src: "shortcut-plus.svg",
+                src: "shortcut-plus-192x192.png",
                 sizes: "192x192",
                 type: "image/png",
               },
@@ -99,7 +99,7 @@ export default defineConfig({
             description: "Create a new reminder for today",
             icons: [
               {
-                src: "shortcut-plus.svg",
+                src: "shortcut-plus-192x192.png",
                 sizes: "192x192",
                 type: "image/png",
               },
