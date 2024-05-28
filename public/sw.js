@@ -61,7 +61,7 @@ self.addEventListener("push", (event) => {
           time
         ).toLocaleTimeString("en-US")}`,
         data,
-        icon: "./favicon.svg",
+        icon: "./event-icon.svg",
         badge: "./badge.svg",
         vibrate: [100, 100, 100],
         actions: [
@@ -79,7 +79,7 @@ self.addEventListener("push", (event) => {
           time
         ).toLocaleTimeString("en-US")}`,
         data,
-        icon: "./favicon.svg",
+        icon: "./rem-icon.svg",
         badge: "./badge.svg",
         vibrate: [100, 100, 100],
         actions: [
@@ -97,7 +97,7 @@ self.addEventListener("push", (event) => {
           time
         ).toLocaleTimeString("en-US")}`,
         data,
-        icon: "./favicon.svg",
+        icon: "./sys-icon.svg",
         badge: "./badge.svg",
         vibrate: [100, 100, 100],
         actions: [
