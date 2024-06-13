@@ -56,6 +56,12 @@ export const UserProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    if (localDB && authToken) {
+      localDB.setAuthToken(authToken);
+    }
+  }, [localDB, authToken]);
+
+  useEffect(() => {
     const currentDate = new Date();
     const filteredEvents = events
       .filter((event) => {
@@ -76,6 +82,8 @@ export const UserProvider = ({ children }) => {
   }, [events]);
 
   useEffect(() => {
+    // Immediately open indexDb
+    createIndexedDb();
     window.addEventListener("online", updateStatus);
     window.addEventListener("offline", updateStatus);
     return () => {
@@ -252,8 +260,8 @@ export const UserProvider = ({ children }) => {
     }
     if (!authToken && user) {
       localStorage.removeItem("authToken");
+      localDB.removeAuth();
       setUser(false);
-      openIndexDB();
     }
   }, [authToken]);
 
@@ -365,8 +373,8 @@ export const UserProvider = ({ children }) => {
     markAsRead(notification.id);
   };
 
-  const openIndexDB = () => {
-    const request = indexedDB.open("myCalngDB", 1);
+  const createIndexedDb = () => {
+    const request = indexedDB.open("myCalngDB", 2);
     const calngIndexDBManager = new IndexedDBManager(request);
     setLocalDB(calngIndexDBManager);
   };
