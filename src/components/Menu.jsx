@@ -10,6 +10,7 @@ import { updateList, updateTasks } from "../utils/api.js";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext.jsx";
 import DatesContext from "../context/DatesContext.jsx";
+import Switch from "./Switch.jsx";
 
 const Menu = () => {
   const {
@@ -26,6 +27,8 @@ const Menu = () => {
   const { hideMenuNav } = useContext(InteractiveContext);
 
   const [timeOfDay, setTimeOfDay] = useState(null);
+  const [sort, setSort] = useState(false);
+  const [search, setSearch] = useState(false);
 
   useEffect(() => {
     if (listUpdate.length < 1) return;
@@ -133,6 +136,79 @@ const Menu = () => {
                   exit={{ x: "-10%", opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                 >
+                  <div className="mt-10">
+                    <Switch
+                      title="Sort"
+                      styles="mb-3"
+                      value={sort}
+                      toggle={setSort}
+                    />
+                    <Switch
+                      title="Search"
+                      styles=""
+                      value={search}
+                      toggle={setSearch}
+                    />
+                  </div>
+                  {sort ? (
+                    <>
+                      <div className="flex flex-wrap justify-start items-start gap-2 mt-5">
+                        <button
+                          className={`rounded-md py-1 px-3 shadow-md bg-cyan-200`}
+                        >
+                          TItle
+                        </button>
+                        <button
+                          className={`rounded-md py-1 px-3 shadow-md bg-cyan-200`}
+                        >
+                          Important
+                        </button>
+                        <button
+                          className={`rounded-md py-1 px-3 shadow-md bg-cyan-200`}
+                        >
+                          Event
+                        </button>
+                        <button
+                          className={`rounded-md py-1 px-3 shadow-md bg-cyan-200`}
+                        >
+                          Today
+                        </button>
+                        <button
+                          className={`rounded-md py-1 px-3 shadow-md bg-cyan-200`}
+                        >
+                          Tomorrow
+                        </button>
+                        <button
+                          className={`rounded-md py-1 px-3 shadow-md bg-cyan-200`}
+                        >
+                          This Month
+                        </button>
+                        <button
+                          className={`rounded-md py-1 px-3 shadow-md bg-cyan-200`}
+                        >
+                          This Week
+                        </button>
+                      </div>
+                      <p className="mt-5">Group By</p>
+                      <div className="mt-5 flex flex-wrap justify-start items-start">
+                        <button
+                          className={`rounded-md py-1 px-3 shadow-md bg-cyan-100`}
+                        >
+                          Date
+                        </button>
+                        <button
+                          className={`rounded-md py-1 px-3 shadow-md bg-cyan-100`}
+                        >
+                          Event
+                        </button>
+                        <button
+                          className={`rounded-md py-1 px-3 shadow-md bg-cyan-100`}
+                        >
+                          Date
+                        </button>
+                      </div>
+                    </>
+                  ) : null}
                   <Reminders />
                 </motion.div>
               )}

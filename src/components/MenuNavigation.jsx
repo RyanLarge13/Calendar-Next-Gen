@@ -11,7 +11,7 @@ import {
 import { IoIosAlarm } from "react-icons/io";
 import { TbKeyboardHide } from "react-icons/tb";
 import { MdOutlineKeyboardHide } from "react-icons/md";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext";
 

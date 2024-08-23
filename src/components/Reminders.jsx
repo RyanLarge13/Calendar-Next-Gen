@@ -9,6 +9,7 @@ import UserContext from "../context/UserContext.jsx";
 import DatesContext from "../context/DatesContext.jsx";
 import InteractiveContext from "../context/InteractiveContext";
 import { BsAlarmFill } from "react-icons/bs";
+import { MdOpenInNew } from "react-icons/md";
 
 const Reminders = () => {
   const { reminders, setReminders, user, events } = useContext(UserContext);
@@ -199,9 +200,10 @@ const Reminders = () => {
             {reminder.eventRefId && (
               <button
                 onClick={() => openRelatedEvent(reminder.eventRefId)}
-                className="p-2 mt-3"
+                className="p-2 mt-3 flex justify-center items-center gap-3 bg-white rounded-md hover:bg-slate-200 duration-200"
               >
                 Open Event
+                <MdOpenInNew />
               </button>
             )}
           </div>
