@@ -118,7 +118,7 @@ const Menu = () => {
           animate={{ opacity: 1, paddingTop: hideMenuNav ? 10 : 200 }}
           exit={{ opacity: 0 }}
           className={`fixed inset-0 z-10 pb-10 px-5 rounded-md
-                    will-change-transform shadow-md overflow-auto ${
+                    will-change-transform shadow-md overflow-auto scrollbar-slick ${
                       preferences.darkMode
                         ? "bg-[#222] text-white"
                         : "bg-white text-black"

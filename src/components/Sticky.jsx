@@ -170,8 +170,8 @@ const Sticky = ({ sticky, index }) => {
     >
       <div
         className={`${
-          minimize ? "bg-transparent" : "bg-slate-100"
-        } rounded-t-md shadow-lg p-2 flex justify-between items-center cursor-pointer`}
+          minimize ? "bg-transparent shadow-none" : "bg-slate-100 shadow-lg"
+        } rounded-t-md p-2 flex justify-between items-center cursor-pointer`}
         onPointerDown={startDrag}
         style={{ touchAction: "none" }}
       >
@@ -196,8 +196,8 @@ const Sticky = ({ sticky, index }) => {
       {!!expand && (
         <div
           className={`${
-            minimize ? "bg-transparent" : "bg-slate-100"
-          } rounded-b-md shadow-md p-2 flex justify-between items-center`}
+            minimize ? "bg-transparent shadow-none" : "bg-slate-100 shadow-md"
+          } rounded-b-md p-2 flex justify-between items-center`}
         >
           <button onClick={() => setFullScreen((prev) => !prev)}>
             <FiMaximize />
@@ -210,21 +210,21 @@ const Sticky = ({ sticky, index }) => {
       <div
         className={`${
           !!expand ? "mt-20" : "mt-5"
-        } p-2 overflow-y-auto overflow-x-hidden scrollbar-hide absolute inset-0 z-[-1] break-words`}
+        } p-2 overflow-y-auto scrollbar-slick overflow-x-hidden scrollbar-hide absolute inset-0 z-[-1] break-words`}
       >
         {!edit ? (
           <>
             <h2 className="mb-5 border-b border-b-black">{sticky.title}</h2>
             <div
               dangerouslySetInnerHTML={{ __html: sticky.body }}
-              className="markdown"
+              className="markdown scrollbar-slick"
             ></div>
           </>
         ) : (
           <ReactQuill
             value={editText}
             onChange={handleTextChange}
-            className="h-full"
+            className="h-full scrollbar-slick"
           />
         )}
       </div>

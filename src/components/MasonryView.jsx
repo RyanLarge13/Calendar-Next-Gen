@@ -22,8 +22,15 @@ const MasonryView = () => {
   };
 
   useEffect(() => {
-    const allDates = events.map((event) => event.date);
-    const dateObjects = allDates.map((dateString) => new Date(dateString));
+    const now = new Date();
+    const eventsToRender = events.filter(
+      (event) =>
+        event.date > new Date(now.getFullYear(), now.getMonth - 1) &&
+        event.date < new Date(now.getFullYear(), now.getMonth() + 1)
+    );
+    const dateObjects = eventsToRender.map(
+      (dateString) => new Date(dateString)
+    );
     dateObjects.sort((a, b) => a - b);
     const sortedDatesArray = dateObjects.map((date) =>
       date.toLocaleDateString()

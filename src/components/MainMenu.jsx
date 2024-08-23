@@ -22,12 +22,12 @@ const MainMenu = ({ timeOfDay }) => {
         <p className="text-sm">
           You have a few upcoming Events on your agenda this week
         </p>
-        <div className="mt-3">
+        <div className="mt-3 lg:grid lg:grid-cols-2 lg:place-items-center lg:gap-5">
           {upcoming.length > 0 &&
             upcoming.map((event) => (
               <div
                 key={event.id}
-                className={`p-3 rounded-md shadow-lg my-5 relative pl-5`}
+                className={`p-3 rounded-md shadow-lg my-5 lg:my-0 relative pl-5 w-full`}
               >
                 <button
                   className="absolute top-0 right-0"
