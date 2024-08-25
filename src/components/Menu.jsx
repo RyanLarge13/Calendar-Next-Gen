@@ -27,8 +27,10 @@ const Menu = () => {
   const { hideMenuNav } = useContext(InteractiveContext);
 
   const [timeOfDay, setTimeOfDay] = useState(null);
-  const [sort, setSort] = useState(false);
-  const [search, setSearch] = useState(false);
+  const [reminderSort, setReminderSort] = useState(false);
+  const [reminderSearch, setReminderSearch] = useState(false);
+  const [reminderSortOpt, setReminderSortOpt] = useState("");
+  const [reminderSearchTxt, setReminderSearchTxt] = useState("");
 
   useEffect(() => {
     if (listUpdate.length < 1) return;
@@ -140,23 +142,23 @@ const Menu = () => {
                     <Switch
                       title="Sort"
                       styles="mb-3"
-                      value={sort}
-                      toggle={setSort}
+                      value={reminderSort}
+                      toggle={setReminderSort}
                     />
                     <Switch
                       title="Search"
                       styles=""
-                      value={search}
-                      toggle={setSearch}
+                      value={reminderSearch}
+                      toggle={setReminderSearch}
                     />
                   </div>
-                  {sort ? (
+                  {reminderSort ? (
                     <>
                       <div className="flex flex-wrap justify-start items-start gap-2 mt-5">
                         <button
                           className={`rounded-md py-1 px-3 shadow-md bg-cyan-200`}
                         >
-                          TItle
+                          Title
                         </button>
                         <button
                           className={`rounded-md py-1 px-3 shadow-md bg-cyan-200`}
@@ -189,27 +191,21 @@ const Menu = () => {
                           This Week
                         </button>
                       </div>
-                      <p className="mt-5">Group By</p>
-                      <div className="mt-5 flex flex-wrap justify-start items-start">
-                        <button
-                          className={`rounded-md py-1 px-3 shadow-md bg-cyan-100`}
-                        >
-                          Date
-                        </button>
-                        <button
-                          className={`rounded-md py-1 px-3 shadow-md bg-cyan-100`}
-                        >
-                          Event
-                        </button>
-                        <button
-                          className={`rounded-md py-1 px-3 shadow-md bg-cyan-100`}
-                        >
-                          Date
-                        </button>
-                      </div>
                     </>
                   ) : null}
-                  <Reminders />
+                  {reminderSearch ? (
+                    <input
+                      className="outline-none focus:outline-none rounded-md shadow-md px-3 py-2 mt-1 w-full"
+                      placeholder="Search Reminders"
+                      onChange={(e) => setReminderSearchTxt(e.target.value)}
+                    />
+                  ) : null}
+                  <Reminders
+                    sort={reminderSort}
+                    sortOpt={reminderSortOpt}
+                    search={reminderSearch}
+                    searchTxt={reminderSearchTxt}
+                  />
                 </motion.div>
               )}
               {showCategory === "todo-list" && (
