@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import ListItems from "./ListItems";
 import { deleteList } from "../utils/api";
 import { Reorder, motion, useDragControls } from "framer-motion";
@@ -15,11 +15,12 @@ import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
 import DatesContext from "../context/DatesContext";
 
-const Lists = () => {
+const Lists = ({ listSort, listSortOpt, listSearch, listSearchTxt }) => {
   const { string, setString, setOpenModal } = useContext(DatesContext);
   const { lists, setLists, setSystemNotif } = useContext(UserContext);
   const { setMenu, setType, setAddNewEvent } = useContext(InteractiveContext);
 
+  const [listsToRender, setListsToRender] = useState(lists);
   const [addItems, setAddItems] = useState([]);
 
   const breakpointColumnsObj = {
@@ -27,6 +28,43 @@ const Lists = () => {
     1100: 2, // Number of columns on screens > 1100px
     700: 1, // Number of columns on screens > 700px
   };
+
+  useEffect(() => {
+    if (listSort && listSortOpt) {
+      switch (listSortOpt) {
+        case "title":
+          {
+            const newLists = [...lists];
+            const sortedNewLists = newLists.sort((a, b) =>
+              a.title.localeCompare(b.title)
+            );
+            setListsToRender(sortedNewLists);
+          }
+          break;
+        case "event":
+          {
+            const newLists = lists.filter((li) => li.eventId !== null);
+            setListsToRender(newLists);
+          }
+          break;
+        default:
+          setListsToRender(lists);
+          break;
+      }
+    } else {
+      setListsToRender(lists);
+    }
+  }, [listSort, listSortOpt]);
+
+  useEffect(() => {
+    if (listSearch && listSearchTxt) {
+      const newLists = lists.filter((li) => li.title.includes(listSearchTxt));
+      newLists.sort((a, b) => a.title.localeCompare(b.title));
+      setListsToRender(newLists);
+    } else {
+      setListsToRender(lists);
+    }
+  }, [listSearch, listSearchTxt]);
 
   const deleteEntireList = (listId) => {
     setSystemNotif({ show: false });
@@ -70,7 +108,7 @@ const Lists = () => {
 
   return (
     <motion.div className="py-3 relative">
-      {lists.length < 1 && (
+      {listsToRender.length < 1 && (
         <div className="px-3">
           <div className="rounded-md p-3 shadow-md my-5 flex justify-between items-center">
             <div>
@@ -84,8 +122,8 @@ const Lists = () => {
         </div>
       )}
       <Reorder.Group
-        values={lists}
-        onReorder={setLists}
+        values={listsToRender}
+        onReorder={setListsToRender}
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-10 list-none"
         // comment out grid styles if using masonry
       >
@@ -94,7 +132,7 @@ const Lists = () => {
           className="my-masonry-grid"
           columnClassName="my-masonry-grid_column"
         > */}
-        {lists.map((list) => (
+        {listsToRender.map((list) => (
           <Reorder.Item
             key={list.id}
             value={list}

@@ -21,7 +21,7 @@ const Menu = () => {
     setTaskUpdates,
     showCategory,
   } = useContext(InteractiveContext);
-  const { lists, setLists, user, userTasks, preferences, setUserTasks } =
+  const { lists, setLists, userTasks, preferences, setUserTasks } =
     useContext(UserContext);
   const { dateObj } = useContext(DatesContext);
   const { hideMenuNav } = useContext(InteractiveContext);
@@ -31,6 +31,10 @@ const Menu = () => {
   const [reminderSearch, setReminderSearch] = useState(false);
   const [reminderSortOpt, setReminderSortOpt] = useState("");
   const [reminderSearchTxt, setReminderSearchTxt] = useState("");
+  const [listSort, setListSort] = useState(false);
+  const [listSearch, setListSearch] = useState(false);
+  const [listSortOpt, setListSortOpt] = useState("");
+  const [listSearchTxt, setListSearchTxt] = useState("");
 
   useEffect(() => {
     if (listUpdate.length < 1) return;
@@ -258,8 +262,54 @@ const Menu = () => {
                   initial={{ x: "-10%", opacity: 0 }}
                   exit={{ x: "-10%", opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
+                  className="mt-10"
                 >
-                  <Lists />
+                  <Switch
+                    title="Sort"
+                    styles=""
+                    value={listSort}
+                    toggle={setListSort}
+                  />
+                  <Switch
+                    title="Search"
+                    styles="mt-3"
+                    value={listSearch}
+                    toggle={setListSearch}
+                  />
+                  {listSort ? (
+                    <div className="flex flex-wrap gap-3">
+                      <button
+                        onClick={() => setListSortOpt("title")}
+                        className={`${
+                          listSortOpt === "title" ? "bg-cyan-300" : "bg-white"
+                        } shadow-md rounded-md px-3 py-2`}
+                      >
+                        Title
+                      </button>
+                      <button
+                        onClick={() => setListSortOpt("event")}
+                        className={`${
+                          listSortOpt === "event" ? "bg-cyan-300" : "bg-white"
+                        } shadow-md rounded-md px-3 py-2`}
+                      >
+                        Event
+                      </button>
+                    </div>
+                  ) : null}
+                  {listSearch ? (
+                    <input
+                      type="text"
+                      onChange={(e) => setListSearchTxt(e.target.value)}
+                      placeholder="Search your lists"
+                      className="outline-none rounded-md shadow-md p-3 w-full"
+                    />
+                  ) : null}
+                  <Lists
+                    listSort={listSort}
+                    listSortOpt={listSortOpt}
+                    listSearch={listSearch}
+                    listSearchTxt={listSearchTxt}
+                  />
                 </motion.div>
               )}
               {showCategory === "task" && (
