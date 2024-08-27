@@ -156,46 +156,91 @@ const Menu = () => {
                     <>
                       <div className="flex flex-wrap justify-start items-start gap-2 mt-5">
                         <button
-                          className={`rounded-md py-1 px-3 shadow-md bg-cyan-200`}
+                          onClick={() => setReminderSortOpt("title")}
+                          className={`${
+                            reminderSortOpt === "title"
+                              ? "bg-cyan-400"
+                              : "bg-cyan-200"
+                          } rounded-md py-1 px-3 shadow-md`}
                         >
                           Title
                         </button>
                         <button
-                          className={`rounded-md py-1 px-3 shadow-md bg-cyan-200`}
+                          onClick={() => setReminderSortOpt("important")}
+                          className={`${
+                            reminderSortOpt === "important"
+                              ? "bg-cyan-400"
+                              : "bg-cyan-200"
+                          } rounded-md py-1 px-3 shadow-md`}
                         >
                           Important
                         </button>
                         <button
-                          className={`rounded-md py-1 px-3 shadow-md bg-cyan-200`}
+                          onClick={() => setReminderSortOpt("event")}
+                          className={`${
+                            reminderSortOpt === "event"
+                              ? "bg-cyan-400"
+                              : "bg-cyan-200"
+                          } rounded-md py-1 px-3 shadow-md`}
                         >
                           Event
                         </button>
                         <button
-                          className={`rounded-md py-1 px-3 shadow-md bg-cyan-200`}
+                          onClick={() => setReminderSortOpt("today")}
+                          className={`${
+                            reminderSortOpt === "today"
+                              ? "bg-cyan-400"
+                              : "bg-cyan-200"
+                          } rounded-md py-1 px-3 shadow-md`}
                         >
                           Today
                         </button>
                         <button
-                          className={`rounded-md py-1 px-3 shadow-md bg-cyan-200`}
+                          onClick={() => setReminderSortOpt("tomorrow")}
+                          className={`${
+                            reminderSortOpt === "tomorrow"
+                              ? "bg-cyan-400"
+                              : "bg-cyan-200"
+                          } rounded-md py-1 px-3 shadow-md`}
                         >
                           Tomorrow
                         </button>
                         <button
-                          className={`rounded-md py-1 px-3 shadow-md bg-cyan-200`}
+                          onClick={() => setReminderSortOpt("month")}
+                          className={`${
+                            reminderSortOpt === "month"
+                              ? "bg-cyan-400"
+                              : "bg-cyan-200"
+                          } rounded-md py-1 px-3 shadow-md`}
                         >
                           This Month
                         </button>
                         <button
-                          className={`rounded-md py-1 px-3 shadow-md bg-cyan-200`}
+                          onClick={() => setReminderSortOpt("week")}
+                          className={`${
+                            reminderSortOpt === "week"
+                              ? "bg-cyan-400"
+                              : "bg-cyan-200"
+                          } rounded-md py-1 px-3 shadow-md`}
                         >
                           This Week
+                        </button>
+                        <button
+                          onClick={() => setReminderSortOpt("past")}
+                          className={`${
+                            reminderSortOpt === "past"
+                              ? "bg-cyan-400"
+                              : "bg-cyan-200"
+                          } rounded-md py-1 px-3 shadow-md`}
+                        >
+                          Past Reminders
                         </button>
                       </div>
                     </>
                   ) : null}
                   {reminderSearch ? (
                     <input
-                      className="outline-none focus:outline-none rounded-md shadow-md px-3 py-2 mt-1 w-full"
+                      className="outline-none focus:outline-none rounded-md shadow-md px-3 py-2 mt-3 w-full"
                       placeholder="Search Reminders"
                       onChange={(e) => setReminderSearchTxt(e.target.value)}
                     />

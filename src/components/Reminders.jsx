@@ -11,15 +11,127 @@ import InteractiveContext from "../context/InteractiveContext";
 import { BsAlarmFill } from "react-icons/bs";
 import { MdOpenInNew } from "react-icons/md";
 
-const Reminders = () => {
+const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
   const { reminders, setReminders, user, events } = useContext(UserContext);
   const { dateObj, string, setString, setOpenModal } = useContext(DatesContext);
   const { setType, setMenu, setAddNewEvent, setEvent } =
     useContext(InteractiveContext);
 
+  const [remindersToRender, setRemindersToRender] = useState(reminders);
   const [selected, setSelected] = useState([]);
   const [selectable, setSelectable] = useState(false);
   let timeout;
+
+  useEffect(() => {
+    if (sort && sortOpt) {
+      const now = new Date();
+      const d = new Date();
+      const startOfDay = d.setHours(0, 0, 0, 0);
+      switch (sortOpt) {
+        case "title":
+          {
+            const copy = [...reminders];
+            const sortedByTitle = copy.sort((a, b) =>
+              a.title.localeCompare(b.title)
+            );
+            setRemindersToRender(sortedByTitle);
+          }
+          break;
+        case "important":
+          {
+            const d = new Date();
+            const hourAgo = new Date(d.getTime() - 60 * 60 * 1000);
+            const importantReminders = reminders.filter(
+              (rem) => new Date(rem.time) >= hourAgo && new Date(rem.time) <= d
+            );
+            setRemindersToRender(importantReminders);
+          }
+          break;
+        case "event":
+          {
+            const copy = [...reminders];
+            const eventCarryingRems = copy.filter(
+              (rem) => rem.eventRefId !== null
+            );
+            const sortedEventRems = eventCarryingRems.sort((a, b) =>
+              a.title.localeCompare(b.title)
+            );
+            setRemindersToRender(sortedEventRems);
+          }
+          break;
+        case "today":
+          {
+            const dayAhead = new Date();
+            dayAhead.setTime(23, 59, 59, 999);
+            const todaysRems = reminders.filter((rem) => {
+              const remTime = new Date(rem.time);
+              return remTime >= startOfDay && remTime <= dayAhead;
+            });
+            setRemindersToRender(todaysRems);
+          }
+          break;
+        case "tomorrow":
+          {
+            const midnight = new Date(startOfDay);
+            const midnightTomorrow = new Date(midnight);
+            midnightTomorrow.setDate(midnightTomorrow.getDate() + 1);
+            const endOfTomorrow = new Date(midnightTomorrow);
+            endOfTomorrow.setHours(23, 59, 59, 999);
+            const tomorrowsRems = reminders.filter((rem) => {
+              const remTime = new Date(rem.time);
+              return remTime >= midnightTomorrow && remTime <= endOfTomorrow;
+            });
+            setRemindersToRender(tomorrowsRems);
+          }
+          break;
+        case "month":
+          {
+            const monthAhead = new Date(now.getMonth() + 1);
+            const monthRems = reminders.filter((rem) => {
+              const remTime = new Date(rem.time);
+              return remTime <= monthAhead && remTime >= d;
+            });
+            setRemindersToRender(monthRems);
+          }
+          break;
+        case "week":
+          {
+            const weekAhead = new Date(startOfDay);
+            weekAhead.setDate(now.getDate() + 7);
+            const weekRems = reminders.filter((rem) => {
+              const remTime = new Date(rem.time);
+              return remTime <= weekAhead && remTime >= now;
+            });
+            setRemindersToRender(weekRems);
+          }
+          break;
+        case "past":
+          {
+            const pastRems = reminders.filter((rem) => {
+              const remTime = new Date(rem.time);
+              return remTime < now;
+            });
+            setRemindersToRender(pastRems);
+          }
+          break;
+        default:
+          setRemindersToRender(reminders);
+      }
+    } else {
+      setRemindersToRender(reminders);
+    }
+  }, [sort, sortOpt]);
+
+  useEffect(() => {
+    if (search && searchTxt) {
+      const filteredReminders = reminders.filter((rem) =>
+        rem.title.toLowerCase().includes(searchTxt.toLowerCase())
+      );
+      setRemindersToRender(filteredReminders);
+    } else {
+      setRemindersToRender(reminders);
+    }
+  }, [search, searchTxt]);
 
   const calcWidth = (time) => {
     if (new Date(time).toLocaleDateString() !== dateObj.toLocaleDateString()) {
@@ -107,7 +219,7 @@ const Reminders = () => {
 
   return (
     <motion.div className="p-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mt-5">
-      {reminders.length < 1 && (
+      {remindersToRender.length < 1 && (
         <div>
           <div className="rounded-md p-3 shadow-md my-5 flex justify-between items-center">
             <div>
@@ -120,7 +232,7 @@ const Reminders = () => {
           </div>
         </div>
       )}
-      {reminders.map((reminder) => (
+      {remindersToRender.map((reminder) => (
         <motion.div
           animate={
             selected.includes(reminder.id)
