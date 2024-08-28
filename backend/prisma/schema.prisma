@@ -199,12 +199,13 @@ userId String
 
 model Kanban {
 id String @id @unique @default(uuid())
+userId String
 title String
 color String
-folders Folder[]
 createdAt DateTime @default(now())
-User User   @relation(fields: [userId], references: [id])
-userId String
+folders Folder[]
+User User @relation(fields: [userId], references: [id])
+
 @@index([userId], name: "userKanbanIndex")
 }
 

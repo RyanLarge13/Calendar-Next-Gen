@@ -248,11 +248,11 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
           key={reminder.id}
           className={`${
             new Date(reminder.time) < dateObj
-              ? "bg-teal-200"
+              ? "bg-rose-300"
               : new Date(reminder.time).toLocaleDateString() ===
                 dateObj.toLocaleDateString()
               ? ""
-              : "bg-slate-200"
+              : "bg-cyan-200"
           } p-2 relative rounded-md text-black`}
           style={{ fontSize: 11 }}
           onPointerDown={(e) => {

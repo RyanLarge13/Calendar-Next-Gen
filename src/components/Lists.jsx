@@ -47,6 +47,15 @@ const Lists = ({ listSort, listSortOpt, listSearch, listSearchTxt }) => {
             setListsToRender(newLists);
           }
           break;
+        case "length":
+          {
+            const newLists = [...lists];
+            const newListsSortedLen = newLists.sort(
+              (a, b) => a.items.length > a.items.length
+            );
+            setListsToRender(newListsSortedLen);
+          }
+          break;
         default:
           setListsToRender(lists);
           break;

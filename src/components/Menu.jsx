@@ -35,6 +35,10 @@ const Menu = () => {
   const [listSearch, setListSearch] = useState(false);
   const [listSortOpt, setListSortOpt] = useState("");
   const [listSearchTxt, setListSearchTxt] = useState("");
+  const [taskSort, setTaskSort] = useState(false);
+  const [taskSearch, setTaskSearch] = useState(false);
+  const [taskSortOpt, setTaskSortOpt] = useState("");
+  const [taskSearchTxt, setTaskSearchTxt] = useState("");
 
   useEffect(() => {
     if (listUpdate.length < 1) return;
@@ -163,8 +167,8 @@ const Menu = () => {
                           onClick={() => setReminderSortOpt("title")}
                           className={`${
                             reminderSortOpt === "title"
-                              ? "bg-cyan-400"
-                              : "bg-cyan-200"
+                              ? "bg-cyan-200"
+                              : "bg-white"
                           } rounded-md py-1 px-3 shadow-md`}
                         >
                           Title
@@ -173,8 +177,8 @@ const Menu = () => {
                           onClick={() => setReminderSortOpt("important")}
                           className={`${
                             reminderSortOpt === "important"
-                              ? "bg-cyan-400"
-                              : "bg-cyan-200"
+                              ? "bg-cyan-200"
+                              : "bg-white"
                           } rounded-md py-1 px-3 shadow-md`}
                         >
                           Important
@@ -183,8 +187,8 @@ const Menu = () => {
                           onClick={() => setReminderSortOpt("event")}
                           className={`${
                             reminderSortOpt === "event"
-                              ? "bg-cyan-400"
-                              : "bg-cyan-200"
+                              ? "bg-cyan-200"
+                              : "bg-white"
                           } rounded-md py-1 px-3 shadow-md`}
                         >
                           Event
@@ -193,8 +197,8 @@ const Menu = () => {
                           onClick={() => setReminderSortOpt("today")}
                           className={`${
                             reminderSortOpt === "today"
-                              ? "bg-cyan-400"
-                              : "bg-cyan-200"
+                              ? "bg-cyan-200"
+                              : "bg-white"
                           } rounded-md py-1 px-3 shadow-md`}
                         >
                           Today
@@ -203,8 +207,8 @@ const Menu = () => {
                           onClick={() => setReminderSortOpt("tomorrow")}
                           className={`${
                             reminderSortOpt === "tomorrow"
-                              ? "bg-cyan-400"
-                              : "bg-cyan-200"
+                              ? "bg-cyan-200"
+                              : "bg-white"
                           } rounded-md py-1 px-3 shadow-md`}
                         >
                           Tomorrow
@@ -213,8 +217,8 @@ const Menu = () => {
                           onClick={() => setReminderSortOpt("month")}
                           className={`${
                             reminderSortOpt === "month"
-                              ? "bg-cyan-400"
-                              : "bg-cyan-200"
+                              ? "bg-cyan-200"
+                              : "bg-white"
                           } rounded-md py-1 px-3 shadow-md`}
                         >
                           This Month
@@ -223,8 +227,8 @@ const Menu = () => {
                           onClick={() => setReminderSortOpt("week")}
                           className={`${
                             reminderSortOpt === "week"
-                              ? "bg-cyan-400"
-                              : "bg-cyan-200"
+                              ? "bg-cyan-200"
+                              : "bg-white"
                           } rounded-md py-1 px-3 shadow-md`}
                         >
                           This Week
@@ -233,8 +237,8 @@ const Menu = () => {
                           onClick={() => setReminderSortOpt("past")}
                           className={`${
                             reminderSortOpt === "past"
-                              ? "bg-cyan-400"
-                              : "bg-cyan-200"
+                              ? "bg-cyan-200"
+                              : "bg-white"
                           } rounded-md py-1 px-3 shadow-md`}
                         >
                           Past Reminders
@@ -294,6 +298,14 @@ const Menu = () => {
                       >
                         Event
                       </button>
+                      <button
+                        onClick={() => setListSortOpt("length")}
+                        className={`${
+                          listSortOpt === "length" ? "bg-cyan-300" : "bg-white"
+                        } shadow-md rounded-md px-3 py-2`}
+                      >
+                        Number of Items
+                      </button>
                     </div>
                   ) : null}
                   {listSearch ? (
@@ -318,7 +330,52 @@ const Menu = () => {
                   exit={{ x: "-10%", opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                 >
-                  <Tasks />
+                  <Switch
+                    title="Sort"
+                    styles="mt-10"
+                    value={taskSort}
+                    toggle={setTaskSort}
+                  />
+                  <Switch
+                    title="Search"
+                    styles="mt-3"
+                    value={taskSearch}
+                    toggle={setTaskSearch}
+                  />
+                  {taskSort ? (
+                    <div className="flex flex-wrap gap-3">
+                      <button
+                        onClick={() => setTaskSortOpt("title")}
+                        className={`${
+                          taskSortOpt === "title" ? "bg-cyan-300" : "bg-white"
+                        } shadow-md rounded-md px-3 py-2`}
+                      >
+                        Title
+                      </button>
+                      <button
+                        onClick={() => setTaskSortOpt("length")}
+                        className={`${
+                          taskSortOpt === "length" ? "bg-cyan-300" : "bg-white"
+                        } shadow-md rounded-md px-3 py-2`}
+                      >
+                        Number of tasks
+                      </button>
+                    </div>
+                  ) : null}
+                  {taskSearch ? (
+                    <input
+                      type="text"
+                      onChange={(e) => setTaskSearchTxt(e.target.value)}
+                      placeholder="Search your tasks"
+                      className="outline-none rounded-md shadow-md p-3 w-full"
+                    />
+                  ) : null}
+                  <Tasks
+                    taskSort={taskSort}
+                    taskSortOpt={taskSortOpt}
+                    taskSearch={taskSearch}
+                    taskSearchTxt={taskSearchTxt}
+                  />
                 </motion.div>
               )}
               {showCategory === "kanban" && (
