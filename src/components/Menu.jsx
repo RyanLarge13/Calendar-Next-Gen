@@ -4,13 +4,16 @@ import Reminders from "./Reminders.jsx";
 import Lists from "./Lists.jsx";
 import Tasks from "./Tasks";
 import Kanbans from "./Kanbans";
-//import Stickies from "./Stickies";
 import MainMenu from "./MainMenu";
 import { updateList, updateTasks } from "../utils/api.js";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext.jsx";
 import DatesContext from "../context/DatesContext.jsx";
 import Switch from "./Switch.jsx";
+import StaticStickies from "./StaticStickies.jsx";
+import DayEvent from "./DayEvent.jsx";
+import { formatDbText, formatTime } from "../utils/helpers.js";
+import { MdOutlineOpenInNew } from "react-icons/md";
 
 const Menu = () => {
   const {
@@ -21,7 +24,7 @@ const Menu = () => {
     setTaskUpdates,
     showCategory,
   } = useContext(InteractiveContext);
-  const { lists, setLists, userTasks, preferences, setUserTasks } =
+  const { lists, setLists, userTasks, preferences, setUserTasks, events } =
     useContext(UserContext);
   const { dateObj } = useContext(DatesContext);
   const { hideMenuNav } = useContext(InteractiveContext);
@@ -145,6 +148,7 @@ const Menu = () => {
                   initial={{ x: "-10%", opacity: 0 }}
                   exit={{ x: "-10%", opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
+                  className="p-3"
                 >
                   <div className="mt-10">
                     <Switch
@@ -270,13 +274,13 @@ const Menu = () => {
                 >
                   <Switch
                     title="Sort"
-                    styles=""
+                    styles="pr-7"
                     value={listSort}
                     toggle={setListSort}
                   />
                   <Switch
                     title="Search"
-                    styles="mt-3"
+                    styles="mt-3 pr-7"
                     value={listSearch}
                     toggle={setListSearch}
                   />
@@ -329,6 +333,7 @@ const Menu = () => {
                   initial={{ x: "-10%", opacity: 0 }}
                   exit={{ x: "-10%", opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
+                  className="p-3"
                 >
                   <Switch
                     title="Sort"
@@ -394,7 +399,68 @@ const Menu = () => {
                   animate={{ x: 0, opacity: 1 }}
                   className="relative"
                 >
-                  {/* <Stickies />*/}
+                  <StaticStickies />
+                </motion.div>
+              )}
+              {showCategory === "event" && (
+                <motion.div
+                  initial={{ x: "-10%", opacity: 0 }}
+                  exit={{ x: "-10%", opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  className="relative"
+                >
+                  {events.length > 0 ? (
+                    [...events]
+                      .sort((a, b) => new Date(a.date) - new Date(b.date))
+                      .map((event) => (
+                        <div
+                          key={event.id}
+                          className={`p-3 rounded-md shadow-lg my-5 lg:my-0 relative pl-5 w-full`}
+                        >
+                          <button
+                            className="absolute top-0 right-0"
+                            onClick={() => setEvent(event)}
+                          >
+                            <MdOutlineOpenInNew />
+                          </button>
+                          <div
+                            className={`${event.color} absolute left-0 top-0 bottom-0 w-2 rounded-md`}
+                          ></div>
+                          <p className="text-lg mb-2">
+                            {formatTime(new Date(event.date))}
+                          </p>
+                          <p className="text-sm p-2font-semibold">
+                            {event.summary}
+                          </p>
+                          <div className="mt-3">
+                            {formatDbText(event.description || "").map(
+                              (text, index) => (
+                                <p
+                                  key={index}
+                                  className="text-[14px] font-semibold"
+                                >
+                                  {text}
+                                </p>
+                              )
+                            )}
+                          </div>
+                        </div>
+                      ))
+                  ) : (
+                    <div className="px-3">
+                      <div className="rounded-md p-3 shadow-md my-5 flex justify-between items-center">
+                        <div>
+                          <h2 className="font-semibold mb-2">
+                            You have no events
+                          </h2>
+                          <BiListPlus />
+                        </div>
+                        <div className="text-2xl p-2">
+                          <IoIosAddCircle />
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </motion.div>
               )}
             </div>

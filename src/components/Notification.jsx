@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { deleteNotification } from "../utils/api";
+import { deleteNotification, markAsRead, markAsUnread } from "../utils/api";
 import { formatTime, formatDbText } from "../utils/helpers";
 import { motion, AnimatePresence, useDragControls } from "framer-motion";
 import { AiFillCloseCircle } from "react-icons/ai";
@@ -40,15 +40,21 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
     if (!idsToUpdate.includes(id)) {
       setIdsToUpdate((prev) => [...prev, id]);
     }
-    // Create a new array with the updated notification
     const updatedNotifications = notifications.map((notif) =>
       notif.id === id ? { ...notif, read: true } : notif
     );
-    // Sort the updatedNotifications array by time from newest to oldest
     const sortedNotifications = updatedNotifications.sort(
       (a, b) => b.time - a.time
     );
     setNotifications(sortedNotifications);
+  };
+
+  const unReadNotif = (id) => {
+    const updatedNotifications = notifications.map((notif) =>
+      notif.id === id ? { ...notif, read: false } : notif
+    );
+    setNotifications(updatedNotifications);
+    markAsUnread(id);
   };
 
   const getIcon = (type) => {
@@ -178,7 +184,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                 } relative flex flex-col justify-between h-max`}
               >
                 {notif.read === false && (
-                  <div className="absolute top-[-5px] left-[-5px] rounded-full w-[10px] h-[10px] bg-red-300"></div>
+                  <div className="absolute top-[-5px] left-[-5px] rounded-full w-[10px] h-[10px] bg-gradient-to-tr from-red-300 to-red-400"></div>
                 )}
                 <div>
                   <div className="flex justify-between items-start">
@@ -196,7 +202,11 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                   </div>
                   <p className="text-sm">{notif.notifData.title}</p>
                   {notifOpen === notif.id && (
-                    <div className="p-3 bg-slate-100 mt-1 rounded-md shadow-sm max-h-[100px] overflow-y-auto">
+                    <div
+                      className={`p-3 mt-2 rounded-md shadow-sm max-h-[100px] overflow-y-auto ${
+                        preferences.darkMode ? "text-white" : "text-black"
+                      }`}
+                    >
                       <motion.p
                         initial={{ opacity: 0 }}
                         animate={{
@@ -223,9 +233,17 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                   )}
                 </div>
                 <div>
-                  <div className="text-xs flex justify-between items-center p-1 px-2 mt-4 rounded-b-md bg-purple-100 cursor-pointer">
+                  <div className="text-xs flex justify-between items-center p-1 px-2 mt-4 rounded-b-md bg-cyan-100 cursor-pointer text-black">
                     {notif.read ? (
-                      <p>Mark As UnOpen</p>
+                      <p
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          unReadNotif(notif.id);
+                        }}
+                        className="border-b border-b-cyan-300 cursor-pointer"
+                      >
+                        Mark As UnOpen
+                      </p>
                     ) : (
                       <p
                         onClick={(e) => {

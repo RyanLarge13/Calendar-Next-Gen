@@ -32,6 +32,7 @@ export const DatesProvider = ({ children }) => {
   useEffect(() => {
     setLoading(true);
     const newDate = new Date(updatedDate);
+    newDate.setDate(1);
     newDate.setMonth(newDate.getMonth() + nav);
     setDt(newDate);
   }, [nav, updatedDate]);

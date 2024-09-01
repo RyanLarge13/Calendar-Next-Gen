@@ -3,9 +3,11 @@ import { motion } from "framer-motion";
 import { RiSunFill } from "react-icons/ri";
 import { BiSolidMoon } from "react-icons/bi";
 import UserContext from "../context/UserContext";
+import Switch from "./Switch";
+import { FaMinusCircle } from "react-icons/fa";
 
 const Settings = ({ setOption }) => {
-  const { user, preferences, setPreferences } = useContext(UserContext);
+  const { preferences, setPreferences } = useContext(UserContext);
 
   const finish = (e, info) => {
     const dragDistance = info.offset.y;
@@ -19,14 +21,17 @@ const Settings = ({ setOption }) => {
     }
   };
 
-  const setTheme = () => {
+  const setTheme = (newVal) => {
     const meta = document.getElementById("theme-color-meta");
     if (meta) {
-     meta.setAttribute("content", preferences.darkMode ? "#FFFFFF" : "#222222")
+      meta.setAttribute(
+        "content",
+        preferences.darkMode ? "#FFFFFF" : "#222222"
+      );
     }
     const newPreferences = {
       ...preferences,
-      darkMode: !preferences.darkMode,
+      darkMode: newVal,
     };
     localStorage.setItem("preferences", JSON.stringify(newPreferences));
     setPreferences(newPreferences);
@@ -45,14 +50,19 @@ const Settings = ({ setOption }) => {
         preferences.darkMode ? "bg-[#222] text-white" : "bg-white text-black"
       }`}
     >
-      <h2 className="text-4xl pb-2 border-b">Settings</h2>
-      <button onClick={() => setTheme()}>
-        {preferences.darkMode ? (
-          <RiSunFill className="text-2xl" />
-        ) : (
-          <BiSolidMoon className="text-xl" />
-        )}
-      </button>
+      <div className="flex justify-between items-center">
+        <h2 className="text-4xl">Settings</h2>
+        <button onClick={() => setOption(null)} className="text-xl p-3">
+          <FaMinusCircle />
+        </button>
+      </div>
+
+      <Switch
+        title={preferences.darkMode ? <RiSunFill /> : <BiSolidMoon />}
+        styles="text-3xl p-3 rounded-md shadow-lg mt-10"
+        value={preferences.darkMode}
+        toggle={setTheme}
+      />
     </motion.div>
   );
 };

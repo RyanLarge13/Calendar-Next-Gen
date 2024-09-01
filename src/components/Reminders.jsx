@@ -218,7 +218,7 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
   };
 
   return (
-    <motion.div className="p-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mt-5">
+    <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mt-5">
       {remindersToRender.length < 1 && (
         <div>
           <div className="rounded-md p-3 shadow-md my-5 flex justify-between items-center">

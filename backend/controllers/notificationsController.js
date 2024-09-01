@@ -256,6 +256,31 @@ export const markAsRead = async (req, res) => {
   }
 };
 
+export const markAsUnRead = async (req, res) => {
+  const { notifId } = req.body;
+  try {
+    const updatedNotification = await prisma.notification.update({
+      where: { id: notifId },
+      data: { read: false },
+    });
+    if (updatedNotification) {
+      return res.status(200).json({
+        message: "Notification marked as un-read",
+        notif: updatedNotification,
+      });
+    } else {
+      return res.status(404).json({
+        message: "Notification not found",
+      });
+    }
+  } catch (err) {
+    console.error("Error marking notification as read:", err);
+    return res.status(500).json({
+      message: "An error occurred while marking the notification as read",
+    });
+  }
+};
+
 export const deleteNotification = async (req, res) => {
   const notifId = req.params.notifId;
   try {

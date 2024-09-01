@@ -297,6 +297,11 @@ export const markAsRead = (notifId) => {
   return res;
 };
 
+export const markAsUnread = (notifId) => {
+  const res = Axios.post(`${productionUrl}/mark-as-unread`, { notifId });
+  return res;
+};
+
 export const deleteNotification = (token, id) => {
   const res = Axios.delete(`${productionUrl}/notification/${id}`, {
     headers: {

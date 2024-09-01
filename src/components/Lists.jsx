@@ -23,11 +23,11 @@ const Lists = ({ listSort, listSortOpt, listSearch, listSearchTxt }) => {
   const [listsToRender, setListsToRender] = useState(lists);
   const [addItems, setAddItems] = useState([]);
 
-  const breakpointColumnsObj = {
-    default: 3, // Number of columns by default
-    1100: 2, // Number of columns on screens > 1100px
-    700: 1, // Number of columns on screens > 700px
-  };
+  // const breakpointColumnsObj = {
+  //   default: 3, // Number of columns by default
+  //   1100: 2, // Number of columns on screens > 1100px
+  //   700: 1, // Number of columns on screens > 700px
+  // };
 
   useEffect(() => {
     if (listSort && listSortOpt) {

@@ -19,9 +19,13 @@ const MainMenu = ({ timeOfDay }) => {
       <h1 className="text-4xl pb-2 font-semibold">{timeOfDay}</h1>
       {user.username && <p className="ml-5 font-semibold">{user.username}</p>}
       <div className="px-5 mt-5 overflow-visible">
-        <p className="text-sm">
-          You have a few upcoming Events on your agenda this week
-        </p>
+        {upcoming.length > 0 ? (
+          <p className="text-sm">
+            You have a few upcoming Events on your agenda this week
+          </p>
+        ) : (
+          <p className="text-sm">You have no upcoming events this week</p>
+        )}
         <div className="mt-3 lg:grid lg:grid-cols-2 lg:place-items-center lg:gap-5">
           {upcoming.length > 0 &&
             upcoming.map((event) => (
