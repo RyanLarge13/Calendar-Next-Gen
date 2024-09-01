@@ -6,7 +6,7 @@ import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext.jsx";
 
-const DayView = ({ todaysEvents, todaysReminders, containerRef}) => {
+const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
   const { setEvent } = useContext(InteractiveContext);
   const { theDay, dateObj } = useContext(DatesContext);
   const { preferences } = useContext(UserContext);
@@ -41,9 +41,9 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef}) => {
         const containerHeight = dayViewContainer.current.clientHeight;
         const componentHeight =
           (duration / (24 * 60 * 60 * 1000)) * containerHeight;
-          if (componentHeight <= 0) {
-            return 500;
-          }
+        if (componentHeight <= 0) {
+          return 500;
+        }
         return componentHeight;
       }
     }
@@ -66,7 +66,7 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef}) => {
   };
 
   useEffect(() => {
-   return containerRef.current.scrollTo({ top: height, behavior: "smooth" });
+    return containerRef.current.scrollTo({ top: height, behavior: "smooth" });
   }, [height]);
 
   const getTime = () => {
@@ -90,14 +90,67 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef}) => {
     }
   };
 
-  const checkToSetTime = (e, staticString) => {
-    if (times.includes(staticString)) {
-      const newStrings = times.filter((time) => time !== staticString);
-      return setTimes(newStrings);
+  const findTime = (aTime) => {
+    for (let i = 0; i < staticTimes.length; i++) {
+      if (staticTimes[i].string === aTime) {
+        return staticTimes[i].time;
+      }
     }
+    return "00:00:00";
+  };
+
+  const checkToSetTime = (e, staticString) => {
     const end = e.clientX;
     if (end > window.innerWidth / 1.5) {
-      setTimes((prev) => [...prev, staticString]);
+      if (times.length === 0) {
+        return setTimes([staticString]);
+      }
+      if (times.includes(staticString)) {
+        const index = times.indexOf(staticString);
+        const newStrings = times.slice(0, index);
+        return setTimes(newStrings);
+      }
+      if (times.length === 1) {
+        const currentSelection = new Date(
+          `${theDay.toDateString()} ${findTime(times[0])}`
+        );
+        const newSelection = new Date(
+          `${theDay.toDateString()} ${findTime(staticString)}`
+        );
+        if (
+          isNaN(currentSelection.getTime()) ||
+          isNaN(newSelection.getTime())
+        ) {
+          console.error("Invalid Date:", currentSelection, newSelection);
+          return;
+        }
+        console.log(
+          "current and new selection",
+          currentSelection,
+          newSelection
+        );
+        const [earlierTime, laterTime] = [currentSelection, newSelection].sort(
+          (a, b) => a - b
+        );
+        let timesArray = [];
+        let startTime = new Date(earlierTime);
+        console.log("earlier and later time", earlierTime, laterTime);
+        while (startTime <= laterTime) {
+          console.log("in loop");
+          timesArray.push(
+            startTime.toLocaleTimeString([], {
+              hour: "numeric",
+              minute: "2-digit",
+            })
+          );
+          startTime.setMinutes(startTime.getMinutes() + 30);
+        }
+        console.log(timesArray);
+        return setTimes(timesArray);
+      }
+      if (times.length > 1) {
+        return;
+      }
     }
   };
 
@@ -126,7 +179,6 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef}) => {
                 dragConstraints={{ left: 0 }}
                 dragSnapToOrigin={true}
                 onDragEnd={(e) => checkToSetTime(e, staticTime.string.trim())}
-                //whileHover={{ backgroundColor: "#ddd" }}
                 key={index}
                 style={{ height: `${getHeight()}px` }}
                 animate={{

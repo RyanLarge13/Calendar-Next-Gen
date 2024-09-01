@@ -54,7 +54,13 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
       notif.id === id ? { ...notif, read: false } : notif
     );
     setNotifications(updatedNotifications);
-    markAsUnread(id);
+    markAsUnread(id)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const getIcon = (type) => {

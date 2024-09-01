@@ -40,195 +40,195 @@ export const weekDays = [
 
 export const staticTimes = [
   {
-    string: "12:00am",
+    string: "12:00 AM",
     time: "00:00:00",
   },
   {
-    string: "12:30am",
+    string: "12:30 AM",
     time: "00:30:00",
   },
   {
-    string: "1:00am",
+    string: "1:00 AM",
     time: "01:00:00",
   },
   {
-    string: "1:30am",
+    string: "1:30 AM",
     time: "01:30:00",
   },
   {
-    string: "2:00am",
+    string: "2:00 AM",
     time: "02:00:00",
   },
   {
-    string: "2:30am",
+    string: "2:30 AM",
     time: "02:30:00",
   },
   {
-    string: "3:00am",
+    string: "3:00 AM",
     time: "03:00:00",
   },
   {
-    string: "3:30am",
+    string: "3:30 AM",
     time: "03:30:00",
   },
   {
-    string: "4:00am",
+    string: "4:00 AM",
     time: "04:00:00",
   },
   {
-    string: "4:30am",
+    string: "4:30 AM",
     time: "04:30:00",
   },
   {
-    string: "5:00am",
+    string: "5:00 AM",
     time: "05:00:00",
   },
   {
-    string: "5:30am",
+    string: "5:30 AM",
     time: "05:30:00",
   },
   {
-    string: "6:00am",
+    string: "6:00 AM",
     time: "06:00:00",
   },
   {
-    string: "6:30am",
+    string: "6:30 AM",
     time: "06:30:00",
   },
   {
-    string: "7:00am",
+    string: "7:00 AM",
     time: "07:00:00",
   },
   {
-    string: "7:30am",
+    string: "7:30 AM",
     time: "07:30:00",
   },
   {
-    string: "8:00am",
+    string: "8:00 AM",
     time: "08:00:00",
   },
   {
-    string: "8:30am",
+    string: "8:30 AM",
     time: "08:30:00",
   },
   {
-    string: "9:00am",
+    string: "9:00 AM",
     time: "09:00:00",
   },
   {
-    string: "9:30am",
+    string: "9:30 AM",
     time: "09:30:00",
   },
   {
-    string: "10:00am",
+    string: "10:00 AM",
     time: "10:00:00",
   },
   {
-    string: "10:30am",
+    string: "10:30 AM",
     time: "10:30:00",
   },
   {
-    string: "11:00am",
+    string: "11:00 AM",
     time: "11:00:00",
   },
   {
-    string: "11:30am",
+    string: "11:30 AM",
     time: "11:30:00",
   },
   {
-    string: "12:00pm",
+    string: "12:00 PM",
     time: "12:00:00",
   },
   {
-    string: "12:30pm",
+    string: "12:30 PM",
     time: "12:30:00",
   },
   {
-    string: "1:00pm",
+    string: "1:00 PM",
     time: "13:00:00",
   },
   {
-    string: "1:30pm",
+    string: "1:30 PM",
     time: "13:30:00",
   },
   {
-    string: "2:00pm",
+    string: "2:00 PM",
     time: "14:00:00",
   },
   {
-    string: "2:30pm",
+    string: "2:30 PM",
     time: "14:30:00",
   },
   {
-    string: "3:00pm",
+    string: "3:00 PM",
     time: "15:00:00",
   },
   {
-    string: "3:30pm",
+    string: "3:30 PM",
     time: "15:30:00",
   },
   {
-    string: "4:00pm",
+    string: "4:00 PM",
     time: "16:00:00",
   },
   {
-    string: "4:30pm",
+    string: "4:30 PM",
     time: "16:30:00",
   },
   {
-    string: "5:00pm",
+    string: "5:00 PM",
     time: "17:00:00",
   },
   {
-    string: "5:30pm",
+    string: "5:30 PM",
     time: "17:30:00",
   },
   {
-    string: "6:00pm",
+    string: "6:00 PM",
     time: "18:00:00",
   },
   {
-    string: "6:30pm",
+    string: "6:30 PM",
     time: "18:30:00",
   },
   {
-    string: "7:00pm",
+    string: "7:00 PM",
     time: "19:00:00",
   },
   {
-    string: "7:30pm",
+    string: "7:30 PM",
     time: "19:30:00",
   },
   {
-    string: "8:00pm",
+    string: "8:00 PM",
     time: "20:00:00",
   },
   {
-    string: "8:30pm",
+    string: "8:30 PM",
     time: "20:30:00",
   },
   {
-    string: "9:00pm",
+    string: "9:00 PM",
     time: "21:00:00",
   },
   {
-    string: "9:30pm",
+    string: "9:30 PM",
     time: "21:30:00",
   },
   {
-    string: "10:00pm",
+    string: "10:00 PM",
     time: "22:00:00",
   },
   {
-    string: "10:30pm",
+    string: "10:30 PM",
     time: "22:30:00",
   },
   {
-    string: "11:00pm",
+    string: "11:00 PM",
     time: "23:00:00",
   },
   {
-    string: "11:30pm",
+    string: "11:30 PM",
     time: "23:30:00",
   },
 ];
