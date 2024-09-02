@@ -11,16 +11,24 @@ import AddList from "./AddList";
 import AddKanban from "./AddKanban";
 import AddTask from "./AddTask";
 import AddSticky from "./AddSticky";
+import { formatDbText } from "../utils/helpers";
 
 const Modal = ({ allDayEvents }) => {
   const { events, holidays, preferences } = useContext(UserContext);
   const { string, setOpenModal, dateObj, setSecondString } =
     useContext(DatesContext);
-  const { addNewEvent, setAddNewEvent, type, setType } =
-    useContext(InteractiveContext);
+  const {
+    addNewEvent,
+    setAddNewEvent,
+    type,
+    setType,
+    setAddEventWithStartEndTime,
+  } = useContext(InteractiveContext);
 
   const [dayEvents, setDayEvents] = useState([]);
-  const [addEventWithStartTime, setAddEventWithStartTime] = useState(null);
+  const [staticTimeHeight, setStaticTimeHeight] = useState(0);
+
+  const staticTimesContainerRef = useRef(null);
   const modalRef = useRef(0);
 
   useEffect(() => {
@@ -61,6 +69,51 @@ const Modal = ({ allDayEvents }) => {
     return () => setSecondString("");
   }, [string, events, addNewEvent]);
 
+  const getHeight = () => {
+    if (staticTimeHeight !== 0) {
+      return staticTimeHeight;
+    }
+    if (staticTimesContainerRef.current) {
+      const height =
+        staticTimesContainerRef.current.clientHeight / staticTimes.length;
+      setStaticTimeHeight(height);
+      return height;
+    }
+  };
+
+  const calcDayEventHeight = (start, end) => {
+    if (!start || !end) {
+      return 500;
+    } else {
+      if (staticTimesContainerRef.current) {
+        const duration = end.getTime() - start.getTime();
+        const containerHeight = staticTimesContainerRef.current.clientHeight;
+        const componentHeight =
+          (duration / (24 * 60 * 60 * 1000)) * containerHeight;
+        if (componentHeight <= 0) {
+          return 500;
+        }
+        return componentHeight;
+      }
+    }
+  };
+
+  const fromTop = (startTime) => {
+    if (staticTimesContainerRef.current) {
+      const containerHeight = staticTimesContainerRef.current.clientHeight;
+      const timeInSeconds =
+        startTime.getHours() * 3600 +
+        startTime.getMinutes() * 60 +
+        startTime.getSeconds();
+      const percentage = (timeInSeconds / (24 * 3600)) * 100;
+      if (percentage <= 0) {
+        return 0;
+      }
+      return (percentage * containerHeight) / 100;
+    }
+    return 0;
+  };
+
   return (
     <>
       <motion.div
@@ -85,12 +138,7 @@ const Modal = ({ allDayEvents }) => {
       >
         {addNewEvent ? (
           <div className="mt-10 mx-2">
-            {type === "event" && (
-              <AddEvent
-                setAddNewEvent={setAddNewEvent}
-                passedStartTime={addEventWithStartTime}
-              />
-            )}
+            {type === "event" && <AddEvent />}
             {type === "reminder" && <AddReminder />}
             {type === "todo-list" && (
               <AddList eventsForDay={[...dayEvents, ...allDayEvents]} />
@@ -100,35 +148,53 @@ const Modal = ({ allDayEvents }) => {
             {type === "stickynote" && <AddSticky />}
           </div>
         ) : (
-          <div className="w-full pl-20">
-            <div className="absolute left-0 top-0 bottom-0 w-20 pl-2 pt-[100px]">
+          <>
+            <div
+              className="absolute inset-0 pl-2 h-[800vh]"
+              ref={staticTimesContainerRef}
+            >
               {staticTimes.map((timeObj, index) => (
-                <p
+                <div
                   key={index}
                   onClick={() => {
-                    setAddEventWithStartTime(timeObj.time);
+                    setAddEventWithStartEndTime({
+                      start: timeObj.time,
+                      end: null,
+                    });
                     setType("event");
                     setAddNewEvent(true);
                   }}
-                  style={
-                    index % 2 === 0
-                      ? { fontSize: "15px" }
-                      : { fontSize: "10px" }
-                  }
-                  className={`${index === 0 ? "mt-0" : "my-[100px]"} ${
+                  style={{
+                    fontSize: index % 2 === 0 ? "15px" : "10px",
+                    height: `${getHeight()}px`,
+                  }}
+                  className={`${
                     index % 2 === 0 ? "after:w-[100%]" : "after:w-[70%]"
                   } relative cursor-pointer after:left-0 after:bottom-0 after:h-[1px] after:absolute after:bg-slate-200`}
                 >
-                  {timeObj.string}
-                </p>
+                  <p className="absolute top-0 left-0">{timeObj.string}</p>
+                </div>
               ))}
             </div>
             <div className="w-full">
-              {dayEvents.map((event) => (
-                <DayEvent key={event.id} dayEvent={event} />
-              ))}
+              {dayEvents.map((event) => {
+                const height = calcDayEventHeight(
+                  new Date(event.start.startTime),
+                  new Date(event.end.endTime)
+                );
+                const top = fromTop(new Date(event.start.startTime));
+                return (
+                  <DayEvent
+                    key={event.id}
+                    dayEvent={event}
+                    height={height}
+                    top={top}
+                    thirtyMinuteHeight={staticTimeHeight}
+                  />
+                );
+              })}
             </div>
-          </div>
+          </>
         )}
       </motion.div>
     </>

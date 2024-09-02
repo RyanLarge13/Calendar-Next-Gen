@@ -292,6 +292,39 @@ export const getAttachments = async (req, res) => {
   res.status(201).json({ message: "Success", attachments: attachments });
 };
 
+export const updateEventStartAndEndTime = async (req, res) => {
+  const { eventId, offset } = req.body;
+  const event = await prisma.event.findUnique({ where: { id: eventId } });
+  if (!event) {
+    return res.status(404).json({
+      message: "We could not find this event attached to your account",
+    });
+  }
+  const startDate = new Date(event.start.startTime);
+  const endDate = new Date(event.end.endTime);
+  startDate.setMinutes(startDate.getMinutes() + offset * 30);
+  endDate.setMinutes(endDate.getMinutes() + offset * 30);
+  const updatedEvent = {
+    ...event,
+    startDate: startDate,
+    start: { ...event.start, startTime: startDate },
+    end: { ...event.end, endTime: endDate },
+  };
+  const newlyUpdatedEvent = await prisma.event.update({
+    where: { id: eventId },
+    data: updatedEvent,
+  });
+  if (!newlyUpdatedEvent) {
+    return res.status(500).json({
+      message:
+        "There was a problem updating the time on your event, Please try again",
+    });
+  }
+  return res
+    .status(200)
+    .json({ message: "Successfully updating your event time" });
+};
+
 export const deleteEvent = async (req, res) => {
   const id = req.params.eventId;
   const deletedReminders = await prisma.reminder.deleteMany({

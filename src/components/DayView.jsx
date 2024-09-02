@@ -7,16 +7,28 @@ import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext.jsx";
 
 const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
-  const { setEvent } = useContext(InteractiveContext);
-  const { theDay, dateObj } = useContext(DatesContext);
+  const { setEvent, setAddEventWithStartEndTime, setType, setAddNewEvent } =
+    useContext(InteractiveContext);
+  const { theDay, dateObj, setOpenModal } = useContext(DatesContext);
   const { preferences } = useContext(UserContext);
 
   const [time, setTime] = useState(dateObj.toLocaleTimeString());
-  const [height, setheight] = useState(0);
+  const [height, setHeight] = useState(0);
+  const [staticTimeHeight, setStaticTimeHeight] = useState(0);
   const [combinedArray, setCombinedArray] = useState([]);
   const [times, setTimes] = useState([]);
+  const [isSettingTime, setIsSettingTime] = useState(false);
+
   const dayViewContainer = useRef(null);
   let interval;
+
+  useEffect(() => {
+    if (times.length > 1) {
+      setIsSettingTime(true);
+    } else {
+      setIsSettingTime(false);
+    }
+  }, [times]);
 
   useEffect(() => {
     const combined = [...todaysEvents, ...todaysReminders];
@@ -78,14 +90,18 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
         (24 * 3600);
       const containerHeight = dayViewContainer.current.clientHeight;
       const newPosition = Math.floor(percentageOfDay * containerHeight);
-      setheight(newPosition);
+      setHeight(newPosition);
       setTime(new Date().toLocaleTimeString());
     }, 1000);
   };
 
   const getHeight = () => {
+    if (staticTimeHeight !== 0) {
+      return staticTimeHeight;
+    }
     if (dayViewContainer.current) {
       const height = dayViewContainer.current.clientHeight / staticTimes.length;
+      setStaticTimeHeight(height);
       return height;
     }
   };
@@ -110,7 +126,7 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
         const newStrings = times.slice(0, index);
         return setTimes(newStrings);
       }
-      if (times.length === 1) {
+      if (times.length > 0) {
         const currentSelection = new Date(
           `${theDay.toDateString()} ${findTime(times[0])}`
         );
@@ -124,19 +140,12 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
           console.error("Invalid Date:", currentSelection, newSelection);
           return;
         }
-        console.log(
-          "current and new selection",
-          currentSelection,
-          newSelection
-        );
         const [earlierTime, laterTime] = [currentSelection, newSelection].sort(
           (a, b) => a - b
         );
         let timesArray = [];
         let startTime = new Date(earlierTime);
-        console.log("earlier and later time", earlierTime, laterTime);
         while (startTime <= laterTime) {
-          console.log("in loop");
           timesArray.push(
             startTime.toLocaleTimeString([], {
               hour: "numeric",
@@ -145,17 +154,49 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
           );
           startTime.setMinutes(startTime.getMinutes() + 30);
         }
-        console.log(timesArray);
         return setTimes(timesArray);
-      }
-      if (times.length > 1) {
-        return;
       }
     }
   };
 
+  const createEvent = () => {
+    setAddEventWithStartEndTime({
+      start: findTime(times[0]),
+      end: findTime(times[times.length - 1]),
+    });
+    setType("event");
+    setAddNewEvent(true);
+    setOpenModal(true);
+  };
+
   return (
     <div className="py-20">
+      {isSettingTime ? (
+        <div className="fixed bottom-5 right-5 left-5 bg-white rounded-md shadow-md p-3">
+          <p>Create an event from</p>
+          <p>
+            {new Date(
+              `${theDay.toDateString()} ${findTime(times[0])}`
+            ).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              hour: "numeric",
+              minute: "2-digit",
+            })}{" "}
+            to{" "}
+            {new Date(
+              `${theDay.toDateString()} ${findTime(times[times.length - 1])}`
+            ).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              hour: "numeric",
+              minute: "2-digit",
+            })}
+          </p>
+          <button onClick={() => createEvent()}>Yes</button>
+          <button onClick={() => setTimes([])}>No</button>
+        </div>
+      ) : null}
       <div ref={dayViewContainer} className="text-sm min-h-[400vh] relative">
         {dateObj.toLocaleDateString() === theDay.toLocaleDateString() ? (
           <motion.div
@@ -168,9 +209,7 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
               </p>
             </div>
           </motion.div>
-        ) : (
-          <p className=""></p>
-        )}
+        ) : null}
         <div>
           <div className="">
             {staticTimes.map((staticTime, index) => (

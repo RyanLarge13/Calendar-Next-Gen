@@ -105,6 +105,15 @@ export const postEvent = (event, token) => {
   return res;
 };
 
+export const updateStartAndEndTimeOnEvent = async (eventId, offset, token) => {
+  const res = Axios.patch(
+    `${productionUrl}/patch/event/startendtime`,
+    { eventId, offset },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return res;
+};
+
 export const createAttachments = (attachments, eventId, token) => {
   const res = Axios.post(
     `${productionUrl}/new/attachments/${eventId}`,

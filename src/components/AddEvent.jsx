@@ -21,7 +21,7 @@ import Toggle from "./Toggle";
 import TimeSetter from "./TimeSetter";
 import SuggestCities from "./SuggestCities";
 
-const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
+const AddEvent = () => {
   const {
     setEvents,
     user,
@@ -30,7 +30,12 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
     setSystemNotif,
     preferences,
   } = useContext(UserContext);
-  const { setType } = useContext(InteractiveContext);
+  const {
+    setType,
+    setAddNewEvent,
+    addEventWithStartEndTime,
+    setAddEventWithStartEndTime,
+  } = useContext(InteractiveContext);
   const { string, setOpenModal, secondString } = useContext(DatesContext);
 
   // Basic event data
@@ -82,8 +87,8 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
   };
 
   useEffect(() => {
-    if (passedStartTime != null) {
-      const splitStartTime = passedStartTime.split(":");
+    if (addEventWithStartEndTime.start != null) {
+      const splitStartTime = addEventWithStartEndTime.start.split(":");
       const today = new Date(string);
       const month = today.getMonth();
       const year = today.getFullYear();
@@ -108,7 +113,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
       setStartWhen(() => newStartTime);
       setStartTimeString(formattedDateString);
     }
-  }, [passedStartTime]);
+  }, [addEventWithStartEndTime.start, addEventWithStartEndTime.end]);
 
   const getEndDate = () => {
     if (secondString) {
@@ -175,6 +180,7 @@ const AddEvent = ({ setAddNewEvent, passedStartTime }) => {
       };
       postEvent(newEvent, localStorage.getItem("authToken"))
         .then((res) => {
+          setAddEventWithStartEndTime({ start: null, end: null });
           setEvents((prev) => [...prev, ...res.data.event]);
           if (res.data.reminders) {
             setReminders((prev) => [...prev, res.data.reminders]);
