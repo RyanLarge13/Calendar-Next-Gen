@@ -11,7 +11,6 @@ import AddList from "./AddList";
 import AddKanban from "./AddKanban";
 import AddTask from "./AddTask";
 import AddSticky from "./AddSticky";
-import { formatDbText } from "../utils/helpers";
 
 const Modal = ({ allDayEvents }) => {
   const { events, holidays, preferences } = useContext(UserContext);
@@ -187,6 +186,7 @@ const Modal = ({ allDayEvents }) => {
                   <DayEvent
                     key={event.id}
                     dayEvent={event}
+                    setDayEvents={setDayEvents}
                     height={height}
                     top={top}
                     thirtyMinuteHeight={staticTimeHeight}

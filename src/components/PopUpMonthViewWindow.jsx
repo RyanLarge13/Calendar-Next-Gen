@@ -34,7 +34,7 @@ const PopUpMonthViewWindow = ({ positions, eventsToRender, day }) => {
         left: `${positions.x}px`,
         transform: "translate(-17vw, -17vh)",
       }}
-      className={`absolute p-2 z-[900] shadow-lg rounded-md min-h-[100px] min-w-80 max-h-40 overflow-y-auto scrollbar-hide ${
+      className={`absolute p-2 z-[900] shadow-lg rounded-md min-h-[100px] max-h-40 overflow-y-auto scrollbar-hide ${
         preferences.darkMode ? "bg-[#222]" : "bg-white"
       }`}
       onWheel={(e) => e.stopPropagation()}
@@ -44,7 +44,7 @@ const PopUpMonthViewWindow = ({ positions, eventsToRender, day }) => {
           preferences.darkMode
             ? "text-white bg-black"
             : "text-black bg-slate-100"
-        } text-sm p-1 rounded-md mb-2`}
+        } text-sm p-1 rounded-md mb-2 font-semibold`}
       >
         {formatTime(new Date(day))}
       </p>

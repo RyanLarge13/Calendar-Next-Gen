@@ -2,6 +2,10 @@ import { useEffect, useRef, useState, useContext } from "react";
 import { motion } from "framer-motion";
 import { staticTimes } from "../constants.js";
 import { formatDbText } from "../utils/helpers.js";
+import { MdEventAvailable, MdEventNote, MdEventRepeat } from "react-icons/md";
+import { MdLocationPin } from "react-icons/md";
+import { FiRepeat } from "react-icons/fi";
+import { IoIosAlarm } from "react-icons/io";
 import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext.jsx";
@@ -10,7 +14,7 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
   const { setEvent, setAddEventWithStartEndTime, setType, setAddNewEvent } =
     useContext(InteractiveContext);
   const { theDay, dateObj, setOpenModal } = useContext(DatesContext);
-  const { preferences } = useContext(UserContext);
+  const { preferences, events } = useContext(UserContext);
 
   const [time, setTime] = useState(dateObj.toLocaleTimeString());
   const [height, setHeight] = useState(0);
@@ -167,37 +171,67 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
     setType("event");
     setAddNewEvent(true);
     setOpenModal(true);
+    setTimes([]);
+  };
+
+  const getColorReminder = (reminder) => {
+    if (reminder.eventRef) {
+      const eventAttached = events.filter((e) => e.id === reminder.eventRef)[0];
+      if (!eventAttached) {
+        return "bg-cyan-200";
+      }
+      return eventAttached.color;
+    } else {
+      return "bg-cyan-200";
+    }
   };
 
   return (
     <div className="py-20">
       {isSettingTime ? (
-        <div className="fixed bottom-5 right-5 left-5 bg-white rounded-md shadow-md p-3">
+        <div className="sticky top-5 w-fit left-5 z-40 bg-white rounded-md shadow-md p-3">
           <p>Create an event from</p>
           <p>
-            {new Date(
-              `${theDay.toDateString()} ${findTime(times[0])}`
-            ).toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-              hour: "numeric",
-              minute: "2-digit",
-            })}{" "}
+            <span className="font-semibold">
+              {new Date(
+                `${theDay.toDateString()} ${findTime(times[0])}`
+              ).toLocaleTimeString("en-US", {
+                hour: "numeric",
+                minute: "2-digit",
+              })}
+            </span>{" "}
             to{" "}
-            {new Date(
-              `${theDay.toDateString()} ${findTime(times[times.length - 1])}`
-            ).toLocaleDateString("en-US", {
+            <span className="font-semibold">
+              {new Date(
+                `${theDay.toDateString()} ${findTime(times[times.length - 1])}`
+              ).toLocaleTimeString("en-US", {
+                hour: "numeric",
+                minute: "2-digit",
+              })}
+            </span>{" "}
+            on{" "}
+            {new Date(theDay).toLocaleDateString("en-US", {
               month: "short",
               day: "numeric",
-              hour: "numeric",
-              minute: "2-digit",
             })}
           </p>
-          <button onClick={() => createEvent()}>Yes</button>
-          <button onClick={() => setTimes([])}>No</button>
+          <div className="flex justify-between items-center mt-3">
+            <button
+              onClick={() => createEvent()}
+              className="px-3 py-2 rounded-md bg-cyan-200 shadow-md"
+            >
+              Yes
+            </button>
+            <button
+              onClick={() => setTimes([])}
+              className="px-3 py-2 rounded-md bg-rose-200 shadow-md"
+            >
+              No
+            </button>
+          </div>
         </div>
       ) : null}
-      <div ref={dayViewContainer} className="text-sm min-h-[400vh] relative">
+      <div ref={dayViewContainer} className="text-sm min-h-[800vh] relative">
         {dateObj.toLocaleDateString() === theDay.toLocaleDateString() ? (
           <motion.div
             animate={{ top: height }}
@@ -258,13 +292,24 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
                     }
               }
               onClick={() => (item.start ? setEvent(item) : null)}
-              className={`${item.color || "bg-slate-200"} ${
-                item.start ? "z-[10] left-20" : "z-[50] left-60"
-              } absolute right-5 p-2 rounded-md shadow-md`}
+              className={`${item.color || getColorReminder(item)} ${
+                item.start ? "z-[10]" : "z-[50]"
+              } absolute right-5 p-2 rounded-md shadow-md left-20`}
             >
-              <p className="font-bold bg-white bg-opacity-50 p-2 rounded-md">
-                {item.summary || item.title}
-              </p>
+              <div className="flex justify-between items-center bg-white bg-opacity-50 p-2 rounded-md">
+                <p className="font-bold">{item.summary || item.title}</p>
+                <div className="flex">
+                  <p>
+                    {(item?.kind === "Event" && <MdEventNote />) ||
+                      (item?.kind === "Reminder" && <MdEventAvailable />) ||
+                      (item?.kind === "Repeat" && <MdEventRepeat />)}
+                  </p>
+                  <p>{item?.repeats?.repeat && <FiRepeat />}</p>
+                  <p>{item?.reminders?.reminder && <IoIosAlarm />}</p>
+                  <p>{item?.location && <MdLocationPin />}</p>
+                  <p>{item.title ? <IoIosAlarm /> : null}</p>
+                </div>
+              </div>
               <div className="mr-5 text-sm bg-white bg-opacity-30 rounded-md p-2 w-full mt-2">
                 {formatDbText(item.description || item.notes || "").map(
                   (text, index) => (

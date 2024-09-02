@@ -8,7 +8,13 @@ import { IoIosAlarm } from "react-icons/io";
 import { formatDbText } from "../utils/helpers";
 import { updateStartAndEndTimeOnEvent } from "../utils/api";
 
-const DayEvent = ({ dayEvent, height, top, thirtyMinuteHeight }) => {
+const DayEvent = ({
+  dayEvent,
+  setDayEvents,
+  height,
+  top,
+  thirtyMinuteHeight,
+}) => {
   const { setEvent } = useContext(InteractiveContext);
 
   const [start, setStart] = useState(0);
@@ -25,7 +31,24 @@ const DayEvent = ({ dayEvent, height, top, thirtyMinuteHeight }) => {
     const token = localStorage.getItem("authToken");
     updateStartAndEndTimeOnEvent(dayEvent.id, amount, token)
       .then((res) => {
-        console.log(res);
+        const start = new Date(dayEvent.start.startTime);
+        const end = new Date(dayEvent.end.endTime);
+        const newStart = start.setMinutes(start.getMinutes() + amount * 30);
+        const newEnd = end.setMinutes(start.getMinutes() + amount * 30);
+        setDayEvents((prev) => {
+          return prev.map((item) => {
+            if (item.id === dayEvent.id) {
+              return {
+                ...item,
+                startDate: newStart,
+                start: { ...item.start, startTime: newStart },
+                end: { ...item.end, endTime: newEnd },
+              };
+            } else {
+              return item;
+            }
+          });
+        });
       })
       .catch((err) => {
         console.log(err);

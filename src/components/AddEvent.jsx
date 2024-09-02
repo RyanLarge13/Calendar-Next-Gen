@@ -113,6 +113,32 @@ const AddEvent = () => {
       setStartWhen(() => newStartTime);
       setStartTimeString(formattedDateString);
     }
+    if (addEventWithStartEndTime.end !== null) {
+      const splitEndTime = addEventWithStartEndTime.end.split(":");
+      const today = new Date(string);
+      const month = today.getMonth();
+      const year = today.getFullYear();
+      const day = today.getDate();
+      const newEndTime = new Date(
+        year,
+        month,
+        day,
+        splitEndTime[0],
+        splitEndTime[1]
+      );
+      const formattedDateString = () => {
+        return `${
+          splitEndTime[0] > 12
+            ? splitEndTime[0] % 12
+            : splitEndTime[0] == 0
+            ? "12"
+            : splitEndTime[0]
+        }:${splitEndTime[1]} ${splitEndTime[0] >= 12 ? "PM" : "AM"}`;
+      };
+      setEndTime(true);
+      setEndWhen(() => newEndTime);
+      setEndTimeString(formattedDateString);
+    }
   }, [addEventWithStartEndTime.start, addEventWithStartEndTime.end]);
 
   const getEndDate = () => {

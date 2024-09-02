@@ -39,10 +39,17 @@ const Calendar = () => {
   const containerRef = useRef(null);
 
   useEffect(() => {
-    const eventsToday = [...events, ...holidays].filter(
-      (item) =>
-        new Date(item.date).toLocaleDateString() === theDay.toLocaleDateString()
-    );
+    if (event || view === "day") {
+      const eventsToday = [...events, ...holidays].filter(
+        (item) =>
+          new Date(item.date).toLocaleDateString() ===
+          theDay.toLocaleDateString()
+      );
+      setTodaysEvents(eventsToday);
+    }
+  }, [event, view, theDay]);
+
+  useEffect(() => {
     if (string) {
       const eventsForDay = [...events, ...holidays].filter((event) => {
         const startDate = new Date(event.startDate);
@@ -55,10 +62,10 @@ const Calendar = () => {
           currentDate.setDate(currentDate.getDate() + 1)
         ) {
           if (currentDate.toLocaleDateString() === string) {
-            return true; // Event includes the 'string' date
+            return true;
           }
         }
-        return false; // Event does not include the 'string' date
+        return false;
       });
       const fullDayEvents = eventsForDay.filter((event) => {
         const startDate = new Date(event.startDate);
@@ -77,7 +84,6 @@ const Calendar = () => {
       });
       setAllDayEvents(fullDayEvents);
     }
-    setTodaysEvents(eventsToday);
     const remindersToday = reminders.filter(
       (reminder) =>
         new Date(reminder.time).toLocaleDateString() ===

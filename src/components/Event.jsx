@@ -128,7 +128,7 @@ const Event = ({ dayEvents }) => {
       initial={{ y: "100%" }}
       exit={{ y: "100%" }}
       animate={{ y: 0 }}
-      className={`z-[901] will-change-transform fixed inset-0 top-[6%] rounded-md ${
+      className={`z-[901] will-change-transform fixed inset-0 lg:left-0 lg:bottom-0 lg:right-[66%] scrollbar-slick top-[6%] rounded-md ${
         preferences.darkMode ? "bg-[#222]" : "bg-white"
       } overflow-y-auto`}
     >
