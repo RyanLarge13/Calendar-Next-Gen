@@ -1,4 +1,4 @@
-import { useState, useRef, useContext } from "react";
+import { useState, useRef, useContext, useLayoutEffect } from "react";
 import { motion, useDragControls } from "framer-motion";
 import { deleteStickyNote, updateSticky } from "../utils/api.js";
 import {
@@ -20,12 +20,14 @@ const Sticky = ({ sticky, index }) => {
   const { setSystemNotif, setStickies, stickies } = useContext(UserContext);
   const { event } = useContext(InteractiveContext);
 
-  const [expand, setExpand] = useState(true);
+  const [expand, setExpand] = useState(false);
   const [pin, setPin] = useState(sticky.pin);
   const [fullScreen, setFullScreen] = useState(false);
   const [minimize, setMinimize] = useState(true);
   const [edit, setEdit] = useState(false);
   const [editText, setEditText] = useState(sticky.body);
+  const [top, setTop] = useState(0);
+  const [left, setLeft] = useState(0);
 
   const stickyRef = useRef(null);
 
@@ -54,20 +56,6 @@ const Sticky = ({ sticky, index }) => {
 
   const startDrag = (e) => {
     controls.start(e);
-  };
-
-  const getLeft = () => {
-    if (stickyRef.current) {
-      const left = stickyRef.current.getBoundingClientRect().left;
-      return -left;
-    }
-  };
-
-  const getTop = () => {
-    if (stickyRef.current) {
-      const top = stickyRef.current.getBoundingClientRect().top;
-      return -top;
-    }
   };
 
   const confirmDelete = (stickyId) => {
@@ -121,31 +109,24 @@ const Sticky = ({ sticky, index }) => {
     <motion.div
       initial={{ opacity: 0 }}
       exit={{ scale: 0 }}
-      animate={
-        event
-          ? { opacity: 0 }
-          : !minimize
-          ? expand
-            ? fullScreen
-              ? {
-                  height: window.innerHeight,
-                  top: getTop(),
-                  left: getLeft(),
-                  width: window.innerWidth,
-                  opacity: 1,
-                }
-              : { opacity: 1, height: 500, width: 250 }
-            : { opacity: 1, height: 175, width: 175 }
-          : {
-              opacity: 1,
-              height: 150,
-              width: 10,
-              overflow: "hidden",
-              left: getLeft(),
-              top: index * 50,
-            }
-      }
-      drag={fullScreen ? false : !!minimize ? "y" : !pin}
+      animate={{
+        opacity: event ? 0 : 1,
+        height: fullScreen
+          ? window.innerHeight
+          : expand
+          ? 500
+          : minimize
+          ? 150
+          : 175,
+        width: fullScreen
+          ? window.innerWidth
+          : expand
+          ? 250
+          : minimize
+          ? 10
+          : 175,
+      }}
+      drag={fullScreen ? false : minimize ? "y" : !pin}
       dragControls={controls}
       dragListener={false}
       dragConstraints={{
@@ -160,11 +141,12 @@ const Sticky = ({ sticky, index }) => {
         minimize ? "text-transparent" : "text-black"
       }`}
       onClick={() => {
-        if (!!minimize) {
+        if (minimize) {
           if ("vibrate" in navigator) {
             navigator.vibrate(75);
           }
           setMinimize(false);
+          setExpand(true);
         }
       }}
     >
@@ -177,7 +159,7 @@ const Sticky = ({ sticky, index }) => {
       >
         <div className="flex justify-between items-center gap-x-3">
           <button onClick={() => setPin((prev) => !prev)}>
-            {!!pin ? <AiFillPushpin /> : <AiOutlinePushpin />}
+            {pin ? <AiFillPushpin /> : <AiOutlinePushpin />}
           </button>
           <button
             onClick={() => (!edit ? setEdit(true) : handleSave())}
@@ -185,15 +167,31 @@ const Sticky = ({ sticky, index }) => {
           >
             {edit ? <MdSave /> : <BsFillPenFill />}
           </button>
-          <button onClick={() => setExpand((prev) => !prev)}>
-            {!!expand ? <BiCollapse /> : <BiExpand />}
+          <button
+            onClick={() => {
+              if (fullScreen && !expand) {
+                return;
+              }
+              if (fullScreen && expand) {
+                setFullScreen(false);
+                setExpand(false);
+              }
+              if (!expand && !fullScreen) {
+                setExpand(true);
+              }
+              if (expand && !fullScreen) {
+                setExpand(false);
+              }
+            }}
+          >
+            {expand ? <BiCollapse /> : <BiExpand />}
           </button>
         </div>
         <button type="text" onClick={() => confirmDelete(sticky.id)}>
           <AiFillCloseCircle />
         </button>
       </div>
-      {!!expand && (
+      {expand && (
         <div
           className={`${
             minimize ? "bg-transparent shadow-none" : "bg-slate-100 shadow-md"
@@ -202,14 +200,20 @@ const Sticky = ({ sticky, index }) => {
           <button onClick={() => setFullScreen((prev) => !prev)}>
             <FiMaximize />
           </button>
-          <button onClick={() => setMinimize(true)}>
+          <button
+            onClick={() => {
+              setMinimize(true);
+              setExpand(false);
+              setFullScreen(false);
+            }}
+          >
             <FaRegWindowMinimize />
           </button>
         </div>
       )}
       <div
         className={`${
-          !!expand ? "mt-20" : "mt-5"
+          expand ? "mt-20" : "mt-5"
         } p-2 overflow-y-auto scrollbar-slick overflow-x-hidden scrollbar-hide absolute inset-0 z-[-1] break-words`}
       >
         {!edit ? (

@@ -43,7 +43,7 @@ const MainMenu = ({ timeOfDay }) => {
                   className={`${event.color} absolute left-0 top-0 bottom-0 w-2 rounded-md`}
                 ></div>
                 {event.diff < 1 && event.diff >= 0 ? (
-                  <p className="text-2xl font-semibold mb-2">today</p>
+                  <p className="text-2xl font-semibold mb-2">Today</p>
                 ) : event.diff >= 1 && event.diff < 2 ? (
                   <p className="text-2xl font-semibold mb-2">Tomorrow</p>
                 ) : (
