@@ -120,7 +120,7 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
     } else {
       setRemindersToRender(reminders);
     }
-  }, [sort, sortOpt]);
+  }, [sort, sortOpt, reminders]);
 
   useEffect(() => {
     if (search && searchTxt) {
