@@ -211,19 +211,70 @@ const closeOpenNotifications = () => {
   });
 };
 
-//backgorun and periodic sync
+const getTokenFromDb = async () => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open("myCalngDB", 2);
+    request.onsuccess = (event) => {
+      const db = event.target.result;
+      const transaction = db.transaction(["auth"], "readonly");
+      const store = transaction.objectStore("auth");
+      const tokenRequest = store.get(0);
+      tokenRequest.onsuccess = () =>
+        resolve(tokenRequest.result ? tokenRequest.result.token : null);
+      tokenRequest.onerror = () => reject(tokenRequest.error);
+    };
+    request.onerror = () => reject(request.error);
+  });
+};
+
+//background and periodic sync
 self.addEventListener("sync", (event) => {
   if (event.tag === "background-sync") {
-    event.waitUntil(backgroundSync()); // Call your sync function
+    event.waitUntil(backgroundSync());
   }
 });
 
-self.addEventListener("periodicsync", (event) => {
+self.addEventListener("periodicsync", async (event) => {
   if (event.tag === "periodic-sync") {
-    event.waitUntil(periodicSync()); // Call your periodic sync function
+    try {
+      const token = await getTokenFromDb();
+      if (!token) {
+        console.log("No token in indexDB for periodic sync");
+        return;
+      }
+      event.waitUntil(periodicSync(token));
+    } catch (err) {
+      console.log(`Error pulling token from db: ${err}`);
+    }
   }
 });
 
 const backgroundSync = () => {};
 
-const periodicSync = () => {};
+const periodicSync = async (token) => {
+  const cache = await caches.open("app-cache");
+  try {
+    const response = await fetch(
+      "https://calendar-next-gen-production.up.railway.app/user/data",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    await cache.put("/user/data", response);
+    self.clients.matchAll().then((clients) => {
+      clients.forEach((client) => {
+        client.postMessage({
+          type: "user-data-update",
+          data: response.json(),
+        });
+      });
+    });
+    console.log("Periodic sync");
+  } catch (err) {
+    console.log(`Error during periodic sync: ${err}`);
+  }
+};

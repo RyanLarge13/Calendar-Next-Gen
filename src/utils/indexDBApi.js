@@ -18,7 +18,7 @@ class IndexedDBManager {
   handleError(event) {
     console.log(`Error opening your local data storage: ${event}`);
   }
-  // Run update on every new version
+
   handleUpgradeNeeded(event) {
     const myDb = event.target.result;
     if (myDb.objectStoreNames.contains("events")) {
@@ -29,6 +29,7 @@ class IndexedDBManager {
       objStore.createIndex("token", "token", { unique: false });
     }
   }
+
   setAuthToken(token) {
     if (this.db) {
       const tx = this.db.transaction(["auth"], "readwrite");
@@ -39,6 +40,7 @@ class IndexedDBManager {
       };
     }
   }
+
   getAuthToken() {
     if (this.db) {
       const tx = this.db.transaction(["auth"], "readonly");
@@ -47,6 +49,7 @@ class IndexedDBManager {
       req.onsuccess = () => (req.result ? req.result.token : null);
     }
   }
+
   removeAuth() {
     if (this.db) {
       const tx = this.db.transaction(["auth"], "readwrite");

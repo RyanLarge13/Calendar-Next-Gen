@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { weekDays } from "../constants";
 import { AiFillCalendar } from "react-icons/ai";
-import { formatDbText } from "../utils/helpers.js";
+import { formatDbText, formatTime } from "../utils/helpers.js";
 import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext";
@@ -128,9 +128,14 @@ const AgendaView = () => {
       <div className="mt-10">
         {timesForEvents.map((time, index) => (
           <div key={index} className="my-20">
-            <p className="mb-5 text-xl font-semibold border-b-cyan-300">
-              {time}
-            </p>
+            <div>
+              <p className="mb-5 text-xl font-semibold border-b-cyan-300">
+                {time}
+              </p>
+              <p className="text-semibold ml-5 mt-3">
+                In {formatTime(new Date(time))}
+              </p>
+            </div>
             {selectedEvents.length > 0 ? (
               selectedEvents.map((event) => {
                 if (

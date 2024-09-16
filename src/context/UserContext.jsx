@@ -265,6 +265,41 @@ export const UserProvider = ({ children }) => {
     }
   }, [authToken]);
 
+  const updateUserData = (newData) => {
+    if (!newData || !newData.user) {
+      console.log("No data returned from service worker, canceling update");
+      return;
+    }
+    const user = newData.user;
+    const basicUser = {
+      username: user.username,
+      email: user.email,
+      avatarUrl: user.avatarUrl,
+      id: user.id,
+      birthday: user.birthday,
+      createdAt: user.createAt,
+    };
+    setUser(basicUser);
+    localStorage.setItem("user", JSON.stringify(basicUser));
+    setEvents(user.events);
+    setStaticEvents(user.events);
+    const sortedReminders = user.reminders.sort(
+      (a, b) => new Date(a.time) - new Date(b.time)
+    );
+    setReminders(sortedReminders);
+    const sortedLists = user.lists.sort(
+      (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+    );
+    setLists(sortedLists);
+    setKanbans(user.kanbans);
+    setStickies(user.stickies);
+    generateQrCode(user.email);
+    setUserTasks(user.tasks);
+    console.log(
+      "service worker background sync successfully updated user data"
+    );
+  };
+
   const generateQrCode = (userEmail) => {
     const qr = QRCode(0, "L");
     const data = `https://calendar-next-gen-production.up.railway.app/friends/add/request/qrcode/${userEmail}`;
@@ -384,12 +419,19 @@ export const UserProvider = ({ children }) => {
       if ("periodicSync" in registration) {
         registration.periodicSync.register({
           tag: "periodic-sync",
-          minInterval: 24 * 60 * 60 * 1000, // Minimum interval in milliseconds
+          minInterval: 60 * 60 * 1000,
         });
       }
       return registration.sync.register("background-sync");
     });
   };
+
+  navigator.serviceWorker.addEventListener("message", (event) => {
+    if (event.data && event.data.type === "user-data-update") {
+      const newData = event.data.data;
+      updateUserData(newData);
+    }
+  });
 
   return (
     <UserContext.Provider
