@@ -19,7 +19,7 @@ notifRouter.get("/:username/notifs", auth, getOldNotifications);
 notifRouter.post("/subscribe/notifs", auth, subscribeToNotifications);
 notifRouter.post("/add/subscription", auth, addSubscriptionToUser);
 notifRouter.post("/mark-as-read", markAsRead);
-notifRouter.post("/mark-as-read", markAsUnRead);
+notifRouter.post("/mark-as-unread", markAsUnRead);
 notifRouter.post("/new/notification", auth, createNotification);
 notifRouter.patch("/:username/update/notif", auth, updateNotification);
 notifRouter.delete("/notification/:notifId", auth, deleteNotification);

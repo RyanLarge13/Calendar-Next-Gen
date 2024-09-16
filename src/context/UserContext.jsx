@@ -417,9 +417,10 @@ export const UserProvider = ({ children }) => {
   const registerServiceWorkerSync = () => {
     navigator.serviceWorker.ready.then((registration) => {
       if ("periodicSync" in registration) {
+        console.log("Period sync in service worker");
         registration.periodicSync.register({
           tag: "periodic-sync",
-          minInterval: 60 * 60 * 1000,
+          minInterval: 10 * 60 * 1000,
         });
       }
       return registration.sync.register("background-sync");

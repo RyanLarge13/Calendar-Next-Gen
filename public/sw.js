@@ -1,7 +1,7 @@
 import { precacheAndRoute, cleanupOutdatedCaches } from "workbox-precaching";
 import { clientsClaim } from "workbox-core";
 import { registerRoute } from "workbox-routing";
-import { NetworkFirst } from "workbox-strategies";
+import { StaleWhileRevalidate } from "workbox-strategies";
 
 self.skipWaiting();
 clientsClaim();
@@ -12,7 +12,7 @@ precacheAndRoute(self.__WB_MANIFEST);
 
 registerRoute(
   /^https:\/\/calendar-next-gen-production\.up\.railway\.app\/user\/data/,
-  new NetworkFirst({ cacheName: "api-cache" })
+  new StaleWhileRevalidate({ cacheName: "api-cache" })
 );
 
 const formatDbText = (text) => {
@@ -273,7 +273,7 @@ const periodicSync = async (token) => {
         });
       });
     });
-    console.log("Periodic sync");
+    console.log("Periodic sync success");
   } catch (err) {
     console.log(`Error during periodic sync: ${err}`);
   }

@@ -20,7 +20,7 @@ const StaticStickies = () => {
       {stickies.map((sticky) => (
         <div
           key={sticky.id}
-          className={`${sticky.color} w-full max-h-80 p-5 overflow-auto rounded-md shadow-md`}
+          className={`${sticky.color} w-full p-5 rounded-md shadow-md`}
         >
           <p className="text-2xl mb-3 border-b font-semibold border-b-black">
             {sticky.title}
