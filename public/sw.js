@@ -1,19 +1,43 @@
-import { precacheAndRoute, cleanupOutdatedCaches } from "workbox-precaching";
-import { clientsClaim } from "workbox-core";
+import { precacheAndRoute } from "workbox-precaching";
 import { registerRoute } from "workbox-routing";
-import { StaleWhileRevalidate } from "workbox-strategies";
+import { CacheFirst } from "workbox-strategies";
 
-self.skipWaiting();
-clientsClaim();
-
-cleanupOutdatedCaches();
+const productionUrl = "https://calendar-next-gen-production.up.railway.app";
 
 precacheAndRoute(self.__WB_MANIFEST);
 
 registerRoute(
- /^https:\/\/calendar-next-gen-production\.up\.railway\.app\/user\/data/,
- new StaleWhileRevalidate({ cacheName: "api-cache" })
+ ({ request }) =>
+  request.destination === "style" || request.destination === "script",
+ new CacheFirst({
+  cacheName: "script-style-cache"
+ })
 );
+
+registerRoute(
+ ({ request }) => request.destination === "document",
+ new CacheFirst({
+  cacheName: "html-cache"
+ })
+);
+
+registerRoute(
+ ({ request }) =>
+  request.destination === "image" && request.url.endsWith(".svg"),
+ new CacheFirst({
+  cacheName: "svg-cache"
+ })
+);
+
+registerRoute(
+ ({ request }) =>
+  request.destination === "image" && request.url.endsWith(".png"),
+ new CacheFirst({
+  cacheName: "png-cache"
+ })
+);
+
+self.skipWaiting();
 
 const formatDbText = text => {
  if (typeof text !== "string") {
@@ -30,6 +54,35 @@ const formatDbText = text => {
   return text.trim();
  }
 };
+
+// Install redundant at the moment from use of workbox and VitePWA config automatically handling static assets
+// self.addEventListener("install", event => {});
+
+self.addEventListener("activate", event => {
+ const cacheWhitelist = [""];
+ event.waitUntil(
+  caches.keys().then(cacheNames => {
+   return Promise.all(
+    cacheNames.map(cacheName => {
+     if (!cacheWhitelist.includes(cacheName)) {
+      return caches.delete(cacheName);
+     }
+    })
+   );
+  })
+ );
+ event.waitUntil(self.clients.claim());
+});
+
+self.addEventListener("fetch", event => {
+ if (event.request.url.includes("/user/data")) {
+  event.respondWith(
+   caches.match(event.request).then(cachedResponse => {
+    return cachedResponse || fetch(event.request);
+   })
+  );
+ }
+});
 
 self.addEventListener("push", event => {
  let payload = {};
@@ -146,7 +199,7 @@ self.addEventListener("notificationclick", event => {
  }
  if (event.action === "mark-as-read") {
   event.notification.close();
-  fetch("https://calendar-next-gen-production.up.railway.app/mark-as-read", {
+  fetch(`${productionUrl}/mark-as-read`, {
    method: "POST",
    headers: {
     "Content-Type": "application/json"
@@ -165,18 +218,15 @@ self.addEventListener("notificationclick", event => {
  }
  if (event.action === "delete-notif") {
   event.notification.close();
-  fetch(
-   `https://calendar-next-gen-production.up.railway.app/delete-notif/notification/${notifId}`,
-   {
-    method: "DELETE",
-    headers: {
-     "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-     notifId: notifId
-    })
-   }
-  )
+  fetch(`${productionUrl}/delete-notif/notification/${notifId}`, {
+   method: "DELETE",
+   headers: {
+    "Content-Type": "application/json"
+   },
+   body: JSON.stringify({
+    notifId: notifId
+   })
+  })
    .then(() => {
     event.notification.close();
    })
@@ -200,19 +250,18 @@ self.addEventListener("message", async event => {
  if (event.data && event.data.command === "user-cache-update") {
   event.waitUntil(
    (async () => {
-    const cache = await caches.open("app-cache");
+    const cache = await caches.open(`${productionUrl}/user/data`);
     const responseToCache = new Response(JSON.stringify(event.data.data), {
      headers: { "Content-Type": "application/json" }
     });
-    await cache.put("/user/data", responseToCache);
-    console.log("Successfully updated cache after initial fetch")
+    await cache.put(`${productionUrl}/user/data`, responseToCache);
+    console.log("Successfully updated cache after initial fetch");
    })()
   );
  }
 });
 
 const closeOpenNotifications = () => {
- // Get a list of open notifications
  self.registration.getNotifications().then(notifications => {
   notifications.forEach(notification => {
    notification.close();
@@ -261,19 +310,16 @@ self.addEventListener("periodicsync", async event => {
 const backgroundSync = () => {};
 
 const periodicSync = async token => {
- const cache = await caches.open("app-cache");
+ const cache = await caches.open(`${productionUrl}/user/data`);
  try {
-  const response = await fetch(
-   "https://calendar-next-gen-production.up.railway.app/user/data",
-   {
-    method: "GET",
-    headers: {
-     "Content-Type": "application/json",
-     Authorization: `Bearer ${token}`
-    }
+  const response = await fetch(`${productionUrl}/user/data`, {
+   method: "GET",
+   headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`
    }
-  );
-  await cache.put("/user/data", response);
+  });
+  await cache.put(`${productionUrl}/user/data`, response);
   self.clients.matchAll().then(clients => {
    clients.forEach(client => {
     client.postMessage({
