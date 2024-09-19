@@ -6,9 +6,9 @@ const StaticStickies = () => {
   const { stickies } = useContext(UserContext);
 
   const breakpointColumnsObj = {
-    default: 4, // Number of columns by default
-    1100: 3, // Number of columns on screens > 1100px
-    700: 2, // Number of columns on screens > 700px
+    default: 3, // Number of columns by default
+    1100: 2, // Number of columns on screens > 1100px
+    700: 1, // Number of columns on screens > 700px
   };
 
   return stickies.length > 0 ? (
@@ -20,7 +20,7 @@ const StaticStickies = () => {
       {stickies.map((sticky) => (
         <div
           key={sticky.id}
-          className={`${sticky.color} w-full p-5 rounded-md shadow-md`}
+          className={`${sticky.color} w-full max-h-screen overflow-auto p-5 rounded-md shadow-md`}
         >
           <p className="text-2xl mb-3 border-b font-semibold border-b-black">
             {sticky.title}

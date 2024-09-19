@@ -31,10 +31,6 @@ const formatDbText = (text) => {
   }
 };
 
-self.addEventListener("fetch", (event) => {
-  console.log(`SW fetch event logging: ${JSON.stringify(event)}`);
-});
-
 self.addEventListener("push", (event) => {
   let payload = {};
   if (event.data) {
@@ -196,7 +192,7 @@ self.addEventListener("message", (event) => {
   if (event.data && event.data.type === "SKIP_WAITING") {
     self.skipWaiting();
   }
-  if (event.data && event.data.command === "closeNotifications") {
+  if (event.data && event.data.command === "close-notifications") {
     closeOpenNotifications();
     console.log("CLosing notifications");
   }

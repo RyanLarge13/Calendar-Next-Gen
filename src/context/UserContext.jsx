@@ -391,7 +391,7 @@ export const UserProvider = ({ children }) => {
     });
     window.addEventListener("beforeunload", () => {
       if (serverSentSource !== null) {
-        serverSentSource.close(); // Close the SSE connection before unloading the window
+        serverSentSource.close();
       }
     });
   };
@@ -430,6 +430,7 @@ export const UserProvider = ({ children }) => {
   navigator.serviceWorker.addEventListener("message", (event) => {
     if (event.data && event.data.type === "user-data-update") {
       const newData = event.data.data;
+      console.log("Updating user data");
       updateUserData(newData);
     }
   });
