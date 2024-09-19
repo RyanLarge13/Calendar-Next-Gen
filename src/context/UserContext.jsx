@@ -170,6 +170,12 @@ export const UserProvider = ({ children }) => {
       getUserData(authToken)
         .then((res) => {
           const user = res.data.user;
+          if (navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({
+        type: "user-cache-update",
+        data: user
+      });
+    }
           const basicUser = {
             username: user.username,
             email: user.email,
