@@ -171,11 +171,11 @@ export const UserProvider = ({ children }) => {
         .then((res) => {
           const user = res.data.user;
           if (navigator.serviceWorker.controller) {
-      navigator.serviceWorker.controller.postMessage({
-        type: "user-cache-update",
-        data: user
-      });
-    }
+            navigator.serviceWorker.controller.postMessage({
+              type: "user-cache-update",
+              data: res,
+            });
+          }
           const basicUser = {
             username: user.username,
             email: user.email,
@@ -411,7 +411,7 @@ export const UserProvider = ({ children }) => {
       return sorted;
     });
     setSystemNotif({ show: false });
-    markAsRead(notification.id);
+    markAsRead(notifId);
   };
 
   const createIndexedDb = () => {
@@ -424,9 +424,15 @@ export const UserProvider = ({ children }) => {
     navigator.serviceWorker.ready.then((registration) => {
       if ("periodicSync" in registration) {
         console.log("Period sync in service worker");
-        registration.periodicSync.register({
-          tag: "periodic-sync",
-          minInterval: 10 * 60 * 1000,
+        registration.periodicSync.getTags().then((tags) => {
+          if (tags.includes("periodic-sync")) {
+            console.log("Periodic sync already registered");
+            return;
+          }
+        });
+        console.log("Registering periodic sync");
+        registration.periodicSync.register("periodic-sync", {
+          minInterval: 2 * 60 * 1000,
         });
       }
       return registration.sync.register("background-sync");
@@ -434,9 +440,10 @@ export const UserProvider = ({ children }) => {
   };
 
   navigator.serviceWorker.addEventListener("message", (event) => {
+    console.log(`Message from service worker to client: ${event.data.type}`);
     if (event.data && event.data.type === "user-data-update") {
       const newData = event.data.data;
-      console.log("Updating user data");
+      console.log(`Updating user data: ${newData}`);
       updateUserData(newData);
     }
   });
