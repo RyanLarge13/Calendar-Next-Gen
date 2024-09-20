@@ -168,13 +168,20 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     if (authToken) {
       getUserData(authToken)
-        .then((res) => {
+        .then(async (res) => {
           const user = res.data.user;
           if (navigator.serviceWorker.controller) {
-            navigator.serviceWorker.controller.postMessage({
-              type: "user-cache-update",
-              data: res,
-            });
+            try {
+              const data = await res.json();
+              navigator.serviceWorker.controller.postMessage({
+                type: "user-cache-update",
+                data: data,
+              });
+            } catch (err) {
+              console.log(
+                `Error JSON-ing network response for user data: ${err}\n\nNo fresh data sent to service worker to update cache`
+              );
+            }
           }
           const basicUser = {
             username: user.username,
