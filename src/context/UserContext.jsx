@@ -437,7 +437,7 @@ export const UserProvider = ({ children }) => {
           }
           console.log("Registering periodic sync");
           registration.periodicSync.register("periodic-sync", {
-            minInterval: 2 * 60 * 1000,
+            minInterval: 24 * 60 * 60 * 1000,
           });
         });
       }
