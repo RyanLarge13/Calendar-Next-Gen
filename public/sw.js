@@ -257,22 +257,9 @@ self.addEventListener("message", async (event) => {
     closeOpenNotifications();
     console.log("Closing notifications");
   }
-  if (event.data && event.data.type === "user-cache-update") {
+  if (event.data && event.data.command === "user-cache-update") {
     console.log("user cache update from front-end manually called");
-    event.waitUntil(
-      (async () => {
-        const cache = await caches.open("user-data");
-        const { status, statusText, headers, body } = event.data.data;
-        const headerObj = new Headers(headers);
-        const response = new Response(body, {
-          status: status,
-          statusText: statusText,
-          headers: headerObj,
-        });
-        await cache.put(`${productionUrl}/user/data`, response);
-        console.log("Successfully updated cache after initial fetch");
-      })()
-    );
+    event.waitUntil(periodicSync(event.data.token));
   }
 });
 

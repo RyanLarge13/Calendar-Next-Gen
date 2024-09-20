@@ -172,24 +172,13 @@ export const UserProvider = ({ children }) => {
           const user = res.data.user;
           if (navigator.serviceWorker.controller) {
             try {
-              const headers = {};
-              res.headers.forEach((value, key) => {
-                headers[key] = value;
-              });
-              const body = await res.clone().text();
               navigator.serviceWorker.controller.postMessage({
-                type: "user-cache-update",
-                data: {
-                  url: res.url,
-                  status: res.status,
-                  statusText: res.statusText,
-                  headers: headers,
-                  body: body,
-                },
+                command: "user-cache-update",
+                token: authToken,
               });
             } catch (err) {
               console.log(
-                `Error serializing response for user data: ${err}\n\nNo fresh data sent to service worker to update cache`
+                `Error sending message to service worker to update user cache: ${err}\n\nNo fresh data sent to service worker to update cache`
               );
             }
           }
