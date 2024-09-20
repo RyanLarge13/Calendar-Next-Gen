@@ -262,10 +262,14 @@ self.addEventListener("message", async (event) => {
     event.waitUntil(
       (async () => {
         const cache = await caches.open("user-data");
-        const responseToCache = new Response(JSON.stringify(event.data.data), {
-          headers: { "Content-Type": "application/json" },
+        const { status, statusText, headers, body } = event.data.data;
+        const headerObj = new Headers(headers);
+        const response = new Response(body, {
+          status: status,
+          statusText: statusText,
+          headers: headerObj,
         });
-        await cache.put(`${productionUrl}/user/data`, responseToCache);
+        await cache.put(`${productionUrl}/user/data`, response);
         console.log("Successfully updated cache after initial fetch");
       })()
     );
