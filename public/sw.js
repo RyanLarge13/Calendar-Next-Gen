@@ -59,19 +59,20 @@ const formatDbText = (text) => {
 // self.addEventListener("install", event => {});
 
 self.addEventListener("activate", (event) => {
-  const cacheWhitelist = [""];
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (!cacheWhitelist.includes(cacheName)) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-  );
-  event.waitUntil(self.clients.claim());
+  // Stopping clearing of cache for now
+  // const cacheWhitelist = [""];
+  // event.waitUntil(
+  //   caches.keys().then((cacheNames) => {
+  //     return Promise.all(
+  //       cacheNames.map((cacheName) => {
+  //         if (!cacheWhitelist.includes(cacheName)) {
+  //           return caches.delete(cacheName);
+  //         }
+  //       })
+  //     );
+  //   })
+  // );
+  // event.waitUntil(self.clients.claim());
 });
 
 self.addEventListener("fetch", (event) => {
