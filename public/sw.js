@@ -334,15 +334,20 @@ const periodicSync = async (token) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    await cache.put(`${productionUrl}/user/data`, response);
+    if (!response.ok) {
+      throw new Error(`Network response was not ok: ${response.statusText}`);
+    }
+    await cache.put(`${productionUrl}/user/data`, response.clone());
+    const data = await response.json();
     self.clients.matchAll().then((clients) => {
       clients.forEach((client) => {
         client.postMessage({
           type: "user-data-update",
-          data: response.json(),
+          data: data,
         });
       });
     });
+
     console.log("Periodic sync success");
   } catch (err) {
     console.log(`Error during periodic sync: ${err}`);

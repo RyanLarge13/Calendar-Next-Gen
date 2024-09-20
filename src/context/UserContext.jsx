@@ -424,18 +424,19 @@ export const UserProvider = ({ children }) => {
     navigator.serviceWorker.ready.then((registration) => {
       if ("periodicSync" in registration) {
         console.log("Period sync in service worker");
-        registration.periodicSync.getTags().then((tags) => {
+        return registration.periodicSync.getTags().then((tags) => {
           if (tags.includes("periodic-sync")) {
             console.log("Periodic sync already registered");
             return;
           }
-        });
-        console.log("Registering periodic sync");
-        registration.periodicSync.register("periodic-sync", {
-          minInterval: 2 * 60 * 1000,
+          console.log("Registering periodic sync");
+          registration.periodicSync.register("periodic-sync", {
+            minInterval: 2 * 60 * 1000,
+          });
         });
       }
-      return registration.sync.register("background-sync");
+      // Commenting out background sync for now until I am ready to implement the logic
+      // return registration.sync.register("background-sync");
     });
   };
 
