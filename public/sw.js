@@ -86,22 +86,50 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       caches.open("user-cache").then((cache) => {
         return cache.match(event.request).then((cachedResponse) => {
-          const fetchPromise = fetch(event.request).then((networkResponse) => {
-            const responseClone = networkResponse.clone();
-            cache.put(event.request, responseClone);
-            return responseClone.json().then((res) => {
-              const userData = res.data.user;
-              self.clients.matchAll().then((clients) => {
-                clients.forEach((client) => {
-                  client.postMessage({
-                    type: "user-cache-update",
-                    data: userData,
+          const fetchPromise = fetch(event.request)
+            .then((networkResponse) => {
+              if (networkResponse && networkResponse.status === 200) {
+                return networkResponse
+                  .clone()
+                  .arrayBuffer()
+                  .then((buffer) => {
+                    const responseClone = new Response(buffer, {
+                      status: networkResponse.status,
+                      statusText: networkResponse.statusText,
+                      headers: networkResponse.headers,
+                    });
+                    cache.put(event.request, responseClone.clone());
+                    const jsonResponse = new Response(buffer, {
+                      status: networkResponse.status,
+                      statusText: networkResponse.statusText,
+                      headers: networkResponse.headers,
+                    });
+                    return jsonResponse.json().then((res) => {
+                      const userData = res.data?.user;
+                      if (userData) {
+                        self.clients.matchAll().then((clients) => {
+                          clients.forEach((client) => {
+                            client.postMessage({
+                              type: "user-cache-update",
+                              data: userData,
+                            });
+                          });
+                        });
+                      }
+                      return networkResponse;
+                    });
                   });
-                });
-              });
-              return networkResponse;
+              } else {
+                return networkResponse;
+              }
+            })
+            .catch((error) => {
+              console.error(
+                "Fetch failed, serving cached response if available:",
+                error
+              );
+              return cachedResponse;
             });
-          });
           return cachedResponse || fetchPromise;
         });
       })
