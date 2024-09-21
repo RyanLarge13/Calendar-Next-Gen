@@ -165,112 +165,8 @@ export const UserProvider = ({ children }) => {
     }
   }, [isOnline, googleToken]);
 
-  useEffect(() => {
-    if (authToken) {
-      getUserData(authToken)
-        .then((res) => {
-          const user = res.data.user;
-          const basicUser = {
-            username: user.username,
-            email: user.email,
-            avatarUrl: user.avatarUrl,
-            id: user.id,
-            birthday: user.birthday,
-            createdAt: user.createAt,
-          };
-          setUser(basicUser);
-          localStorage.setItem("user", JSON.stringify(basicUser));
-          if (user.importedGoogleEvents) {
-            const newNotif = {
-              show: true,
-              title: "Google Events",
-              text: "Would you like to import your google calendar events?",
-              color: "bg-sky-300",
-              hasCancel: true,
-              actions: [
-                {
-                  text: "close",
-                  func: () => setSystemNotif({ show: false }),
-                },
-                {
-                  text: "get events",
-                  func: () => fetchGoogleEvents(authToken, googleToken),
-                },
-              ],
-            };
-            setSystemNotif(newNotif);
-          }
-          if (user.notifSub?.length < 1 || user.notifSub === null) {
-            requestPermissonsAndSubscribe(authToken);
-          }
-          if (user.notifSub?.length > 0 && user.notifSub !== null) {
-            checkSubscription().then((sub) => {
-              const userHasSub = user.notifSub.some(
-                (item) => JSON.parse(item).endpoint === sub.endpoint
-              );
-              if (userHasSub) {
-                send(authToken, user.id);
-              }
-              if (!userHasSub) {
-                addSubscriptionToUser(sub, authToken)
-                  .then((newUserRes) => {
-                    setUser(newUserRes.data.user);
-                    localStorage.setItem("authToken", newUserRes.data.token);
-                    localStorage.setItem(
-                      "user",
-                      JSON.stringify(newUserRes.data.user)
-                    );
-                    send(newUserRes.data.token, newUserRes.data.user.id);
-                  })
-                  .catch((err) => {
-                    console.log(`Error with adding new subscription: ${err}`);
-                  });
-              }
-            });
-          }
-          setEvents(user.events);
-          setStaticEvents(user.events);
-          const sortedReminders = user.reminders.sort(
-            (a, b) => new Date(a.time) - new Date(b.time)
-          );
-          setReminders(sortedReminders);
-          const sortedLists = user.lists.sort(
-            (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
-          );
-          setLists(sortedLists);
-          setKanbans(user.kanbans);
-          setStickies(user.stickies);
-          generateQrCode(user.email);
-          setUserTasks(user.tasks);
-          getFriendinfo(authToken)
-            .then((response) => {
-              const data = response.data;
-              setFriends(data.userFriends);
-              setFriendRequests(data.friendRequests);
-              setConnectionRequests(data.connectionRequests);
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-      registerServiceWorkerSync();
-    }
-    if (!authToken && user) {
-      localStorage.removeItem("authToken");
-      localDB.removeAuth();
-      setUser(false);
-    }
-  }, [authToken]);
-
-  const updateUserData = (newData) => {
-    if (!newData || !newData.user) {
-      console.log("No data returned from service worker, canceling update");
-      return;
-    }
-    const user = newData.user;
+  const updateUI = (res) => {
+    const user = res.data.user;
     const basicUser = {
       username: user.username,
       email: user.email,
@@ -281,6 +177,54 @@ export const UserProvider = ({ children }) => {
     };
     setUser(basicUser);
     localStorage.setItem("user", JSON.stringify(basicUser));
+    if (user.importedGoogleEvents) {
+      const newNotif = {
+        show: true,
+        title: "Google Events",
+        text: "Would you like to import your google calendar events?",
+        color: "bg-sky-300",
+        hasCancel: true,
+        actions: [
+          {
+            text: "close",
+            func: () => setSystemNotif({ show: false }),
+          },
+          {
+            text: "get events",
+            func: () => fetchGoogleEvents(authToken, googleToken),
+          },
+        ],
+      };
+      setSystemNotif(newNotif);
+    }
+    if (user.notifSub?.length < 1 || user.notifSub === null) {
+      requestPermissonsAndSubscribe(authToken);
+    }
+    if (user.notifSub?.length > 0 && user.notifSub !== null) {
+      checkSubscription().then((sub) => {
+        const userHasSub = user.notifSub.some(
+          (item) => JSON.parse(item).endpoint === sub.endpoint
+        );
+        if (userHasSub) {
+          send(authToken, user.id);
+        }
+        if (!userHasSub) {
+          addSubscriptionToUser(sub, authToken)
+            .then((newUserRes) => {
+              setUser(newUserRes.data.user);
+              localStorage.setItem("authToken", newUserRes.data.token);
+              localStorage.setItem(
+                "user",
+                JSON.stringify(newUserRes.data.user)
+              );
+              send(newUserRes.data.token, newUserRes.data.user.id);
+            })
+            .catch((err) => {
+              console.log(`Error with adding new subscription: ${err}`);
+            });
+        }
+      });
+    }
     setEvents(user.events);
     setStaticEvents(user.events);
     const sortedReminders = user.reminders.sort(
@@ -295,10 +239,35 @@ export const UserProvider = ({ children }) => {
     setStickies(user.stickies);
     generateQrCode(user.email);
     setUserTasks(user.tasks);
-    console.log(
-      "service worker background sync successfully updated user data"
-    );
+    getFriendinfo(authToken)
+      .then((response) => {
+        const data = response.data;
+        setFriends(data.userFriends);
+        setFriendRequests(data.friendRequests);
+        setConnectionRequests(data.connectionRequests);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
+
+  useEffect(() => {
+    if (authToken) {
+      getUserData(authToken)
+        .then((res) => {
+          updateUI(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      registerServiceWorkerSync();
+    }
+    if (!authToken && user) {
+      localStorage.removeItem("authToken");
+      localDB.removeAuth();
+      setUser(false);
+    }
+  }, [authToken]);
 
   const generateQrCode = (userEmail) => {
     const qr = QRCode(0, "L");
@@ -432,12 +401,12 @@ export const UserProvider = ({ children }) => {
     });
   };
 
-  navigator.serviceWorker.addEventListener("message", (event) => {
+  navigator.serviceWorker.addEventListener("message", async (event) => {
     console.log(`Message from service worker to client: ${event.data.type}`);
     if (event.data && event.data.type === "user-cache-update") {
-      const newData = event.data.data;
+      const newData = await event.data.data.json();
       console.log(`Updating user data: ${newData}`);
-      updateUserData(newData);
+      updateUI(newData);
     }
   });
 

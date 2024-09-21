@@ -86,16 +86,19 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       caches.open("user-cache").then((cache) => {
         return cache.match(event.request).then((cachedResponse) => {
-          if (cachedResponse) {
-            fetch(event.request).then((networkResponse) => {
-              cache.put(event.request, networkResponse.clone());
-            });
-            return cachedResponse;
-          }
-          return fetch(event.request).then((networkResponse) => {
+          const fetchPromise = fetch(event.request).then((networkResponse) => {
             cache.put(event.request, networkResponse.clone());
+            self.clients.matchAll().then((clients) => {
+              clients.forEach((client) => {
+                client.postMessage({
+                  type: "user-cache-update",
+                  data: networkResponse.clone(),
+                });
+              });
+            });
             return networkResponse;
           });
+          return cachedResponse || fetchPromise;
         });
       })
     );
@@ -336,19 +339,18 @@ const periodicSync = async () => {
       },
     });
     if (!response.ok) {
-      throw new Error(`Network response was not ok: ${response.statusText}`);
+      console.log(`Network response was not ok: ${response.statusText}`);
+      return;
     }
     await cache.put(`${productionUrl}/user/data`, response.clone());
-    const data = await response.json();
     self.clients.matchAll().then((clients) => {
       clients.forEach((client) => {
         client.postMessage({
           type: "user-cache-update",
-          data: data,
+          data: response.clone(),
         });
       });
     });
-
     console.log("Periodic sync success");
   } catch (err) {
     console.log(`Error during periodic sync: ${err}`);
