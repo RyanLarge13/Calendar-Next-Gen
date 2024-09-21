@@ -305,6 +305,9 @@ export const UserProvider = ({ children }) => {
   };
 
   const send = async (token, userId) => {
+    if (!user) {
+      return;
+    }
     try {
       const serverSentSource = getNotifications(userId);
       getNotificationsAtStart(user.username, token)

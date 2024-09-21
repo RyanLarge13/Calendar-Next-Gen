@@ -91,36 +91,36 @@ self.addEventListener("fetch", (event) => {
               if (networkResponse && networkResponse.status === 200) {
                 return networkResponse
                   .clone()
-                  .arrayBuffer()
-                  .then((buffer) => {
-                    const responseClone = new Response(buffer, {
-                      status: networkResponse.status,
-                      statusText: networkResponse.statusText,
-                      headers: networkResponse.headers,
-                    });
-                    cache.put(event.request, responseClone.clone());
-                    const jsonResponse = new Response(buffer, {
-                      status: networkResponse.status,
-                      statusText: networkResponse.statusText,
-                      headers: networkResponse.headers,
-                    });
-                    return jsonResponse.json().then((res) => {
-                      const userData = res.data?.user;
-                      if (userData) {
-                        self.clients.matchAll().then((clients) => {
-                          clients.forEach((client) => {
-                            client.postMessage({
-                              type: "user-cache-update",
-                              data: userData,
-                            });
+                  .json()
+                  .then((jsonData) => {
+                    const userData = jsonData?.data?.user;
+                    if (userData) {
+                      self.clients.matchAll().then((clients) => {
+                        clients.forEach((client) => {
+                          client.postMessage({
+                            type: "user-cache-update",
+                            data: userData,
                           });
                         });
+                      });
+                    }
+                    const responseToCache = new Response(
+                      JSON.stringify(jsonData),
+                      {
+                        status: networkResponse.status,
+                        statusText: networkResponse.statusText,
+                        headers: networkResponse.headers,
                       }
-                      return networkResponse;
+                    );
+                    cache.put(event.request, responseToCache);
+                    return new Response(JSON.stringify(jsonData), {
+                      status: networkResponse.status,
+                      statusText: networkResponse.statusText,
+                      headers: networkResponse.headers,
                     });
                   });
               } else {
-                return networkResponse;
+                return cachedResponse;
               }
             })
             .catch((error) => {
