@@ -16,6 +16,7 @@ import {
   getGoogleCalendarEvents,
   markAsRead,
   getFriendinfo,
+  getUserDataFresh,
 } from "../utils/api";
 import QRCode from "qrcode-generator";
 import IndexedDBManager from "../utils/indexDBApi";
@@ -407,9 +408,15 @@ export const UserProvider = ({ children }) => {
   navigator.serviceWorker.addEventListener("message", (event) => {
     console.log(`Message from service worker to client: ${event.data.type}`);
     if (event.data && event.data.type === "user-cache-update") {
-      const userData = event.data.data;
-      console.log(`Updating user data: ${userData}`);
-      updateUI(userData);
+      getUserDataFresh()
+        .then((res) => {
+          const user = res.data.user;
+          updateUI(user);
+        })
+        .catch((err) => {
+          console.log(err);
+          console.log("No catch in service worker");
+        });
     }
   });
 

@@ -81,17 +81,72 @@ self.addEventListener("activate", (event) => {
   event.waitUntil(self.clients.claim());
 });
 
+const interceptUserData = (event) => {
+  event.respondWith(
+    (async () => {
+      const cache = await caches.open("user-cache");
+      const cachedResponse = await cache.match(event.request);
+      if (cachedResponse) {
+        event.waitUntil(
+          (async () => {
+            try {
+              const networkResponse = await fetch(event.request);
+              if (networkResponse && networkResponse.ok) {
+                await cache.put(event.request, networkResponse.clone());
+                const clients = await self.clients.matchAll();
+                clients.forEach((client) => {
+                  client.postMessage({ type: "user-cache-update" });
+                });
+              }
+            } catch (err) {
+              console.log(`Error updating cache from network: ${err}`);
+            }
+          })()
+        );
+        return cachedResponse;
+      }
+      try {
+        const networkResponse = await fetch(event.request);
+        if (networkResponse && networkResponse.ok) {
+          await cache.put(event.request, networkResponse.clone());
+          return networkResponse;
+        }
+      } catch (err) {
+        console.log(
+          `Error fetching user data from initial load in service worker: ${err}`
+        );
+      }
+      return cachedResponse;
+    })()
+  );
+};
+
 self.addEventListener("fetch", (event) => {
   if (event.request.url.includes("/user/data")) {
-    event.respondWith(
-      caches.open("user-cache").then((cache) => {
-        return cache.match(event.request).then((cachedResponse) => {
-          return (
-            cachedResponse || new Response("No cached data", { status: 404 })
-          );
-        });
-      })
-    );
+    interceptUserData(event);
+  }
+});
+
+const grabFreshCache = (event) => {
+  event.respondWith(
+    (async () => {
+      const cache = await caches.open("user-cache");
+      const cachedResponse = await cache.match(`${productionUrl}/user/data`);
+      if (cachedResponse) {
+        return cachedResponse;
+      } else {
+        return new Response("No cache", { status: 404 });
+      }
+    })()
+  );
+};
+
+self.addEventListener("fetch", (event) => {
+  if (event.request.url.includes("/user/data")) {
+    interceptUserData(event);
+  }
+  if (event.request.url.includes("/user/data/fresh")) {
+    grabFreshCache(event);
   }
 });
 
@@ -272,22 +327,6 @@ const closeOpenNotifications = () => {
   });
 };
 
-const getTokenFromDb = async () => {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open("myCalngDB", 2);
-    request.onsuccess = (event) => {
-      const db = event.target.result;
-      const transaction = db.transaction(["auth"], "readonly");
-      const store = transaction.objectStore("auth");
-      const tokenRequest = store.get(0);
-      tokenRequest.onsuccess = () =>
-        resolve(tokenRequest.result ? tokenRequest.result.token : null);
-      tokenRequest.onerror = () => reject(tokenRequest.error);
-    };
-    request.onerror = () => reject(request.error);
-  });
-};
-
 //background and periodic sync
 self.addEventListener("sync", (event) => {
   if (event.tag === "background-sync") {
@@ -297,45 +336,12 @@ self.addEventListener("sync", (event) => {
 
 self.addEventListener("periodicsync", async (event) => {
   if (event.tag === "periodic-sync") {
-    try {
-      console.log("Fetching token from indexDB in service worker");
-      if (!token) {
-        token = await getTokenFromDb();
-      }
-      event.waitUntil(periodicSync());
-    } catch (err) {
-      console.log(`Error pulling token from db: ${err}`);
-    }
+    event.waitUntil(periodicSync());
   }
 });
 
 const backgroundSync = () => {};
 
 const periodicSync = async () => {
-  if (!token) {
-    console.log(
-      "No token to use for fetching user data in sw periodicsync, canceling sync for user cache"
-    );
-    return;
-  }
-  const cache = await caches.open("user-cache");
-  console.log("opening cache");
-  try {
-    const response = await fetch(`${productionUrl}/user/data`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    if (!response.ok) {
-      console.log(`Network response was not ok: ${response.statusText}`);
-      return;
-    }
-    const resClone = response.clone();
-    await cache.put(`${productionUrl}/user/data`, resClone);
-    console.log("Periodic sync success");
-  } catch (err) {
-    console.log(`Error during periodic sync: ${err}`);
-  }
+  console.log("Syncing!");
 };

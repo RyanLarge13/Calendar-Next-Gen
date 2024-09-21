@@ -13,6 +13,11 @@ export const getUserData = (token) => {
   return res;
 };
 
+export const getUserDataFresh = () => {
+  const res = Axios.get(`${productionUrl}/user/data/fresh`);
+  return res;
+};
+
 export const getGoogleData = async (token) => {
   const res = await Axios.get(
     `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${token}`,
