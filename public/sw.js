@@ -3,6 +3,7 @@ import { registerRoute } from "workbox-routing";
 import { CacheFirst } from "workbox-strategies";
 
 const productionUrl = "https://calendar-next-gen-production.up.railway.app";
+let token = "";
 
 precacheAndRoute(self.__WB_MANIFEST);
 
@@ -59,35 +60,32 @@ const formatDbText = (text) => {
 // self.addEventListener("install", event => {});
 
 self.addEventListener("activate", (event) => {
-  // Stopping clearing of cache for now
-  // const cacheWhitelist = [""];
-  // event.waitUntil(
-  //   caches.keys().then((cacheNames) => {
-  //     return Promise.all(
-  //       cacheNames.map((cacheName) => {
-  //         if (!cacheWhitelist.includes(cacheName)) {
-  //           return caches.delete(cacheName);
-  //         }
-  //       })
-  //     );
-  //   })
-  // );
-  // event.waitUntil(self.clients.claim());
+  const cacheWhitelist = [
+    "user-data",
+    "png-cache",
+    "svg-cache",
+    "script-style-cache",
+    "html-cache",
+  ];
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (!cacheWhitelist.includes(cacheName)) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+  event.waitUntil(self.clients.claim());
 });
 
 self.addEventListener("fetch", (event) => {
   if (event.request.url.includes("/user/data")) {
     event.respondWith(
       caches.match(event.request).then((cachedResponse) => {
-        return (
-          cachedResponse ||
-          fetch(event.request).then((response) => {
-            return caches.open("user-data").then((cache) => {
-              cache.put(event.request, response.clone());
-              return response;
-            });
-          })
-        );
+        return cachedResponse;
       })
     );
   }
@@ -259,8 +257,39 @@ self.addEventListener("message", async (event) => {
     console.log("Closing notifications");
   }
   if (event.data && event.data.command === "user-cache-update") {
-    console.log("user cache update from front-end manually called");
-    event.waitUntil(periodicSync(event.data.token));
+    if (!event.data.response) {
+      console.log(
+        "No response in message from front-end canceling user cache update"
+      );
+      return;
+    }
+    const { body, headers, status, statusText } = event.data.response;
+    if (event.data.token) {
+      token = event.data.token;
+    }
+    const resHeaders = new Headers(headers);
+    try {
+      const resObj = new Response(body, {
+        headers: resHeaders,
+        status: status,
+        statusText: statusText,
+      });
+      if (!resObj) {
+        console.log(
+          "Failed to create response object canceling user cache update"
+        );
+        return;
+      }
+      caches.open("user-cache").then((cache) => {
+        cache.put(`${productionUrl}/user/data`, resObj);
+      });
+    } catch (err) {
+      console.log(
+        `Failed to create a response object from front-end network data canceling user cache update. Error: ${err}`
+      );
+    }
+    // console.log("user cache update from front-end manually called");
+    // event.waitUntil(periodicSync(event.data.token));
   }
 });
 
@@ -301,12 +330,10 @@ self.addEventListener("periodicsync", async (event) => {
   if (event.tag === "periodic-sync") {
     try {
       console.log("Fetching token from indexDB in service worker");
-      const token = await getTokenFromDb();
       if (!token) {
-        console.log("No token in indexDB for periodic sync");
-        return;
+        token = await getTokenFromDb();
       }
-      event.waitUntil(periodicSync(token));
+      event.waitUntil(periodicSync());
     } catch (err) {
       console.log(`Error pulling token from db: ${err}`);
     }
@@ -315,7 +342,13 @@ self.addEventListener("periodicsync", async (event) => {
 
 const backgroundSync = () => {};
 
-const periodicSync = async (token) => {
+const periodicSync = async () => {
+  if (!token) {
+    console.log(
+      "No token to use for fetching user data in sw periodicsync, canceling sync for user cache"
+    );
+    return;
+  }
   const cache = await caches.open("user-data");
   console.log("opening cache");
   try {

@@ -175,6 +175,12 @@ export const UserProvider = ({ children }) => {
               navigator.serviceWorker.controller.postMessage({
                 command: "user-cache-update",
                 token: authToken,
+                response: {
+                  body: JSON.stringify(res.data),
+                  headers: res.headers,
+                  statusText: res.statusText || "OK",
+                  status: res.status,
+                },
               });
             } catch (err) {
               console.log(
