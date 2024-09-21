@@ -376,17 +376,7 @@ const periodicSync = async () => {
     }
     const resClone = response.clone();
     await cache.put(`${productionUrl}/user/data`, resClone);
-    resClone.json().then((res) => {
-      self.clients.matchAll().then((clients) => {
-        clients.forEach((client) => {
-          client.postMessage({
-            type: "user-cache-update",
-            data: res.data.user,
-          });
-        });
-      });
-      console.log("Periodic sync success");
-    });
+    console.log("Periodic sync success");
   } catch (err) {
     console.log(`Error during periodic sync: ${err}`);
   }

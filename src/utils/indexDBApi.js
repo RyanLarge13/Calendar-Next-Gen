@@ -35,8 +35,18 @@ class IndexedDBManager {
       const tx = this.db.transaction(["auth"], "readwrite");
       const objStore = tx.objectStore("auth");
       objStore.clear().onsuccess = () => {
-        objStore.add({ id: 0, token: token });
-        console.log("Auth token set successfully in indexedDB");
+        console.log("Existing auth tokens cleared from IndexedDB");
+        const addTx = this.db.transaction(["auth"], "readwrite");
+        const addObjStore = addTx.objectStore("auth");
+        addObjStore.add({ id: 0, token: token }).onsuccess = () => {
+          console.log("Auth token set successfully in IndexedDB");
+        };
+      };
+      objStore.clear().onerror = (event) => {
+        console.error(
+          "Error clearing auth tokens from IndexedDB:",
+          event.target.error
+        );
       };
     }
   }
