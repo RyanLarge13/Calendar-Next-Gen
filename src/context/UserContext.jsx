@@ -168,26 +168,8 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     if (authToken) {
       getUserData(authToken)
-        .then(async (res) => {
+        .then((res) => {
           const user = res.data.user;
-          if (navigator.serviceWorker.controller) {
-            try {
-              navigator.serviceWorker.controller.postMessage({
-                command: "user-cache-update",
-                token: authToken,
-                response: {
-                  body: JSON.stringify(res.data),
-                  headers: res.headers,
-                  statusText: res.statusText || "OK",
-                  status: res.status,
-                },
-              });
-            } catch (err) {
-              console.log(
-                `Error sending message to service worker to update user cache: ${err}\n\nNo fresh data sent to service worker to update cache`
-              );
-            }
-          }
           const basicUser = {
             username: user.username,
             email: user.email,
@@ -438,10 +420,8 @@ export const UserProvider = ({ children }) => {
         console.log("Period sync in service worker");
         return registration.periodicSync.getTags().then((tags) => {
           if (tags.includes("periodic-sync")) {
-            console.log("Periodic sync already registered");
             return;
           }
-          console.log("Registering periodic sync");
           registration.periodicSync.register("periodic-sync", {
             minInterval: 24 * 60 * 60 * 1000,
           });

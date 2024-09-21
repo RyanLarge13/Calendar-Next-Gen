@@ -85,18 +85,18 @@ self.addEventListener("fetch", (event) => {
   if (event.request.url.includes("/user/data")) {
     event.respondWith(
       caches.open("user-cache").then((cache) => {
-        return cache
-          .match(event.request)
-          .then((cachedResponse) => {
-            if (cachedResponse) {
-              return cachedResponse;
-            }
-            return fetch(event.request);
-          })
-          .catch((err) => {
-            console.log("Error fetching from cache on initial load:", err);
-            return fetch(event.request);
+        return cache.match(event.request).then((cachedResponse) => {
+          if (cachedResponse) {
+            fetch(event.request).then((networkResponse) => {
+              cache.put(event.request, networkResponse.clone());
+            });
+            return cachedResponse;
+          }
+          return fetch(event.request).then((networkResponse) => {
+            cache.put(event.request, networkResponse.clone());
+            return networkResponse;
           });
+        });
       })
     );
   }
@@ -266,41 +266,6 @@ self.addEventListener("message", async (event) => {
   if (event.data && event.data.command === "close-notifications") {
     closeOpenNotifications();
     console.log("Closing notifications");
-  }
-  if (event.data && event.data.command === "user-cache-update") {
-    if (!event.data.response) {
-      console.log(
-        "No response in message from front-end canceling user cache update"
-      );
-      return;
-    }
-    const { body, headers, status, statusText } = event.data.response;
-    if (event.data.token) {
-      token = event.data.token;
-    }
-    const resHeaders = new Headers(headers);
-    try {
-      const resObj = new Response(body, {
-        headers: resHeaders,
-        status: status,
-        statusText: statusText,
-      });
-      if (!resObj) {
-        console.log(
-          "Failed to create response object canceling user cache update"
-        );
-        return;
-      }
-      caches.open("user-cache").then((cache) => {
-        cache.put(`${productionUrl}/user/data`, resObj);
-      });
-    } catch (err) {
-      console.log(
-        `Failed to create a response object from front-end network data canceling user cache update. Error: ${err}`
-      );
-    }
-    // console.log("user cache update from front-end manually called");
-    // event.waitUntil(periodicSync(event.data.token));
   }
 });
 
