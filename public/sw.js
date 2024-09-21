@@ -87,16 +87,20 @@ self.addEventListener("fetch", (event) => {
       caches.open("user-cache").then((cache) => {
         return cache.match(event.request).then((cachedResponse) => {
           const fetchPromise = fetch(event.request).then((networkResponse) => {
-            cache.put(event.request, networkResponse.clone());
-            self.clients.matchAll().then((clients) => {
-              clients.forEach((client) => {
-                client.postMessage({
-                  type: "user-cache-update",
-                  data: networkResponse.clone(),
+            const responseClone = networkResponse.clone();
+            cache.put(event.request, responseClone);
+            return responseClone.json().then((res) => {
+              const userData = res.data.user;
+              self.clients.matchAll().then((clients) => {
+                clients.forEach((client) => {
+                  client.postMessage({
+                    type: "user-cache-update",
+                    data: userData,
+                  });
                 });
               });
+              return networkResponse;
             });
-            return networkResponse;
           });
           return cachedResponse || fetchPromise;
         });
@@ -342,16 +346,19 @@ const periodicSync = async () => {
       console.log(`Network response was not ok: ${response.statusText}`);
       return;
     }
-    await cache.put(`${productionUrl}/user/data`, response.clone());
-    self.clients.matchAll().then((clients) => {
-      clients.forEach((client) => {
-        client.postMessage({
-          type: "user-cache-update",
-          data: response.clone(),
+    const resClone = response.clone();
+    await cache.put(`${productionUrl}/user/data`, resClone);
+    resClone.json().then((res) => {
+      self.clients.matchAll().then((clients) => {
+        clients.forEach((client) => {
+          client.postMessage({
+            type: "user-cache-update",
+            data: res.data.user,
+          });
         });
       });
+      console.log("Periodic sync success");
     });
-    console.log("Periodic sync success");
   } catch (err) {
     console.log(`Error during periodic sync: ${err}`);
   }

@@ -165,8 +165,7 @@ export const UserProvider = ({ children }) => {
     }
   }, [isOnline, googleToken]);
 
-  const updateUI = (res) => {
-    const user = res.data.user;
+  const updateUI = (user) => {
     const basicUser = {
       username: user.username,
       email: user.email,
@@ -255,7 +254,8 @@ export const UserProvider = ({ children }) => {
     if (authToken) {
       getUserData(authToken)
         .then((res) => {
-          updateUI(res);
+          const user = res.data.user;
+          updateUI(user);
         })
         .catch((err) => {
           console.log(err);
@@ -401,12 +401,12 @@ export const UserProvider = ({ children }) => {
     });
   };
 
-  navigator.serviceWorker.addEventListener("message", async (event) => {
+  navigator.serviceWorker.addEventListener("message", (event) => {
     console.log(`Message from service worker to client: ${event.data.type}`);
     if (event.data && event.data.type === "user-cache-update") {
-      const newData = await event.data.data.json();
-      console.log(`Updating user data: ${newData}`);
-      updateUI(newData);
+      const userData = event.data.data;
+      console.log(`Updating user data: ${userData}`);
+      updateUI(userData);
     }
   });
 
