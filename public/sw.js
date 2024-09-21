@@ -84,8 +84,19 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   if (event.request.url.includes("/user/data")) {
     event.respondWith(
-      caches.match(event.request).then((cachedResponse) => {
-        return cachedResponse;
+      caches.open("user-cache").then((cache) => {
+        return cache
+          .match(event.request)
+          .then((cachedResponse) => {
+            if (cachedResponse) {
+              return cachedResponse;
+            }
+            return fetch(event.request);
+          })
+          .catch((err) => {
+            console.log("Error fetching from cache on initial load:", err);
+            return fetch(event.request);
+          });
       })
     );
   }
