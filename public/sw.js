@@ -109,18 +109,21 @@ self.addEventListener("fetch", (event) => {
                       {
                         status: networkResponse.status,
                         statusText: networkResponse.statusText,
-                        headers: networkResponse.headers,
+                        headers: new Headers(networkResponse.headers),
                       }
                     );
                     cache.put(event.request, responseToCache);
                     return new Response(JSON.stringify(jsonData), {
                       status: networkResponse.status,
                       statusText: networkResponse.statusText,
-                      headers: networkResponse.headers,
+                      headers: new Headers(networkResponse.headers),
                     });
                   });
               } else {
-                return cachedResponse;
+                return (
+                  cachedResponse ||
+                  new Response("No cached data", { status: 404 })
+                );
               }
             })
             .catch((error) => {
@@ -128,8 +131,10 @@ self.addEventListener("fetch", (event) => {
                 "Fetch failed, serving cached response if available:",
                 error
               );
-              return cachedResponse;
+              return cachedResponse || new Response("Offline", { status: 503 });
             });
+
+          event.waitUntil(fetchPromise); // Ensures SW doesn't terminate early
           return cachedResponse || fetchPromise;
         });
       })
