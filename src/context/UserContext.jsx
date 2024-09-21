@@ -454,7 +454,7 @@ export const UserProvider = ({ children }) => {
 
   navigator.serviceWorker.addEventListener("message", (event) => {
     console.log(`Message from service worker to client: ${event.data.type}`);
-    if (event.data && event.data.type === "user-data-update") {
+    if (event.data && event.data.type === "user-cache-update") {
       const newData = event.data.data;
       console.log(`Updating user data: ${newData}`);
       updateUserData(newData);

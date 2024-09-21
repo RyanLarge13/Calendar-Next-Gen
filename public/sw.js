@@ -61,7 +61,7 @@ const formatDbText = (text) => {
 
 self.addEventListener("activate", (event) => {
   const cacheWhitelist = [
-    "user-data",
+    "user-cache",
     "png-cache",
     "svg-cache",
     "script-style-cache",
@@ -349,7 +349,7 @@ const periodicSync = async () => {
     );
     return;
   }
-  const cache = await caches.open("user-data");
+  const cache = await caches.open("user-cache");
   console.log("opening cache");
   try {
     const response = await fetch(`${productionUrl}/user/data`, {
@@ -367,7 +367,7 @@ const periodicSync = async () => {
     self.clients.matchAll().then((clients) => {
       clients.forEach((client) => {
         client.postMessage({
-          type: "user-data-update",
+          type: "user-cache-update",
           data: data,
         });
       });
