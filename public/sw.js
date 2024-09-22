@@ -138,7 +138,7 @@ self.addEventListener("fetch", (event) => {
   if (event.request.url.includes("/user/data")) {
     interceptUserData(event);
   }
-  if (event.request.url.includes("/user/data/fresh")) {
+  if (event.request.url.includes("/fresh")) {
     grabFreshCache(event);
   }
 });

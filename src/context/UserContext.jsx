@@ -58,7 +58,6 @@ export const UserProvider = ({ children }) => {
 
   useEffect(() => {
     if (localDB && authToken) {
-      console.log(`Setting auth token in indexed db, token :${authToken}`);
       localDB.setIndexedDBAuthToken(authToken);
     }
   }, [localDB, authToken]);
@@ -152,9 +151,6 @@ export const UserProvider = ({ children }) => {
           loginWithGoogle(res.data)
             .then((response) => {
               setUser(response.data.user);
-              console.log(
-                `Setting auth token after get google data fetch, token: ${response.data.token}`
-              );
               setAuthToken(response.data.token);
               localStorage.setItem("authToken", response.data.token);
             })
@@ -216,9 +212,6 @@ export const UserProvider = ({ children }) => {
           addSubscriptionToUser(sub, authToken)
             .then((newUserRes) => {
               setUser(newUserRes.data.user);
-              console.log(
-                `Setting token in localStorage only after addSubToUser call, token: ${newUserRes.data.token}`
-              );
               localStorage.setItem("authToken", newUserRes.data.token);
               localStorage.setItem(
                 "user",
@@ -302,9 +295,6 @@ export const UserProvider = ({ children }) => {
         .then((res) => res.json())
         .then((data) => {
           setUser(data.user);
-          console.log(
-            `Setting auth token after calling request and subscribe, token: ${token}`
-          );
           localStorage.setItem("authToken", data.token);
           localStorage.setItem("user", JSON.stringify(data.user));
           send(data.token, data.user.id);
@@ -416,7 +406,9 @@ export const UserProvider = ({ children }) => {
   };
 
   navigator.serviceWorker.addEventListener("message", (event) => {
-    console.log(`Message from service worker to client: ${event.data.type}`);
+    console.log(
+      `Message from service worker to client, type: ${event.data.type}`
+    );
     if (event.data && event.data.type === "user-cache-update") {
       getUserDataFresh()
         .then((res) => {

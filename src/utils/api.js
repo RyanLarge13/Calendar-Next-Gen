@@ -14,7 +14,7 @@ export const getUserData = (token) => {
 };
 
 export const getUserDataFresh = () => {
-  const res = Axios.get(`${productionUrl}/user/data/fresh`);
+  const res = Axios.get(`${productionUrl}/fresh`);
   return res;
 };
 
