@@ -94,7 +94,11 @@ const interceptUserData = (event) => {
                 await cache.put(event.request, networkResponse.clone());
                 const clients = await self.clients.matchAll();
                 clients.forEach((client) => {
-                  client.postMessage({ type: "user-cache-update" });
+                  if (client.visibilityState === "visible") {
+                    client.postMessage({
+                      type: "user-cache-update",
+                    });
+                  }
                 });
               }
             } catch (err) {

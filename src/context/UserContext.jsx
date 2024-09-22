@@ -166,17 +166,7 @@ export const UserProvider = ({ children }) => {
     }
   }, [isOnline, googleToken]);
 
-  const updateUI = (user) => {
-    const basicUser = {
-      username: user.username,
-      email: user.email,
-      avatarUrl: user.avatarUrl,
-      id: user.id,
-      birthday: user.birthday,
-      createdAt: user.createAt,
-    };
-    setUser(basicUser);
-    localStorage.setItem("user", JSON.stringify(basicUser));
+  const continueRequests = (user) => {
     if (user.importedGoogleEvents) {
       const newNotif = {
         show: true,
@@ -225,6 +215,29 @@ export const UserProvider = ({ children }) => {
         }
       });
     }
+    getFriendInfo(authToken)
+      .then((response) => {
+        const data = response.data;
+        setFriends(data.userFriends);
+        setFriendRequests(data.friendRequests);
+        setConnectionRequests(data.connectionRequests);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const updateUI = (user, fresh) => {
+    const basicUser = {
+      username: user.username,
+      email: user.email,
+      avatarUrl: user.avatarUrl,
+      id: user.id,
+      birthday: user.birthday,
+      createdAt: user.createAt,
+    };
+    setUser(basicUser);
+    localStorage.setItem("user", JSON.stringify(basicUser));
     setEvents(user.events);
     setStaticEvents(user.events);
     const sortedReminders = user.reminders.sort(
@@ -239,16 +252,9 @@ export const UserProvider = ({ children }) => {
     setStickies(user.stickies);
     generateQrCode(user.email);
     setUserTasks(user.tasks);
-    getFriendInfo(authToken)
-      .then((response) => {
-        const data = response.data;
-        setFriends(data.userFriends);
-        setFriendRequests(data.friendRequests);
-        setConnectionRequests(data.connectionRequests);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    if (fresh) {
+      continueRequests(user);
+    }
   };
 
   useEffect(() => {
@@ -256,7 +262,7 @@ export const UserProvider = ({ children }) => {
       getUserData(authToken)
         .then((res) => {
           const user = res.data.user;
-          updateUI(user);
+          updateUI(user, true);
         })
         .catch((err) => {
           console.log(err);
@@ -265,6 +271,7 @@ export const UserProvider = ({ children }) => {
     }
     if (!authToken && user) {
       localStorage.removeItem("authToken");
+      localStorage.removeItem("user");
       localDB.removeAuth();
       setUser(false);
     }
@@ -412,12 +419,20 @@ export const UserProvider = ({ children }) => {
     if (event.data && event.data.type === "user-cache-update") {
       getUserDataFresh()
         .then((res) => {
+          if (!res.ok) {
+            throw new Error(
+              `No cache in service worker. Response status: ${res.status}`
+            );
+          }
+          return res;
+        })
+        .then((res) => {
           const user = res.data.user;
-          updateUI(user);
+          updateUI(user, false);
         })
         .catch((err) => {
           console.log(err);
-          console.log("No catch in service worker");
+          console.log("No cache in service worker");
         });
     }
   });
