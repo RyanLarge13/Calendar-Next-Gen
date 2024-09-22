@@ -39,7 +39,7 @@ export const subscribeToNotifications = async (req, res) => {
   } catch (err) {
     console.log(err);
     return res.status(401).json({
-      message: `The server failed, I am terribly sorry for the inconveniece, please try to subscribe to notifications again by reloading the page. Error: ${err}`,
+      message: `The server failed, I am terribly sorry for the inconvenience, please try to subscribe to notifications again by reloading the page. Error: ${err}`,
     });
   }
 };
@@ -58,6 +58,7 @@ export const addSubscriptionToUser = async (req, res) => {
   if (updatedUser) {
     const payload = JSON.stringify({
       title: "New Device",
+      notifType: "system",
       body: `Notifications will now be sent this device as well ${updatedUser.username}`,
     });
     sendNotification(payload, [newSubscription]);
@@ -162,7 +163,7 @@ export const getNotifications = async (req, res) => {
       existingClient.job.stop();
       console.log(`Stopping SSE response for client ${existingClient.id}`);
     } else {
-      console.log("No exsisting client but req.on close event fired");
+      console.log("No existing client but req.on close event fired");
     }
   });
 };
@@ -178,7 +179,7 @@ export const getOldNotifications = async (req, res) => {
     });
     if (notifications) {
       res.status(200).json({
-        message: "Succesfully fetched notifications",
+        message: "Successfully fetched notifications",
         notifs: notifications,
       });
     }

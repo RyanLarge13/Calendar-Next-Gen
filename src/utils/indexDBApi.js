@@ -30,7 +30,7 @@ class IndexedDBManager {
     }
   }
 
-  setAuthToken(token) {
+  setIndexedDBAuthToken(token) {
     if (this.db) {
       const tx = this.db.transaction(["auth"], "readwrite");
       const objStore = tx.objectStore("auth");

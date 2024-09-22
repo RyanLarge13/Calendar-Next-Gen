@@ -15,7 +15,7 @@ import {
   addSubscriptionToUser,
   getGoogleCalendarEvents,
   markAsRead,
-  getFriendinfo,
+  getFriendInfo,
   getUserDataFresh,
 } from "../utils/api";
 import QRCode from "qrcode-generator";
@@ -58,7 +58,8 @@ export const UserProvider = ({ children }) => {
 
   useEffect(() => {
     if (localDB && authToken) {
-      localDB.setAuthToken(authToken);
+      console.log(`Setting auth token in indexed db, token :${authToken}`);
+      localDB.setIndexedDBAuthToken(authToken);
     }
   }, [localDB, authToken]);
 
@@ -151,6 +152,9 @@ export const UserProvider = ({ children }) => {
           loginWithGoogle(res.data)
             .then((response) => {
               setUser(response.data.user);
+              console.log(
+                `Setting auth token after get google data fetch, token: ${response.data.token}`
+              );
               setAuthToken(response.data.token);
               localStorage.setItem("authToken", response.data.token);
             })
@@ -191,14 +195,14 @@ export const UserProvider = ({ children }) => {
           },
           {
             text: "get events",
-            func: () => fetchGoogleEvents(authToken, googleToken),
+            func: () => fetchGoogleEvents(googleToken),
           },
         ],
       };
       setSystemNotif(newNotif);
     }
     if (user.notifSub?.length < 1 || user.notifSub === null) {
-      requestPermissonsAndSubscribe(authToken);
+      requestPermissionsAndSubscribe(authToken);
     }
     if (user.notifSub?.length > 0 && user.notifSub !== null) {
       checkSubscription().then((sub) => {
@@ -212,6 +216,9 @@ export const UserProvider = ({ children }) => {
           addSubscriptionToUser(sub, authToken)
             .then((newUserRes) => {
               setUser(newUserRes.data.user);
+              console.log(
+                `Setting token in localStorage only after addSubToUser call, token: ${newUserRes.data.token}`
+              );
               localStorage.setItem("authToken", newUserRes.data.token);
               localStorage.setItem(
                 "user",
@@ -239,7 +246,7 @@ export const UserProvider = ({ children }) => {
     setStickies(user.stickies);
     generateQrCode(user.email);
     setUserTasks(user.tasks);
-    getFriendinfo(authToken)
+    getFriendInfo(authToken)
       .then((response) => {
         const data = response.data;
         setFriends(data.userFriends);
@@ -279,7 +286,7 @@ export const UserProvider = ({ children }) => {
     setQrCodeUrl(qrCodeDataUrl);
   };
 
-  const fetchGoogleEvents = (authToken, googleToken) => {
+  const fetchGoogleEvents = (googleToken) => {
     setSystemNotif({ show: false });
     getGoogleCalendarEvents(authToken, googleToken)
       .then((res) => {
@@ -289,12 +296,15 @@ export const UserProvider = ({ children }) => {
       .catch((err) => console.log(err));
   };
 
-  const requestPermissonsAndSubscribe = async (token) => {
+  const requestPermissionsAndSubscribe = async (token) => {
     try {
       requestAndSubscribe(token)
         .then((res) => res.json())
         .then((data) => {
           setUser(data.user);
+          console.log(
+            `Setting auth token after calling request and subscribe, token: ${token}`
+          );
           localStorage.setItem("authToken", data.token);
           localStorage.setItem("user", JSON.stringify(data.user));
           send(data.token, data.user.id);

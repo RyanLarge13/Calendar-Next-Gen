@@ -408,7 +408,7 @@ export const deleteTask = (token, taskId) => {
 };
 
 // Friend management
-export const getFriendinfo = (token) => {
+export const getFriendInfo = (token) => {
   const res = Axios.get(`${productionUrl}/friends/friendinfo`, {
     headers: {
       Authorization: `Bearer ${token}`,

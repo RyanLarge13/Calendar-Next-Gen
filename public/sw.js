@@ -3,7 +3,6 @@ import { registerRoute } from "workbox-routing";
 import { CacheFirst } from "workbox-strategies";
 
 const productionUrl = "https://calendar-next-gen-production.up.railway.app";
-let token = "";
 
 precacheAndRoute(self.__WB_MANIFEST);
 
@@ -120,12 +119,6 @@ const interceptUserData = (event) => {
     })()
   );
 };
-
-self.addEventListener("fetch", (event) => {
-  if (event.request.url.includes("/user/data")) {
-    interceptUserData(event);
-  }
-});
 
 const grabFreshCache = (event) => {
   event.respondWith(
