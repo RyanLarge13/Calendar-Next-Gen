@@ -24,10 +24,16 @@ export const subscribeToNotifications = async (req, res) => {
         },
       });
       sendNotification(payload, [subscription]);
-      const newSignture = signToken(updatedUser);
+      const userToSign = {
+        id: updatedUser.id,
+        username: updatedUser.username,
+        email: updatedUser.email,
+        avatarUrl: updatedUser.avatarUrl,
+      };
+      const newSignature = signToken(userToSign);
       return res.status(200).json({
         message: "Subscription received successfully and user updated",
-        token: newSignture,
+        token: newSignature,
         user: updatedUser,
       });
     }
@@ -58,14 +64,23 @@ export const addSubscriptionToUser = async (req, res) => {
   if (updatedUser) {
     const payload = JSON.stringify({
       title: "New Device",
-      notifType: "system",
       body: `Notifications will now be sent this device as well ${updatedUser.username}`,
+      data: {
+        notifType: "system",
+        time: new Date(),
+      },
     });
     sendNotification(payload, [newSubscription]);
-    const newSignture = signToken(updatedUser);
+    const userToSign = {
+      id: updatedUser.id,
+      username: updatedUser.username,
+      email: updatedUser.email,
+      avatarUrl: updatedUser.avatarUrl,
+    };
+    const newSignature = signToken(userToSign);
     return res.status(200).json({
       message: "Subscription received successfully and user updated",
-      token: newSignture,
+      token: newSignature,
       user: updatedUser,
     });
   }

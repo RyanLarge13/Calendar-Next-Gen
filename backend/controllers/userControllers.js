@@ -64,29 +64,29 @@ export const fetchUserData = async (req, res) => {
 export const loginWithGoogle = async (req, res) => {
   const { id, username, email, avatarUrl } = req.body.user;
   try {
-    const exsistingUser = await prisma.user.findUnique({
+    const existingUser = await prisma.user.findUnique({
       where: {
         email: email,
       },
     });
-    if (exsistingUser) {
-      await bcrypt.compare(id, exsistingUser.password).then((isMatch) => {
+    if (existingUser) {
+      await bcrypt.compare(id, existingUser.password).then((isMatch) => {
         if (!isMatch) {
           return res.status(401).json({ message: "Incorrect password" });
         }
         const userToSign = {
-          id: exsistingUser.id,
-          username: exsistingUser.username,
-          email: exsistingUser.email,
-          avatarUrl: exsistingUser.avatarUrl,
+          id: existingUser.id,
+          username: existingUser.username,
+          email: existingUser.email,
+          avatarUrl: existingUser.avatarUrl,
         };
-        const newSignture = signToken(userToSign);
+        const newSignature = signToken(userToSign);
         return res.status(201).json({
-          token: newSignture,
+          token: newSignature,
         });
       });
     }
-    if (!exsistingUser) {
+    if (!existingUser) {
       const hashedPassword = await hashPassword(id);
       const newUser = {
         username,
@@ -104,9 +104,9 @@ export const loginWithGoogle = async (req, res) => {
           email: createdUser.email,
           avatarUrl: createdUser.avatarUrl,
         };
-        const newSignture = signToken(userToSign);
+        const newSignature = signToken(userToSign);
         res.status(201).json({
-          token: newSignture,
+          token: newSignature,
         });
         return sendSocialWelcomeEmail(email, username, "Google");
       }
@@ -133,29 +133,29 @@ export const loginWithFacebook = async (req, res) => {
       `https://graph.facebook.com/v12.0/me?fields=id,name,email,picture&access_token=${accessToken}`
     );
     const userData = fbResponse.data;
-    const exsistingUser = await prisma.user.findUnique({
+    const existingUser = await prisma.user.findUnique({
       where: { email: userData.email },
     });
-    if (exsistingUser) {
+    if (existingUser) {
       await bcrypt
-        .compare(userData.id, exsistingUser.password)
+        .compare(userData.id, existingUser.password)
         .then((isMatch) => {
           if (!isMatch) {
             return res.status(401).json({ message: "Incorrect password" });
           }
           const userToSign = {
-            id: exsistingUser.id,
-            username: exsistingUser.username,
-            email: exsistingUser.email,
-            avatarUrl: exsistingUser.avatarUrl,
+            id: existingUser.id,
+            username: existingUser.username,
+            email: existingUser.email,
+            avatarUrl: existingUser.avatarUrl,
           };
-          const newSignture = signToken(userToSign);
+          const newSignature = signToken(userToSign);
           return res.status(201).json({
-            token: newSignture,
+            token: newSignature,
           });
         });
     }
-    if (!exsistingUser) {
+    if (!existingUser) {
       const hashedPassword = await hashPassword(userData.id);
       const fbUser = {
         username: userData.name,
@@ -171,9 +171,9 @@ export const loginWithFacebook = async (req, res) => {
           email: newFbUser.email,
           avatarUrl: newFbUser.avatarUrl,
         };
-        const newSignture = signToken(userToSign);
+        const newSignature = signToken(userToSign);
         res.status(201).json({
-          token: newSignture,
+          token: newSignature,
         });
       }
       if (!newFbUser) {
@@ -191,14 +191,14 @@ export const loginWithFacebook = async (req, res) => {
 export const loginWithPasswordUsername = async (req, res) => {
   const { username, email, password, avatarUrl } = req.body;
   try {
-    const exsistingUser = await prisma.user.findUnique({
+    const existingUser = await prisma.user.findUnique({
       where: {
         email: email,
       },
     });
-    if (exsistingUser) {
-      await bcrypt.compare(password, exsistingUser.password).then((isMatch) => {
-        if (!isMatch && exsistingUser.username !== username) {
+    if (existingUser) {
+      await bcrypt.compare(password, existingUser.password).then((isMatch) => {
+        if (!isMatch && existingUser.username !== username) {
           return res
             .status(401)
             .json({ message: "An account already exists with this email" });
@@ -207,18 +207,18 @@ export const loginWithPasswordUsername = async (req, res) => {
           return res.status(401).json({ message: "Incorrect password" });
         }
         const userToSign = {
-          id: exsistingUser.id,
-          username: exsistingUser.username,
-          email: exsistingUser.email,
-          avatarUrl: exsistingUser.avatarUrl,
+          id: existingUser.id,
+          username: existingUser.username,
+          email: existingUser.email,
+          avatarUrl: existingUser.avatarUrl,
         };
-        const newSignture = signToken(userToSign);
+        const newSignature = signToken(userToSign);
         res.status(201).json({
-          token: newSignture,
+          token: newSignature,
         });
       });
     }
-    if (!exsistingUser) {
+    if (!existingUser) {
       const hashedPassword = await hashPassword(password);
       const newUser = {
         username,
@@ -236,9 +236,9 @@ export const loginWithPasswordUsername = async (req, res) => {
           email: createdUser.email,
           avatarUrl: createdUser.avatarUrl,
         };
-        const newSignture = signToken(userToSign);
+        const newSignature = signToken(userToSign);
         res.status(201).json({
-          token: newSignture,
+          token: newSignature,
         });
         return sendWelcomeEmail(email, username, password);
       }
