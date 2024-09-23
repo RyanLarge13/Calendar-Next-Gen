@@ -1,41 +1,4 @@
-import { precacheAndRoute } from "workbox-precaching";
-import { registerRoute } from "workbox-routing";
-import { CacheFirst } from "workbox-strategies";
-
 const productionUrl = "https://calendar-next-gen-production.up.railway.app";
-
-precacheAndRoute(self.__WB_MANIFEST);
-
-registerRoute(
-  ({ request }) =>
-    request.destination === "style" || request.destination === "script",
-  new CacheFirst({
-    cacheName: "script-style-cache",
-  })
-);
-
-registerRoute(
-  ({ request }) => request.destination === "document",
-  new CacheFirst({
-    cacheName: "html-cache",
-  })
-);
-
-registerRoute(
-  ({ request }) =>
-    request.destination === "image" && request.url.endsWith(".svg"),
-  new CacheFirst({
-    cacheName: "svg-cache",
-  })
-);
-
-registerRoute(
-  ({ request }) =>
-    request.destination === "image" && request.url.endsWith(".png"),
-  new CacheFirst({
-    cacheName: "png-cache",
-  })
-);
 
 self.skipWaiting();
 
@@ -59,13 +22,7 @@ const formatDbText = (text) => {
 // self.addEventListener("install", event => {});
 
 self.addEventListener("activate", (event) => {
-  const cacheWhitelist = [
-    "user-cache",
-    "png-cache",
-    "svg-cache",
-    "script-style-cache",
-    "html-cache",
-  ];
+  const cacheWhitelist = ["user-cache"];
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
@@ -94,11 +51,9 @@ const interceptUserData = (event) => {
                 await cache.put(event.request, networkResponse.clone());
                 const clients = await self.clients.matchAll();
                 clients.forEach((client) => {
-                  if (client.id === event.source.id) {
-                    client.postMessage({
-                      type: "user-cache-update",
-                    });
-                  }
+                  client.postMessage({
+                    type: "user-cache-update",
+                  });
                 });
               }
             } catch (err) {
