@@ -94,7 +94,7 @@ const interceptUserData = (event) => {
                 await cache.put(event.request, networkResponse.clone());
                 const clients = await self.clients.matchAll();
                 clients.forEach((client) => {
-                  if (client.visibilityState === "visible") {
+                  if (client.id === event.source.id) {
                     client.postMessage({
                       type: "user-cache-update",
                     });
@@ -139,6 +139,7 @@ const grabFreshCache = (event) => {
 };
 
 self.addEventListener("fetch", (event) => {
+  console.log(`Intercepting event network request for: ${event.request.url}`);
   if (event.request.url.includes("/user/data")) {
     interceptUserData(event);
   }

@@ -419,7 +419,7 @@ export const UserProvider = ({ children }) => {
     if (event.data && event.data.type === "user-cache-update") {
       getUserDataFresh()
         .then((res) => {
-          if (!res.ok) {
+          if (res.status !== 200) {
             throw new Error(
               `No cache in service worker. Response status: ${res.status}`
             );
