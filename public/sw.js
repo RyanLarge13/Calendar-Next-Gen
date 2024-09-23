@@ -1,4 +1,8 @@
+import { precacheAndRoute } from "workbox-precaching";
+
 const productionUrl = "https://calendar-next-gen-production.up.railway.app";
+
+precacheAndRoute(self.__WB_MANIFEST);
 
 self.skipWaiting();
 
