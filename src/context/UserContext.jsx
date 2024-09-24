@@ -57,6 +57,36 @@ export const UserProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    const handleSWMessage = (event) => {
+      console.log(
+        `Message from service worker to client, type: ${event.data.type}`
+      );
+      if (event.data && event.data.type === "user-cache-update") {
+        getUserDataFresh()
+          .then((res) => {
+            if (res.status !== 200) {
+              throw new Error(
+                `No cache in service worker. Response status: ${res.status}`
+              );
+            }
+            return res;
+          })
+          .then((res) => {
+            const user = res.data.user;
+            updateUI(user, false);
+          })
+          .catch((err) => {
+            console.log(err);
+            console.log("No cache in service worker");
+          });
+      }
+    };
+    navigator.serviceWorker.addEventListener("message", handleSWMessage);
+    return () =>
+      navigator.serviceWorker.removeEventListener("message", handleSWMessage);
+  }, []);
+
+  useEffect(() => {
     if (localDB && authToken) {
       localDB.setIndexedDBAuthToken(authToken);
     }
@@ -411,31 +441,6 @@ export const UserProvider = ({ children }) => {
       // return registration.sync.register("background-sync");
     });
   };
-
-  navigator.serviceWorker.addEventListener("message", (event) => {
-    console.log(
-      `Message from service worker to client, type: ${event.data.type}`
-    );
-    if (event.data && event.data.type === "user-cache-update") {
-      getUserDataFresh()
-        .then((res) => {
-          if (res.status !== 200) {
-            throw new Error(
-              `No cache in service worker. Response status: ${res.status}`
-            );
-          }
-          return res;
-        })
-        .then((res) => {
-          const user = res.data.user;
-          updateUI(user, false);
-        })
-        .catch((err) => {
-          console.log(err);
-          console.log("No cache in service worker");
-        });
-    }
-  });
 
   return (
     <UserContext.Provider

@@ -174,4 +174,7 @@ export default defineConfig({
   build: {
     sourcemap: true,
   },
+  devOptions: {
+    enabled: true,
+  },
 });
