@@ -1,6 +1,8 @@
-import { precacheAndRoute } from "workbox-precaching";
+import { precacheAndRoute, cleanupOutdatedCaches } from "workbox-precaching";
 
 const productionUrl = "https://calendar-next-gen-production.up.railway.app";
+
+cleanupOutdatedCaches();
 
 precacheAndRoute(self.__WB_MANIFEST);
 
@@ -98,7 +100,7 @@ const grabFreshCache = (event) => {
 };
 
 self.addEventListener("fetch", (event) => {
-  console.log(`Intercepting event network request for: ${event.request.url}`);
+  // console.log(`Intercepting event network request for: ${event.request.url}`);
   if (event.request.url.includes("/user/data")) {
     interceptUserData(event);
   }

@@ -283,6 +283,7 @@ export const UserProvider = ({ children }) => {
     generateQrCode(user.email);
     setUserTasks(user.tasks);
     if (fresh) {
+      console.log(`Calling continueRequest, user: ${user}`);
       continueRequests(user);
     }
   };
