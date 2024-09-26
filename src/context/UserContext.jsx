@@ -198,6 +198,7 @@ export const UserProvider = ({ children }) => {
 
   const continueRequests = (user) => {
     if (user.importedGoogleEvents) {
+      console.log("Import google events");
       const newNotif = {
         show: true,
         title: "Google Events",
@@ -218,25 +219,42 @@ export const UserProvider = ({ children }) => {
       setSystemNotif(newNotif);
     }
     if (user.notifSub?.length < 1 || user.notifSub === null) {
+      console.log(
+        "No permission and not subscribed to notifications, calling new request and subscribe"
+      );
       requestPermissionsAndSubscribe(authToken);
     }
     if (user.notifSub?.length > 0 && user.notifSub !== null) {
+      console.log("Checking subscription");
       checkSubscription().then((sub) => {
+        console.log(
+          "Check subscription returned a success with the subscription"
+        );
         const userHasSub = user.notifSub.some(
           (item) => JSON.parse(item).endpoint === sub.endpoint
         );
         if (userHasSub) {
+          console.log(
+            "User has a live subscription to notifications already. Calling send"
+          );
           send(authToken, user.id);
         }
         if (!userHasSub) {
+          console.log(
+            "User does not have a subscription to notifications, adding subscription now"
+          );
           addSubscriptionToUser(sub, authToken)
             .then((newUserRes) => {
+              console.log(
+                "Server called to add subscription to user for notifications and it was a success, setting new user and calling send"
+              );
               setUser(newUserRes.data.user);
               localStorage.setItem("authToken", newUserRes.data.token);
               localStorage.setItem(
                 "user",
                 JSON.stringify(newUserRes.data.user)
               );
+              console.log("Calling send");
               send(newUserRes.data.token, newUserRes.data.user.id);
             })
             .catch((err) => {
@@ -332,34 +350,55 @@ export const UserProvider = ({ children }) => {
       requestAndSubscribe(token)
         .then((res) => res.json())
         .then((data) => {
+          console.log(
+            "Called request and subscribe to notifications and it returned a success setting new user and calling send"
+          );
           setUser(data.user);
           localStorage.setItem("authToken", data.token);
           localStorage.setItem("user", JSON.stringify(data.user));
           send(data.token, data.user.id);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          console.log("Error calling request and subscribe to notifications");
+          console.log(err);
+        });
     } catch (err) {
-      console.error("Error getting service worker registration:", err);
+      console.error(
+        "Error getting service worker registration after calling request and subscribe:",
+        err
+      );
     }
   };
 
   const send = async (token, userId) => {
+    console.log("In the send function");
     if (!user) {
+      console.log("No user inside the send function. Returning immediately");
       return;
     }
     try {
       const serverSentSource = getNotifications(userId);
+      console.log(
+        "Server sent source was a success. Continuing send and calling get notifications at start"
+      );
       getNotificationsAtStart(user.username, token)
         .then((res) => {
+          console.log(
+            "Get notifications at start returned a success. Setting notifications"
+          );
           const oldNotifs = res.data.notifs;
           const sortedOldNotifs = oldNotifs.sort((a, b) => b.time - a.time);
           setNotifications(sortedOldNotifs);
           setupNotifListener(serverSentSource, userId);
         })
         .catch((err) => {
+          console.log(
+            "Getting notifications at start failed inside send funciton"
+          );
           console.log(err);
         });
     } catch (err) {
+      console.log("Error in send function catch block");
       console.log(err);
     }
   };
