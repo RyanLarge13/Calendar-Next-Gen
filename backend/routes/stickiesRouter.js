@@ -7,12 +7,14 @@ import {
   getAllStickies,
   deleteSticky,
   updateSticky,
+  updateStickyView,
 } from "../controllers/stickiesController.js";
 
 const stickiesRouter = express.Router();
 
 stickiesRouter.get("/user/stickies", auth, getAllStickies);
 stickiesRouter.put("/update/sticky", auth, updateSticky);
+stickiesRouter.put("/update/sticky/view", auth, updateStickyView);
 stickiesRouter.post("/add/sticky", auth, addNewSticky);
 stickiesRouter.delete(
   "/delete/sticky/:stickyId",

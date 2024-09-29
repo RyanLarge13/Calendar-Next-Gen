@@ -11,7 +11,6 @@ import UserContext from "../context/UserContext.jsx";
 import DatesContext from "../context/DatesContext.jsx";
 import Switch from "./Switch.jsx";
 import StaticStickies from "./StaticStickies.jsx";
-import DayEvent from "./DayEvent.jsx";
 import { formatDbText, formatTime } from "../utils/helpers.js";
 import { MdOutlineOpenInNew } from "react-icons/md";
 

@@ -88,6 +88,30 @@ export const updateSticky = async (req, res) => {
   }
 };
 
+export const updateStickyView = async (req, res) => {
+  const { newView, stickyId } = req.body;
+  if (!newView) {
+    return res.status(400).json({ message: "No view provided" });
+  }
+  if (!stickyId) {
+    return res
+      .status(400)
+      .json({ message: "Please provide a sticky to update" });
+  }
+  const newUpdatedSticky = await prisma.sticky.update({
+    where: { id: stickyId },
+    data: { viewState: newView },
+  });
+  if (!newUpdatedSticky) {
+    return res
+      .status(500)
+      .json({
+        message: "We ran into a problem on our server. Please try again later",
+      });
+  }
+  return res.status(200).json({ message: "Sticky view successfully updated" });
+};
+
 export const deleteSticky = async (req, res) => {
   const stickyId = req.params.stickyId;
   if (!stickyId) {

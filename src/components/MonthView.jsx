@@ -137,8 +137,6 @@ const MonthView = () => {
     const lastDay = selected[selected.length - 1] - paddingDays + 1;
     setString(`${month + 1}/${firstDay}/${year}`);
     setSecondString(`${month + 1}/${lastDay}/${year}`);
-    setType("event");
-    setAddNewEvent(true);
     setOpenModal(true);
     setSelected([]);
   };

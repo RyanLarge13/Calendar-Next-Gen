@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { colors } from "../constants";
 import { getTimeZone } from "../utils/helpers";
 import { MdLocationPin, MdFreeCancellation } from "react-icons/md";
-import { BsAlarmFill, BsFillCalendarPlusFill } from "react-icons/bs";
+import { BsFillCalendarPlusFill } from "react-icons/bs";
 import { AiFillCloseCircle, AiFillInfoCircle } from "react-icons/ai";
 import { FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";

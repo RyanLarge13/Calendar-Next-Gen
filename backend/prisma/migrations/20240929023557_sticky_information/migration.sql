@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Sticky" ADD COLUMN     "fromTop" DOUBLE PRECISION NOT NULL DEFAULT 0.0,
+ADD COLUMN     "viewState" TEXT NOT NULL DEFAULT 'minimized';

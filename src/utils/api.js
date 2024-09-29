@@ -490,3 +490,12 @@ export const deleteStickyNote = (token, stickyId) => {
   });
   return res;
 };
+
+export const updateStickyView = (token, stickyId, newView) => {
+  const res = Axios.put(
+    `${productionUrl}/update/sticky/view`,
+    { stickyId: stickyId, newView: newView },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return res;
+};
