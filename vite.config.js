@@ -19,6 +19,43 @@ export default defineConfig({
         "sw.js",
         "registerSw.js",
       ],
+      workbox: {
+        runtimeCaching: [
+          {
+            urlPattern: /index\.html$/,
+            handler: "StaleWhileRevalidate",
+            options: {
+              cacheName: "html-cache",
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 30 * 24 * 60 * 60,
+              },
+            },
+          },
+          {
+            urlPattern: /index\.js$/,
+            handler: "StaleWhileRevalidate",
+            options: {
+              cacheName: "js-cache",
+              expiration: {
+                maxEntries: 20,
+                maxAgeSeconds: 30 * 24 * 60 * 60,
+              },
+            },
+          },
+          {
+            urlPattern: /index\.css$/,
+            handler: "StaleWhileRevalidate",
+            options: {
+              cacheName: "css-cache",
+              expiration: {
+                maxEntries: 20,
+                maxAgeSeconds: 30 * 24 * 60 * 60,
+              },
+            },
+          },
+        ],
+      },
       manifest: {
         id: "app.calng.calendarnextgen",
         name: "Calendar Next Gen",

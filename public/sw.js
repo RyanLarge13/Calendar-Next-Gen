@@ -100,7 +100,6 @@ const grabFreshCache = (event) => {
 };
 
 self.addEventListener("fetch", (event) => {
-  // console.log(`Intercepting event network request for: ${event.request.url}`);
   if (event.request.url.includes("/user/data")) {
     interceptUserData(event);
   }
