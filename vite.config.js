@@ -22,7 +22,7 @@ export default defineConfig({
       workbox: {
         runtimeCaching: [
           {
-            urlPattern: /index\.html$/,
+            urlPattern: /.*\.html$/,
             handler: "StaleWhileRevalidate",
             options: {
               cacheName: "html-cache",
@@ -33,7 +33,7 @@ export default defineConfig({
             },
           },
           {
-            urlPattern: /index\.js$/,
+            urlPattern: /.*\.js$/,
             handler: "StaleWhileRevalidate",
             options: {
               cacheName: "js-cache",
@@ -44,10 +44,21 @@ export default defineConfig({
             },
           },
           {
-            urlPattern: /index\.css$/,
+            urlPattern: /.*\.css$/,
             handler: "StaleWhileRevalidate",
             options: {
               cacheName: "css-cache",
+              expiration: {
+                maxEntries: 20,
+                maxAgeSeconds: 30 * 24 * 60 * 60,
+              },
+            },
+          },
+          {
+            urlPattern: /^https:\/\/www\.calng\.app\//,
+            handler: "StaleWhileRevalidate",
+            options: {
+              cacheName: "root-cache",
               expiration: {
                 maxEntries: 20,
                 maxAgeSeconds: 30 * 24 * 60 * 60,

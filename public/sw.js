@@ -28,7 +28,13 @@ const formatDbText = (text) => {
 // self.addEventListener("install", event => {});
 
 self.addEventListener("activate", (event) => {
-  const cacheWhitelist = ["user-cache"];
+  const cacheWhitelist = [
+    "user-cache",
+    "root-cache",
+    "css-cache",
+    "js-cache",
+    "html-cache",
+  ];
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
