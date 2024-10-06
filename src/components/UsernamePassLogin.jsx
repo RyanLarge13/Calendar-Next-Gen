@@ -13,6 +13,7 @@ const UsernamePassLogin = () => {
   const [password, setPassword] = useState("");
   const [validUserName, setValidUserName] = useState(null);
   const [validPassword, setValidPassword] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!password || validPassword) {
@@ -123,7 +124,7 @@ const UsernamePassLogin = () => {
         transition: { delay: 0.25 },
       }}
       onSubmit={loginPasswordUsername}
-      className="flex flex-col items-center justify-center"
+      className="flex flex-col items-center gap-y-3 justify-center w-full"
     >
       <input
         onChange={(e) => setUsername(e.target.value)}
@@ -139,7 +140,7 @@ const UsernamePassLogin = () => {
             : validUserName
             ? "shadow-green-200"
             : "shadow-red-200"
-        } w-full p-2 my-2 rounded-md shadow-md focus:outline-none ${
+        } w-full p-3 my-2 rounded-md shadow-lg focus:outline-none ${
           preferences.darkMode ? "bg-transparent" : "bg-white"
         }`}
       />
@@ -150,7 +151,7 @@ const UsernamePassLogin = () => {
         value={email}
         id="email"
         name="email"
-        className={`w-full p-3 rounded-md shadow-md focus:outline-none ${
+        className={`w-full p-3 rounded-md shadow-lg focus:outline-none ${
           preferences.darkMode ? "bg-transparent" : "bg-white"
         }`}
       />
@@ -168,15 +169,16 @@ const UsernamePassLogin = () => {
             : validPassword
             ? "shadow-green-200"
             : "shadow-red-200"
-        } w-full p-3 my-2 rounded-md shadow-md focus:outline-none ${
+        } w-full p-3 my-2 rounded-md shadow-lg focus:outline-none ${
           preferences.darkMode ? "bg-transparent" : "bg-white"
         }`}
       />
       <button
+        disabled={loading}
         type="submit"
-        className="px-3 py-2 bg-cyan-100 rounded-md shadow-md w-full mt-4"
+        className="px-3 py-2 rounded-md shadow-lg w-full mt-4 duration-200 hover:shadow-lg hover:scale-[1.01] hover:bg-white bg-slate-100"
       >
-        Sign In
+        Go!
       </button>
     </motion.form>
   );

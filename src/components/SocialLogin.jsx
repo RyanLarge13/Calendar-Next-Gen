@@ -4,9 +4,12 @@ import { loginWithFb } from "../utils/api.js";
 import { motion } from "framer-motion";
 import FacebookLogin from "@greatsumini/react-facebook-login";
 import UserContext from "../context/UserContext";
+import UsernamePassLogin from "./UsernamePassLogin.jsx";
+import InteractiveContext from "../context/InteractiveContext.jsx";
 
 const SocialLogin = () => {
   const { setUser, setGoogleToken, setAuthToken } = useContext(UserContext);
+  const { setShowLogin } = useContext(InteractiveContext);
 
   const fbId = import.meta.env.VITE_FB_ID;
 
@@ -54,45 +57,33 @@ const SocialLogin = () => {
         y: 0,
         transition: { delay: 0.25 },
       }}
-      className=""
+      className="flex flex-col justify-start items-center p-10"
     >
       <button
-        onClick={() => loginGoogle()}
-        className="px-5 py-2 my-2 w-full font-bold rounded-md shadow-md text-white google"
+        className="text-sm absolute top-5 left-3"
+        onClick={() => setShowLogin(false)}
       >
-        <p>Google</p>
+        Cancel
       </button>
-      <FacebookLogin
-        appId={fbId}
-        className="px-5 py-2 my-2 w-full font-bold rounded-md shadow-md text-white facebook"
-        children="Facebook"
-        scope="email, public_profile"
-        callback={loginFb}
-      />
-      <button
-        // onClick={() => {
-        // loginFacebook();
-        // }}
-        className="px-5 py-2 my-2 w-full font-bold rounded-md shadow-md text-white discord opacity-50"
-      >
-        Discord
-      </button>
-      <button
-        // onClick={() => {
-        //   loginGithub();
-        // }}
-        className="px-5 py-2 my-2 w-full font-bold rounded-md shadow-md text-white github opacity-50"
-      >
-        Github
-      </button>
-      <button
-        // onClick={() => {
-        //   loginGithub();
-        // }}
-        className="px-5 py-2 my-2 w-full font-bold rounded-md shadow-md text-white apple opacity-50"
-      >
-        Twitter
-      </button>
+      <p className="text-3xl mb-20 mt-10 text-center">Login or Sign Up With</p>
+      <div className="flex justify-center items-center gap-x-5 w-full">
+        <button
+          onClick={() => loginGoogle()}
+          className="px-5 py-2 my-2 w-full font-bold rounded-md shadow-md text-white google duration-200 hover:shadow-lg hover:scale-[1.01]"
+        >
+          <p>Google</p>
+        </button>
+        <FacebookLogin
+          appId={fbId}
+          className="px-5 py-2 my-2 w-full font-bold rounded-md shadow-md text-white facebook duration-200 hover:shadow-lg hover:scale-[1.01]"
+          children="Facebook"
+          scope="email, public_profile"
+          callback={loginFb}
+        />
+      </div>
+      <p className="mt-10">Or</p>
+      <hr className="w-full mb-10 mt-3" />
+      <UsernamePassLogin />
     </motion.div>
   );
 };

@@ -10,7 +10,6 @@ import Options from "./Options";
 import Settings from "./Settings";
 import Connections from "./Connections";
 import SocialLogin from "./SocialLogin";
-import UsernamePassLogin from "./UsernamePassLogin";
 
 const LoginLogout = () => {
   const { showLogin, setShowLogin, showNotifs, setShowNotifs } =
@@ -29,7 +28,6 @@ const LoginLogout = () => {
     preferences,
   } = useContext(UserContext);
 
-  const [regularLogin, setRegularLogin] = useState(false);
   const [unReadLength, setUnReadLength] = useState(0);
   const [idsToUpdate, setIdsToUpdate] = useState([]);
   const [option, setOption] = useState(null);
@@ -119,6 +117,8 @@ const LoginLogout = () => {
                 showNotifs ? { y: "85%", opacity: 1 } : { y: 0, opacity: 1 }
               }
               className={`p-3 fixed bottom-0 left-0 right-0 rounded-md shadow-md z-10 lg:right-[50%] ${
+                !user ? "top-0" : ""
+              } ${
                 preferences.darkMode
                   ? "bg-[#222] text-white"
                   : "bg-white text-black"
@@ -164,38 +164,9 @@ const LoginLogout = () => {
                   <Options setOption={setOption} />
                 </div>
               ) : (
-                <div className="">
-                  {!regularLogin && (
-                    <motion.div
-                      initial={{ x: 50, opacity: 0 }}
-                      exit={{ x: 50, opacity: 0 }}
-                      animate={{ x: 0, opacity: 1 }}
-                      className="text-xs flex justify-end items-center pb-5"
-                      onClick={() => setRegularLogin(true)}
-                    >
-                      <p className="mr-2">classic</p>
-                      <BiLogInCircle />
-                    </motion.div>
-                  )}
-                  {regularLogin && (
-                    <motion.div
-                      initial={{ x: -50, opacity: 0 }}
-                      exit={{ x: -50, opacity: 0 }}
-                      animate={{ x: 0, opacity: 1 }}
-                      className="text-xs flex justify-start items-center pb-5"
-                      onClick={() => setRegularLogin(false)}
-                    >
-                      <BiLogOutCircle />
-                      <p className="ml-2">social</p>
-                    </motion.div>
-                  )}
-                  <AnimatePresence>
-                    {regularLogin && <UsernamePassLogin />}
-                  </AnimatePresence>
-                  <AnimatePresence>
-                    {!regularLogin && <SocialLogin />}
-                  </AnimatePresence>
-                </div>
+                <AnimatePresence>
+                  <SocialLogin />
+                </AnimatePresence>
               )}
             </motion.div>
           </>
