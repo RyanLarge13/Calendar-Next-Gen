@@ -23,7 +23,7 @@ export default defineConfig({
         runtimeCaching: [
           {
             urlPattern: /.*\.html$/,
-            handler: "StaleWhileRevalidate",
+            handler: "NetworkFirst",
             options: {
               cacheName: "html-cache",
               expiration: {
@@ -34,7 +34,7 @@ export default defineConfig({
           },
           {
             urlPattern: /.*\.js$/,
-            handler: "StaleWhileRevalidate",
+            handler: "NetworkFirst",
             options: {
               cacheName: "js-cache",
               expiration: {
@@ -45,7 +45,7 @@ export default defineConfig({
           },
           {
             urlPattern: /.*\.css$/,
-            handler: "StaleWhileRevalidate",
+            handler: "NetworkFirst",
             options: {
               cacheName: "css-cache",
               expiration: {
@@ -56,7 +56,7 @@ export default defineConfig({
           },
           {
             urlPattern: /^https:\/\/www\.calng\.app\//,
-            handler: "StaleWhileRevalidate",
+            handler: "NetworkFirst",
             options: {
               cacheName: "root-cache",
               expiration: {

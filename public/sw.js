@@ -27,27 +27,27 @@ const formatDbText = (text) => {
 // Install redundant at the moment from use of workbox and VitePWA config automatically handling static assets
 // self.addEventListener("install", event => {});
 
-self.addEventListener("activate", (event) => {
-  const cacheWhitelist = [
-    "user-cache",
-    "root-cache",
-    "css-cache",
-    "js-cache",
-    "html-cache",
-  ];
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (!cacheWhitelist.includes(cacheName)) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-  );
-  event.waitUntil(self.clients.claim());
-});
+// self.addEventListener("activate", (event) => {
+//   const cacheWhitelist = [
+//     "user-cache",
+//     "root-cache",
+//     "css-cache",
+//     "js-cache",
+//     "html-cache",
+//   ];
+//   event.waitUntil(
+//     caches.keys().then((cacheNames) => {
+//       return Promise.all(
+//         cacheNames.map((cacheName) => {
+//           if (!cacheWhitelist.includes(cacheName)) {
+//             return caches.delete(cacheName);
+//           }
+//         })
+//       );
+//     })
+//   );
+//   event.waitUntil(self.clients.claim());
+// });
 
 const interceptUserData = (event) => {
   event.respondWith(
