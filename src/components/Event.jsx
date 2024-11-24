@@ -1,13 +1,20 @@
 import { useState, useEffect, useContext } from "react";
 import { AiFillCloseCircle } from "react-icons/ai";
 import { BsFillTrashFill } from "react-icons/bs";
-import { FiRepeat } from "react-icons/fi";
+import { FiMaximize, FiMinimize, FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";
 import { MdLocationPin, MdOutlineDragIndicator } from "react-icons/md";
-import { FaExternalLinkAlt } from "react-icons/fa";
+import {
+  FaCalendarPlus,
+  FaEdit,
+  FaExternalLinkAlt,
+  FaImage,
+  FaPlusCircle,
+  FaTrash,
+} from "react-icons/fa";
 import { motion, useDragControls } from "framer-motion";
 import { fetchAttachments } from "../utils/api";
-import { formatDbText, formatTime } from "../utils/helpers";
+import { formatDbText, formatText, formatTime } from "../utils/helpers";
 import ListItems from "./ListItems";
 import GoogleMaps from "./GoogleMaps";
 import Masonry from "react-masonry-css";
@@ -23,6 +30,7 @@ const Event = ({ dayEvents }) => {
   const [timeInEvent, setTimeInEvent] = useState(0);
   const [fetchedImages, setFetchedImages] = useState([]);
   const [imagesLoading, setImagesLoading] = useState(false);
+  const [maximize, setMaximize] = useState(false);
   const [addItems, setAddItems] = useState([]);
   const [eventLists, setEventLists] = useState(
     lists.filter((list) => list.eventId === event.id)
@@ -128,7 +136,9 @@ const Event = ({ dayEvents }) => {
       initial={{ y: "100%" }}
       exit={{ y: "100%" }}
       animate={{ y: 0 }}
-      className={`z-[901] will-change-transform fixed inset-0 lg:left-0 lg:bottom-0 lg:right-[66%] scrollbar-slick top-[6%] rounded-md ${
+      className={`z-[901] will-change-transform fixed inset-0 lg:left-0 lg:bottom-0 ${
+        maximize ? "lg:right-0" : "lg:right-[66%]"
+      } scrollbar-slick top-[6%] rounded-md ${
         preferences.darkMode ? "bg-[#222]" : "bg-white"
       } overflow-y-auto`}
     >
@@ -149,22 +159,42 @@ const Event = ({ dayEvents }) => {
           >
             <AiFillCloseCircle />
           </button>
-          <MdOutlineDragIndicator />
+          <div className="flex gap-x-3 justify-center items-center">
+            {!maximize ? (
+              <button
+                className="hidden lg:block"
+                onClick={() => setMaximize(true)}
+              >
+                <FiMaximize />
+              </button>
+            ) : (
+              <button
+                className="hidden lg:block"
+                onClick={() => setMaximize(false)}
+              >
+                <FiMinimize />
+              </button>
+            )}
+            <button>
+              <MdOutlineDragIndicator />
+            </button>
+          </div>
         </div>
         <div className="rounded-md p-3">
           <div className={`p-2 rounded-md shadow-sm font-bold ${event.color}`}>
-            <h1 className="text-[20px]">{event.summary}</h1>
+            <input
+              className="text-[20px] bg-transparent placeholder:text-black focus:outline-none outline-none"
+              placeholder={event.summary}
+            />
           </div>
           <div
             className={`p-2 mt-2 rounded-md shadow-sm font-bold ${event.color} bg-opacity-50`}
           >
-            <div>
-              {formatDbText(event.description || "").map((text, index) => (
-                <p key={index} className="text-[14px]">
-                  {text}
-                </p>
-              ))}
-            </div>
+            <textarea
+              type="text"
+              className={`text-[14px focus:outline-none outline-none placeholder:text-black bg-transparent w-full`}
+              placeholder={formatText(event.description)}
+            />
           </div>
           {event.start.startTime && (
             <div>
@@ -228,32 +258,47 @@ const Event = ({ dayEvents }) => {
           <div className="my-2 bg-white rounded-md shadow-md p-2">
             {event.location ? (
               <div>
-                <div className="flex justify-between items-start">
+                <div className="flex justify-between items-center mb-2">
                   <div>
                     <MdLocationPin />
-                    <p
-                      className={`mt-3 p-2 rounded-md shadow-md ${event.color} font-semibold`}
-                    >
-                      {event.location.string}
-                    </p>
                   </div>
-                  <div
-                    className=""
-                    onClick={() =>
-                      (window.location.href = `https://www.google.com/maps/dir/?api=1&destination=${event.location.string}`)
-                    }
-                  >
-                    <FaExternalLinkAlt />
+                  <div className="flex justify-center items-center gap-x-3">
+                    <button>
+                      <FaTrash />
+                    </button>
+                    <button>
+                      <FaEdit />
+                    </button>
+                    <button
+                      className=""
+                      onClick={() =>
+                        (window.location.href = `https://www.google.com/maps/dir/?api=1&destination=${event.location.string}`)
+                      }
+                    >
+                      <FaExternalLinkAlt />
+                    </button>
                   </div>
                 </div>
+                <textarea
+                  className={`placeholder:text-black mt-3 p-2 rounded-md w-full outline-none focus:outline-none ${event.color}`}
+                  type="text"
+                  placeholder={event.location.string}
+                />
                 <div className="mt-5">
                   <GoogleMaps coordinates={event.location.coordinates} />
                 </div>
               </div>
             ) : (
               <div>
-                <MdLocationPin />
-                <p className="text-[14px]">No location provided</p>
+                <div className="flex justify-between items-center">
+                  <MdLocationPin />
+                  <button
+                    className={`text-xs font-semibold rounded-md ${event.color} hover:translate-x-1 duration-200 py-2 px-3`}
+                  >
+                    Add Location
+                  </button>
+                </div>
+                <p>No Location Provided</p>
               </div>
             )}
           </div>
@@ -262,18 +307,46 @@ const Event = ({ dayEvents }) => {
               <div>
                 <div className="flex justify-between items-center">
                   <IoIosAlarm />
-                  <div>
-                    <BsFillTrashFill />
+                  <div className="flex gap-3 justify-center items-center">
+                    <button>
+                      <BsFillTrashFill />
+                    </button>
+                    <button>
+                      <FaPlusCircle />
+                    </button>
+                    <button>
+                      <FaEdit />
+                    </button>
                   </div>
                 </div>
                 <p className={`${event.color} mt-3 p-2 rounded-md shadow-md`}>
-                  {new Date(event.reminders.when).toLocaleTimeString()}
+                  You have a reminder set for this event on <br />
+                  <span className="font-semibold">
+                    {new Date(event.reminders.when).toLocaleDateString(
+                      "en-US",
+                      {
+                        month: "short",
+                        day: "numeric",
+                      }
+                    )}
+                  </span>{" "}
+                  at <br />
+                  <span className="font-semibold">
+                    {new Date(event.reminders.when).toLocaleTimeString()}
+                  </span>
                 </p>
               </div>
             ) : (
               <div>
-                <IoIosAlarm />
-                <p className="text-[14px]">No reminders set</p>
+                <div className="flex justify-between items-center">
+                  <IoIosAlarm />
+                  <button
+                    className={`text-xs font-semibold rounded-md ${event.color} hover:translate-x-1 duration-200 py-2 px-3`}
+                  >
+                    Add Reminders
+                  </button>
+                </div>
+                <p>No Reminders Set</p>
               </div>
             )}
           </div>
@@ -287,8 +360,15 @@ const Event = ({ dayEvents }) => {
               </div>
             ) : (
               <div>
-                <FiRepeat />
-                <p className="text-[14px]">No repeated events</p>
+                <div className="flex justify-between items-center">
+                  <FiRepeat />
+                  <button
+                    className={`text-xs font-semibold rounded-md ${event.color} hover:translate-x-1 duration-200 py-2 px-3`}
+                  >
+                    Create Repeat
+                  </button>
+                </div>
+                <p>No repeated events</p>
               </div>
             )}
           </div>
@@ -315,24 +395,36 @@ const Event = ({ dayEvents }) => {
             ))}
           </div>
           {imagesLoading ? (
-            <p>Loading {event.attachmentLength} images...</p>
+            <p className="text-center font-semibold text-sm mt-10">
+              Loading {event.attachmentLength} Images
+            </p>
+          ) : fetchedImages.length > 0 ? (
+            <Masonry
+              breakpointCols={breakpointColumnsObj}
+              className="my-masonry-grid-attachments"
+              columnClassName="my-masonry-grid_column-attachments"
+            >
+              {fetchedImages.map((img) => (
+                <img
+                  key={img}
+                  src={img}
+                  alt={"event attachment"}
+                  className="mt-3 rounded-sm shadow-sm"
+                />
+              ))}
+            </Masonry>
           ) : (
-            fetchedImages.length > 0 && (
-              <Masonry
-                breakpointCols={breakpointColumnsObj}
-                className="my-masonry-grid-attachments"
-                columnClassName="my-masonry-grid_column-attachments"
-              >
-                {fetchedImages.map((img) => (
-                  <img
-                    key={img}
-                    src={img}
-                    alt={"event attachment"}
-                    className="mt-3 rounded-sm shadow-sm"
-                  />
-                ))}
-              </Masonry>
-            )
+            <div className="bg-white p-2 rounded-md shadow-md">
+              <div className="flex justify-between items-center">
+                <FaImage />
+                <button
+                  className={`text-xs font-semibold rounded-md ${event.color} hover:translate-x-1 duration-200 py-2 px-3`}
+                >
+                  Add Attachment
+                </button>
+              </div>
+              <p>No Attachments</p>
+            </div>
           )}
         </div>
       </div>

@@ -40,6 +40,10 @@ export const formatDbText = (text) => {
   }
 };
 
+export const formatText = (text) => {
+  return text.replace("|||", "\n");
+};
+
 export const getTimeZone = async (lng, lat) => {
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const response = await fetch(
@@ -51,6 +55,4 @@ export const getTimeZone = async (lng, lat) => {
   return data.timeZoneId;
 };
 
-export const validateFormData = (data, rules) => {
-	
-}
+export const validateFormData = (data, rules) => {};

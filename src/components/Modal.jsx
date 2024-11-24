@@ -22,6 +22,7 @@ const Modal = ({ allDayEvents }) => {
     type,
     setType,
     setAddEventWithStartEndTime,
+    setEvent,
   } = useContext(InteractiveContext);
 
   const [dayEvents, setDayEvents] = useState([]);
@@ -123,6 +124,7 @@ const Modal = ({ allDayEvents }) => {
           setAddNewEvent(false);
           setOpenModal(false);
           setType(null);
+          setEvent(null);
         }}
         className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex z-[10]"
       ></motion.div>

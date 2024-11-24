@@ -156,7 +156,7 @@ const Sticky = ({ sticky, index }) => {
           : expand
           ? 250
           : minimize
-          ? 13
+          ? 10
           : 175,
       }}
       drag={fullScreen ? false : minimize ? "y" : !pin}
