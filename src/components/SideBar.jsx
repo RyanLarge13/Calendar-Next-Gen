@@ -95,7 +95,7 @@ const SideBar = () => {
       <div
         className={`${
           preferences.darkMode ? "bg-[#222] text-white" : "bg-white text-black"
-        } bg-opacity-80 backdrop-blur-sm sticky top-0 pt-5 z-[1]`}
+        } bg-white rounded-b-md shadow-lg sticky top-0 pt-5 z-[1]`}
       >
         <div className="flex justify-between items-center px-3 mb-3">
           <BsFillArrowLeftCircleFill
@@ -113,7 +113,7 @@ const SideBar = () => {
             className="cursor-pointer"
           />
         </div>
-        <div className="pl-3 pb-3">
+        <div className="pl-3 p-2">
           <div className="grid grid-cols-7 place-items-center mb-3">
             {weekDays.map((day, index) => (
               <p

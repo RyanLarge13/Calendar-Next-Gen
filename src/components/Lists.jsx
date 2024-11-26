@@ -23,11 +23,13 @@ const Lists = ({ listSort, listSortOpt, listSearch, listSearchTxt }) => {
   const [listsToRender, setListsToRender] = useState(lists);
   const [addItems, setAddItems] = useState([]);
 
-  // const breakpointColumnsObj = {
-  //   default: 3, // Number of columns by default
-  //   1100: 2, // Number of columns on screens > 1100px
-  //   700: 1, // Number of columns on screens > 700px
-  // };
+  const breakpointColumnsObj = {
+    default: 5, // Number of columns by default
+    1800: 4,
+    1400: 3, // Number of columns on screens > 1100px
+    1000: 2,
+    700: 1, // Number of columns on screens > 700px
+  };
 
   useEffect(() => {
     if (listSort && listSortOpt) {
@@ -133,81 +135,81 @@ const Lists = ({ listSort, listSortOpt, listSearch, listSearchTxt }) => {
       <Reorder.Group
         values={listsToRender}
         onReorder={setListsToRender}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-10 list-none"
         // comment out grid styles if using masonry
+        // className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-10 list-none"
       >
-        {/* <Masonry
+        <Masonry
           breakpointCols={breakpointColumnsObj}
           className="my-masonry-grid"
           columnClassName="my-masonry-grid_column"
-        > */}
-        {listsToRender.map((list) => (
-          <Reorder.Item
-            key={list.id}
-            value={list}
-            drag
-            className={`scrollbar-hide p-3 rounded-md
+        >
+          {listsToRender.map((list) => (
+            <Reorder.Item
+              key={list.id}
+              value={list}
+              drag
+              className={`scrollbar-hide p-3 rounded-md
             shadow-md ${list.color} my-5 mx-0 mr-7 md:mr-0 pr-10 md:pr-3
             text-black list-none`}
-          >
-            <div className="mb-2 bg-white rounded-md shadow-md p-3 flex justify-between items-center">
-              <p className="font-semibold mr-2">{list.title}</p>
-              <div className="flex gap-x-3 text-sm">
-                <button onClick={() => copyAsPlainText(list.items)}>
-                  {" "}
-                  <RiFileCopy2Line />
-                </button>
-                {!addItems.includes(list.id) ? (
-                  <BiListPlus
-                    onClick={() => setAddItems((prev) => [...prev, list.id])}
-                    className="text-lg cursor-pointer"
-                  />
-                ) : (
-                  <BiListMinus
+            >
+              <div className="mb-2 bg-white rounded-md shadow-md p-3 flex justify-between items-center">
+                <p className="font-semibold mr-2">{list.title}</p>
+                <div className="flex gap-x-3 text-sm">
+                  <button onClick={() => copyAsPlainText(list.items)}>
+                    {" "}
+                    <RiFileCopy2Line />
+                  </button>
+                  {!addItems.includes(list.id) ? (
+                    <BiListPlus
+                      onClick={() => setAddItems((prev) => [...prev, list.id])}
+                      className="text-lg cursor-pointer"
+                    />
+                  ) : (
+                    <BiListMinus
+                      onClick={() => {
+                        const newIds = addItems.filter((i) => i !== list.id);
+                        setAddItems(newIds);
+                      }}
+                      className="text-lg cursor-pointer"
+                    />
+                  )}
+                  <BsFillShareFill />
+                  <BsFillPenFill />
+                  <BsFillTrashFill
                     onClick={() => {
-                      const newIds = addItems.filter((i) => i !== list.id);
-                      setAddItems(newIds);
+                      const newNotif = {
+                        show: true,
+                        title: "Delete List",
+                        text: `Are you sure you want to delete this list ${list.title}?`,
+                        color: "bg-red-300",
+                        hasCancel: true,
+                        actions: [
+                          {
+                            text: "cancel",
+                            func: () =>
+                              setSystemNotif({
+                                show: false,
+                              }),
+                          },
+                          {
+                            text: "delete",
+                            func: () => deleteEntireList(list.id),
+                          },
+                        ],
+                      };
+                      setSystemNotif(newNotif);
                     }}
-                    className="text-lg cursor-pointer"
                   />
-                )}
-                <BsFillShareFill />
-                <BsFillPenFill />
-                <BsFillTrashFill
-                  onClick={() => {
-                    const newNotif = {
-                      show: true,
-                      title: "Delete List",
-                      text: `Are you sure you want to delete this list ${list.title}?`,
-                      color: "bg-red-300",
-                      hasCancel: true,
-                      actions: [
-                        {
-                          text: "cancel",
-                          func: () =>
-                            setSystemNotif({
-                              show: false,
-                            }),
-                        },
-                        {
-                          text: "delete",
-                          func: () => deleteEntireList(list.id),
-                        },
-                      ],
-                    };
-                    setSystemNotif(newNotif);
-                  }}
-                />
+                </div>
               </div>
-            </div>
-            <ListItems
-              addItems={addItems}
-              listId={list.id}
-              items={list?.items}
-            />
-          </Reorder.Item>
-        ))}
-        {/* </Masonry> */}
+              <ListItems
+                addItems={addItems}
+                listId={list.id}
+                items={list?.items}
+              />
+            </Reorder.Item>
+          ))}
+        </Masonry>
       </Reorder.Group>
     </motion.div>
   );

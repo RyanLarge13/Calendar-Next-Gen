@@ -270,7 +270,7 @@ const Sticky = ({ sticky, index }) => {
         ) : (
           <>
             <input
-              className="mb-5 border-b border-b-black"
+              className="mb-5 border-b border-b-black bg-transparent outline-none focus:outline-none"
               placeholder={sticky.title}
             />
             <ReactQuill
