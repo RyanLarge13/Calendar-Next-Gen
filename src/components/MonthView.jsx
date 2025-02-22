@@ -10,7 +10,7 @@ import InteractiveContext from "../context/InteractiveContext";
 import PopUpMonthViewWindow from "./PopUpMonthViewWindow";
 
 const MonthView = () => {
-  const { events, preferences } = useContext(UserContext);
+  const { events, holidays, preferences } = useContext(UserContext);
   const { setMenu, setShowLogin, setAddNewEvent, setType } =
     useContext(InteractiveContext);
   const {
@@ -202,7 +202,7 @@ const MonthView = () => {
           month === dateObj.getMonth() &&
           year === dateObj.getFullYear();
         const dateStr = `${month + 1}/${index - paddingDays + 1}/${year}`;
-        const eventsToRender = getIndicesForEvents(events, dateStr);
+        const eventsToRender = getIndicesForEvents([...holidays,...events], dateStr);
 
         return (
           <motion.div
