@@ -10,7 +10,7 @@ import InteractiveContext from "../context/InteractiveContext";
 import PopUpMonthViewWindow from "./PopUpMonthViewWindow";
 
 const MonthView = () => {
-	const { events, holidays, preferences } = useContext(UserContext);
+	const { events, eventMap, holidays, preferences } = useContext(UserContext);
 	const { setMenu, setShowLogin, setAddNewEvent, setType } =
 		useContext(InteractiveContext);
 	const {
@@ -112,7 +112,10 @@ const MonthView = () => {
 	const getIndicesForEvents = dtStr => {
 		const targetDateObj = new Date(dtStr);
 		targetDateObj.setHours(0, 0, 0, 0);
-		return [...events, ...holidays]
+		const key = "2025";
+		const eventsToSort = eventMap.get(key) || [];
+		return eventsToSort
+			.concat(holidays)
 			.map(event => {
 				const startDate = new Date(event.startDate);
 				const endDate = new Date(event.endDate);
@@ -126,9 +129,10 @@ const MonthView = () => {
 				};
 			})
 			.filter(
-				event => event.startDate <= targetDateObj && event.endDate >= targetDateObj
+				event =>
+					event.startDate <= targetDateObj && event.endDate >= targetDateObj
 			)
-			.sort((a, b) => a.duration - b.duration);
+			.sort((a, b) => b.duration - a.duration);
 	};
 
 	const addNewTypeWithDays = () => {
@@ -205,7 +209,7 @@ const MonthView = () => {
 
 				return (
 					<motion.div
-							variants={calendarBlocks}
+						variants={calendarBlocks}
 						whileHover={{ scale: 1.025 }}
 						onMouseEnter={e => createPopup(e, eventsToRender, index)}
 						onContextMenu={e => {
@@ -250,7 +254,8 @@ const MonthView = () => {
 									//			}}
 									className={`rounded-lg ${event.color} shadow-md p-1 my-1 mx-auto relative`}
 								>
-									{new Date(event.startDate).toLocaleDateString() === dateStr ? (
+									{new Date(event.startDate).toLocaleDateString() ===
+									dateStr ? (
 										<p className="whitespace-nowrap text-xs overflow-hidden">
 											{event.summary}
 										</p>

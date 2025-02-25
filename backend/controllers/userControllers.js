@@ -19,7 +19,11 @@ export const fetchUserData = async (req, res) => {
         id: id,
       },
       include: {
-        events: true,
+        events: {
+         orderBy: {
+          startDate: "asc"
+         }
+        },
         reminders: true,
         lists: true,
         tasks: true,
