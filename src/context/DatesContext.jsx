@@ -49,14 +49,15 @@ export const DatesProvider = ({ children }) => {
 	};
 
 	useEffect(() => {
-		setMonth(dt.getMonth());
-		setYear(dt.getFullYear());
+		if (dt) {
+			const newMonth = dt.getMonth();
+			const newYear = dt.getFullYear();
+			setMonth(newMonth);
+			setYear(newYear);
+			setFirstDayOfMonth(new Date(newYear, newMonth, 1));
+			setDaysInMonth(new Date(newYear, newMonth + 1, 0).getUTCDate());
+		}
 	}, [dt]);
-
-	useEffect(() => {
-		setFirstDayOfMonth(new Date(year, month, 1));
-		setDaysInMonth(new Date(year, month + 1, 0).getUTCDate());
-	}, [year, month]);
 
 	useEffect(() => {
 		const dateStr = firstDayOfMonth.toLocaleDateString("en-us", {
@@ -66,22 +67,16 @@ export const DatesProvider = ({ children }) => {
 			day: "numeric"
 		});
 		setDateString(dateStr);
+		setPaddingDays(weekDays.indexOf(dateStr.split(", ")[0]));
 	}, [firstDayOfMonth]);
-
-	useEffect(() => {
-		setPaddingDays(weekDays.indexOf(dateString.split(", ")[0]));
-		//setLoading(false);
-	}, [dateString]);
 
 	useEffect(() => {
 		const day = dateObj.getDate();
 		const dayOfWeek = dateObj.getDay();
 		const start = day - dayOfWeek + paddingDays - 1;
 		setRowDays(Array.from({ length: 7 }, (_, i) => start + i));
-		setTimeout(() => {
-			setLoading(false);
-		}, 0);
-	}, [paddingDays, dateObj]);
+		setLoading(false);
+	}, [paddingDays, dateString]);
 
 	useEffect(() => {
 		const currentDay = weekDateObj.getDay();

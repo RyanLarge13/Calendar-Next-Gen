@@ -10,7 +10,7 @@ import InteractiveContext from "../context/InteractiveContext";
 import PopUpMonthViewWindow from "./PopUpMonthViewWindow";
 
 const MonthView = () => {
-	const { events, preferences } = useContext(UserContext);
+	const { events, holidays, preferences } = useContext(UserContext);
 	const { setMenu, setShowLogin, setAddNewEvent, setType } =
 		useContext(InteractiveContext);
 	const {
@@ -109,26 +109,26 @@ const MonthView = () => {
 		setString(date);
 	};
 
-	const getIndicesForEvents = (dtStr) => {
+	const getIndicesForEvents = dtStr => {
 		const targetDateObj = new Date(dtStr);
-		const eventsToFilter = [...events, ...holidays];
-		return eventsToFilter
-			.filter(event => {
+		targetDateObj.setHours(0, 0, 0, 0);
+		return [...events, ...holidays]
+			.map(event => {
 				const startDate = new Date(event.startDate);
 				const endDate = new Date(event.endDate);
 				startDate.setHours(0, 0, 0, 0);
 				endDate.setHours(0, 0, 0, 0);
-				return startDate <= targetDateObj && endDate >= targetDateObj;
+				return {
+					...event,
+					startDate,
+					endDate,
+					duration: (endDate - startDate) / (24 * 60 * 60 * 1000)
+				};
 			})
-			.sort((a, b) => {
-				const daysDifferenceA = Math.abs(
-					(new Date(b.endDate) - new Date(b.startDate)) / (24 * 60 * 60 * 1000)
-				);
-				const daysDifferenceB = Math.abs(
-					(new Date(a.endDate) - new Date(a.startDate)) / (24 * 60 * 60 * 1000)
-				);
-				return daysDifferenceA - daysDifferenceB;
-			});
+			.filter(
+				event => event.startDate <= targetDateObj && event.endDate >= targetDateObj
+			)
+			.sort((a, b) => a.duration - b.duration);
 	};
 
 	const addNewTypeWithDays = () => {
@@ -201,13 +201,11 @@ const MonthView = () => {
 					month === dateObj.getMonth() &&
 					year === dateObj.getFullYear();
 				const dateStr = `${month + 1}/${index - paddingDays + 1}/${year}`;
-				const eventsToRender = getIndicesForEvents(
-					dateStr
-				);
+				const eventsToRender = getIndicesForEvents(dateStr);
 
 				return (
 					<motion.div
-						variants={calendarBlocks}
+							variants={calendarBlocks}
 						whileHover={{ scale: 1.025 }}
 						onMouseEnter={e => createPopup(e, eventsToRender, index)}
 						onContextMenu={e => {
@@ -246,10 +244,10 @@ const MonthView = () => {
 							{eventsToRender.map(event => (
 								<motion.div
 									key={`${event.id}_${index}`}
-									initial={{ opacity: 0 }}
-									animate={{
-										opacity: 1
-									}}
+									//		initial={{ opacity: 0 }}
+									//animate={{
+									//			opacity: 1
+									//			}}
 									className={`rounded-lg ${event.color} shadow-md p-1 my-1 mx-auto relative`}
 								>
 									{new Date(event.startDate).toLocaleDateString() === dateStr ? (
