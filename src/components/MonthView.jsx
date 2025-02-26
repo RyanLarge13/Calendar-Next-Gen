@@ -112,10 +112,12 @@ const MonthView = () => {
 	const getIndicesForEvents = dtStr => {
 		const targetDateObj = new Date(dtStr);
 		targetDateObj.setHours(0, 0, 0, 0);
-		const key = "2025";
-		const eventsToSort = eventMap.get(key) || [];
+		const key = `${year}-${month}`;
+		const eventsToSort = eventMap.get(key);
+		if (!eventsToSort) {
+			return [];
+		}
 		return eventsToSort
-			.concat(holidays)
 			.map(event => {
 				const startDate = new Date(event.startDate);
 				const endDate = new Date(event.endDate);
@@ -185,9 +187,9 @@ const MonthView = () => {
 
 	return (
 		<motion.div
-			variants={calendar}
-			initial="hidden"
-			animate="show"
+				variants={calendar}
+				initial="hidden"
+				animate="show"
 			className="grid grid-cols-7 min-h-[50vh] h-[83vh] gap-1"
 			onMouseLeave={() => setRenderPopup(false)}
 			onMouseEnter={() => setRenderPopup(true)}
@@ -209,7 +211,7 @@ const MonthView = () => {
 
 				return (
 					<motion.div
-						variants={calendarBlocks}
+							variants={calendarBlocks}
 						whileHover={{ scale: 1.025 }}
 						onMouseEnter={e => createPopup(e, eventsToRender, index)}
 						onContextMenu={e => {
@@ -248,10 +250,10 @@ const MonthView = () => {
 							{eventsToRender.map(event => (
 								<motion.div
 									key={`${event.id}_${index}`}
-									//		initial={{ opacity: 0 }}
-									//animate={{
-									//			opacity: 1
-									//			}}
+											initial={{ opacity: 0 }}
+									animate={{
+												opacity: 1
+												}}
 									className={`rounded-lg ${event.color} shadow-md p-1 my-1 mx-auto relative`}
 								>
 									{new Date(event.startDate).toLocaleDateString() ===

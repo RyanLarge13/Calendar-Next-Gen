@@ -42,7 +42,8 @@ const Calendar = () => {
 		if (event || view === "day") {
 			const eventsToday = [...events, ...holidays].filter(
 				item =>
-					new Date(item.date).toLocaleDateString() === theDay.toLocaleDateString()
+					new Date(item.date).toLocaleDateString() ===
+					theDay.toLocaleDateString()
 			);
 			setTodaysEvents(eventsToday);
 		}
@@ -85,7 +86,8 @@ const Calendar = () => {
 		}
 		const remindersToday = reminders.filter(
 			reminder =>
-				new Date(reminder.time).toLocaleDateString() === theDay.toLocaleDateString()
+				new Date(reminder.time).toLocaleDateString() ===
+				theDay.toLocaleDateString()
 		);
 		setTodaysReminder(remindersToday);
 	}, [theDay, events, reminders, string]);
@@ -117,7 +119,9 @@ const Calendar = () => {
 						weekDays.map((day, index) => (
 							<p
 								key={day}
-								className={`${preferences.darkMode ? "text-white" : "text-black"} ${
+								className={`${
+									preferences.darkMode ? "text-white" : "text-black"
+								} ${
 									index === new Date().getDay() &&
 									new Date(dateString).getMonth() === dateObj.getMonth() &&
 									new Date(dateString).getYear() === dateObj.getYear()
@@ -153,13 +157,13 @@ const Calendar = () => {
 								{view === "agenda" && <AgendaView />}
 							</div>
 						</motion.div>
-					) : (
-		null
-					)}
+					) : null}
 				</section>
 				{showDatePicker && <DatePicker />}
 				{showFullDatePicker && <FullDatePicker />}
-				{openModal || event ? <ModalHeader allDayEvents={allDayEvents} /> : null}
+				{openModal || event ? (
+					<ModalHeader allDayEvents={allDayEvents} />
+				) : null}
 				<AnimatePresence>
 					{openModal && <Modal allDayEvents={allDayEvents} />}
 				</AnimatePresence>

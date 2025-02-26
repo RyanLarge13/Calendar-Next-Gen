@@ -88,6 +88,7 @@ export const UserProvider = ({ children }) => {
 	}, []);
 
 	useEffect(() => {
+		buildEventsMap([]);
 		if (localDB && authToken) {
 			localDB.setIndexedDBAuthToken(authToken);
 		}
@@ -177,14 +178,15 @@ export const UserProvider = ({ children }) => {
 
 	const buildEventsMap = eventsToMap => {
 		const newMap = new Map();
-		for (let i = 0; i < eventsToMap.length; i++) {
-			const date = new Date(eventsToMap[i].startDate);
-			const key = `${date.getFullYear()}`;
+		const allEvents = eventsToMap.concat(holidays);
+		allEvents.forEach(evt => {
+			const date = new Date(evt.date);
+			const key = `${date.getFullYear()}-${date.getMonth()}`;
 			if (!newMap.has(key)) {
 				newMap.set(key, []);
 			}
-			newMap.get(key).push(eventsToMap[i]);
-		}
+			newMap.get(key).push(evt);
+		});
 		setEventMap(newMap);
 	};
 
@@ -283,8 +285,8 @@ export const UserProvider = ({ children }) => {
 		};
 		setUser(basicUser);
 		localStorage.setItem("user", JSON.stringify(basicUser));
-		buildEventsMap(user.events);
 		setEvents(user.events);
+		buildEventsMap(user.events);
 		setStaticEvents(user.events);
 		const sortedReminders = user.reminders.sort(
 			(a, b) => new Date(a.time) - new Date(b.time)
