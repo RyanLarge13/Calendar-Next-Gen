@@ -187,7 +187,7 @@ export const UserProvider = ({ children }) => {
 			}
 			newMap.get(key).push(evt);
 		});
-		setEventMap(newMap);
+		setEventMap(new Map(newMap));
 	};
 
 	useEffect(() => {
@@ -196,7 +196,6 @@ export const UserProvider = ({ children }) => {
 				.then(res => {
 					loginWithGoogle(res.data)
 						.then(response => {
-							buildEventsMap(response.data.user.events);
 							setUser(response.data.user);
 							setAuthToken(response.data.token);
 							localStorage.setItem("authToken", response.data.token);
