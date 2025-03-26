@@ -88,7 +88,6 @@ export const UserProvider = ({ children }) => {
 	}, []);
 
 	useEffect(() => {
-		buildEventsMap([]);
 		if (localDB && authToken) {
 			localDB.setIndexedDBAuthToken(authToken);
 		}
