@@ -119,6 +119,11 @@ export const updateStartAndEndTimeOnEvent = async (eventId, offset, token) => {
   return res;
 };
 
+export const API_UpdateEventTitle = (eventId, title, token) => {
+  const res = Axios.patch(`${productionUrl}/patch/event/title`, {eventId, title, token});
+  return res;
+}
+
 export const createAttachments = (attachments, eventId, token) => {
   const res = Axios.post(
     `${productionUrl}/new/attachments/${eventId}`,

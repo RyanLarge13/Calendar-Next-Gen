@@ -35,6 +35,8 @@ const Event = ({ dayEvents }) => {
   const [eventLists, setEventLists] = useState(
     lists.filter((list) => list.eventId === event.id)
   );
+  
+  const [title, setTitle] = useState(event.summary);
 
   const controls = useDragControls();
 
@@ -124,6 +126,19 @@ const Event = ({ dayEvents }) => {
   const startDrag = (e) => {
     controls.start(e);
   };
+  
+  const updateTitle = async (e) => {
+    e.preventDefault();
+    
+    const oldTitle = event.summary;
+    
+    try {
+      const response = await API_UpdateEventTitle();
+    } catch (err) {
+      console.log(err);
+      
+    } 
+  }
 
   return (
     <motion.div
@@ -181,12 +196,15 @@ const Event = ({ dayEvents }) => {
           </div>
         </div>
         <div className="rounded-md p-3">
-          <div className={`p-2 rounded-md shadow-sm font-bold ${event.color}`}>
+          <form 
+          onSubmit={updateTitle}
+          className={`p-2 rounded-md shadow-sm font-bold ${event.color}`}>
             <input
               className="text-[20px] bg-transparent placeholder:text-black focus:outline-none outline-none"
-              placeholder={event.summary}
+              placeholder={title}
+              onFocusOut={updateTitle}
             />
-          </div>
+          </form>
           <div
             className={`p-2 mt-2 rounded-md shadow-sm font-bold ${event.color} bg-opacity-50`}
           >
