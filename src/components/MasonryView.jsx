@@ -18,23 +18,19 @@ const MasonryView = () => {
   const breakpointColumnsObj = {
     default: 3, // Number of columns by default
     1100: 2, // Number of columns on screens > 1100px
-    700: 1, // Number of columns on screens > 700px
+    700: 1 // Number of columns on screens > 700px
   };
 
   useEffect(() => {
     const now = new Date();
     const eventsToRender = events.filter(
-      (event) =>
+      event =>
         event.date > new Date(now.getFullYear(), now.getMonth - 1) &&
         event.date < new Date(now.getFullYear(), now.getMonth() + 1)
     );
-    const dateObjects = eventsToRender.map(
-      (dateString) => new Date(dateString)
-    );
+    const dateObjects = eventsToRender.map(dateString => new Date(dateString));
     dateObjects.sort((a, b) => a - b);
-    const sortedDatesArray = dateObjects.map((date) =>
-      date.toLocaleDateString()
-    );
+    const sortedDatesArray = dateObjects.map(date => date.toLocaleDateString());
     const uniqueSet = new Set(sortedDatesArray);
     const uniqueDatesArray = Array.from(uniqueSet);
     setUniqueDates(uniqueDatesArray);
@@ -63,7 +59,7 @@ const MasonryView = () => {
       const scrollOptions = {
         behavior: "smooth",
         left: 0,
-        top: closestDateRef.current.offsetTop - padding,
+        top: closestDateRef.current.offsetTop - padding
       };
       window.scrollTo(scrollOptions);
     }
@@ -85,7 +81,7 @@ const MasonryView = () => {
 
   return (
     <div className="pb-10">
-      {uniqueDates.map((dateString) => (
+      {uniqueDates.map(dateString => (
         <div key={dateString} className="mt-5">
           <div
             className="rounded-md p-2 shadow-md flex justify-between items-center"
@@ -103,7 +99,7 @@ const MasonryView = () => {
             columnClassName="my-masonry-grid_column"
           >
             {events.map(
-              (event) =>
+              event =>
                 event.date === dateString && (
                   <motion.div
                     key={event.id}
@@ -113,7 +109,7 @@ const MasonryView = () => {
                       minHeight: `${getHeight(
                         event.start.startTime,
                         event.end.endTime
-                      )}px`,
+                      )}px`
                     }}
                     className={`m-2 p-3 rounded-md shadow-md ${event.color}`}
                     onClick={() => setEvent(event)}

@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import UserContext from "../context/UserContext";
 import Masonry from "react-masonry-css";
+import { getTextColorBasedOnBackground, tailwindBgToHex} from "../utils/helpers.js";
 
 const StaticStickies = () => {
   const { stickies } = useContext(UserContext);
@@ -8,7 +9,7 @@ const StaticStickies = () => {
   const breakpointColumnsObj = {
     default: 3, // Number of columns by default
     1100: 2, // Number of columns on screens > 1100px
-    700: 1, // Number of columns on screens > 700px
+    700: 1 // Number of columns on screens > 700px
   };
 
   return stickies.length > 0 ? (
@@ -17,16 +18,28 @@ const StaticStickies = () => {
       className="my-masonry-grid"
       columnClassName="my-masonry-grid_column"
     >
-      {stickies.map((sticky) => (
+      {stickies.map(sticky => (
         <div
           key={sticky.id}
           className={`${sticky.color} w-full max-h-screen overflow-auto p-5
           rounded-md shadow-md my-5`}
         >
-          <p className="text-2xl mb-3 border-b font-semibold border-b-black">
+          <p
+            style={{
+              color: getTextColorBasedOnBackground(
+                tailwindBgToHex(sticky.color)
+              )
+            }}
+            className="text-2xl mb-3 border-b font-semibold border-b-black"
+          >
             {sticky.title}
           </p>
           <div
+            style={{
+              color: getTextColorBasedOnBackground(
+                tailwindBgToHex(sticky.color)
+              )
+            }}
             dangerouslySetInnerHTML={{ __html: sticky.body }}
             className="markdown scrollbar-slick"
           ></div>
