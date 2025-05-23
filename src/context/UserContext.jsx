@@ -20,7 +20,7 @@ import {
 } from "../utils/api";
 import QRCode from "qrcode-generator";
 import IndexedDBManager from "../utils/indexDBApi";
-import {eventIsAllDay} from "../utils/helpers.js";
+import { eventIsAllDay } from "../utils/helpers.js";
 
 const UserContext = createContext({});
 
@@ -179,7 +179,7 @@ export const UserProvider = ({ children }) => {
 
   const buildEventsMap = eventsToMap => {
     const newMap = new Map();
-    const newMapDays = new Map();
+    // const newMapDays = new Map();
     const allEvents = eventsToMap.concat(holidays);
 
     allEvents.forEach(evt => {
@@ -196,14 +196,14 @@ export const UserProvider = ({ children }) => {
         newMap.get(key).events.push(evt);
       }
 
-      if (!newMapDays.has(dayKey)) {
+        if (!newMapDays.has(dayKey)) {
         newMap.set(dayKey, { events: [], allDayEvents: [] });
       }
       if (eventIsAllDay(evt)) {
         newMap.get(dayKey).allDayEvents.push(evt);
       } else {
         newMap.get(dayKey).events.push(evt);
-      }
+      } 
     });
 
     setEventMapDays(new Map(newMapDays));

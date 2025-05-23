@@ -116,7 +116,7 @@ export const tailwindBgToHex = bgClass => {
   }
 };
 
-export const eventIsAllDay = (event) => {
+export const eventIsAllDay = event => {
   const startDate = new Date(event.startDate);
   const endDate = new Date(event.endDate);
   startDate.setHours(0, 0, 0, 0);
@@ -124,8 +124,8 @@ export const eventIsAllDay = (event) => {
   const daysDifference = (endDate - startDate) / (24 * 60 * 60 * 1000);
   if (
     daysDifference >= 1 ||
-    event.end.endTime === null ||
-    event.start.startTime === null
+    event.end?.endTime === null ||
+    event.start?.startTime === null
   ) {
     return true;
   } else {
