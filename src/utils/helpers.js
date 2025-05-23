@@ -81,7 +81,7 @@ export const getTextColorBasedOnBackground = bgColor => {
   return luminance > 186 ? "#000000" : "#FFFFFF";
 };
 
-const tailwindBgToHex = bgClass => {
+export const tailwindBgToHex = bgClass => {
   const colorMap = {
     "bg-red-300": "#fca5a5",
     "bg-red-600": "#dc2626",
@@ -109,3 +109,7 @@ const tailwindBgToHex = bgClass => {
 
   return colorMap[bgClass] || "#00000";
 };
+
+export const eventIsAllDay = () => {
+  
+}
