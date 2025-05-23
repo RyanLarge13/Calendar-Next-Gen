@@ -58,10 +58,12 @@ export const getTimeZone = async (lng, lat) => {
 export const validateFormData = (data, rules) => {};
 
 export const getTextColorBasedOnBackground = bgColor => {
-  // Remove "#" if present
-  const hex = bgColor.replace("#", "");
+  if (typeof bgColor !== "string") return "#000000";
 
-  // Convert 3-digit hex to 6-digit
+  const hex = bgColor.replace("#", "").trim();
+
+  if (!/^([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(hex)) return "#000000";
+
   const fullHex =
     hex.length === 3
       ? hex
@@ -74,10 +76,8 @@ export const getTextColorBasedOnBackground = bgColor => {
   const g = parseInt(fullHex.substr(2, 2), 16);
   const b = parseInt(fullHex.substr(4, 2), 16);
 
-  // Calculate relative luminance
   const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
 
-  // Return black or white depending on brightness
   return luminance > 186 ? "#000000" : "#FFFFFF";
 };
 
@@ -107,5 +107,11 @@ export const tailwindBgToHex = bgClass => {
     "bg-cyan-600": "#0891b2"
   };
 
-  return colorMap[bgClass] || "#00000";
+  const colorToReturn = colorMap[bgClass];
+
+  if (colorToReturn) {
+    return colorToReturn;
+  } else {
+    return "#000000";
+  }
 };
