@@ -114,8 +114,7 @@ const MonthView = () => {
     const targetDateObj = new Date(dtStr);
     targetDateObj.setHours(0, 0, 0, 0);
     const key = `${year}-${month}`;
-    const eventsToSortArrays = eventMap.get(key);
-    const eventsToSort = eventsToSortArrays.events.concat(eventsToSortArrays.allDayEvents)
+    const eventsToSort = eventMap.get(key);
     if (!eventsToSort) {
       return [];
     }

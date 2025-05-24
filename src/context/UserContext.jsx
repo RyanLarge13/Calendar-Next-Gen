@@ -185,28 +185,13 @@ export const UserProvider = ({ children }) => {
     allEvents.forEach(evt => {
       const date = new Date(evt.date);
       const key = `${date.getFullYear()}-${date.getMonth()}`;
-      const dayKey = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
 
       if (!newMap.has(key)) {
-        newMap.set(key, { events: [], allDayEvents: [] });
-      }
-      if (eventIsAllDay(evt)) {
-        newMap.get(key).allDayEvents.push(evt);
+        newMap.set(key, []);
       } else {
         newMap.get(key).events.push(evt);
       }
-
-        if (!newMapDays.has(dayKey)) {
-        newMap.set(dayKey, { events: [], allDayEvents: [] });
-      }
-      if (eventIsAllDay(evt)) {
-        newMap.get(dayKey).allDayEvents.push(evt);
-      } else {
-        newMap.get(dayKey).events.push(evt);
-      } 
     });
-
-    setEventMapDays(new Map(newMapDays));
     setEventMap(new Map(newMap));
   };
 
