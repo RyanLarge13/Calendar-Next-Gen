@@ -187,7 +187,7 @@ export const UserProvider = ({ children }) => {
       const key = `${date.getFullYear()}-${date.getMonth()}`;
 
       if (!newMap.has(key)) {
-        newMap.set(key, []);
+        newMap.set(key, {events: []});
       } else {
         newMap.get(key).events.push(evt);
       }
