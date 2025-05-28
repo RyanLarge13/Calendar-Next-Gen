@@ -78,7 +78,7 @@ export const getTextColorBasedOnBackground = bgColor => {
 
   const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
 
-  return luminance > 100 ? "#000000" : "#FFFFFF";
+  return luminance > 200 ? "#000000" : "#FFFFFF";
 };
 
 export const tailwindBgToHex = bgClass => {
