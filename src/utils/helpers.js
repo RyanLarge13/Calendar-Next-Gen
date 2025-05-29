@@ -88,7 +88,7 @@ export const tailwindBgToHex = bgClass => {
     "bg-green-600": "#FFFFFF",
     "bg-emerald-600": "#FFFFFF",
     "bg-teal-600": "#FFFFFF",
-    "bg-cyan-600": "#000000", // too light for white text
+    "bg-cyan-600": "#FFFFFF", // too light for white text
     "bg-sky-600": "#FFFFFF",
     "bg-blue-600": "#FFFFFF",
     "bg-indigo-600": "#FFFFFF",

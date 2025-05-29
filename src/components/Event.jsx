@@ -4,13 +4,14 @@ import { BsFillTrashFill } from "react-icons/bs";
 import { FiMaximize, FiMinimize, FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";
 import { MdLocationPin, MdOutlineDragIndicator } from "react-icons/md";
+import { tailwindBgToHex } from "../utils/helpers.js";
 import {
   FaCalendarPlus,
   FaEdit,
   FaExternalLinkAlt,
   FaImage,
   FaPlusCircle,
-  FaTrash,
+  FaTrash
 } from "react-icons/fa";
 import { motion, useDragControls } from "framer-motion";
 import { fetchAttachments } from "../utils/api";
@@ -33,9 +34,9 @@ const Event = ({ dayEvents }) => {
   const [maximize, setMaximize] = useState(false);
   const [addItems, setAddItems] = useState([]);
   const [eventLists, setEventLists] = useState(
-    lists.filter((list) => list.eventId === event.id)
+    lists.filter(list => list.eventId === event.id)
   );
-  
+
   const [title, setTitle] = useState(event.summary);
 
   const controls = useDragControls();
@@ -43,24 +44,24 @@ const Event = ({ dayEvents }) => {
   const breakpointColumnsObj = {
     default: 4,
     1100: 3,
-    700: 2,
+    700: 2
   };
 
   useEffect(() => {
     if (event.attachmentLength > 0) {
       setImagesLoading(true);
       fetchAttachments(event.id)
-        .then((res) => {
-          res.data.attachments.forEach((file) => {
+        .then(res => {
+          res.data.attachments.forEach(file => {
             const blob = new Blob([new Uint8Array(file.content.data)], {
-              type: file.mimetype,
+              type: file.mimetype
             });
             const url = URL.createObjectURL(blob);
-            setFetchedImages((prevUrls) => [...prevUrls, url]);
+            setFetchedImages(prevUrls => [...prevUrls, url]);
             setImagesLoading(false);
           });
         })
-        .catch((err) => console.log(err));
+        .catch(err => console.log(err));
     }
     return () => setFetchedImages([]);
   }, []);
@@ -123,22 +124,21 @@ const Event = ({ dayEvents }) => {
     }
   };
 
-  const startDrag = (e) => {
+  const startDrag = e => {
     controls.start(e);
   };
-  
-  const updateTitle = async (e) => {
+
+  const updateTitle = async e => {
     e.preventDefault();
-    
+
     const oldTitle = event.summary;
-    
+
     try {
       const response = await API_UpdateEventTitle();
     } catch (err) {
       console.log(err);
-      
-    } 
-  }
+    }
+  };
 
   return (
     <motion.div
@@ -196,9 +196,11 @@ const Event = ({ dayEvents }) => {
           </div>
         </div>
         <div className="rounded-md p-3">
-          <form 
-          onSubmit={updateTitle}
-          className={`p-2 rounded-md shadow-sm font-bold ${event.color}`}>
+          <form
+            onSubmit={updateTitle}
+            style={{ color: tailwindBgToHex(event.color) }}
+            className={`p-2 rounded-md shadow-sm font-bold ${event.color}`}
+          >
             <input
               className="text-[20px] bg-transparent placeholder:text-black focus:outline-none outline-none"
               placeholder={title}
@@ -206,6 +208,7 @@ const Event = ({ dayEvents }) => {
             />
           </form>
           <div
+            style={{ color: tailwindBgToHex(event.color) }}
             className={`p-2 mt-2 rounded-md shadow-sm font-bold ${event.color} bg-opacity-50`}
           >
             <textarea
@@ -226,12 +229,10 @@ const Event = ({ dayEvents }) => {
                     transition: {
                       duration: 0.1,
                       type: "spring",
-                      stiffness: 400,
-                    },
+                      stiffness: 400
+                    }
                   }}
-                  className={`absolute left-1 top-1 bottom-1 ${
-                    event.color === "bg-white" ? "bg-slate-200" : event.color
-                  } bg-opacity-50 rounded-3xl`}
+                  className={`absolute left-1 top-1 bottom-1 bg-opacity-50 rounded-3xl`}
                 ></motion.div>
                 <motion.p
                   initial={{ opacity: 0 }}
@@ -254,8 +255,8 @@ const Event = ({ dayEvents }) => {
                     transition: {
                       duration: 0.1,
                       type: "spring",
-                      stiffness: 400,
-                    },
+                      stiffness: 400
+                    }
                   }}
                   className={`absolute left-1 top-1 bottom-1 ${
                     event.color === "bg-white" ? "bg-slate-200" : event.color
@@ -298,6 +299,7 @@ const Event = ({ dayEvents }) => {
                   </div>
                 </div>
                 <textarea
+                  style={{ color: tailwindBgToHex(event.color) }}
                   className={`placeholder:text-black mt-3 p-2 rounded-md w-full outline-none focus:outline-none ${event.color}`}
                   type="text"
                   placeholder={event.location.string}
@@ -311,6 +313,7 @@ const Event = ({ dayEvents }) => {
                 <div className="flex justify-between items-center">
                   <MdLocationPin />
                   <button
+                    style={{ color: tailwindBgToHex(event.color) }}
                     className={`text-xs font-semibold rounded-md ${event.color} hover:translate-x-1 duration-200 py-2 px-3`}
                   >
                     Add Location
@@ -337,14 +340,17 @@ const Event = ({ dayEvents }) => {
                     </button>
                   </div>
                 </div>
-                <p className={`${event.color} mt-3 p-2 rounded-md shadow-md`}>
+                <p
+                  style={{ color: tailwindBgToHex(event.color) }}
+                  className={`${event.color} mt-3 p-2 rounded-md shadow-md`}
+                >
                   You have a reminder set for this event on <br />
                   <span className="font-semibold">
                     {new Date(event.reminders.when).toLocaleDateString(
                       "en-US",
                       {
                         month: "short",
-                        day: "numeric",
+                        day: "numeric"
                       }
                     )}
                   </span>{" "}
@@ -359,6 +365,7 @@ const Event = ({ dayEvents }) => {
                 <div className="flex justify-between items-center">
                   <IoIosAlarm />
                   <button
+                    style={{ color: tailwindBgToHex(event.color) }}
                     className={`text-xs font-semibold rounded-md ${event.color} hover:translate-x-1 duration-200 py-2 px-3`}
                   >
                     Add Reminders
@@ -372,7 +379,10 @@ const Event = ({ dayEvents }) => {
             {event.repeats.repeat ? (
               <div className="">
                 <FiRepeat />
-                <p className={`${event.color} mt-3 p-2 rounded-md shadow-md`}>
+                <p
+                  style={{ color: tailwindBgToHex(event.color) }}
+                  className={`${event.color} mt-3 p-2 rounded-md shadow-md`}
+                >
                   {event.repeats.howOften}
                 </p>
               </div>
@@ -381,6 +391,7 @@ const Event = ({ dayEvents }) => {
                 <div className="flex justify-between items-center">
                   <FiRepeat />
                   <button
+                    style={{ color: tailwindBgToHex(event.color) }}
                     className={`text-xs font-semibold rounded-md ${event.color} hover:translate-x-1 duration-200 py-2 px-3`}
                   >
                     Create Repeat
@@ -391,9 +402,10 @@ const Event = ({ dayEvents }) => {
             )}
           </div>
           <div>
-            {eventLists.map((list) => (
+            {eventLists.map(list => (
               <div
                 key={list.id}
+style={{color: tailwindBgToHex(list.color)}}
                 className={`scrollbar-hide p-3 rounded-md
             shadow-md ${list.color} my-5 mx-0 mr-7 md:mr-0 pr-10 md:pr-3
             text-black list-none`}
@@ -422,7 +434,7 @@ const Event = ({ dayEvents }) => {
               className="my-masonry-grid-attachments"
               columnClassName="my-masonry-grid_column-attachments"
             >
-              {fetchedImages.map((img) => (
+              {fetchedImages.map(img => (
                 <img
                   key={img}
                   src={img}
@@ -436,6 +448,7 @@ const Event = ({ dayEvents }) => {
               <div className="flex justify-between items-center">
                 <FaImage />
                 <button
+                  style={{ color: tailwindBgToHex(event.color) }}
                   className={`text-xs font-semibold rounded-md ${event.color} hover:translate-x-1 duration-200 py-2 px-3`}
                 >
                   Add Attachment
