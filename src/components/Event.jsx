@@ -199,19 +199,20 @@ const Event = ({ dayEvents }) => {
           <form
             onSubmit={updateTitle}
             style={{ color: tailwindBgToHex(event.color) }}
-            className={`p-2 rounded-md shadow-sm font-bold ${event.color}`}
+            className={`p-2 rounded-md shadow-sm font-bold`}
           >
             <input
+              style={{ color: tailwindBgToHex(event.color) }}
               className="text-[20px] bg-transparent placeholder:text-black focus:outline-none outline-none"
               placeholder={title}
               onFocusOut={updateTitle}
             />
           </form>
           <div
-            style={{ color: tailwindBgToHex(event.color) }}
             className={`p-2 mt-2 rounded-md shadow-sm font-bold ${event.color} bg-opacity-50`}
           >
             <textarea
+              style={{ color: tailwindBgToHex(event.color) }}
               type="text"
               className={`text-[14px focus:outline-none outline-none placeholder:text-black bg-transparent w-full`}
               placeholder={formatText(event.description)}
@@ -258,9 +259,7 @@ const Event = ({ dayEvents }) => {
                       stiffness: 400
                     }
                   }}
-                  className={`absolute left-1 top-1 bottom-1 ${
-                    event.color === "bg-white" ? "bg-slate-200" : event.color
-                  } bg-opacity-50 rounded-3xl`}
+                  className={`absolute left-1 top-1 bottom-1 bg-opacity-50 rounded-3xl`}
                 ></motion.div>
                 <p className="z-10">
                   {new Date(event.start.startTime).toLocaleTimeString()}
@@ -300,7 +299,7 @@ const Event = ({ dayEvents }) => {
                 </div>
                 <textarea
                   style={{ color: tailwindBgToHex(event.color) }}
-                  className={`placeholder:text-black mt-3 p-2 rounded-md w-full outline-none focus:outline-none ${event.color}`}
+                  className={`mt-3 p-2 rounded-md w-full outline-none focus:outline-none ${event.color}`}
                   type="text"
                   placeholder={event.location.string}
                 />
@@ -405,7 +404,7 @@ const Event = ({ dayEvents }) => {
             {eventLists.map(list => (
               <div
                 key={list.id}
-style={{color: tailwindBgToHex(list.color)}}
+                style={{ color: tailwindBgToHex(list.color) }}
                 className={`scrollbar-hide p-3 rounded-md
             shadow-md ${list.color} my-5 mx-0 mr-7 md:mr-0 pr-10 md:pr-3
             text-black list-none`}
