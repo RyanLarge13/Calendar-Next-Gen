@@ -198,12 +198,11 @@ const Event = ({ dayEvents }) => {
         <div className="rounded-md p-3">
           <form
             onSubmit={updateTitle}
-            style={{ color: tailwindBgToHex(event.color) }}
-            className={`p-2 rounded-md shadow-sm font-bold`}
+            className={`${event.color} p-2 rounded-md shadow-sm font-bold`}
           >
             <input
               style={{ color: tailwindBgToHex(event.color) }}
-              className="text-[20px] bg-transparent placeholder:text-black focus:outline-none outline-none"
+              className="text-[20px] bg-transparent focus:outline-none outline-none"
               placeholder={title}
               onFocusOut={updateTitle}
             />
@@ -214,7 +213,7 @@ const Event = ({ dayEvents }) => {
             <textarea
               style={{ color: tailwindBgToHex(event.color) }}
               type="text"
-              className={`text-[14px focus:outline-none outline-none placeholder:text-black bg-transparent w-full`}
+              className={`text-[14px focus:outline-none outline-none bg-transparent w-full`}
               placeholder={formatText(event.description)}
             />
           </div>
