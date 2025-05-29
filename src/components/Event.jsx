@@ -201,7 +201,9 @@ const Event = ({ dayEvents }) => {
             className={`${event.color} p-2 rounded-md shadow-sm font-bold`}
           >
             <input
-              style={{ color: tailwindBgToHex(event.color) }}
+              style={{ color: tailwindBgToHex(event.color), 
+placeholderColor: tailwindBgToHex(event.color)                
+              }}
               className="text-[20px] bg-transparent focus:outline-none outline-none"
               placeholder={title}
               onFocusOut={updateTitle}
@@ -211,7 +213,10 @@ const Event = ({ dayEvents }) => {
             className={`p-2 mt-2 rounded-md shadow-sm font-bold ${event.color} bg-opacity-50`}
           >
             <textarea
-              style={{ color: tailwindBgToHex(event.color) }}
+              style={{
+                color: tailwindBgToHex(event.color),
+                placeholderColor: tailwindBgToHex(event.color)
+              }}
               type="text"
               className={`text-[14px focus:outline-none outline-none bg-transparent w-full`}
               placeholder={formatText(event.description)}
@@ -297,7 +302,10 @@ const Event = ({ dayEvents }) => {
                   </div>
                 </div>
                 <textarea
-                  style={{ color: tailwindBgToHex(event.color) }}
+                  style={{
+                    color: tailwindBgToHex(event.color),
+                    placeholderColor: tailwindBgToHex(event.color)
+                  }}
                   className={`mt-3 p-2 rounded-md w-full outline-none focus:outline-none ${event.color}`}
                   type="text"
                   placeholder={event.location.string}
