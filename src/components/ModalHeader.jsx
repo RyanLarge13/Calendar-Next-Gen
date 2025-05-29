@@ -10,6 +10,7 @@ import {
   BsFillShareFill,
 } from "react-icons/bs";
 import DatesContext from "../context/DatesContext";
+import {tailwindBgToHex} from "../utils/helpers.js"
 import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
 
@@ -238,11 +239,10 @@ const ModalHeader = ({ allDayEvents }) => {
                 : { opacity: 0, y: -50, pointerEvents: "none" }
             }
             key={event.id}
+style={{color: tailwindBgToHex(event.color)}}
             className={`py-1 px-2 rounded-md shadow-sm flex justify-between ${
               event.color
-            } ${index === 0 && !showAllDayEvents ? "mt-0" : "mt-2"} ${
-              event.color === "bg-black" ? "text-white" : "text-black"
-            }`}
+            } ${index === 0 && !showAllDayEvents ? "mt-0" : "mt-2"}`}
           >
             <p onClick={() => setEvent(event)} className="cursor-pointer">
               {event.summary}

@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import ListItems from "./ListItems";
 import { deleteList } from "../utils/api";
 import { Reorder, motion, useDragControls } from "framer-motion";
+import {tailwindBgToHex} from "../utils/helpers.js"
 import {
   BsFillTrashFill,
   BsFillPenFill,
@@ -148,6 +149,7 @@ const Lists = ({ listSort, listSortOpt, listSearch, listSearchTxt }) => {
               key={list.id}
               value={list}
               drag
+style={{color: tailwindBgToHex(list.color)}}
               className={`scrollbar-hide p-3 rounded-md
             shadow-md ${list.color} my-5 mx-0 mr-7 md:mr-0 pr-10 md:pr-3
             text-black list-none`}
