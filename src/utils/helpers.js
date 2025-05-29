@@ -57,54 +57,30 @@ export const getTimeZone = async (lng, lat) => {
 
 export const validateFormData = (data, rules) => {};
 
-export const getTextColorBasedOnBackground = bgColor => {
-  if (typeof bgColor !== "string") return "#000000";
-
-  const hex = bgColor.replace("#", "").trim();
-
-  if (!/^([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(hex)) return "#000000";
-
-  const fullHex =
-    hex.length === 3
-      ? hex
-          .split("")
-          .map(c => c + c)
-          .join("")
-      : hex;
-
-  const r = parseInt(fullHex.substr(0, 2), 16);
-  const g = parseInt(fullHex.substr(2, 2), 16);
-  const b = parseInt(fullHex.substr(4, 2), 16);
-
-  const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
-
-  return luminance > 200 ? "#000000" : "#FFFFFF";
-};
-
 export const tailwindBgToHex = bgClass => {
   const colorMap = {
-    "bg-red-300": "#fca5a5",
-    "bg-red-600": "#dc2626",
-    "bg-green-300": "#86efac",
-    "bg-green-600": "#16a34a",
-    "bg-blue-300": "#93c5fd",
-    "bg-blue-600": "#2563eb",
-    "bg-yellow-300": "#fde68a",
-    "bg-yellow-600": "#ca8a04",
-    "bg-purple-300": "#d8b4fe",
-    "bg-purple-600": "#7e22ce",
-    "bg-pink-300": "#f9a8d4",
-    "bg-pink-600": "#db2777",
-    "bg-indigo-300": "#a5b4fc",
-    "bg-indigo-600": "#4f46e5",
-    "bg-gray-300": "#d1d5db",
-    "bg-gray-600": "#4b5563",
-    "bg-orange-300": "#fdba74",
-    "bg-orange-600": "#ea580c",
-    "bg-teal-300": "#5eead4",
-    "bg-teal-600": "#0d9488",
-    "bg-cyan-300": "#67e8f9",
-    "bg-cyan-600": "#0891b2"
+    "bg-red-300": "#000000",
+    "bg-red-600": "#ffffff",
+    "bg-green-300": "#000000",
+    "bg-green-600": "#ffffff",
+    "bg-blue-300": "#000000",
+    "bg-blue-600": "#ffffff",
+    "bg-yellow-300": "#000000",
+    "bg-yellow-600": "#ffffff",
+    "bg-purple-300": "#000000",
+    "bg-purple-600": "#ffffff",
+    "bg-pink-300": "#000000",
+    "bg-pink-600": "#ffffff",
+    "bg-indigo-300": "#000000",
+    "bg-indigo-600": "#ffffff",
+    "bg-gray-300": "#000000",
+    "bg-gray-600": "#ffffff",
+    "bg-orange-300": "#000000",
+    "bg-orange-600": "#ffffff",
+    "bg-teal-300": "#000000",
+    "bg-teal-600": "#ffffff",
+    "bg-cyan-300": "#000000",
+    "bg-cyan-600": "#ffffff"
   };
 
   const colorToReturn = colorMap[bgClass];

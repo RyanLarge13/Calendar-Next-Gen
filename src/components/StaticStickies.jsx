@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import UserContext from "../context/UserContext";
 import Masonry from "react-masonry-css";
-import { getTextColorBasedOnBackground, tailwindBgToHex} from "../utils/helpers.js";
+import { tailwindBgToHex } from "../utils/helpers.js";
 
 const StaticStickies = () => {
   const { stickies } = useContext(UserContext);
@@ -26,9 +26,8 @@ const StaticStickies = () => {
         >
           <p
             style={{
-              color: getTextColorBasedOnBackground(
+              color:
                 tailwindBgToHex(sticky.color)
-              )
             }}
             className="text-2xl mb-3 border-b font-semibold border-b-black"
           >
