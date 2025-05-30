@@ -2,11 +2,10 @@ import { useContext, useEffect, useState } from "react";
 import ListItems from "./ListItems";
 import { deleteList } from "../utils/api";
 import { Reorder, motion, useDragControls } from "framer-motion";
-import {tailwindBgToHex} from "../utils/helpers.js"
 import {
   BsFillTrashFill,
   BsFillPenFill,
-  BsFillShareFill,
+  BsFillShareFill
 } from "react-icons/bs";
 import { BiListMinus, BiListPlus } from "react-icons/bi";
 import { IoIosAddCircle } from "react-icons/io";
@@ -29,7 +28,7 @@ const Lists = ({ listSort, listSortOpt, listSearch, listSearchTxt }) => {
     1800: 4,
     1400: 3, // Number of columns on screens > 1100px
     1000: 2,
-    700: 1, // Number of columns on screens > 700px
+    700: 1 // Number of columns on screens > 700px
   };
 
   useEffect(() => {
@@ -46,7 +45,7 @@ const Lists = ({ listSort, listSortOpt, listSearch, listSearchTxt }) => {
           break;
         case "event":
           {
-            const newLists = lists.filter((li) => li.eventId !== null);
+            const newLists = lists.filter(li => li.eventId !== null);
             setListsToRender(newLists);
           }
           break;
@@ -70,7 +69,7 @@ const Lists = ({ listSort, listSortOpt, listSearch, listSearchTxt }) => {
 
   useEffect(() => {
     if (listSearch && listSearchTxt) {
-      const newLists = lists.filter((li) => li.title.includes(listSearchTxt));
+      const newLists = lists.filter(li => li.title.includes(listSearchTxt));
       newLists.sort((a, b) => a.title.localeCompare(b.title));
       setListsToRender(newLists);
     } else {
@@ -78,17 +77,17 @@ const Lists = ({ listSort, listSortOpt, listSearch, listSearchTxt }) => {
     }
   }, [listSearch, listSearchTxt]);
 
-  const deleteEntireList = (listId) => {
+  const deleteEntireList = listId => {
     setSystemNotif({ show: false });
     const token = localStorage.getItem("authToken");
     if (!token) return;
-    const newListOfLists = lists.filter((item) => item.id !== listId);
+    const newListOfLists = lists.filter(item => item.id !== listId);
     setLists(newListOfLists);
     deleteList(token, listId)
-      .then((res) => {
+      .then(res => {
         console.log(res);
       })
-      .catch((err) => {
+      .catch(err => {
         console.log(err);
       });
   };
@@ -103,7 +102,7 @@ const Lists = ({ listSort, listSortOpt, listSearch, listSearchTxt }) => {
     setAddNewEvent(true);
   };
 
-  const copyAsPlainText = (items) => {
+  const copyAsPlainText = items => {
     let listString = "";
     for (let i = 0; i < items.length; i++) {
       listString += `${i + 1}. ${items[i].text.trim()}\n\n`;
@@ -113,7 +112,7 @@ const Lists = ({ listSort, listSortOpt, listSearch, listSearchTxt }) => {
       .then(() => {
         console.log("clipped");
       })
-      .catch((err) => {
+      .catch(err => {
         console.log(err);
       });
   };
@@ -144,12 +143,11 @@ const Lists = ({ listSort, listSortOpt, listSearch, listSearchTxt }) => {
           className="my-masonry-grid"
           columnClassName="my-masonry-grid_column"
         >
-          {listsToRender.map((list) => (
+          {listsToRender.map(list => (
             <Reorder.Item
               key={list.id}
               value={list}
               drag
-style={{color: tailwindBgToHex(list.color)}}
               className={`scrollbar-hide p-3 rounded-md
             shadow-md ${list.color} my-5 mx-0 mr-7 md:mr-0 pr-10 md:pr-3
             text-black list-none`}
@@ -163,13 +161,13 @@ style={{color: tailwindBgToHex(list.color)}}
                   </button>
                   {!addItems.includes(list.id) ? (
                     <BiListPlus
-                      onClick={() => setAddItems((prev) => [...prev, list.id])}
+                      onClick={() => setAddItems(prev => [...prev, list.id])}
                       className="text-lg cursor-pointer"
                     />
                   ) : (
                     <BiListMinus
                       onClick={() => {
-                        const newIds = addItems.filter((i) => i !== list.id);
+                        const newIds = addItems.filter(i => i !== list.id);
                         setAddItems(newIds);
                       }}
                       className="text-lg cursor-pointer"
@@ -190,14 +188,14 @@ style={{color: tailwindBgToHex(list.color)}}
                             text: "cancel",
                             func: () =>
                               setSystemNotif({
-                                show: false,
-                              }),
+                                show: false
+                              })
                           },
                           {
                             text: "delete",
-                            func: () => deleteEntireList(list.id),
-                          },
-                        ],
+                            func: () => deleteEntireList(list.id)
+                          }
+                        ]
                       };
                       setSystemNotif(newNotif);
                     }}
@@ -205,6 +203,7 @@ style={{color: tailwindBgToHex(list.color)}}
                 </div>
               </div>
               <ListItems
+              listColor={list.color}
                 addItems={addItems}
                 listId={list.id}
                 items={list?.items}

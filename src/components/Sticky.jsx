@@ -262,7 +262,9 @@ const Sticky = ({ sticky, index }) => {
       >
         {!edit ? (
           <>
-            <h2 className="mb-5 border-b border-b-black">{sticky.title}</h2>
+            <h2
+            style={{color: tailwindBgToHex(sticky.color)}}
+            className="mb-5 border-b border-b-black">{sticky.title}</h2>
             <div
             style={{color: tailwindBgToHex(sticky.color)}}
               dangerouslySetInnerHTML={{ __html: sticky.body }}
