@@ -334,7 +334,7 @@ const AddEvent = () => {
         placeholder="Event"
         value={summary}
         onChange={e => setSummary(e.target.value)}
-        className={`p-2 text-4xl mt-10 mb-5 w-full outline-none duration-200 ${
+        className={`p-2 text-4xl mt-10 mb-5 w-full outline-none duration-200 ${color ? `${color} bg-opacity-20` :
           preferences.darkMode ? "bg-[#222]" : "bg-white"
         }`}
       />
@@ -462,8 +462,7 @@ const AddEvent = () => {
                   {multiReminders.length > 0 &&
                     multiReminders.map((reminder, index) => (
                       <p
-style={{color: tailwindBgToHex(color)}}
-                      
+                        style={{ color: tailwindBgToHex(color) }}
                         className={`${color} rounded-md shadow-sm px-2 py-1 mt-3`}
                         key={index}
                       >
