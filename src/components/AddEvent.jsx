@@ -29,13 +29,14 @@ const AddEvent = () => {
     isOnline,
     setReminders,
     setSystemNotif,
-    preferences
+    preferences,
+    setEventMap,
   } = useContext(UserContext);
   const {
     setType,
     setAddNewEvent,
     addEventWithStartEndTime,
-    setAddEventWithStartEndTime
+    setAddEventWithStartEndTime,
   } = useContext(InteractiveContext);
   const { string, setOpenModal, secondString } = useContext(DatesContext);
 
@@ -47,7 +48,7 @@ const AddEvent = () => {
   const [location, setLocation] = useState(false);
   const [locationObject, setLocationObject] = useState({
     string: "",
-    coordinates: null
+    coordinates: null,
   });
   // reminders
   const [reminder, setReminder] = useState(false);
@@ -84,7 +85,7 @@ const AddEvent = () => {
   const breakpointColumnsObj = {
     default: 4, // Number of columns by default
     1100: 3, // Number of columns on screens > 1100px
-    700: 2 // Number of columns on screens > 700px
+    700: 2, // Number of columns on screens > 700px
   };
 
   useEffect(() => {
@@ -185,32 +186,39 @@ const AddEvent = () => {
           multiReminders: reminder ? multiReminders : [],
           reminderTimeString: reminder ? reminderTimeString : null,
           when: reminder ? when : null,
-          onlyNotify: onlyNotify
+          onlyNotify: onlyNotify,
         },
         repeats: {
           repeat,
           howOften: repeat ? howOften : null,
           nextDate: null,
           interval: interval ? interval : 7,
-          repeatId: uuidv4()
+          repeatId: uuidv4(),
         },
         color: color ? color : "bg-white",
         start: {
           startTime: startTime ? (allDay ? null : startWhen) : null,
-          timeZone
+          timeZone,
         },
         end: {
           endTime: endTime ? (allDay ? null : endWhen) : null,
-          timeZone: endTimeZone ? endTimeZone : timeZone
+          timeZone: endTimeZone ? endTimeZone : timeZone,
         },
-        userId: user.id
+        userId: user.id,
       };
       postEvent(newEvent, localStorage.getItem("authToken"))
-        .then(res => {
+        .then((res) => {
           setAddEventWithStartEndTime({ start: null, end: null });
-          setEvents(prev => [...prev, ...res.data.event]);
+          setEvents((prev) => [...prev, ...res.data.event]);
+          setEventMap((prev) => {
+            return new Map(
+              prev[`${date.getFullYear()}-${date.getMonth()}`].events.push(
+                newEvent
+              )
+            );
+          });
           if (res.data.reminders) {
-            setReminders(prev => [...prev, res.data.reminders]);
+            setReminders((prev) => [...prev, res.data.reminders]);
           }
           setAddNewEvent(false);
           setType(null);
@@ -222,12 +230,12 @@ const AddEvent = () => {
                 newEventId,
                 localStorage.getItem("authToken")
               )
-                .then(res => console.log(res))
-                .catch(err => console.log(err));
+                .then((res) => console.log(res))
+                .catch((err) => console.log(err));
             }, 1000);
           }
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
         });
     }
@@ -242,8 +250,8 @@ const AddEvent = () => {
         color: "bg-red-200",
         hasCancel: false,
         actions: [
-          { text: "close", func: () => setSystemNotif({ show: false }) }
-        ]
+          { text: "close", func: () => setSystemNotif({ show: false }) },
+        ],
       };
       setSystemNotif(newError);
       return false;
@@ -256,8 +264,8 @@ const AddEvent = () => {
         color: "bg-red-200",
         hasCancel: false,
         actions: [
-          { text: "close", func: () => setSystemNotif({ show: false }) }
-        ]
+          { text: "close", func: () => setSystemNotif({ show: false }) },
+        ],
       };
       setSystemNotif(newError);
       return false;
@@ -265,12 +273,12 @@ const AddEvent = () => {
     return true;
   };
 
-  const formatDescText = text => {
+  const formatDescText = (text) => {
     const formattedText = text.replace(/\n/g, "|||");
     return formattedText;
   };
 
-  const handleFileChange = async event => {
+  const handleFileChange = async (event) => {
     const newFiles = [...event.target.files];
     for (const file of newFiles) {
       try {
@@ -281,32 +289,32 @@ const AddEvent = () => {
           img: URL.createObjectURL(compressedFile),
           mimetype: file.type,
           filename: file.name,
-          content: compressedFileContent
+          content: compressedFileContent,
         };
-        setAttachments(prevFiles => [...prevFiles, newFile]);
+        setAttachments((prevFiles) => [...prevFiles, newFile]);
       } catch (err) {
         console.log(`Error compressing image: ${err}`);
       }
     }
   };
 
-  const compressImage = file => {
+  const compressImage = (file) => {
     return new Promise((resolve, reject) => {
       new Compressor(file, {
         quality: 0.3, // Adjust the quality value as needed (0.0 to 1.0)
-        success: compressedFile => {
+        success: (compressedFile) => {
           resolve(compressedFile);
         },
-        error: error => {
+        error: (error) => {
           reject(error);
-        }
+        },
       });
     });
   };
 
-  const removeFile = file => {
+  const removeFile = (file) => {
     const newFiles = attachments.filter(
-      attach => attach.filename !== file.filename
+      (attach) => attach.filename !== file.filename
     );
     setAttachments(newFiles);
   };
@@ -333,9 +341,13 @@ const AddEvent = () => {
         type="text"
         placeholder="Event"
         value={summary}
-        onChange={e => setSummary(e.target.value)}
-        className={`p-2 text-4xl mt-10 mb-5 w-full outline-none duration-200 ${color ? `${color} bg-opacity-20` :
-          preferences.darkMode ? "bg-[#222]" : "bg-white"
+        onChange={(e) => setSummary(e.target.value)}
+        className={`p-2 text-4xl mt-10 mb-5 w-full outline-none duration-200 ${
+          color
+            ? `${color} bg-opacity-20`
+            : preferences.darkMode
+            ? "bg-[#222]"
+            : "bg-white"
         }`}
       />
       <div className="flex flex-wrap justify-center items-center my-5">
@@ -353,7 +365,7 @@ const AddEvent = () => {
         name="description"
         placeholder="Description"
         value={description}
-        onChange={e => setDescription(e.target.value)}
+        onChange={(e) => setDescription(e.target.value)}
         id="description"
         cols="30"
         rows="10"
@@ -384,7 +396,7 @@ const AddEvent = () => {
               animate={{ opacity: 1 }}
               className=""
             >
-              {repeatOptions.map(intervalString => (
+              {repeatOptions.map((intervalString) => (
                 <div
                   key={intervalString}
                   className="flex justify-between items-center px-2 py-3 my-3 rounded-md shadow-md"
@@ -412,7 +424,7 @@ const AddEvent = () => {
                       ? "years"
                       : ""
                   }?`}
-                  onChange={e => setInterval(Number(e.target.value) || "")}
+                  onChange={(e) => setInterval(Number(e.target.value) || "")}
                   onKeyUp={() => {
                     typeof interval === "number"
                       ? setInvalid(false)
@@ -471,8 +483,8 @@ const AddEvent = () => {
                     ))}
                   {addAnother && (
                     <TimeSetter
-                      setDateTime={newWhen => setAnotherWhen(newWhen, 2)}
-                      setDateTimeString={newTimeString =>
+                      setDateTime={(newWhen) => setAnotherWhen(newWhen, 2)}
+                      setDateTimeString={(newTimeString) =>
                         setAnotherWhen(newTimeString, 1)
                       }
                       openTimeSetter={setAddAnother}
@@ -552,6 +564,16 @@ const AddEvent = () => {
           </div>
         </>
       )}
+      {preview ? (
+        <div className="fixed z-[999] inset-0 flex justify-center items-center">
+          <img
+            src={preview.img}
+            alt="preview"
+            onClick={() => setPreview(null)}
+            className="rounded-sm shadow-sm object-cover"
+          />
+        </div>
+      ) : null}
       <div className="mt-10 mb-20 flex w-full flex-col justify-center items-center">
         {attachments.length > 0 && (
           <Masonry
@@ -559,7 +581,7 @@ const AddEvent = () => {
             className="my-masonry-grid-attachments"
             columnClassName="my-masonry-grid_column-attachments"
           >
-            {attachments.map(attachment => (
+            {attachments.map((attachment) => (
               <div key={attachment.filename}>
                 {attachment.mimetype.startsWith("image/") ? (
                   <div className="relative">
