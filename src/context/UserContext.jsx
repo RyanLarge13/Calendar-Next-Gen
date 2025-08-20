@@ -18,6 +18,7 @@ import {
   getFriendInfo,
   getUserDataFresh,
   API_GetLocation,
+  API_GetWeather,
 } from "../utils/api";
 import QRCode from "qrcode-generator";
 import IndexedDBManager from "../utils/indexDBApi";

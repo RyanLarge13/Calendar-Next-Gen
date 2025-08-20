@@ -125,7 +125,7 @@ const Calendar = () => {
                   index === new Date().getDay() &&
                   new Date(dateString).getMonth() === dateObj.getMonth() &&
                   new Date(dateString).getYear() === dateObj.getYear()
-                    ? "text-cyan-300 font-semibold shadow-md rounded-full"
+                    ? "bg-slate-200 rounded-t-full"
                     : ""
                 } mx-2 text-center`}
               >

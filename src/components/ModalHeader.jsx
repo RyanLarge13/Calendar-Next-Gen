@@ -8,7 +8,7 @@ import {
   BsFillArrowUpCircleFill,
   BsFillTrashFill,
   BsFillPenFill,
-  BsFillShareFill
+  BsFillShareFill,
 } from "react-icons/bs";
 import DatesContext from "../context/DatesContext";
 import { tailwindBgToHex } from "../utils/helpers.js";
@@ -26,7 +26,7 @@ const ModalHeader = ({ allDayEvents }) => {
     setSystemNotif,
     preferences,
     location,
-    weatherData
+    weatherData,
   } = useContext(UserContext);
   const { addNewEvent, event, setEvent, setShowFullDatePicker } =
     useContext(InteractiveContext);
@@ -35,22 +35,21 @@ const ModalHeader = ({ allDayEvents }) => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [weatherCode, setWeatherCode] = useState(null);
 
-  const changeWidth = e => {
+  const changeWidth = (e) => {
     setWindowWidth(window.innerWidth);
   };
 
   const getDateIndex = () => {
     // Parse the string "MM/DD/YYYY"
-    const [month, day, year] = string.split("/").map(Number);
-    const baseDate = new Date(year, month - 1, day);
+    const baseDate = new Date(string);
 
     // Normalize both dates to midnight (ignore time)
     const baseTime = baseDate.setHours(0, 0, 0, 0);
-    const currentTime = new Date().setHours(0, 0, 0, 0);
+    const currentTime = new Date(new Date().setHours(0, 0, 0, 0));
 
     // Calculate difference in days
     const diffDays = Math.floor(
-      (currentTime - baseTime) / (1000 * 60 * 60 * 24)
+      (baseTime - currentTime) / (1000 * 60 * 60 * 24)
     );
 
     // Check range
@@ -62,19 +61,23 @@ const ModalHeader = ({ allDayEvents }) => {
   };
 
   useEffect(() => {
+    window.addEventListener("resize", changeWidth);
+    return () => window.removeEventListener("resize", changeWidth);
+  }, []);
+
+  useEffect(() => {
     const indexOfDay = getDateIndex();
 
-    if (indexOfDay) {
+    console.log(indexOfDay);
+
+    if (indexOfDay !== null) {
       const theCode = weatherData?.daily?.weathercode[indexOfDay];
 
       if (theCode !== null) {
         setWeatherCode(theCode);
       }
     }
-
-    window.addEventListener("resize", changeWidth);
-    return () => window.removeEventListener("resize", changeWidth);
-  }, []);
+  }, [string]);
 
   useEffect(() => {
     if (event) {
@@ -88,23 +91,23 @@ const ModalHeader = ({ allDayEvents }) => {
   const deleteAnEvent = () => {
     const authToken = localStorage.getItem("authToken");
     deleteEvent(user.username, event.id, authToken)
-      .then(res => {
-        const filteredEvents = events.filter(e => e.id !== res.data.eventId);
+      .then((res) => {
+        const filteredEvents = events.filter((e) => e.id !== res.data.eventId);
         setEvent(null);
         setEvents(filteredEvents);
         if (allDayEvents.length > 0) {
           setShowAllDayEvents(true);
         }
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
   const deleteAllEvents = () => {
     try {
       const token = localStorage.getItem("authToken");
       deleteRepeats(user.username, event.id, event.parentId, token)
-        .then(res => {
-          const filteredEvents = events.filter(e => {
+        .then((res) => {
+          const filteredEvents = events.filter((e) => {
             if (e.id === event.id || e.id === event.parentId) {
               return;
             }
@@ -122,7 +125,7 @@ const ModalHeader = ({ allDayEvents }) => {
             setShowAllDayEvents(true);
           }
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
         });
     } catch (err) {
@@ -152,12 +155,12 @@ const ModalHeader = ({ allDayEvents }) => {
     <motion.div
       initial={{
         width: event ? "99.5%" : windowWidth < 1024 ? "63.5%" : "29.5%",
-        opacity: 0
+        opacity: 0,
       }}
       animate={{
         opacity: 1,
         transition: { opacity: { delay: 0.3 } },
-        width: event ? "99.5%" : windowWidth < 1024 ? "63.5%" : "29.5%"
+        width: event ? "99.5%" : windowWidth < 1024 ? "63.5%" : "29.5%",
       }}
       className={`${
         preferences.darkMode ? "bg-[#222] text-white" : "bg-white text-black"
@@ -194,20 +197,20 @@ const ModalHeader = ({ allDayEvents }) => {
             </p>
           )}
         </motion.div>
-        <div className="flex justify-start items-center my-1 gap-x-2">
-          <p className="text-sm">
-            <MdLocationPin />
-            {location.city}, {location.state}
-          </p>
-          {weatherCode ? (
-            <img
-              src={weatherCodes[weatherCode].icon}
-              alt=""
-              className="object-cover aspect-square w-3"
-            />
-          ) : null}
-        </div>
         <div className="flex gap-x-3">
+          <div className="flex justify-start items-center my-1 gap-x-2">
+            <MdLocationPin />
+            <p className="text-sm">
+              {location.city}, {location.state}
+            </p>
+            {weatherCode ? (
+              <img
+                src={weatherCodes[weatherCode].icon}
+                alt=""
+                className="object-cover aspect-square w-6"
+              />
+            ) : null}
+          </div>
           {allDayEvents.length > 0 && (
             <div>
               {showAllDayEvents ? (
@@ -233,35 +236,35 @@ const ModalHeader = ({ allDayEvents }) => {
                         ? [
                             {
                               text: "cancel",
-                              func: () => setSystemNotif({ show: false })
+                              func: () => setSystemNotif({ show: false }),
                             },
                             {
                               text: "delete all",
                               func: () => {
                                 setSystemNotif({ show: false });
                                 deleteAllEvents();
-                              }
+                              },
                             },
                             {
                               text: "delete",
                               func: () => {
                                 setSystemNotif({ show: false });
                                 deleteAnEvent();
-                              }
-                            }
+                              },
+                            },
                           ]
                         : [
                             {
                               text: "cancel",
-                              func: () => setSystemNotif({ show: false })
+                              func: () => setSystemNotif({ show: false }),
                             },
                             {
                               text: "delete",
                               func: () => {
                                 setSystemNotif({ show: false });
                                 deleteAnEvent();
-                              }
-                            }
+                              },
+                            },
                           ];
                       const newConfirmation = {
                         show: true,
@@ -271,7 +274,7 @@ const ModalHeader = ({ allDayEvents }) => {
                           : "Are you sure you want to delete this event?",
                         color: "bg-red-200",
                         hasCancel: true,
-                        actions: actions
+                        actions: actions,
                       };
                       setSystemNotif(newConfirmation);
                     }}
