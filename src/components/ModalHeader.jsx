@@ -2,13 +2,13 @@ import { useState, useContext, useEffect } from "react";
 import { motion } from "framer-motion";
 import { deleteEvent, deleteRepeats } from "../utils/api.js";
 import { AiFillPlusCircle } from "react-icons/ai";
-import { FaLocationDot } from "react-icons/fa";
+import { MdLocationPin } from "react-icons/md";
 import {
   BsFillArrowDownCircleFill,
   BsFillArrowUpCircleFill,
   BsFillTrashFill,
   BsFillPenFill,
-  BsFillShareFill,
+  BsFillShareFill
 } from "react-icons/bs";
 import DatesContext from "../context/DatesContext";
 import { tailwindBgToHex } from "../utils/helpers.js";
@@ -26,7 +26,7 @@ const ModalHeader = ({ allDayEvents }) => {
     setSystemNotif,
     preferences,
     location,
-    weatherData,
+    weatherData
   } = useContext(UserContext);
   const { addNewEvent, event, setEvent, setShowFullDatePicker } =
     useContext(InteractiveContext);
@@ -35,7 +35,7 @@ const ModalHeader = ({ allDayEvents }) => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [weatherCode, setWeatherCode] = useState(null);
 
-  const changeWidth = (e) => {
+  const changeWidth = e => {
     setWindowWidth(window.innerWidth);
   };
 
@@ -88,23 +88,23 @@ const ModalHeader = ({ allDayEvents }) => {
   const deleteAnEvent = () => {
     const authToken = localStorage.getItem("authToken");
     deleteEvent(user.username, event.id, authToken)
-      .then((res) => {
-        const filteredEvents = events.filter((e) => e.id !== res.data.eventId);
+      .then(res => {
+        const filteredEvents = events.filter(e => e.id !== res.data.eventId);
         setEvent(null);
         setEvents(filteredEvents);
         if (allDayEvents.length > 0) {
           setShowAllDayEvents(true);
         }
       })
-      .catch((err) => console.log(err));
+      .catch(err => console.log(err));
   };
 
   const deleteAllEvents = () => {
     try {
       const token = localStorage.getItem("authToken");
       deleteRepeats(user.username, event.id, event.parentId, token)
-        .then((res) => {
-          const filteredEvents = events.filter((e) => {
+        .then(res => {
+          const filteredEvents = events.filter(e => {
             if (e.id === event.id || e.id === event.parentId) {
               return;
             }
@@ -122,7 +122,7 @@ const ModalHeader = ({ allDayEvents }) => {
             setShowAllDayEvents(true);
           }
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         });
     } catch (err) {
@@ -152,12 +152,12 @@ const ModalHeader = ({ allDayEvents }) => {
     <motion.div
       initial={{
         width: event ? "99.5%" : windowWidth < 1024 ? "63.5%" : "29.5%",
-        opacity: 0,
+        opacity: 0
       }}
       animate={{
         opacity: 1,
         transition: { opacity: { delay: 0.3 } },
-        width: event ? "99.5%" : windowWidth < 1024 ? "63.5%" : "29.5%",
+        width: event ? "99.5%" : windowWidth < 1024 ? "63.5%" : "29.5%"
       }}
       className={`${
         preferences.darkMode ? "bg-[#222] text-white" : "bg-white text-black"
@@ -196,7 +196,7 @@ const ModalHeader = ({ allDayEvents }) => {
         </motion.div>
         <div className="flex justify-start items-center my-1 gap-x-2">
           <p className="text-sm">
-            <FaLocationDot />
+            <MdLocationPin />
             {location.city}, {location.state}
           </p>
           {weatherCode ? (
@@ -233,35 +233,35 @@ const ModalHeader = ({ allDayEvents }) => {
                         ? [
                             {
                               text: "cancel",
-                              func: () => setSystemNotif({ show: false }),
+                              func: () => setSystemNotif({ show: false })
                             },
                             {
                               text: "delete all",
                               func: () => {
                                 setSystemNotif({ show: false });
                                 deleteAllEvents();
-                              },
+                              }
                             },
                             {
                               text: "delete",
                               func: () => {
                                 setSystemNotif({ show: false });
                                 deleteAnEvent();
-                              },
-                            },
+                              }
+                            }
                           ]
                         : [
                             {
                               text: "cancel",
-                              func: () => setSystemNotif({ show: false }),
+                              func: () => setSystemNotif({ show: false })
                             },
                             {
                               text: "delete",
                               func: () => {
                                 setSystemNotif({ show: false });
                                 deleteAnEvent();
-                              },
-                            },
+                              }
+                            }
                           ];
                       const newConfirmation = {
                         show: true,
@@ -271,7 +271,7 @@ const ModalHeader = ({ allDayEvents }) => {
                           : "Are you sure you want to delete this event?",
                         color: "bg-red-200",
                         hasCancel: true,
-                        actions: actions,
+                        actions: actions
                       };
                       setSystemNotif(newConfirmation);
                     }}
