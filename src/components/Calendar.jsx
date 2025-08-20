@@ -29,7 +29,7 @@ const Calendar = () => {
     dateString,
     setNav,
     string,
-    dateObj
+    dateObj,
   } = useContext(DatesContext);
 
   const [todaysEvents, setTodaysEvents] = useState([]);
@@ -41,7 +41,7 @@ const Calendar = () => {
   useEffect(() => {
     if (event || view === "day") {
       const eventsToday = [...events, ...holidays].filter(
-        item =>
+        (item) =>
           new Date(item.date).toLocaleDateString() ===
           theDay.toLocaleDateString()
       );
@@ -51,7 +51,7 @@ const Calendar = () => {
 
   useEffect(() => {
     if (string) {
-      const eventsForDay = [...events, ...holidays].filter(event => {
+      const eventsForDay = [...events, ...holidays].filter((event) => {
         const startDate = new Date(event.startDate);
         const endDate = new Date(event.endDate);
         startDate.setHours(0, 0, 0, 0);
@@ -67,7 +67,7 @@ const Calendar = () => {
         }
         return false;
       });
-      const fullDayEvents = eventsForDay.filter(event => {
+      const fullDayEvents = eventsForDay.filter((event) => {
         const startDate = new Date(event.startDate);
         const endDate = new Date(event.endDate);
         startDate.setHours(0, 0, 0, 0);
@@ -85,23 +85,23 @@ const Calendar = () => {
       setAllDayEvents(fullDayEvents);
     }
     const remindersToday = reminders.filter(
-      reminder =>
+      (reminder) =>
         new Date(reminder.time).toLocaleDateString() ===
         theDay.toLocaleDateString()
     );
     setTodaysReminder(remindersToday);
   }, [theDay, events, reminders, string]);
 
-  const checkScroll = e => {
+  const checkScroll = (e) => {
     if (view !== "month") {
       return;
     }
     const offset = e.deltaY;
     if (offset > 0) {
-      setNav(prev => prev + 1);
+      setNav((prev) => prev + 1);
       return;
     } else if (offset < 0) {
-      setNav(prev => prev - 1);
+      setNav((prev) => prev - 1);
       return;
     }
   };
@@ -125,7 +125,7 @@ const Calendar = () => {
                   index === new Date().getDay() &&
                   new Date(dateString).getMonth() === dateObj.getMonth() &&
                   new Date(dateString).getYear() === dateObj.getYear()
-                    ? "text-cyan-300 font-semibold border-b-2 rounded-md"
+                    ? "text-cyan-300 font-semibold shadow-md rounded-full"
                     : ""
                 } mx-2 text-center`}
               >

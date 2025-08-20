@@ -169,6 +169,9 @@ const AddEvent = () => {
     if (!runChecks()) return;
     if (!isOnline) {
     }
+
+    const date = new Date(string);
+
     if (isOnline) {
       const newEvent = {
         id: newEventId,
@@ -177,7 +180,7 @@ const AddEvent = () => {
         description: formatDescText(description),
         location: location ? locationObject : undefined,
         date: string,
-        startDate: new Date(string),
+        startDate: date,
         endDate: getEndDate(),
         nextDate: null,
         attachmentLength: attachments.length,

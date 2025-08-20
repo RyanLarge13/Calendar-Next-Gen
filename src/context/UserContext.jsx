@@ -16,7 +16,8 @@ import {
   getGoogleCalendarEvents,
   markAsRead,
   getFriendInfo,
-  getUserDataFresh
+  getUserDataFresh,
+  API_GetLocation,
 } from "../utils/api";
 import QRCode from "qrcode-generator";
 import IndexedDBManager from "../utils/indexDBApi";
@@ -54,19 +55,21 @@ export const UserProvider = ({ children }) => {
   const [qrCodeUrl, setQrCodeUrl] = useState(null);
   const [eventMap, setEventMap] = useState(new Map());
   const [eventMapDays, setEventMapDays] = useState(new Map());
+  const [location, setLocation] = useState({ city: "", state: "" });
+  const [weatherData, setWeatherData] = useState(null);
 
   const updateStatus = () => {
     setIsOnline(navigator.onLine);
   };
 
   useEffect(() => {
-    const handleSWMessage = event => {
+    const handleSWMessage = (event) => {
       console.log(
         `Message from service worker to client, type: ${event.data.type}`
       );
       if (event.data && event.data.type === "user-cache-update") {
         getUserDataFresh()
-          .then(res => {
+          .then((res) => {
             if (res.status !== 200) {
               throw new Error(
                 `No cache in service worker. Response status: ${res.status}`
@@ -74,11 +77,11 @@ export const UserProvider = ({ children }) => {
             }
             return res;
           })
-          .then(res => {
+          .then((res) => {
             const user = res.data.user;
             updateUI(user, false);
           })
-          .catch(err => {
+          .catch((err) => {
             console.log(err);
             console.log("No cache in service worker");
           });
@@ -98,26 +101,57 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     const currentDate = new Date();
     const filteredEvents = events
-      .filter(event => {
+      .filter((event) => {
         const eventDate = new Date(event.startDate);
         const diff = Math.ceil(
           (eventDate - currentDate) / (25 * 60 * 60 * 1000)
         );
         return diff >= 0 && diff <= 8;
       })
-      .map(event => ({
+      .map((event) => ({
         ...event,
         diff: Math.ceil(
           (new Date(event.startDate) - currentDate) / (25 * 60 * 60 * 1000)
-        )
+        ),
       }))
       .sort((a, b) => a.diff - b.diff);
     setUpcoming(filteredEvents);
   }, [events]);
 
+  const M_FetchLocation = async (lon, lat) => {
+    try {
+      const response = await API_GetLocation(lon, lat, 1);
+
+      setLocation({
+        city: response.data[0].name,
+        state: response.data[0].state,
+      });
+
+      M_FetchWeather(lon, lat);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const M_FetchWeather = async (lon, lat) => {
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const response = await API_GetWeather(lon, lat, timeZone);
+    const data = response.data;
+
+    setWeatherData(data);
+  };
+
   useEffect(() => {
     // Immediately open indexDb
     createIndexedDb();
+    navigator?.geolocation.getCurrentPosition((position) => {
+      const long = position?.coords?.longitude;
+      const lat = position?.coords?.latitude;
+
+      if (long && lat) {
+        M_FetchLocation(long, lat);
+      }
+    });
     window.addEventListener("online", updateStatus);
     window.addEventListener("offline", updateStatus);
     return () => {
@@ -138,10 +172,10 @@ export const UserProvider = ({ children }) => {
         actions: [
           {
             text: "close",
-            func: () => setSystemNotif({ show: false })
+            func: () => setSystemNotif({ show: false }),
           },
-          { text: "refresh", func: () => window.location.reload() }
-        ]
+          { text: "refresh", func: () => window.location.reload() },
+        ],
       };
       refreshTimeout = setTimeout(() => {
         setRefresh(true);
@@ -163,9 +197,9 @@ export const UserProvider = ({ children }) => {
         actions: [
           {
             text: "close",
-            func: () => setSystemNotif({ show: false })
-          }
-        ]
+            func: () => setSystemNotif({ show: false }),
+          },
+        ],
       };
       setSystemNotif(newNotif);
       setBackOnlineTrigger(false);
@@ -177,17 +211,17 @@ export const UserProvider = ({ children }) => {
     }
   }, [isOnline]);
 
-  const buildEventsMap = eventsToMap => {
+  const buildEventsMap = (eventsToMap) => {
     const newMap = new Map();
     // const newMapDays = new Map();
     const allEvents = eventsToMap.concat(holidays);
 
-    allEvents.forEach(evt => {
+    allEvents.forEach((evt) => {
       const date = new Date(evt.date);
       const key = `${date.getFullYear()}-${date.getMonth()}`;
 
       if (!newMap.has(key)) {
-        newMap.set(key, {events: []});
+        newMap.set(key, { events: [] });
       } else {
         newMap.get(key).events.push(evt);
       }
@@ -198,18 +232,18 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     if (googleToken && !authToken) {
       getGoogleData(googleToken)
-        .then(res => {
+        .then((res) => {
           loginWithGoogle(res.data)
-            .then(response => {
+            .then((response) => {
               setUser(response.data.user);
               setAuthToken(response.data.token);
               localStorage.setItem("authToken", response.data.token);
             })
-            .catch(err => {
+            .catch((err) => {
               console.log(err);
             });
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
           setUser(false);
           setEvents(localStorage.getItem("events") || []);
@@ -217,7 +251,7 @@ export const UserProvider = ({ children }) => {
     }
   }, [isOnline, googleToken]);
 
-  const continueRequests = user => {
+  const continueRequests = (user) => {
     if (user.importedGoogleEvents) {
       const newNotif = {
         show: true,
@@ -228,13 +262,13 @@ export const UserProvider = ({ children }) => {
         actions: [
           {
             text: "close",
-            func: () => setSystemNotif({ show: false })
+            func: () => setSystemNotif({ show: false }),
           },
           {
             text: "get events",
-            func: () => fetchGoogleEvents(googleToken)
-          }
-        ]
+            func: () => fetchGoogleEvents(googleToken),
+          },
+        ],
       };
       setSystemNotif(newNotif);
     }
@@ -242,16 +276,16 @@ export const UserProvider = ({ children }) => {
       requestPermissionsAndSubscribe(authToken);
     }
     if (user.notifSub?.length > 0 && user.notifSub !== null) {
-      checkSubscription().then(sub => {
+      checkSubscription().then((sub) => {
         const userHasSub = user.notifSub.some(
-          item => JSON.parse(item).endpoint === sub.endpoint
+          (item) => JSON.parse(item).endpoint === sub.endpoint
         );
         if (userHasSub) {
           send(authToken, user.id);
         }
         if (!userHasSub) {
           addSubscriptionToUser(sub, authToken)
-            .then(newUserRes => {
+            .then((newUserRes) => {
               setUser(newUserRes.data.user);
               localStorage.setItem("authToken", newUserRes.data.token);
               localStorage.setItem(
@@ -260,20 +294,20 @@ export const UserProvider = ({ children }) => {
               );
               send(newUserRes.data.token, newUserRes.data.user.id);
             })
-            .catch(err => {
+            .catch((err) => {
               console.log(`Error with adding new subscription: ${err}`);
             });
         }
       });
     }
     getFriendInfo(authToken)
-      .then(response => {
+      .then((response) => {
         const data = response.data;
         setFriends(data.userFriends);
         setFriendRequests(data.friendRequests);
         setConnectionRequests(data.connectionRequests);
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   };
@@ -285,7 +319,7 @@ export const UserProvider = ({ children }) => {
       avatarUrl: user.avatarUrl,
       id: user.id,
       birthday: user.birthday,
-      createdAt: user.createAt
+      createdAt: user.createAt,
     };
     setUser(basicUser);
     localStorage.setItem("user", JSON.stringify(basicUser));
@@ -312,11 +346,11 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     if (authToken) {
       getUserData(authToken)
-        .then(res => {
+        .then((res) => {
           const user = res.data.user;
           updateUI(user, true);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
         });
       registerServiceWorkerSync();
@@ -329,7 +363,7 @@ export const UserProvider = ({ children }) => {
     }
   }, [authToken]);
 
-  const generateQrCode = userEmail => {
+  const generateQrCode = (userEmail) => {
     const qr = QRCode(0, "L");
     const data = `https://calendar-next-gen-production.up.railway.app/friends/add/request/qrcode/${userEmail}`;
     qr.addData(data);
@@ -338,27 +372,27 @@ export const UserProvider = ({ children }) => {
     setQrCodeUrl(qrCodeDataUrl);
   };
 
-  const fetchGoogleEvents = googleToken => {
+  const fetchGoogleEvents = (googleToken) => {
     setSystemNotif({ show: false });
     getGoogleCalendarEvents(authToken, googleToken)
-      .then(res => {
+      .then((res) => {
         const events = res.data.events;
         console.log(events);
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
-  const requestPermissionsAndSubscribe = async token => {
+  const requestPermissionsAndSubscribe = async (token) => {
     try {
       requestAndSubscribe(token)
-        .then(res => res.json())
-        .then(data => {
+        .then((res) => res.json())
+        .then((data) => {
           setUser(data.user);
           localStorage.setItem("authToken", data.token);
           localStorage.setItem("user", JSON.stringify(data.user));
           send(data.token, data.user.id);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log("Error calling request and subscribe to notifications");
           console.log(err);
         });
@@ -377,7 +411,7 @@ export const UserProvider = ({ children }) => {
     try {
       const serverSentSource = getNotifications(userId);
       getNotificationsAtStart(user.username, token)
-        .then(res => {
+        .then((res) => {
           console.log(
             "Get notifications at start returned a success. Setting notifications"
           );
@@ -386,7 +420,7 @@ export const UserProvider = ({ children }) => {
           setNotifications(sortedOldNotifs);
           setupNotifListener(serverSentSource, userId);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(
             "Getting notifications at start failed inside send funciton"
           );
@@ -403,9 +437,9 @@ export const UserProvider = ({ children }) => {
     serverSentSource.addEventListener("open", () => {
       console.log(`New SSE connection open ${serverSentSource}`);
     });
-    serverSentSource.addEventListener("message", event => {
+    serverSentSource.addEventListener("message", (event) => {
       const notification = JSON.parse(event.data);
-      setNotifications(prev => [notification, ...prev]);
+      setNotifications((prev) => [notification, ...prev]);
       setSystemNotif({
         show: true,
         title: notification.notifData.title,
@@ -415,17 +449,17 @@ export const UserProvider = ({ children }) => {
         actions: [
           {
             text: "close",
-            func: () => setSystemNotif({ show: false })
+            func: () => setSystemNotif({ show: false }),
           },
           {
             text: "mark as read",
-            func: () => markAsReadClient(notification.id)
-          }
-        ]
+            func: () => markAsReadClient(notification.id),
+          },
+        ],
       });
       console.log("Received notification:", notification);
     });
-    serverSentSource.addEventListener("error", error => {
+    serverSentSource.addEventListener("error", (error) => {
       console.error("SSE error:", error);
       serverSentSource.close();
       setTimeout(() => {
@@ -441,9 +475,9 @@ export const UserProvider = ({ children }) => {
     });
   };
 
-  const markAsReadClient = notifId => {
-    setNotifications(prevNotifs => {
-      const updated = prevNotifs.map(notif =>
+  const markAsReadClient = (notifId) => {
+    setNotifications((prevNotifs) => {
+      const updated = prevNotifs.map((notif) =>
         notif.id === notifId ? { ...notif, read: true } : notif
       );
       const sorted = updated.sort((a, b) => b.time - a.time);
@@ -460,15 +494,15 @@ export const UserProvider = ({ children }) => {
   };
 
   const registerServiceWorkerSync = () => {
-    navigator.serviceWorker.ready.then(registration => {
+    navigator.serviceWorker.ready.then((registration) => {
       if ("periodicSync" in registration) {
         console.log("Period sync in service worker");
-        return registration.periodicSync.getTags().then(tags => {
+        return registration.periodicSync.getTags().then((tags) => {
           if (tags.includes("periodic-sync")) {
             return;
           }
           registration.periodicSync.register("periodic-sync", {
-            minInterval: 24 * 60 * 60 * 1000
+            minInterval: 24 * 60 * 60 * 1000,
           });
         });
       }
@@ -518,7 +552,9 @@ export const UserProvider = ({ children }) => {
         eventMap,
         setEventMap,
         eventMapDays,
-        setEventMapDays
+        setEventMapDays,
+        weatherData,
+        location,
       }}
     >
       {children}

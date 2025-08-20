@@ -2,6 +2,7 @@ import { useState, useContext, useEffect } from "react";
 import { motion } from "framer-motion";
 import { deleteEvent, deleteRepeats } from "../utils/api.js";
 import { AiFillPlusCircle } from "react-icons/ai";
+import { FaLocationDot } from "react-icons/fa";
 import {
   BsFillArrowDownCircleFill,
   BsFillArrowUpCircleFill,
@@ -10,26 +11,67 @@ import {
   BsFillShareFill,
 } from "react-icons/bs";
 import DatesContext from "../context/DatesContext";
-import {tailwindBgToHex} from "../utils/helpers.js"
+import { tailwindBgToHex } from "../utils/helpers.js";
 import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
+import weatherCodes from "../constants.js";
 
 const ModalHeader = ({ allDayEvents }) => {
-  const { string, setString, secondString, setSecondString } =
-    useContext(DatesContext);
-  const { user, events, setEvents, holidays, setSystemNotif, preferences } =
-    useContext(UserContext);
+  const { string, setString, secondString } = useContext(DatesContext);
+  const {
+    user,
+    events,
+    setEvents,
+    holidays,
+    setSystemNotif,
+    preferences,
+    location,
+    weatherData,
+  } = useContext(UserContext);
   const { addNewEvent, event, setEvent, setShowFullDatePicker } =
     useContext(InteractiveContext);
 
   const [showAllDayEvents, setShowAllDayEvents] = useState(true);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [weatherCode, setWeatherCode] = useState(null);
 
   const changeWidth = (e) => {
     setWindowWidth(window.innerWidth);
   };
 
+  const getDateIndex = () => {
+    // Parse the string "MM/DD/YYYY"
+    const [month, day, year] = string.split("/").map(Number);
+    const baseDate = new Date(year, month - 1, day);
+
+    // Normalize both dates to midnight (ignore time)
+    const baseTime = baseDate.setHours(0, 0, 0, 0);
+    const currentTime = new Date().setHours(0, 0, 0, 0);
+
+    // Calculate difference in days
+    const diffDays = Math.floor(
+      (currentTime - baseTime) / (1000 * 60 * 60 * 24)
+    );
+
+    // Check range
+    if (diffDays >= 0 && diffDays <= 7) {
+      return diffDays; // 0 for same day, up to 7 for 6 days later
+    }
+
+    return null; // not valid
+  };
+
   useEffect(() => {
+    const indexOfDay = getDateIndex();
+
+    if (indexOfDay) {
+      const theCode = weatherData?.daily?.weathercode[indexOfDay];
+
+      if (theCode !== null) {
+        setWeatherCode(theCode);
+      }
+    }
+
     window.addEventListener("resize", changeWidth);
     return () => window.removeEventListener("resize", changeWidth);
   }, []);
@@ -129,7 +171,7 @@ const ModalHeader = ({ allDayEvents }) => {
           dragSnapToOrigin={true}
           onDragEnd={switchDays}
         >
-          <div className="flex justify-center items-center">
+          <div className="flex justify-center items-center gap-x-2">
             <h2 className="bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent">
               {string}
             </h2>
@@ -152,6 +194,19 @@ const ModalHeader = ({ allDayEvents }) => {
             </p>
           )}
         </motion.div>
+        <div className="flex justify-start items-center my-1 gap-x-2">
+          <p className="text-sm">
+            <FaLocationDot />
+            {location.city}, {location.state}
+          </p>
+          {weatherCode ? (
+            <img
+              src={weatherCodes[weatherCode].icon}
+              alt=""
+              className="object-cover aspect-square w-3"
+            />
+          ) : null}
+        </div>
         <div className="flex gap-x-3">
           {allDayEvents.length > 0 && (
             <div>
@@ -239,7 +294,7 @@ const ModalHeader = ({ allDayEvents }) => {
                 : { opacity: 0, y: -50, pointerEvents: "none" }
             }
             key={event.id}
-style={{color: tailwindBgToHex(event.color)}}
+            style={{ color: tailwindBgToHex(event.color) }}
             className={`py-1 px-2 rounded-md shadow-sm flex justify-between ${
               event.color
             } ${index === 0 && !showAllDayEvents ? "mt-0" : "mt-2"}`}

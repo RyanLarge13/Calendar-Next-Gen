@@ -4,6 +4,21 @@ const devUrl = "http://localhost:8080";
 const productionUrl = "https://calendar-next-gen-production.up.railway.app";
 // const productionUrl = "http://localhost:8080";
 
+export const API_GetWeather = (long, lat, timeZone) => {
+  const res = Axios.get(
+    `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${long}&hourly=temperature_2m,relativehumidity_2m,apparent_temperature,precipitation_probability,weathercode,windspeed_10m,winddirection_10m,windgusts_10m,temperature_80m&daily=windspeed_10m_max,uv_index_max,weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset,precipitation_probability_mean,precipitation_sum&current_weather=true&temperature_unit=fahrenheit&windspeed_unit=mph&precipitation_unit=inch&timezone=${timeZone}`
+  );
+  return res;
+};
+
+const APIkey = "e942f755a159eeb9a8cff56a595afac5";
+export const API_GetLocation = (lon, lat, limit) => {
+  const res = Axios.get(
+    `https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=${limit}&appid=${APIkey}`
+  );
+  return res;
+};
+
 export const getUserData = (token) => {
   const res = Axios.get(`${productionUrl}/user/data`, {
     headers: {
@@ -120,9 +135,13 @@ export const updateStartAndEndTimeOnEvent = async (eventId, offset, token) => {
 };
 
 export const API_UpdateEventTitle = (eventId, title, token) => {
-  const res = Axios.patch(`${productionUrl}/patch/event/title`, {eventId, title, token});
+  const res = Axios.patch(`${productionUrl}/patch/event/title`, {
+    eventId,
+    title,
+    token,
+  });
   return res;
-}
+};
 
 export const createAttachments = (attachments, eventId, token) => {
   const res = Axios.post(
