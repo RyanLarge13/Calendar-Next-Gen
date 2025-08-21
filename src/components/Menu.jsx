@@ -147,7 +147,7 @@ const Menu = () => {
                   initial={{ x: "-10%", opacity: 0 }}
                   exit={{ x: "-10%", opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
-                  className="p-3"
+                  className="pt-3"
                 >
                   <div className="mt-10">
                     <Switch

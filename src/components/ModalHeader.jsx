@@ -166,6 +166,20 @@ const ModalHeader = ({ allDayEvents }) => {
         preferences.darkMode ? "bg-[#222] text-white" : "bg-white text-black"
       } z-[902] p-2 font-bold shadow-md fixed top-1 right-1 rounded-md`}
     >
+      <div className="fixed top-3 left-3 my-1 gap-x-2 text-white">
+        <MdLocationPin className="text-lg mb-1" />
+        <p className="text-sm">
+          {location.city}, <br />
+          {location.state}
+        </p>
+        {weatherCode ? (
+          <img
+            src={weatherCodes[weatherCode].icon}
+            alt=""
+            className="object-cover aspect-square w-20 mt-3"
+          />
+        ) : null}
+      </div>
       <div className="flex justify-between items-start">
         <motion.div
           initial={{ opacity: 0 }}
@@ -198,19 +212,6 @@ const ModalHeader = ({ allDayEvents }) => {
           )}
         </motion.div>
         <div className="flex gap-x-3">
-          <div className="flex justify-start items-center my-1 gap-x-2">
-            <MdLocationPin />
-            <p className="text-sm">
-              {location.city}, {location.state}
-            </p>
-            {weatherCode ? (
-              <img
-                src={weatherCodes[weatherCode].icon}
-                alt=""
-                className="object-cover aspect-square w-6"
-              />
-            ) : null}
-          </div>
           {allDayEvents.length > 0 && (
             <div>
               {showAllDayEvents ? (
