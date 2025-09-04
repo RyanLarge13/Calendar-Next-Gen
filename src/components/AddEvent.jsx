@@ -214,11 +214,15 @@ const AddEvent = () => {
           setAddEventWithStartEndTime({ start: null, end: null });
           setEvents((prev) => [...prev, ...res.data.event]);
           setEventMap((prev) => {
-            return new Map(
-              prev[`${date.getFullYear()}-${date.getMonth()}`].events.push(
-                newEvent
-              )
-            );
+            const newMap = new Map(prev);
+            const mapDate = `${date.getFullYear()}-${date.getMonth()}`;
+
+            if (newMap.has(mapDate)) {
+              newMap[mapDate]?.events?.push(newEvent);
+            } else {
+              newMap.set(mapDate, { events: [newEvent] });
+            }
+            return newMap;
           });
           if (res.data.reminders) {
             setReminders((prev) => [...prev, res.data.reminders]);
