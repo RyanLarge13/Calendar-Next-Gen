@@ -350,11 +350,7 @@ const AddEvent = () => {
         value={summary}
         onChange={(e) => setSummary(e.target.value)}
         className={`p-2 text-4xl mt-10 mb-5 w-full outline-none duration-200 ${
-          color
-            ? `${color} bg-opacity-20`
-            : preferences.darkMode
-            ? "bg-[#222]"
-            : "bg-white"
+          preferences.darkMode ? "bg-[#222]" : "bg-white"
         }`}
       />
       <div className="flex flex-wrap justify-center items-center my-5">
@@ -381,7 +377,7 @@ const AddEvent = () => {
         }`}
       ></textarea>
       <div className="mt-10 w-full">
-        <div className="w-full p-3 border-b ">
+        <div className="w-full p-3 ">
           <div className="flex justify-between items-center">
             <MdLocationPin />
             <Toggle condition={location} setCondition={setLocation} />
@@ -392,21 +388,17 @@ const AddEvent = () => {
             </div>
           )}
         </div>
-        <div className="w-full p-3 my-5 border-b">
+        <div className="w-full p-3 my-5 ">
           <div className="flex justify-between items-center">
             <FiRepeat />
             <Toggle condition={repeat} setCondition={setRepeat} />
           </div>
           {repeat && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className=""
-            >
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
               {repeatOptions.map((intervalString) => (
                 <div
                   key={intervalString}
-                  className="flex justify-between items-center px-2 py-3 my-3 rounded-md shadow-md"
+                  className="flex justify-between items-center pl-2 pr-5 py-3 my-3"
                 >
                   <p>{intervalString}</p>
                   <Toggle
@@ -438,14 +430,14 @@ const AddEvent = () => {
                       : setInvalid(true);
                   }}
                   className={`${
-                    invalid ? "border-red-200" : "border-green-200"
-                  } my-2 outline-none border-b py-1 px-2 rounded-sm`}
+                    invalid ? "bg-red-300" : "bg-emerald-100"
+                  } my-2 outline-none py-1 px-2 rounded-md text-black placeholder:text-slate-500`}
                 />
               )}
             </motion.div>
           )}
         </div>
-        <div className="w-full p-3 border-b">
+        <div className="w-full p-3 ">
           <div className="flex justify-between items-center">
             <IoIosAlarm />
             <Toggle condition={reminder} setCondition={setReminder} />
@@ -472,21 +464,52 @@ const AddEvent = () => {
                       />
                     </div>
                   </div>
-                  <p
-                    style={{ color: tailwindBgToHex(color) }}
-                    className={`${color} rounded-md shadow-sm px-2 py-1 mt-3`}
-                  >
-                    {reminderTimeString}
-                  </p>
+                  <div>
+                    <p
+                      style={{ color: tailwindBgToHex(color) }}
+                      className={`${color} rounded-md shadow-sm px-2 py-1 mt-3`}
+                    >
+                      {reminderTimeString}
+                    </p>
+                    <button
+                      className="text-xs rounded-md bg-red-400 font-semibold px-2 py-1 mt-2"
+                      onClick={() => {
+                        if (multiReminders.length > 0) {
+                          setReminderTimeString(multiReminders[0].time);
+                          setWhen(multiReminders[0].time);
+                          setMultiReminders((prev) => {
+                            return prev.filter((r, i) => i !== 0);
+                          });
+                        } else {
+                          setWhen(null);
+                          setReminder(false);
+                        }
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </div>
                   {multiReminders.length > 0 &&
                     multiReminders.map((reminder, index) => (
-                      <p
-                        style={{ color: tailwindBgToHex(color) }}
-                        className={`${color} rounded-md shadow-sm px-2 py-1 mt-3`}
-                        key={index}
-                      >
-                        {reminder.time}
-                      </p>
+                      <div>
+                        <p
+                          style={{ color: tailwindBgToHex(color) }}
+                          className={`${color} rounded-md shadow-sm px-2 py-1 mt-3`}
+                          key={index}
+                        >
+                          {reminder.time}
+                        </p>
+                        <button
+                          className="text-xs rounded-md bg-red-400 font-semibold px-2 py-1 mt-2"
+                          onClick={() => {
+                            setMultiReminders((prev) =>
+                              prev.filter((a, i) => i !== index)
+                            );
+                          }}
+                        >
+                          Delete
+                        </button>
+                      </div>
                     ))}
                   {addAnother && (
                     <TimeSetter
@@ -500,7 +523,11 @@ const AddEvent = () => {
                   <div className="mt-3">
                     <button
                       onClick={() => setAddAnother(true)}
-                      className="py-1 px-3 rounded-md shadow-md bg-cyan-100"
+                      className={` ${
+                        preferences.darkMode
+                          ? "bg-black text-white"
+                          : "text-black bg-white"
+                      } py-1 px-3 rounded-md shadow-md`}
                     >
                       Add Another
                     </button>
@@ -511,7 +538,7 @@ const AddEvent = () => {
           )}
         </div>
       </div>
-      <div className="w-full p-3 mt-5 border-b">
+      <div className="w-full p-3 mt-5 ">
         <div className="flex justify-between items-center">
           <p>All Day Event</p>
           <Toggle condition={allDay} setCondition={setAllDay} />
@@ -520,7 +547,7 @@ const AddEvent = () => {
       {!allDay && (
         <>
           <div className="my-3 flex justify-center items-center w-full">
-            <div className="w-full mr-1 p-3 border-b cursor-pointer">
+            <div className="w-full mr-1 p-3  cursor-pointer">
               <div className="flex justify-between items-center">
                 <p>Start</p>
                 <Toggle condition={startTime} setCondition={setStartTime} />
@@ -534,18 +561,39 @@ const AddEvent = () => {
                       openTimeSetter={setStartTime}
                     />
                   ) : (
-                    <p
-                      style={{ color: tailwindBgToHex(color) }}
-                      className={`${color} rounded-md shadow-sm px-2 py-1`}
-                    >
-                      {startTimeString}
-                    </p>
+                    <div>
+                      <p
+                        className={`${color} p-2 rounded-md`}
+                        style={{ color: tailwindBgToHex(color) }}
+                      >
+                        {startTimeString}
+                      </p>
+                      <button
+                        className="text-xs rounded-md bg-red-400 font-semibold px-2 py-1 mt-2"
+                        onClick={() => {
+                          setStartWhen(null);
+                          setStartTimeString("");
+                          setStartTime(false);
+                        }}
+                      >
+                        Delete
+                      </button>
+                      <button
+                        className="text-xs rounded-md bg-emerald-300 font-semibold px-2 py-1 mt-2 ml-2"
+                        onClick={() => {
+                          setStartWhen(null);
+                          setStartTimeString("");
+                        }}
+                      >
+                        Change
+                      </button>
+                    </div>
                   )}
                 </div>
               )}
             </div>
           </div>
-          <div className="w-full mr-1 p-3 border-b cursor-pointer">
+          <div className="w-full mr-1 p-3  cursor-pointer">
             <div className="flex justify-between items-center">
               <p>End</p>
               <Toggle condition={endTime} setCondition={setEndTime} />
@@ -559,12 +607,33 @@ const AddEvent = () => {
                     openTimeSetter={setEndTime}
                   />
                 ) : (
-                  <p
-                    style={{ color: tailwindBgToHex(color) }}
-                    className={`${color} rounded-md shadow-sm px-2 py-1`}
-                  >
-                    {endTimeString}
-                  </p>
+                  <div>
+                    <p
+                      style={{ color: tailwindBgToHex(color) }}
+                      className={`${color} rounded-md p-2`}
+                    >
+                      {endTimeString}
+                    </p>
+                    <button
+                      className="text-xs rounded-md bg-red-400 font-semibold px-2 py-1 mt-2"
+                      onClick={() => {
+                        setEndWhen(null);
+                        setEndTimeString("");
+                        setEndTime(false);
+                      }}
+                    >
+                      Delete
+                    </button>
+                    <button
+                      className="text-xs rounded-md bg-emerald-300 font-semibold px-2 py-1 mt-2 ml-2"
+                      onClick={() => {
+                        setEndWhen(null);
+                        setEndTimeString("");
+                      }}
+                    >
+                      Change
+                    </button>
+                  </div>
                 )}
               </div>
             )}

@@ -48,33 +48,41 @@ const PopUpMonthViewWindow = ({ positions, eventsToRender, day }) => {
       >
         {formatTime(new Date(day))}
       </p>
-      {eventsToRender && eventsToRender.length > 0
-        ? eventsToRender.map((event) => (
-            <div
-              key={event.id}
-              className={`rounded-lg ${event.color} shadow-md p-2 my-2 w-40`}
-            >
-              <p className="text-sm font-semibold overflow-hidden">
-                {event.summary}
-              </p>
-              <div>
-                {formatDbText(event.description || "").map((text, index) => (
-                  <p key={index} className="text-xs">
-                    {text}
-                  </p>
-                ))}
-              </div>
+      {eventsToRender && eventsToRender.length > 0 ? (
+        eventsToRender.map((event) => (
+          <div
+            key={event.id}
+            className={`rounded-lg ${event.color} shadow-md p-2 my-2 w-40`}
+          >
+            <p className="text-sm font-semibold overflow-hidden">
+              {event.summary}
+            </p>
+            <div>
+              {formatDbText(event.description || "").map((text, index) => (
+                <p key={index} className="text-xs">
+                  {text}
+                </p>
+              ))}
             </div>
-          ))
-        : null}
+          </div>
+        ))
+      ) : (
+        <p
+          className={`text-xs p-1 ${
+            preferences.darkMode ? "text-white" : "text-black"
+          }`}
+        >
+          No Events Today
+        </p>
+      )}
       <div className="flex justify-start items-center gap-x-1">
         <button
           onClick={() => openModalAndSetType("event")}
           className={`${
             preferences.darkMode
-              ? "text-white bg-black rounded-md p-3 hover:bg-slate-700"
-              : "text-black bg-slate-100 rounded-md p-3 hover:bg-slate-200"
-          } text-sm duration-200`}
+              ? "rounded-md p-3"
+              : "text-black rounded-md p-3"
+          } text-sm hover:scale-[1.05] duration-200 bg-gradient-to-tr from-orange-300 to-amber-300`}
         >
           <BsFillCalendar2EventFill />
         </button>
@@ -82,9 +90,9 @@ const PopUpMonthViewWindow = ({ positions, eventsToRender, day }) => {
           onClick={() => openModalAndSetType("reminder")}
           className={`${
             preferences.darkMode
-              ? "text-white bg-black rounded-md p-3 hover:bg-slate-700"
-              : "text-black bg-slate-100 rounded-md p-3 hover:bg-slate-200"
-          } text-sm duration-200`}
+              ? "rounded-md p-3"
+              : "text-black rounded-md p-3"
+          } text-sm hover:scale-[1.05] duration-200 bg-gradient-to-tr from-red-300 to-rose-300`}
         >
           <BsAlarmFill />
         </button>
@@ -92,9 +100,9 @@ const PopUpMonthViewWindow = ({ positions, eventsToRender, day }) => {
           onClick={() => openModalAndSetType("task")}
           className={`${
             preferences.darkMode
-              ? "text-white bg-black rounded-md p-3 hover:bg-slate-700"
-              : "text-black bg-slate-100 rounded-md p-3 hover:bg-slate-200"
-          } text-sm duration-200`}
+              ? "rounded-md p-3"
+              : "text-black rounded-md p-3"
+          } text-sm hover:scale-[1.05] duration-200 bg-gradient-to-tr from-cyan-300 to-sky-300`}
         >
           <BsListTask />
         </button>

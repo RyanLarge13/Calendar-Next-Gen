@@ -1,12 +1,14 @@
-import { useState, useEffect } from "react";
-import { Autocomplete } from "@react-google-maps/api";
+import { useState, useEffect, useContext } from "react";
 import { motion } from "framer-motion";
 import debounce from "lodash.debounce";
 import GoogleMaps from "./GoogleMaps";
+import UserContext from "../context/UserContext";
 
 const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
 const SuggestCities = ({ setLocationObject }) => {
+  const { preferences } = useContext(UserContext);
+
   const [inputValue, setInputValue] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [selectedPlace, setSelectedPlace] = useState(null);
@@ -87,24 +89,15 @@ const SuggestCities = ({ setLocationObject }) => {
 
   return (
     <div>
-      <Autocomplete
-        onLoad={(autocomplete) => {
-          autocomplete.addListener("place_changed", () => {
-            const place = autocomplete.getPlace();
-            if (place) {
-              handleSelectPlace(place.place_id);
-            }
-          });
-        }}
-      >
-        <input
-          type="text"
-          value={inputValue}
-          onChange={handleInputChange}
-          placeholder="Type a city or place"
-          className="my-2 p-2 rounded-sm shadow-sm w-full focus:outline-gray-200"
-        />
-      </Autocomplete>
+      <input
+        type="text"
+        value={inputValue}
+        onChange={handleInputChange}
+        placeholder="Type a city or place"
+        className={`${
+          preferences.darkMode ? "bg-[#444] text-white" : "bg-white text-black"
+        } my-2 p-2 rounded-md shadow-sm w-full focus:outline-none outline-none focus:shadow-md duration-200`}
+      />
       <div className="my-3">
         {suggestions.map((place) => (
           <motion.div
@@ -123,9 +116,7 @@ const SuggestCities = ({ setLocationObject }) => {
         <div>
           <GoogleMaps coordinates={selectedPlace.coordinates} />
         </div>
-      ) : (
-        <div>No place selected</div>
-      )}
+      ) : null}
     </div>
   );
 };

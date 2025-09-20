@@ -166,31 +166,21 @@ const ModalHeader = ({ allDayEvents }) => {
         preferences.darkMode ? "bg-[#222] text-white" : "bg-white text-black"
       } z-[902] p-2 font-bold shadow-md fixed top-1 right-1 rounded-md`}
     >
-      <div className="fixed top-3 left-3 my-1 gap-x-2 text-white">
-        <MdLocationPin className="text-lg mb-1" />
-        <p className="text-sm">
-          {location.city}, <br />
-          {location.state}
-        </p>
-        {weatherCode ? (
-          <img
-            src={weatherCodes[weatherCode].icon}
-            alt=""
-            className="object-cover aspect-square w-20 mt-3"
-          />
-        ) : null}
-      </div>
-      <div className="flex justify-between items-start">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          drag="x"
-          dragSnapToOrigin={true}
-          onDragEnd={switchDays}
-        >
-          <div className="flex justify-center items-center gap-x-2">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        drag="x"
+        dragSnapToOrigin={true}
+        onDragEnd={switchDays}
+      >
+        <div className="flex justify-between items-center">
+          <div className="flex justify-center items-center">
             <h2 className="bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent">
-              {string}
+              {new Date(string).toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })}
             </h2>
             {addNewEvent && (
               <div>
@@ -205,87 +195,106 @@ const ModalHeader = ({ allDayEvents }) => {
               </div>
             )}
           </div>
+          <div className="flex items-center ml-3 min-w-0">
+            <MdLocationPin className="text-lg mr-1 flex-shrink-0" />
+            <p className="text-sm truncate min-w-0">
+              {location.city}, {location.state}
+            </p>
+            {weatherCode ? (
+              <img
+                src={weatherCodes[weatherCode].icon}
+                alt=""
+                className="object-cover aspect-square w-8 ml-2 flex-shrink-0"
+              />
+            ) : null}
+          </div>
+        </div>
+        <div>
           {secondString && (
             <p className="bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent">
-              {secondString}
+              {new Date(secondString).toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })}
             </p>
           )}
-        </motion.div>
-        <div className="flex gap-x-3">
-          {allDayEvents.length > 0 && (
-            <div>
-              {showAllDayEvents ? (
-                <BsFillArrowUpCircleFill
-                  onClick={() => setShowAllDayEvents(false)}
-                />
-              ) : (
-                <BsFillArrowDownCircleFill
-                  onClick={() => setShowAllDayEvents(true)}
-                />
-              )}
-            </div>
-          )}
-          {event && (
-            <>
-              {!holidays.includes(event) && (
-                <>
-                  <BsFillShareFill className="cursor-pointer" />
-                  <BsFillPenFill className="cursor-pointer" />
-                  <BsFillTrashFill
-                    onClick={() => {
-                      const actions = event.repeats.repeat
-                        ? [
-                            {
-                              text: "cancel",
-                              func: () => setSystemNotif({ show: false }),
-                            },
-                            {
-                              text: "delete all",
-                              func: () => {
-                                setSystemNotif({ show: false });
-                                deleteAllEvents();
-                              },
-                            },
-                            {
-                              text: "delete",
-                              func: () => {
-                                setSystemNotif({ show: false });
-                                deleteAnEvent();
-                              },
-                            },
-                          ]
-                        : [
-                            {
-                              text: "cancel",
-                              func: () => setSystemNotif({ show: false }),
-                            },
-                            {
-                              text: "delete",
-                              func: () => {
-                                setSystemNotif({ show: false });
-                                deleteAnEvent();
-                              },
-                            },
-                          ];
-                      const newConfirmation = {
-                        show: true,
-                        title: `Delete ${event.summary}`,
-                        text: event.repeats.repeat
-                          ? "Delete all repeat events or just this one?"
-                          : "Are you sure you want to delete this event?",
-                        color: "bg-red-200",
-                        hasCancel: true,
-                        actions: actions,
-                      };
-                      setSystemNotif(newConfirmation);
-                    }}
-                    className="cursor-pointer"
-                  />
-                </>
-              )}
-            </>
-          )}
         </div>
+      </motion.div>
+      <div className="flex gap-x-3">
+        {allDayEvents.length > 0 && (
+          <div>
+            {showAllDayEvents ? (
+              <BsFillArrowUpCircleFill
+                onClick={() => setShowAllDayEvents(false)}
+              />
+            ) : (
+              <BsFillArrowDownCircleFill
+                onClick={() => setShowAllDayEvents(true)}
+              />
+            )}
+          </div>
+        )}
+        {event && (
+          <>
+            {!holidays.includes(event) && (
+              <>
+                <BsFillShareFill className="cursor-pointer" />
+                <BsFillPenFill className="cursor-pointer" />
+                <BsFillTrashFill
+                  onClick={() => {
+                    const actions = event.repeats.repeat
+                      ? [
+                          {
+                            text: "cancel",
+                            func: () => setSystemNotif({ show: false }),
+                          },
+                          {
+                            text: "delete all",
+                            func: () => {
+                              setSystemNotif({ show: false });
+                              deleteAllEvents();
+                            },
+                          },
+                          {
+                            text: "delete",
+                            func: () => {
+                              setSystemNotif({ show: false });
+                              deleteAnEvent();
+                            },
+                          },
+                        ]
+                      : [
+                          {
+                            text: "cancel",
+                            func: () => setSystemNotif({ show: false }),
+                          },
+                          {
+                            text: "delete",
+                            func: () => {
+                              setSystemNotif({ show: false });
+                              deleteAnEvent();
+                            },
+                          },
+                        ];
+                    const newConfirmation = {
+                      show: true,
+                      title: `Delete ${event.summary}`,
+                      text: event.repeats.repeat
+                        ? "Delete all repeat events or just this one?"
+                        : "Are you sure you want to delete this event?",
+                      color: "bg-red-200",
+                      hasCancel: true,
+                      actions: actions,
+                    };
+                    setSystemNotif(newConfirmation);
+                  }}
+                  className="cursor-pointer"
+                />
+              </>
+            )}
+          </>
+        )}
       </div>
       <motion.div
         animate={showAllDayEvents ? { height: "max-content" } : { height: 0 }}

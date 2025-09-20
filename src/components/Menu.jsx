@@ -13,6 +13,8 @@ import Switch from "./Switch.jsx";
 import StaticStickies from "./StaticStickies.jsx";
 import { formatDbText, formatTime } from "../utils/helpers.js";
 import { MdOutlineOpenInNew } from "react-icons/md";
+import { BiListPlus } from "react-icons/bi";
+import { IoIosAddCircle } from "react-icons/io";
 
 const Menu = () => {
   const {

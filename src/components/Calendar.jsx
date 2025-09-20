@@ -114,20 +114,14 @@ const Calendar = () => {
       }`}
     >
       <section>
-        <div className="grid grid-cols-7 gap-2 justify-center items-center my-5">
+        <div className="grid grid-cols-7 gap-2 justify-center items-center mt-5 mb-10">
           {view === "month" &&
-            weekDays.map((day, index) => (
+            weekDays.map((day) => (
               <p
                 key={day}
                 className={`${
                   preferences.darkMode ? "text-white" : "text-black"
-                } ${
-                  index === new Date().getDay() &&
-                  new Date(dateString).getMonth() === dateObj.getMonth() &&
-                  new Date(dateString).getYear() === dateObj.getYear()
-                    ? "bg-slate-200 rounded-t-full"
-                    : ""
-                } mx-2 text-center`}
+                } mx-2 text-center font-bold`}
               >
                 {day.split("")[0]}
               </p>

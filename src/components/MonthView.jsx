@@ -220,9 +220,10 @@ const MonthView = () => {
           <motion.div
             variants={calendarBlocks}
             whileHover={{
-              scale: 1.025,
-              outline: "1px solid black",
-              backgroundColor: "#f2f2f2",
+              outline: preferences.darkMode
+                ? "1px solid white"
+                : "1px solid black",
+              backgroundColor: preferences.darkMode ? "#333333" : "#f2f2f2",
             }}
             onMouseEnter={(e) => createPopup(e, eventsToRender, index)}
             onContextMenu={(e) => {
@@ -251,7 +252,7 @@ const MonthView = () => {
             <div
               className={`text-center flex justify-center items-center text-sm my-1 ${
                 isCurrentDate
-                  ? "w-[25px] h-[25px] rounded-full bg-cyan-100 shadow-md text-black"
+                  ? "w-[25px] h-[25px] rounded-full bg-white shadow-md text-black"
                   : preferences.darkMode
                   ? "text-white"
                   : "text-black"

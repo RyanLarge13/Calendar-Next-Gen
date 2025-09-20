@@ -95,7 +95,7 @@ const SideBar = () => {
       <div
         className={`${
           preferences.darkMode ? "bg-[#222] text-white" : "bg-white text-black"
-        } bg-white rounded-b-md shadow-lg sticky top-0 pt-5 z-[1]`}
+        } rounded-b-md shadow-lg sticky top-0 pt-5 z-[1]`}
       >
         <div className="flex justify-between items-center px-3 mb-3">
           <BsFillArrowLeftCircleFill
