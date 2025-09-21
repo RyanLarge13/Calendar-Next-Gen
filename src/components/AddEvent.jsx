@@ -549,7 +549,7 @@ const AddEvent = () => {
           <div className="my-3 flex justify-center items-center w-full">
             <div className="w-full mr-1 p-3  cursor-pointer">
               <div className="flex justify-between items-center">
-                <p>Start</p>
+                <p>Start Time</p>
                 <Toggle condition={startTime} setCondition={setStartTime} />
               </div>
               {startTime && (
@@ -595,7 +595,7 @@ const AddEvent = () => {
           </div>
           <div className="w-full mr-1 p-3  cursor-pointer">
             <div className="flex justify-between items-center">
-              <p>End</p>
+              <p>End Time</p>
               <Toggle condition={endTime} setCondition={setEndTime} />
             </div>
             {endTime && (
@@ -683,7 +683,7 @@ const AddEvent = () => {
         )}
         <label
           className="mt-10 p-5 w-full flex flex-col justify-center
-        items-center border-b"
+        items-center"
         >
           <RiGalleryUploadFill className="text-xl cursor-pointer" />
           {attachments.length > 0 ? (
