@@ -15,8 +15,15 @@ import weatherCodeMap from "../utils/weatherCodes";
 import DatesContext from "../context/DatesContext";
 
 const Dashboard = ({ timeOfDay }) => {
-  const { user, upcoming, weatherData, location, reminders, tasks, stickies } =
-    useContext(UserContext);
+  const {
+    user,
+    upcoming,
+    weatherData,
+    location,
+    reminders,
+    userTasks,
+    stickies,
+  } = useContext(UserContext);
   const { setEvent } = useContext(InteractiveContext);
   const { string } = useContext(DatesContext);
 
@@ -126,9 +133,9 @@ const Dashboard = ({ timeOfDay }) => {
           <p className="text-sm text-gray-500">
             Stay on top of your to-do list
           </p>
-          {tasks.length > 0 ? (
+          {userTasks?.length > 0 ? (
             <div className="space-y-3">
-              {tasks
+              {userTasks
                 .filter((t) => t.date === string)
                 .map((t) => (
                   <div
@@ -153,7 +160,7 @@ const Dashboard = ({ timeOfDay }) => {
           <p className="text-sm text-gray-500">
             Jot down thoughts & ideas quickly
           </p>
-          {stickies.length > 0 ? (
+          {stickies?.length > 0 ? (
             <div className="space-y-3">
               {stickies[0].map((s) => (
                 <div
