@@ -13,7 +13,6 @@ body {
   padding-top: env(safe-area-inset-top); /* iOS 11.2+ */
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior-y: contain;
-  white-space: pre-wrap;
 }
 
 ul {
