@@ -53,7 +53,7 @@ const Header = () => {
             preferences.darkMode
               ? "bg-[#222] text-white"
               : "bg-white text-black"
-          } fixed top-0 left-0 right-0 z-[10] flex justify-between px-5 py-4 mb-5 shadow-lg rounded-b-lg`}
+          } fixed top-0 left-0 right-0 z-[10] flex justify-between px-5 py-4 shadow-lg rounded-b-lg`}
         >
           <button
             onClick={() => {

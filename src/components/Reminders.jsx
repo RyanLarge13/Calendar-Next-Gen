@@ -234,35 +234,36 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
       )}
       {remindersToRender.map((reminder) => (
         <motion.div
+          key={reminder.id}
           animate={
             selected.includes(reminder.id)
               ? {
-                  scaleX: 1.025,
-                  scaleY: 1.1,
-                  opacity: 0.75,
-                  boxShadow: "0 0.25em 0.25em 0 rgba(255,50,50,0.4)",
-                  backgroundColor: "#eee",
+                  scale: 1.03,
+                  boxShadow: "0 0 20px rgba(59,130,246,0.4)", // blue glow
+                  backgroundColor: "#f0f9ff",
                 }
-              : { scale: 1, opacity: 1, boxShadow: "0 0.1em 0.5em 0 #eee" }
+              : {
+                  scale: 1,
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+                  backgroundColor: "#fff",
+                }
           }
-          key={reminder.id}
+          transition={{ type: "spring", stiffness: 180, damping: 15 }}
           className={`${
             new Date(reminder.time) < dateObj
-              ? "bg-rose-300"
+              ? "border-l-4 border-rose-400"
               : new Date(reminder.time).toLocaleDateString() ===
                 dateObj.toLocaleDateString()
-              ? ""
-              : "bg-cyan-200"
-          } p-2 my-2 rounded-md relative text-black`}
-          style={{ fontSize: 11 }}
-          onPointerDown={(e) => {
-            startTime(reminder.id);
-          }}
+              ? "border-l-4 border-amber-400"
+              : "border-l-4 border-cyan-400"
+          } p-4 my-3 rounded-2xl relative text-gray-900`}
+          onPointerDown={() => startTime(reminder.id)}
           onPointerUp={() => stopTime(reminder.id)}
           onPointerCancel={() => clearTimeout(timeout)}
         >
-          <div className="z-50 text-[9px]">
-            <div className="font-semibold bg-white bg-opacity-70 p-2 rounded-md shadow-sm mb-2 flex justify-between items-center">
+          <div className="space-y-3">
+            {/* Date Row */}
+            <div className="flex justify-between items-center text-sm font-medium text-gray-600">
               <p>
                 {new Date(reminder.time).toLocaleDateString("en-US", {
                   weekday: "short",
@@ -272,33 +273,36 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
                 })}
               </p>
               {reminder.eventRefId ? (
-                <BiCalendarEvent className="text-lg" />
+                <BiCalendarEvent className="text-xl text-gray-500" />
               ) : (
-                <BiAlarmSnooze className="text-lg" />
+                <BiAlarmSnooze className="text-xl text-gray-500" />
               )}
             </div>
-            <div className="pl-1">
-              <div className="flex justify-start gap-x-2 items-center">
-                <div>
-                  <p className="font-semibold">
-                    @{" "}
-                    {new Date(reminder.time).toLocaleTimeString("en-US", {
-                      timeZoneName: "short",
-                    })}
-                  </p>
-                  <div className="flex justify-start gap-x-1 items-center">
-                    <BsAlarmFill />
-                    <p>{formatTime(new Date(reminder.time))}</p>
-                  </div>
-                </div>
-                <div className="p-2 ml-1 bg-white bg-opacity-75 rounded-md shadow-sm flex-1 cursor-pointer">
-                  <p className="text-lg mt-1">{reminder.title}</p>
+
+            {/* Time + Title */}
+            <div className="flex items-center gap-3">
+              <div className="flex flex-col">
+                <p className="text-sm font-semibold text-gray-700">
+                  @{" "}
+                  {new Date(reminder.time).toLocaleTimeString("en-US", {
+                    timeZoneName: "short",
+                  })}
+                </p>
+                <div className="flex items-center gap-1 text-xs text-gray-500">
+                  <BsAlarmFill className="text-gray-400" />
+                  <p>{formatTime(new Date(reminder.time))}</p>
                 </div>
               </div>
+
+              <div className="flex-1 p-3 bg-gray-50 rounded-xl shadow-inner cursor-pointer">
+                <p className="text-base font-semibold">{reminder.title}</p>
+              </div>
             </div>
+
+            {/* Notes */}
             {reminder.notes && (
-              <div className="mt-2 p-2 rounded-md shadow-sm bg-white bg-opacity-75 flex justify-between items-start">
-                <p className="text-xs">
+              <div className="p-3 bg-gray-50 rounded-xl shadow-inner flex justify-between items-start text-xs text-gray-600">
+                <p className="whitespace-pre-line">
                   {reminder.notes.split(/\|\|\||\n/).map((line, index) => (
                     <React.Fragment key={index}>
                       {line}
@@ -306,40 +310,36 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
                     </React.Fragment>
                   ))}
                 </p>
-                <BsFillPenFill />
+                <BsFillPenFill className="text-gray-400 ml-2 shrink-0" />
               </div>
             )}
+
+            {/* Open Event Button */}
             {reminder.eventRefId && (
               <button
                 onClick={() => openRelatedEvent(reminder.eventRefId)}
-                className="p-2 mt-3 flex justify-center items-center gap-3 bg-white rounded-md hover:bg-slate-200 duration-200"
+                className="w-full px-4 py-2 flex justify-center items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 text-white text-sm font-medium hover:from-cyan-600 hover:to-blue-600 transition-colors duration-200"
               >
                 Open Event
                 <MdOpenInNew />
               </button>
             )}
           </div>
+
+          {/* Delete Button */}
           {selected.includes(reminder.id) && (
             <motion.button
-              initial={{ x: 50, opacity: 0 }}
+              initial={{ x: 40, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              className="px-4 py-1 rounded-md shadow-md bg-rose-400 absolute right-1 top-1"
+              className="px-3 py-1 rounded-lg shadow-md bg-rose-500 text-white text-xs absolute right-2 top-2 hover:bg-rose-600 transition-colors"
               onPointerDown={(e) => {
                 e.stopPropagation();
                 deleteAReminder(reminder.id);
               }}
             >
-              delete
+              Delete
             </motion.button>
           )}
-          <div
-            className={`absolute inset-0 rounded-md bg-gradient-to-tr pointer-events-none ${
-              calcWidth(reminder.time) < 100
-                ? "from-green-100 to-lime-100"
-                : "from-red-100 to-rose-100"
-            } z-[-1]`}
-            style={{ width: `${calcWidth(reminder.time)}%` }}
-          ></div>
         </motion.div>
       ))}
     </motion.div>
