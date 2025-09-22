@@ -21,7 +21,7 @@ const Dashboard = ({ timeOfDay }) => {
       initial={{ x: "-5%", opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: "-5%", opacity: 0 }}
-      className="pt-20 px-6 lg:px-16"
+      className="pt-20 px-3 lg:px-16"
     >
       {/* Greeting */}
       <div className="mb-8">

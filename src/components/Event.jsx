@@ -145,325 +145,227 @@ const Event = ({ dayEvents }) => {
     <motion.div
       drag="y"
       dragControls={controls}
-      dragSnapToOrigin="true"
+      dragSnapToOrigin
       dragConstraints={{ top: 0 }}
       dragListener={false}
       onDragEnd={checkToClose}
       initial={{ y: "100%" }}
       exit={{ y: "100%" }}
       animate={{ y: 0 }}
-      className={`z-[901] will-change-transform fixed inset-0 lg:left-0 lg:bottom-0 ${
-        maximize ? "lg:right-0" : "lg:right-[66%]"
-      } scrollbar-slick top-20 rounded-md ${
-        preferences.darkMode ? "bg-[#222]" : "bg-white"
-      } overflow-y-auto`}
+      className={`fixed inset-0 top-20 z-[901] overflow-y-auto will-change-transform
+    ${maximize ? "lg:right-0" : "lg:right-[66%] lg:left-0"} 
+    ${preferences.darkMode ? "bg-[#1e1e1e]" : "bg-gray-50"}
+    rounded-t-2xl shadow-2xl`}
     >
-      <div className={`${event.color} min-h-full bg-opacity-20`}>
-        <div
-          onPointerDown={startDrag}
-          style={{ touchAction: "none" }}
-          className={`px-3 py-5 sticky top-0 right-0 left-0 z-20 ${
-            preferences.darkMode
-              ? "bg-[#222] text-white"
-              : "bg-white text-black"
-          } rounded-md shadow-md flex justify-between items-center`}
+      {/* Header */}
+      <div
+        onPointerDown={startDrag}
+        style={{ touchAction: "none" }}
+        className={`sticky top-0 z-20 flex items-center justify-between px-5 py-4 shadow-md
+      ${
+        preferences.darkMode
+          ? "bg-[#1e1e1e] text-white"
+          : "bg-white text-gray-900"
+      }
+      rounded-t-2xl`}
+      >
+        <button
+          onClick={() => setEvent(null)}
+          className="text-2xl text-gray-400 hover:text-red-500 transition"
         >
-          <button
-            onClick={() => {
-              setEvent(null);
-            }}
-          >
-            <AiFillCloseCircle />
+          <AiFillCloseCircle />
+        </button>
+
+        <div className="flex gap-4 items-center">
+          {!maximize ? (
+            <button
+              className="hidden lg:block text-gray-400 hover:text-gray-700"
+              onClick={() => setMaximize(true)}
+            >
+              <FiMaximize />
+            </button>
+          ) : (
+            <button
+              className="hidden lg:block text-gray-400 hover:text-gray-700"
+              onClick={() => setMaximize(false)}
+            >
+              <FiMinimize />
+            </button>
+          )}
+          <button className="text-gray-400 hover:text-gray-600">
+            <MdOutlineDragIndicator />
           </button>
-          <div className="flex gap-x-3 justify-center items-center">
-            {!maximize ? (
-              <button
-                className="hidden lg:block"
-                onClick={() => setMaximize(true)}
-              >
-                <FiMaximize />
-              </button>
-            ) : (
-              <button
-                className="hidden lg:block"
-                onClick={() => setMaximize(false)}
-              >
-                <FiMinimize />
-              </button>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="p-6 space-y-6">
+        {/* Title */}
+        <form
+          onSubmit={updateTitle}
+          className="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-sm"
+        >
+          <input
+            style={{ color: tailwindBgToHex(event.color) }}
+            className="w-full text-2xl font-bold bg-transparent focus:outline-none"
+            placeholder={title}
+            value={title}
+            onBlur={updateTitle}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+        </form>
+
+        {/* Description */}
+        <div className="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-sm">
+          <textarea
+            style={{ color: tailwindBgToHex(event.color) }}
+            className="w-full text-base bg-transparent resize-none focus:outline-none whitespace-pre-wrap"
+            placeholder="Add a description..."
+            rows={6}
+            value={newDescription}
+            onChange={(e) => setNewDescription(e.target.value)}
+          />
+        </div>
+
+        {/* Time progress */}
+        {event.start.startTime && (
+          <div className="space-y-3">
+            {/* Until Start */}
+            <div className="relative bg-white dark:bg-gray-800 rounded-xl shadow-sm p-3 flex items-center justify-between overflow-hidden">
+              <motion.div
+                animate={{ width: `${width}%` }}
+                className="absolute left-0 top-0 bottom-0 bg-gradient-to-r from-cyan-400 to-blue-500 opacity-40 rounded-xl"
+              />
+              <span className="z-10 font-semibold">{timeLeft}</span>
+              <span className="z-10 text-sm text-gray-500">
+                {new Date(event.start.startTime).toLocaleTimeString()}
+              </span>
+            </div>
+
+            {/* In Progress */}
+            <div className="relative bg-white dark:bg-gray-800 rounded-xl shadow-sm p-3 flex items-center justify-between overflow-hidden">
+              <motion.div
+                animate={{ width: `${timeInEvent}%` }}
+                className="absolute left-0 top-0 bottom-0 bg-gradient-to-r from-green-400 to-emerald-500 opacity-40 rounded-xl"
+              />
+              <span className="z-10 text-sm text-gray-500">
+                {new Date(event.start.startTime).toLocaleTimeString()}
+              </span>
+              <span className="z-10 text-sm text-gray-500">
+                {new Date(event.end.endTime).toLocaleTimeString()}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Date */}
+        <div className="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-sm">
+          <p className="font-semibold">{formatTime(new Date(event.date))}</p>
+        </div>
+
+        {/* Location */}
+        <div className="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-sm">
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="font-semibold flex items-center gap-2">
+              <MdLocationPin /> Location
+            </h3>
+            {event.location && (
+              <div className="flex gap-3 text-gray-500">
+                <button className="hover:text-red-500">
+                  <FaTrash />
+                </button>
+                <button className="hover:text-blue-500">
+                  <FaEdit />
+                </button>
+                <button
+                  className="hover:text-green-500"
+                  onClick={() =>
+                    (window.location.href = `https://www.google.com/maps/dir/?api=1&destination=${event.location.string}`)
+                  }
+                >
+                  <FaExternalLinkAlt />
+                </button>
+              </div>
             )}
-            <button>
-              <MdOutlineDragIndicator />
+          </div>
+          {event.location ? (
+            <>
+              <input
+                className="w-full p-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-sm focus:outline-none"
+                value={event.location.string}
+                readOnly
+              />
+              <div className="mt-4">
+                <GoogleMaps coordinates={event.location.coordinates} />
+              </div>
+            </>
+          ) : (
+            <p className="text-sm text-gray-500">No Location Provided</p>
+          )}
+        </div>
+
+        {/* Reminders */}
+        <div className="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-sm">
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="font-semibold flex items-center gap-2">
+              <IoIosAlarm /> Reminder
+            </h3>
+            <button className="text-sm text-cyan-600 font-medium">+ Add</button>
+          </div>
+          {event.reminders.reminder ? (
+            <p className="text-sm">
+              You have a reminder set for{" "}
+              <span className="font-semibold">
+                {new Date(event.reminders.when).toLocaleString()}
+              </span>
+            </p>
+          ) : (
+            <p className="text-sm text-gray-500">No reminders set</p>
+          )}
+        </div>
+
+        {/* Repeat */}
+        <div className="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-sm">
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="font-semibold flex items-center gap-2">
+              <FiRepeat /> Repeat
+            </h3>
+            <button className="text-sm text-cyan-600 font-medium">
+              + Create
             </button>
           </div>
-        </div>
-        <div className="rounded-md p-3">
-          <form
-            onSubmit={updateTitle}
-            className={`${event.color} p-2 rounded-md shadow-sm font-bold`}
-          >
-            <input
-              style={{ color: tailwindBgToHex(event.color) }}
-              className="text-[20px] bg-transparent focus:outline-none outline-none w-full"
-              placeholder={title}
-              value={title}
-              onFocusOut={updateTitle}
-            />
-          </form>
-          <div
-            className={`p-2 mt-2 rounded-md shadow-sm font-bold ${event.color} bg-opacity-50`}
-          >
-            <textarea
-              style={{
-                color: tailwindBgToHex(event.color),
-              }}
-              type="text"
-              className={`focus:outline-none outline-none bg-transparent w-full placeholder:text-black resize-none whitespace-pre-wrap`}
-              placeholder={event.description}
-              rows={10}
-              onChange={(e) => setNewDescription(e.target.value)}
-              value={newDescription}
-            />
-          </div>
-          {event.start.startTime && (
-            <div>
-              <div
-                className="relative mt-2 py-2 px-3 rounded-3xl shadow-sm flex w-full
-       justify-between items-center bg-white overflow-hidden"
-              >
-                <motion.div
-                  animate={{
-                    width: `${width}%`,
-                    transition: {
-                      duration: 0.1,
-                      type: "spring",
-                      stiffness: 400,
-                    },
-                  }}
-                  className={`absolute left-1 top-1 bottom-1 bg-opacity-50 rounded-3xl`}
-                ></motion.div>
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1, transition: { delay: 1.5 } }}
-                  className="z-10 font-bold"
-                >
-                  {timeLeft}
-                </motion.p>
-                <p className="z-10">
-                  {new Date(event.start.startTime).toLocaleTimeString()}
-                </p>
-              </div>
-              <div
-                className="relative mt-2 py-2 px-3 rounded-3xl shadow-sm flex w-full
-       justify-between items-center bg-white overflow-hidden"
-              >
-                <motion.div
-                  animate={{
-                    width: `${timeInEvent}%`,
-                    transition: {
-                      duration: 0.1,
-                      type: "spring",
-                      stiffness: 400,
-                    },
-                  }}
-                  className={`absolute left-1 top-1 bottom-1 bg-opacity-50 rounded-3xl`}
-                ></motion.div>
-                <p className="z-10">
-                  {new Date(event.start.startTime).toLocaleTimeString()}
-                </p>
-                <p className="z-10">
-                  {new Date(event.end.endTime).toLocaleTimeString()}
-                </p>
-              </div>
-            </div>
+          {event.repeats.repeat ? (
+            <p className="text-sm">{event.repeats.howOften}</p>
+          ) : (
+            <p className="text-sm text-gray-500">No repeat set</p>
           )}
-          <div className="my-2 bg-white rounded-md shadow-md p-2">
-            {formatTime(new Date(event.date))}
-          </div>
-          <div className="my-2 bg-white rounded-md shadow-md p-2">
-            {event.location ? (
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <div>
-                    <MdLocationPin />
-                  </div>
-                  <div className="flex justify-center items-center gap-x-3">
-                    <button>
-                      <FaTrash />
-                    </button>
-                    <button>
-                      <FaEdit />
-                    </button>
-                    <button
-                      className=""
-                      onClick={() =>
-                        (window.location.href = `https://www.google.com/maps/dir/?api=1&destination=${event.location.string}`)
-                      }
-                    >
-                      <FaExternalLinkAlt />
-                    </button>
-                  </div>
-                </div>
-                <input
-                  style={{
-                    color: tailwindBgToHex(event.color),
-                  }}
-                  className={`mt-3 p-2 rounded-md w-full outline-none focus:outline-none ${event.color}`}
-                  type="text"
-                  placeholder={event.location.string}
-                  value={event.location.string}
-                />
-                <div className="mt-5">
-                  <GoogleMaps coordinates={event.location.coordinates} />
-                </div>
-              </div>
-            ) : (
-              <div>
-                <div className="flex justify-between items-center">
-                  <MdLocationPin />
-                  <button
-                    style={{ color: tailwindBgToHex(event.color) }}
-                    className={`text-xs font-semibold rounded-md ${event.color} hover:translate-x-1 duration-200 py-2 px-3`}
-                  >
-                    Add Location
-                  </button>
-                </div>
-                <p>No Location Provided</p>
-              </div>
-            )}
-          </div>
-          <div className="p-2 rounded-md shadow-md my-2 bg-white">
-            {event.reminders.reminder ? (
-              <div>
-                <div className="flex justify-between items-center">
-                  <IoIosAlarm />
-                  <div className="flex gap-3 justify-center items-center">
-                    <button>
-                      <BsFillTrashFill />
-                    </button>
-                    <button>
-                      <FaPlusCircle />
-                    </button>
-                    <button>
-                      <FaEdit />
-                    </button>
-                  </div>
-                </div>
-                <p
-                  style={{ color: tailwindBgToHex(event.color) }}
-                  className={`${event.color} mt-3 p-2 rounded-md shadow-md`}
-                >
-                  You have a reminder set for this event on <br />
-                  <span className="font-semibold">
-                    {new Date(event.reminders.when).toLocaleDateString(
-                      "en-US",
-                      {
-                        month: "short",
-                        day: "numeric",
-                      }
-                    )}
-                  </span>{" "}
-                  at <br />
-                  <span className="font-semibold">
-                    {new Date(event.reminders.when).toLocaleTimeString()}
-                  </span>
-                </p>
-              </div>
-            ) : (
-              <div>
-                <div className="flex justify-between items-center">
-                  <IoIosAlarm />
-                  <button
-                    style={{ color: tailwindBgToHex(event.color) }}
-                    className={`text-xs font-semibold rounded-md ${event.color} hover:translate-x-1 duration-200 py-2 px-3`}
-                  >
-                    Add Reminders
-                  </button>
-                </div>
-                <p>No Reminders Set</p>
-              </div>
-            )}
-          </div>
-          <div className="bg-white rounded-md shadow-md p-2 my-2">
-            {event.repeats.repeat ? (
-              <div className="">
-                <FiRepeat />
-                <p
-                  style={{ color: tailwindBgToHex(event.color) }}
-                  className={`${event.color} mt-3 p-2 rounded-md shadow-md`}
-                >
-                  {event.repeats.howOften}
-                </p>
-              </div>
-            ) : (
-              <div>
-                <div className="flex justify-between items-center">
-                  <FiRepeat />
-                  <button
-                    style={{ color: tailwindBgToHex(event.color) }}
-                    className={`text-xs font-semibold rounded-md ${event.color} hover:translate-x-1 duration-200 py-2 px-3`}
-                  >
-                    Create Repeat
-                  </button>
-                </div>
-                <p>No repeated events</p>
-              </div>
-            )}
-          </div>
-          <div>
-            {eventLists.map((list) => (
-              <div
-                key={list.id}
-                style={{ color: tailwindBgToHex(list.color) }}
-                className={`scrollbar-hide p-3 rounded-md
-            shadow-md ${list.color} my-5 mx-0 mr-7 md:mr-0 pr-10 md:pr-3
-            text-black list-none`}
-              >
-                <div className="mb-2 bg-white rounded-md shadow-md p-3 flex justify-between items-center">
-                  <p className="font-semibold mr-2">{list.title}</p>
-                  <div className="flex gap-x-3 text-sm">
-                    <button onClick={() => {}}></button>
-                  </div>
-                </div>
-                <ListItems
-                  addItems={addItems}
-                  listId={list.id}
-                  items={list?.items}
-                />
-              </div>
-            ))}
+        </div>
+
+        {/* Attachments */}
+        <div className="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-sm">
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="font-semibold flex items-center gap-2">
+              <FaImage /> Attachments
+            </h3>
+            <button className="text-sm text-cyan-600 font-medium">+ Add</button>
           </div>
           {imagesLoading ? (
-            <p className="text-center font-semibold text-sm mt-10">
-              Loading {event.attachmentLength} Images
+            <p className="text-sm text-gray-500">
+              Loading {event.attachmentLength} images...
             </p>
           ) : fetchedImages.length > 0 ? (
-            <Masonry
-              breakpointCols={breakpointColumnsObj}
-              className="my-masonry-grid-attachments"
-              columnClassName="my-masonry-grid_column-attachments"
-            >
+            <Masonry breakpointCols={breakpointColumnsObj} className="gap-3">
               {fetchedImages.map((img) => (
                 <img
                   key={img}
                   src={img}
-                  alt={"event attachment"}
-                  className="mt-3 rounded-sm shadow-sm"
+                  alt="attachment"
+                  className="rounded-lg shadow-sm"
                 />
               ))}
             </Masonry>
           ) : (
-            <div className="bg-white p-2 rounded-md shadow-md">
-              <div className="flex justify-between items-center">
-                <FaImage />
-                <button
-                  style={{ color: tailwindBgToHex(event.color) }}
-                  className={`text-xs font-semibold rounded-md ${event.color} hover:translate-x-1 duration-200 py-2 px-3`}
-                >
-                  Add Attachment
-                </button>
-              </div>
-              <p>No Attachments</p>
-            </div>
+            <p className="text-sm text-gray-500">No attachments</p>
           )}
         </div>
       </div>
