@@ -152,10 +152,11 @@ const Event = ({ dayEvents }) => {
       initial={{ y: "100%" }}
       exit={{ y: "100%" }}
       animate={{ y: 0 }}
-      className={`fixed inset-0 top-20 z-[901] overflow-y-auto will-change-transform
-    ${maximize ? "lg:right-0" : "lg:right-[66%] lg:left-0"} 
-    ${preferences.darkMode ? "bg-[#1e1e1e]" : "bg-gray-50"}
-    rounded-t-2xl shadow-2xl`}
+      className={`z-[901] will-change-transform fixed inset-0 lg:left-0 lg:bottom-0 ${
+        maximize ? "lg:right-0" : "lg:right-[66%]"
+      } scrollbar-slick top-20 rounded-md ${
+        preferences.darkMode ? "bg-[#222]" : "bg-white"
+      } overflow-y-auto`}
     >
       {/* Header */}
       <div
@@ -171,7 +172,7 @@ const Event = ({ dayEvents }) => {
       >
         <button
           onClick={() => setEvent(null)}
-          className="text-2xl text-gray-400 hover:text-red-500 transition"
+          className="text-xl text-gray-400 hover:text-red-500 transition"
         >
           <AiFillCloseCircle />
         </button>
@@ -203,7 +204,7 @@ const Event = ({ dayEvents }) => {
         {/* Title */}
         <form
           onSubmit={updateTitle}
-          className="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-sm"
+          className={`${event.color} p-3 rounded-xl shadow-sm`}
         >
           <input
             style={{ color: tailwindBgToHex(event.color) }}
@@ -216,7 +217,7 @@ const Event = ({ dayEvents }) => {
         </form>
 
         {/* Description */}
-        <div className="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-sm">
+        <div className={`${event.color} p-3 rounded-xl shadow-sm`}>
           <textarea
             style={{ color: tailwindBgToHex(event.color) }}
             className="w-full text-base bg-transparent resize-none focus:outline-none whitespace-pre-wrap"
@@ -231,7 +232,7 @@ const Event = ({ dayEvents }) => {
         {event.start.startTime && (
           <div className="space-y-3">
             {/* Until Start */}
-            <div className="relative bg-white dark:bg-gray-800 rounded-xl shadow-sm p-3 flex items-center justify-between overflow-hidden">
+            <div className="relative ${event.color} rounded-xl shadow-sm p-3 flex items-center justify-between overflow-hidden">
               <motion.div
                 animate={{ width: `${width}%` }}
                 className="absolute left-0 top-0 bottom-0 bg-gradient-to-r from-cyan-400 to-blue-500 opacity-40 rounded-xl"
@@ -243,7 +244,7 @@ const Event = ({ dayEvents }) => {
             </div>
 
             {/* In Progress */}
-            <div className="relative bg-white dark:bg-gray-800 rounded-xl shadow-sm p-3 flex items-center justify-between overflow-hidden">
+            <div className="relative ${event.color} rounded-xl shadow-sm p-3 flex items-center justify-between overflow-hidden">
               <motion.div
                 animate={{ width: `${timeInEvent}%` }}
                 className="absolute left-0 top-0 bottom-0 bg-gradient-to-r from-green-400 to-emerald-500 opacity-40 rounded-xl"
@@ -259,12 +260,12 @@ const Event = ({ dayEvents }) => {
         )}
 
         {/* Date */}
-        <div className="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-sm">
+        <div className={`${event.color} p-3 rounded-xl shadow-sm`}>
           <p className="font-semibold">{formatTime(new Date(event.date))}</p>
         </div>
 
         {/* Location */}
-        <div className="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-sm">
+        <div className={`${event.color} p-3 rounded-xl shadow-sm`}>
           <div className="flex justify-between items-center mb-2">
             <h3 className="font-semibold flex items-center gap-2">
               <MdLocationPin /> Location
@@ -305,7 +306,7 @@ const Event = ({ dayEvents }) => {
         </div>
 
         {/* Reminders */}
-        <div className="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-sm">
+        <div className={`${event.color} p-3 rounded-xl shadow-sm`}>
           <div className="flex justify-between items-center mb-2">
             <h3 className="font-semibold flex items-center gap-2">
               <IoIosAlarm /> Reminder
@@ -325,7 +326,7 @@ const Event = ({ dayEvents }) => {
         </div>
 
         {/* Repeat */}
-        <div className="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-sm">
+        <div className={`${event.color} p-3 rounded-xl shadow-sm`}>
           <div className="flex justify-between items-center mb-2">
             <h3 className="font-semibold flex items-center gap-2">
               <FiRepeat /> Repeat
@@ -342,7 +343,7 @@ const Event = ({ dayEvents }) => {
         </div>
 
         {/* Attachments */}
-        <div className="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-sm">
+        <div className={`${event.color} p-3 rounded-xl shadow-sm`}>
           <div className="flex justify-between items-center mb-2">
             <h3 className="font-semibold flex items-center gap-2">
               <FaImage /> Attachments

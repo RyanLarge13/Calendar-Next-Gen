@@ -3,13 +3,13 @@ import { motion, useDragControls } from "framer-motion";
 import {
   deleteStickyNote,
   updateSticky,
-  updateStickyView
+  updateStickyView,
 } from "../utils/api.js";
 import { tailwindBgToHex } from "../utils/helpers.js";
 import {
   AiFillPushpin,
   AiFillCloseCircle,
-  AiOutlinePushpin
+  AiOutlinePushpin,
 } from "react-icons/ai";
 import { BiExpand, BiCollapse } from "react-icons/bi";
 import { BsFillPenFill } from "react-icons/bs";
@@ -54,18 +54,18 @@ const Sticky = ({ sticky, index }) => {
     }
   }, []);
 
-  const handleViewChange = newView => {
+  const handleViewChange = (newView) => {
     const token = localStorage.getItem("authToken");
     updateStickyView(token, sticky.id, newView)
-      .then(res => {
+      .then((res) => {
         console.log(`Success Updating sticky view: ${res}`);
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(`Error updating sticky view: ${err}`);
       });
   };
 
-  const handleTextChange = value => {
+  const handleTextChange = (value) => {
     setEditText(value);
   };
 
@@ -75,10 +75,10 @@ const Sticky = ({ sticky, index }) => {
     try {
       const token = localStorage.getItem("authToken");
       updateSticky(token, sticky.id, editText)
-        .then(res => {
+        .then((res) => {
           console.log(res);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
         });
     } catch (err) {
@@ -86,11 +86,11 @@ const Sticky = ({ sticky, index }) => {
     }
   };
 
-  const startDrag = e => {
+  const startDrag = (e) => {
     controls.start(e);
   };
 
-  const confirmDelete = stickyId => {
+  const confirmDelete = (stickyId) => {
     const newConfirmation = {
       show: true,
       title: "Delete sticky",
@@ -99,21 +99,21 @@ const Sticky = ({ sticky, index }) => {
       hasCancel: true,
       actions: [
         { text: "close", func: () => setSystemNotif({ show: false }) },
-        { text: "delete", func: () => deleteSticky(stickyId) }
-      ]
+        { text: "delete", func: () => deleteSticky(stickyId) },
+      ],
     };
     setSystemNotif(newConfirmation);
   };
 
-  const deleteSticky = stickyId => {
+  const deleteSticky = (stickyId) => {
     setSystemNotif({ show: false });
     const token = localStorage.getItem("authToken");
     if (!token) {
     }
     if (token) {
       deleteStickyNote(token, stickyId)
-        .then(res => {
-          const newStickies = stickies.filter(item => item.id !== stickyId);
+        .then((res) => {
+          const newStickies = stickies.filter((item) => item.id !== stickyId);
           setStickies(newStickies);
           const newSuccess = {
             show: true,
@@ -124,14 +124,14 @@ const Sticky = ({ sticky, index }) => {
             actions: [
               {
                 text: "close",
-                func: () => setSystemNotif({ show: false })
+                func: () => setSystemNotif({ show: false }),
               },
-              { text: "undo", func: () => {} }
-            ]
+              { text: "undo", func: () => {} },
+            ],
           };
           setSystemNotif(newSuccess);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
         });
     }
@@ -158,7 +158,7 @@ const Sticky = ({ sticky, index }) => {
           ? 250
           : minimize
           ? 10
-          : 175
+          : 175,
       }}
       drag={fullScreen ? false : minimize ? "y" : !pin}
       dragControls={controls}
@@ -167,13 +167,15 @@ const Sticky = ({ sticky, index }) => {
         top: 0,
         right: window.innerWidth - 200,
         left: 0,
-        bottom: window.innerHeight - 200
+        bottom: window.innerHeight - 200,
       }}
       ref={stickyRef}
       className={`markdown z-[999] shadow-xl rounded-md fixed
             w-[10px] h-[150px] ${sticky.color} ${
-              minimize ? "text-transparent" : "text-black"
-            } overflow-hidden`}
+        minimize
+          ? "text-transparent rounded-l-none outline-1 outline-white"
+          : "text-black"
+      } overflow-hidden`}
       onClick={() => {
         if (minimize) {
           if ("vibrate" in navigator) {
@@ -193,7 +195,7 @@ const Sticky = ({ sticky, index }) => {
         style={{ touchAction: "none" }}
       >
         <div className="flex justify-between items-center gap-x-3">
-          <button onClick={() => setPin(prev => !prev)}>
+          <button onClick={() => setPin((prev) => !prev)}>
             {pin ? <AiFillPushpin /> : <AiOutlinePushpin />}
           </button>
           <button
@@ -229,7 +231,7 @@ const Sticky = ({ sticky, index }) => {
           <AiFillCloseCircle />
         </button>
       </div>
-      {expand && (
+      {expand ? (
         <div
           className={`${
             minimize ? "bg-transparent shadow-none" : "bg-slate-100 shadow-md"
@@ -237,7 +239,7 @@ const Sticky = ({ sticky, index }) => {
         >
           <button
             onClick={() => {
-              setFullScreen(prev => !prev);
+              setFullScreen((prev) => !prev);
               handleViewChange("fullscreen");
             }}
           >
@@ -254,36 +256,39 @@ const Sticky = ({ sticky, index }) => {
             <FaRegWindowMinimize />
           </button>
         </div>
-      )}
+      ) : null}
       <div
-        className={`${
-          expand ? "mt-20" : "mt-5"
+        className={`${expand ? "mt-20" : "mt-5"} ${
+          minimize ? "opacity-0" : "opacity-100"
         } p-2 overflow-y-auto scrollbar-slick overflow-x-hidden scrollbar-hide absolute inset-0 z-[-1] break-words`}
       >
         {!edit ? (
-          <>
+          <div>
             <h2
-            style={{color: tailwindBgToHex(sticky.color)}}
-            className="mb-5 border-b border-b-black">{sticky.title}</h2>
+              style={{ color: tailwindBgToHex(sticky.color) }}
+              className="mb-5 border-b border-b-black"
+            >
+              {sticky.title}
+            </h2>
             <div
-            style={{color: tailwindBgToHex(sticky.color)}}
+              style={{ color: tailwindBgToHex(sticky.color) }}
               dangerouslySetInnerHTML={{ __html: sticky.body }}
               className="markdown scrollbar-slick"
             ></div>
-          </>
+          </div>
         ) : (
-          <>
+          <div>
             <input
               className="mb-5 border-b border-b-black bg-transparent outline-none focus:outline-none"
               placeholder={sticky.title}
             />
             <ReactQuill
-            style={{color: tailwindBgToHex(sticky.color)}}
+              style={{ color: tailwindBgToHex(sticky.color) }}
               value={editText}
               onChange={handleTextChange}
               className="h-full scrollbar-slick text-md"
             />
-          </>
+          </div>
         )}
       </div>
     </motion.div>

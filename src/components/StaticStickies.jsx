@@ -36,9 +36,7 @@ const StaticStickies = () => {
           </p>
           <div
             style={{
-              color: getTextColorBasedOnBackground(
-                tailwindBgToHex(sticky.color)
-              ),
+              color: tailwindBgToHex(sticky.color),
             }}
             dangerouslySetInnerHTML={{ __html: sticky.body }}
             className="markdown scrollbar-slick"

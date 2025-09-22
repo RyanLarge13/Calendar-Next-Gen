@@ -11,17 +11,21 @@ import {
 } from "react-icons/md";
 import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
+import weatherCodeMap from "../utils/weatherCodes";
+import DatesContext from "../context/DatesContext";
 
 const Dashboard = ({ timeOfDay }) => {
-  const { user, upcoming, weatherData } = useContext(UserContext);
+  const { user, upcoming, weatherData, location, reminders, tasks, stickies } =
+    useContext(UserContext);
   const { setEvent } = useContext(InteractiveContext);
+  const { string } = useContext(DatesContext);
 
   return (
     <motion.div
       initial={{ x: "-5%", opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: "-5%", opacity: 0 }}
-      className="pt-20 px-3 lg:px-16"
+      className="pt-20 px-2 lg:px-16"
     >
       {/* Greeting */}
       <div className="mb-8">
@@ -85,8 +89,32 @@ const Dashboard = ({ timeOfDay }) => {
             Reminders
           </h2>
           <p className="text-sm text-gray-500">
-            Quick glance at your reminders
+            Quick glance at your reminders today
           </p>
+          {reminders.length > 0 ? (
+            <div className="space-y-3">
+              {reminders
+                .filter((r) => r.time === string)
+                .map((reminder) => (
+                  <div
+                    key={reminder.id}
+                    className="bg-white rounded-lg shadow-sm p-3 relative"
+                  >
+                    <p className="absolute top-2 right-2 text-gray-400 hover:text-cyan-600">
+                      <MdOutlineAccessAlarm />
+                    </p>
+                    <p className="text-sm font-semibold text-amber-500">
+                      {reminder.title}
+                    </p>
+                    <p className="text-base font-medium mt-1">
+                      {reminder.notes}
+                    </p>
+                  </div>
+                ))}
+            </div>
+          ) : (
+            <p className="text-sm text-gray-500">You have no reminders today</p>
+          )}
         </div>
 
         {/* Tasks */}
@@ -98,6 +126,22 @@ const Dashboard = ({ timeOfDay }) => {
           <p className="text-sm text-gray-500">
             Stay on top of your to-do list
           </p>
+          {tasks.length > 0 ? (
+            <div className="space-y-3">
+              {tasks
+                .filter((t) => t.date === string)
+                .map((t) => (
+                  <div
+                    key={t.id}
+                    className={`p-3 my-5 md:mx-3 lg:mx-5 rounded-md shadow-md ${t.color} text-black`}
+                  >
+                    <tItems t={{ ...t, tasks: t.tasks.slice(0, 5) }} />
+                  </div>
+                ))}
+            </div>
+          ) : (
+            <p className="text-sm text-gray-500">You have no tasks today</p>
+          )}
         </div>
 
         {/* Notes */}
@@ -109,6 +153,22 @@ const Dashboard = ({ timeOfDay }) => {
           <p className="text-sm text-gray-500">
             Jot down thoughts & ideas quickly
           </p>
+          {stickies.length > 0 ? (
+            <div className="space-y-3">
+              {stickies[0].map((s) => (
+                <div
+                  key={s.id}
+                  className={`p-3 my-5 md:mx-3 lg:mx-5 rounded-md shadow-md ${s.color} text-black`}
+                >
+                  <p className="text-sm font-semibold text-amber-600">
+                    {s.title}
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-gray-500">You have no tasks today</p>
+          )}
         </div>
 
         {/* Weather */}
@@ -117,7 +177,17 @@ const Dashboard = ({ timeOfDay }) => {
             <MdOutlineWbSunny className="text-xl text-indigo-600" />
             Weather
           </h2>
-          <p className="text-sm text-gray-500">72°F, Partly Cloudy</p>
+          <div>
+            <p className="text-sm text-gray-500">
+              {weatherData.current_weather.temperature}°F,{" "}
+              {weatherCodeMap[weatherData.current_weather.weathercode].name}
+            </p>
+            <img
+              src={weatherCodeMap[weatherData.current_weather.weathercode].icon}
+              alt={weatherCodeMap[weatherData.current_weather.weathercode].name}
+              className="object-cover aspect-square w-20 ml-2 flex-shrink-0"
+            />
+          </div>
         </div>
 
         {/* Location */}
@@ -126,7 +196,9 @@ const Dashboard = ({ timeOfDay }) => {
             <MdOutlineLocationOn className="text-xl text-slate-600" />
             Location
           </h2>
-          <p className="text-sm text-gray-500">New York, USA</p>
+          <p className="text-sm text-gray-500">
+            {location.city}, {location.state}
+          </p>
         </div>
       </div>
     </motion.div>

@@ -261,5 +261,6 @@ viewState String @default("minimized")
 pin Boolean
 User User   @relation(fields: [userId], references: [id])
 userId String
+updatedAt DateTime @updatedAt
 @@index([userId], name: "userStickyindex")
 }
