@@ -114,7 +114,7 @@ const Calendar = () => {
       }`}
     >
       <section>
-        <div className="grid grid-cols-7 gap-2 justify-center items-center">
+        <div className="grid grid-cols-7 gap-2 justify-center items-center my-5">
           {view === "month" &&
             weekDays.map((day) => (
               <p

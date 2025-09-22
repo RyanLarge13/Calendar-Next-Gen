@@ -152,7 +152,7 @@ const Event = ({ dayEvents }) => {
       initial={{ y: "100%" }}
       exit={{ y: "100%" }}
       animate={{ y: 0 }}
-      className={`fixed inset-0 top-20 z-[901] overflow-y-auto will-change-transform
+      className={`fixed inset-0 z-[901] overflow-y-auto will-change-transform
     ${maximize ? "lg:right-0" : "lg:right-[66%] lg:left-0"} 
     ${preferences.darkMode ? "bg-[#1e1e1e]" : "bg-gray-50"}
     rounded-t-2xl shadow-2xl`}

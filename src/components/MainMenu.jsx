@@ -13,7 +13,7 @@ import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
 
 const Dashboard = ({ timeOfDay }) => {
-  const { user, upcoming } = useContext(UserContext);
+  const { user, upcoming, weatherData } = useContext(UserContext);
   const { setEvent } = useContext(InteractiveContext);
 
   return (
