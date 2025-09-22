@@ -157,24 +157,20 @@ const Dashboard = ({ timeOfDay }) => {
             <MdOutlineStickyNote2 className="text-xl text-amber-600" />
             Notes
           </h2>
-          <p className="text-sm text-gray-500">
-            Jot down thoughts & ideas quickly
-          </p>
+          <p className="text-sm text-gray-500">You latest note</p>
           {stickies?.length > 0 ? (
             <div className="space-y-3">
-              {stickies[0].map((s) => (
-                <div
-                  key={s.id}
-                  className={`p-3 my-5 md:mx-3 lg:mx-5 rounded-md shadow-md ${s.color} text-black`}
-                >
-                  <p className="text-sm font-semibold text-amber-600">
-                    {s.title}
-                  </p>
-                </div>
-              ))}
+              <div
+                key={stickies[0].id}
+                className={`p-3 my-5 md:mx-3 lg:mx-5 rounded-md shadow-md ${stickies[0].color} text-black`}
+              >
+                <p className="text-sm font-semibold text-amber-600">
+                  {stickies[0].title}
+                </p>
+              </div>
             </div>
           ) : (
-            <p className="text-sm text-gray-500">You have no tasks today</p>
+            <p className="text-sm text-gray-500">You have no notes</p>
           )}
         </div>
 
