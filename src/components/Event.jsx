@@ -11,7 +11,7 @@ import {
   FaExternalLinkAlt,
   FaImage,
   FaPlusCircle,
-  FaTrash
+  FaTrash,
 } from "react-icons/fa";
 import { motion, useDragControls } from "framer-motion";
 import { fetchAttachments } from "../utils/api";
@@ -34,8 +34,9 @@ const Event = ({ dayEvents }) => {
   const [maximize, setMaximize] = useState(false);
   const [addItems, setAddItems] = useState([]);
   const [eventLists, setEventLists] = useState(
-    lists.filter(list => list.eventId === event.id)
+    lists.filter((list) => list.eventId === event.id)
   );
+  const [newDescription, setNewDescription] = useState(event.description);
 
   const [title, setTitle] = useState(event.summary);
 
@@ -44,24 +45,24 @@ const Event = ({ dayEvents }) => {
   const breakpointColumnsObj = {
     default: 4,
     1100: 3,
-    700: 2
+    700: 2,
   };
 
   useEffect(() => {
     if (event.attachmentLength > 0) {
       setImagesLoading(true);
       fetchAttachments(event.id)
-        .then(res => {
-          res.data.attachments.forEach(file => {
+        .then((res) => {
+          res.data.attachments.forEach((file) => {
             const blob = new Blob([new Uint8Array(file.content.data)], {
-              type: file.mimetype
+              type: file.mimetype,
             });
             const url = URL.createObjectURL(blob);
-            setFetchedImages(prevUrls => [...prevUrls, url]);
+            setFetchedImages((prevUrls) => [...prevUrls, url]);
             setImagesLoading(false);
           });
         })
-        .catch(err => console.log(err));
+        .catch((err) => console.log(err));
     }
     return () => setFetchedImages([]);
   }, []);
@@ -124,11 +125,11 @@ const Event = ({ dayEvents }) => {
     }
   };
 
-  const startDrag = e => {
+  const startDrag = (e) => {
     controls.start(e);
   };
 
-  const updateTitle = async e => {
+  const updateTitle = async (e) => {
     e.preventDefault();
 
     const oldTitle = event.summary;
@@ -153,7 +154,7 @@ const Event = ({ dayEvents }) => {
       animate={{ y: 0 }}
       className={`z-[901] will-change-transform fixed inset-0 lg:left-0 lg:bottom-0 ${
         maximize ? "lg:right-0" : "lg:right-[66%]"
-      } scrollbar-slick top-[6%] rounded-md ${
+      } scrollbar-slick top-20 rounded-md ${
         preferences.darkMode ? "bg-[#222]" : "bg-white"
       } overflow-y-auto`}
     >
@@ -202,7 +203,7 @@ const Event = ({ dayEvents }) => {
           >
             <input
               style={{ color: tailwindBgToHex(event.color) }}
-              className="text-[20px] bg-transparent focus:outline-none outline-none"
+              className="text-[20px] bg-transparent focus:outline-none outline-none w-full"
               placeholder={title}
               value={title}
               onFocusOut={updateTitle}
@@ -213,12 +214,14 @@ const Event = ({ dayEvents }) => {
           >
             <textarea
               style={{
-                color: tailwindBgToHex(event.color)
+                color: tailwindBgToHex(event.color),
               }}
               type="text"
-              className={`text-[14px focus:outline-none outline-none bg-transparent w-full`}
-              placeholder={formatText(event.description)}
-              value={formatText(event.description)}
+              className={`focus:outline-none outline-none bg-transparent w-full placeholder:text-black resize-none whitespace-pre-wrap`}
+              placeholder={event.description}
+              rows={10}
+              onChange={(e) => setNewDescription(e.target.value)}
+              value={newDescription}
             />
           </div>
           {event.start.startTime && (
@@ -233,8 +236,8 @@ const Event = ({ dayEvents }) => {
                     transition: {
                       duration: 0.1,
                       type: "spring",
-                      stiffness: 400
-                    }
+                      stiffness: 400,
+                    },
                   }}
                   className={`absolute left-1 top-1 bottom-1 bg-opacity-50 rounded-3xl`}
                 ></motion.div>
@@ -259,8 +262,8 @@ const Event = ({ dayEvents }) => {
                     transition: {
                       duration: 0.1,
                       type: "spring",
-                      stiffness: 400
-                    }
+                      stiffness: 400,
+                    },
                   }}
                   className={`absolute left-1 top-1 bottom-1 bg-opacity-50 rounded-3xl`}
                 ></motion.div>
@@ -300,9 +303,9 @@ const Event = ({ dayEvents }) => {
                     </button>
                   </div>
                 </div>
-                <textarea
+                <input
                   style={{
-                    color: tailwindBgToHex(event.color)
+                    color: tailwindBgToHex(event.color),
                   }}
                   className={`mt-3 p-2 rounded-md w-full outline-none focus:outline-none ${event.color}`}
                   type="text"
@@ -355,7 +358,7 @@ const Event = ({ dayEvents }) => {
                       "en-US",
                       {
                         month: "short",
-                        day: "numeric"
+                        day: "numeric",
                       }
                     )}
                   </span>{" "}
@@ -407,7 +410,7 @@ const Event = ({ dayEvents }) => {
             )}
           </div>
           <div>
-            {eventLists.map(list => (
+            {eventLists.map((list) => (
               <div
                 key={list.id}
                 style={{ color: tailwindBgToHex(list.color) }}
@@ -439,7 +442,7 @@ const Event = ({ dayEvents }) => {
               className="my-masonry-grid-attachments"
               columnClassName="my-masonry-grid_column-attachments"
             >
-              {fetchedImages.map(img => (
+              {fetchedImages.map((img) => (
                 <img
                   key={img}
                   src={img}

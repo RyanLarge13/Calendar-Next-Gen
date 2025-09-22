@@ -177,7 +177,7 @@ const AddEvent = () => {
         id: newEventId,
         kind: "Event",
         summary,
-        description: formatDescText(description),
+        description: description,
         location: location ? locationObject : undefined,
         date: string,
         startDate: date,

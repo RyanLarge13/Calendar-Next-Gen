@@ -253,7 +253,7 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
                 dateObj.toLocaleDateString()
               ? ""
               : "bg-cyan-200"
-          } p-2 relative text-black`}
+          } p-2 my-2 rounded-md relative text-black`}
           style={{ fontSize: 11 }}
           onPointerDown={(e) => {
             startTime(reminder.id);

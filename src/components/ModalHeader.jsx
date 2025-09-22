@@ -177,6 +177,7 @@ const ModalHeader = ({ allDayEvents }) => {
           <div className="flex justify-center items-center">
             <h2 className="bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent whitespace-nowrap">
               {new Date(string).toLocaleDateString("en-US", {
+                weekday: "short",
                 month: "short",
                 day: "numeric",
                 year: "numeric",
@@ -213,6 +214,7 @@ const ModalHeader = ({ allDayEvents }) => {
           {secondString && (
             <p className="bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent">
               {new Date(secondString).toLocaleDateString("en-US", {
+                weekday: "short",
                 month: "short",
                 day: "numeric",
                 year: "numeric",
@@ -221,7 +223,7 @@ const ModalHeader = ({ allDayEvents }) => {
           )}
         </div>
       </motion.div>
-      <div className="flex gap-x-3">
+      <div className="flex justify-between items-center mt-2 pb-1">
         {allDayEvents.length > 0 && (
           <div>
             {showAllDayEvents ? (
@@ -238,7 +240,7 @@ const ModalHeader = ({ allDayEvents }) => {
         {event && (
           <>
             {!holidays.includes(event) && (
-              <>
+              <div className="flex justify-center items-center gap-x-3">
                 <BsFillShareFill className="cursor-pointer" />
                 <BsFillPenFill className="cursor-pointer" />
                 <BsFillTrashFill
@@ -291,7 +293,7 @@ const ModalHeader = ({ allDayEvents }) => {
                   }}
                   className="cursor-pointer"
                 />
-              </>
+              </div>
             )}
           </>
         )}
