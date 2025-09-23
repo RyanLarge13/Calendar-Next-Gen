@@ -30,6 +30,7 @@ const AddReminder = () => {
     loading: true,
     events: [],
   });
+  const [eventForReminder, setEventForReminder] = useState(null);
 
   useEffect(() => {
     const date = new Date(string);
@@ -211,12 +212,12 @@ const AddReminder = () => {
                 <button
                   key={event.id}
                   onClick={() =>
-                    setEventForList((prev) =>
+                    setEventForReminder((prev) =>
                       prev?.id === event.id ? null : event
                     )
                   }
                   className={`${
-                    eventForList?.id === event.id
+                    eventForReminder?.id === event.id
                       ? preferences.darkMode
                         ? "bg-slate-700"
                         : "bg-slate-200"
