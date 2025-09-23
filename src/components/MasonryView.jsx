@@ -94,7 +94,7 @@ const MasonryView = () => {
             className="my-masonry-grid"
             columnClassName="my-masonry-grid_column"
           >
-            {events.map(
+            {eventMap.get(dateString)?.events.map(
               (event) =>
                 event.date === dateString && (
                   <motion.div
