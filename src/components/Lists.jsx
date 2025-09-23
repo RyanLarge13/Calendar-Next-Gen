@@ -5,7 +5,7 @@ import { Reorder, motion, useDragControls } from "framer-motion";
 import {
   BsFillTrashFill,
   BsFillPenFill,
-  BsFillShareFill
+  BsFillShareFill,
 } from "react-icons/bs";
 import { BiListMinus, BiListPlus } from "react-icons/bi";
 import { IoIosAddCircle } from "react-icons/io";
@@ -28,7 +28,7 @@ const Lists = ({ listSort, listSortOpt, listSearch, listSearchTxt }) => {
     1800: 4,
     1400: 3, // Number of columns on screens > 1100px
     1000: 2,
-    700: 1 // Number of columns on screens > 700px
+    700: 1, // Number of columns on screens > 700px
   };
 
   useEffect(() => {
@@ -45,7 +45,7 @@ const Lists = ({ listSort, listSortOpt, listSearch, listSearchTxt }) => {
           break;
         case "event":
           {
-            const newLists = lists.filter(li => li.eventId !== null);
+            const newLists = lists.filter((li) => li.eventId !== null);
             setListsToRender(newLists);
           }
           break;
@@ -69,7 +69,7 @@ const Lists = ({ listSort, listSortOpt, listSearch, listSearchTxt }) => {
 
   useEffect(() => {
     if (listSearch && listSearchTxt) {
-      const newLists = lists.filter(li => li.title.includes(listSearchTxt));
+      const newLists = lists.filter((li) => li.title.includes(listSearchTxt));
       newLists.sort((a, b) => a.title.localeCompare(b.title));
       setListsToRender(newLists);
     } else {
@@ -77,17 +77,17 @@ const Lists = ({ listSort, listSortOpt, listSearch, listSearchTxt }) => {
     }
   }, [listSearch, listSearchTxt]);
 
-  const deleteEntireList = listId => {
+  const deleteEntireList = (listId) => {
     setSystemNotif({ show: false });
     const token = localStorage.getItem("authToken");
     if (!token) return;
-    const newListOfLists = lists.filter(item => item.id !== listId);
+    const newListOfLists = lists.filter((item) => item.id !== listId);
     setLists(newListOfLists);
     deleteList(token, listId)
-      .then(res => {
+      .then((res) => {
         console.log(res);
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   };
@@ -102,7 +102,7 @@ const Lists = ({ listSort, listSortOpt, listSearch, listSearchTxt }) => {
     setAddNewEvent(true);
   };
 
-  const copyAsPlainText = items => {
+  const copyAsPlainText = (items) => {
     let listString = "";
     for (let i = 0; i < items.length; i++) {
       listString += `${i + 1}. ${items[i].text.trim()}\n\n`;
@@ -112,7 +112,7 @@ const Lists = ({ listSort, listSortOpt, listSearch, listSearchTxt }) => {
       .then(() => {
         console.log("clipped");
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   };
@@ -120,14 +120,21 @@ const Lists = ({ listSort, listSortOpt, listSearch, listSearchTxt }) => {
   return (
     <motion.div className="py-3 relative">
       {listsToRender.length < 1 && (
-        <div className="px-3">
-          <div className="rounded-md p-3 shadow-md my-5 flex justify-between items-center">
-            <div>
-              <h2 className="font-semibold mb-2">You have no lists</h2>
-              <BiListPlus />
-            </div>
-            <div className="text-2xl p-2" onClick={() => openModalAndSetType()}>
-              <IoIosAddCircle />
+        <div className="flex h-[50vh] justify-center items-center">
+          <div className="w-80 rounded-2xl p-5 shadow-lg my-5 bg-gradient-to-r from-lime-300 via-emerald-300 to-green-300 text-white">
+            <div className="flex justify-between items-center">
+              <div className="flex flex-col items-start">
+                <h2 className="text-lg font-semibold mb-2">
+                  No lists to shows
+                </h2>
+                <BiListPlus className="text-3xl opacity-80" />
+              </div>
+              <button
+                onClick={() => openModalAndSetType()}
+                className="text-3xl p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
+              >
+                <IoIosAddCircle className="text-white drop-shadow" />
+              </button>
             </div>
           </div>
         </div>
@@ -143,7 +150,7 @@ const Lists = ({ listSort, listSortOpt, listSearch, listSearchTxt }) => {
           className="my-masonry-grid"
           columnClassName="my-masonry-grid_column"
         >
-          {listsToRender.map(list => (
+          {listsToRender.map((list) => (
             <Reorder.Item
               key={list.id}
               value={list}
@@ -161,13 +168,13 @@ const Lists = ({ listSort, listSortOpt, listSearch, listSearchTxt }) => {
                   </button>
                   {!addItems.includes(list.id) ? (
                     <BiListPlus
-                      onClick={() => setAddItems(prev => [...prev, list.id])}
+                      onClick={() => setAddItems((prev) => [...prev, list.id])}
                       className="text-lg cursor-pointer"
                     />
                   ) : (
                     <BiListMinus
                       onClick={() => {
-                        const newIds = addItems.filter(i => i !== list.id);
+                        const newIds = addItems.filter((i) => i !== list.id);
                         setAddItems(newIds);
                       }}
                       className="text-lg cursor-pointer"
@@ -188,14 +195,14 @@ const Lists = ({ listSort, listSortOpt, listSearch, listSearchTxt }) => {
                             text: "cancel",
                             func: () =>
                               setSystemNotif({
-                                show: false
-                              })
+                                show: false,
+                              }),
                           },
                           {
                             text: "delete",
-                            func: () => deleteEntireList(list.id)
-                          }
-                        ]
+                            func: () => deleteEntireList(list.id),
+                          },
+                        ],
                       };
                       setSystemNotif(newNotif);
                     }}
@@ -203,7 +210,7 @@ const Lists = ({ listSort, listSortOpt, listSearch, listSearchTxt }) => {
                 </div>
               </div>
               <ListItems
-              listColor={list.color}
+                listColor={list.color}
                 addItems={addItems}
                 listId={list.id}
                 items={list?.items}

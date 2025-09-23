@@ -13,6 +13,7 @@ import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
 import weatherCodeMap from "../utils/weatherCodes";
 import DatesContext from "../context/DatesContext";
+import { tailwindBgToHex } from "../utils/helpers";
 
 const Dashboard = ({ timeOfDay }) => {
   const {
@@ -157,14 +158,18 @@ const Dashboard = ({ timeOfDay }) => {
             <MdOutlineStickyNote2 className="text-xl text-amber-600" />
             Notes
           </h2>
-          <p className="text-sm text-gray-500">You latest note</p>
+          <p className="text-sm text-gray-500">Your latest note</p>
           {stickies?.length > 0 ? (
             <div className="space-y-3">
               <div
                 key={stickies[0].id}
                 className={`p-3 my-5 md:mx-3 lg:mx-5 rounded-md shadow-md ${stickies[0].color} text-black`}
               >
-                <p className="text-sm font-semibold text-amber-600">
+                <p
+                  className={`font-semibold ${tailwindBgToHex(
+                    stickies[0].color
+                  )}`}
+                >
                   {stickies[0].title}
                 </p>
               </div>
@@ -175,22 +180,24 @@ const Dashboard = ({ timeOfDay }) => {
         </div>
 
         {/* Weather */}
-        <div className="p-5 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-2xl shadow-md">
-          <h2 className="text-lg font-semibold flex items-center gap-2 mb-3">
-            <MdOutlineWbSunny className="text-xl text-indigo-600" />
-            Weather
-          </h2>
+        <div className="p-5 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-2xl shadow-md flex justify-between items-start">
           <div>
-            <p className="text-sm text-gray-500">
-              {weatherData.current_weather.temperature}°F,{" "}
-              {weatherCodeMap[weatherData.current_weather.weathercode].name}
-            </p>
-            <img
-              src={weatherCodeMap[weatherData.current_weather.weathercode].icon}
-              alt={weatherCodeMap[weatherData.current_weather.weathercode].name}
-              className="object-cover aspect-square w-20 ml-2 flex-shrink-0"
-            />
+            <h2 className="text-lg font-semibold flex items-center gap-2 mb-3">
+              <MdOutlineWbSunny className="text-xl text-indigo-600" />
+              Weather
+            </h2>
+            <div>
+              <p className="text-sm text-gray-500">
+                {weatherData.current_weather.temperature}°F,{" "}
+                {weatherCodeMap[weatherData.current_weather.weathercode].name}
+              </p>
+            </div>
           </div>
+          <img
+            src={weatherCodeMap[weatherData.current_weather.weathercode].icon}
+            alt={weatherCodeMap[weatherData.current_weather.weathercode].name}
+            className="object-cover aspect-square w-20 ml-2 flex-shrink-0"
+          />
         </div>
 
         {/* Location */}

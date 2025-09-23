@@ -107,16 +107,25 @@ const Tasks = ({ taskSort, taskSortOpt, taskSearch, taskSearchTxt }) => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+    <div
+      className={`${
+        tasksToRender.length < 1 ? "" : "grid"
+      } grid-cols-1 md:grid-cols-2 lg:grid-cols-3`}
+    >
       {tasksToRender.length < 1 ? (
-        <div>
-          <div className="rounded-md p-3 shadow-md my-5 flex justify-between items-center">
-            <div>
-              <h2 className="font-semibold mb-2">No Tasks to Show</h2>
-              <BsListTask />
-            </div>
-            <div className="text-2xl p-2" onClick={() => openModalAndSetType()}>
-              <IoIosAddCircle />
+        <div className="flex h-[50vh] justify-center items-center">
+          <div className="w-80 rounded-2xl p-5 shadow-lg my-5 bg-gradient-to-r from-lime-300 via-emerald-300 to-green-300 text-white">
+            <div className="flex justify-between items-center">
+              <div className="flex flex-col items-start">
+                <h2 className="text-lg font-semibold mb-2">No Tasks to Show</h2>
+                <BsListTask className="text-3xl opacity-80" />
+              </div>
+              <button
+                onClick={() => openModalAndSetType()}
+                className="text-3xl p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
+              >
+                <IoIosAddCircle className="text-white drop-shadow" />
+              </button>
             </div>
           </div>
         </div>

@@ -27,6 +27,7 @@ const ModalHeader = ({ allDayEvents }) => {
     preferences,
     location,
     weatherData,
+    setEventMap,
   } = useContext(UserContext);
   const { addNewEvent, event, setEvent, setShowFullDatePicker } =
     useContext(InteractiveContext);
@@ -95,6 +96,20 @@ const ModalHeader = ({ allDayEvents }) => {
         const filteredEvents = events.filter((e) => e.id !== res.data.eventId);
         setEvent(null);
         setEvents(filteredEvents);
+        setEventMap((prev) => {
+          const newMap = new Map(prev);
+          const mapDate = `${date.getFullYear()}-${date.getMonth()}`;
+
+          if (newMap.has(mapDate)) {
+            const entry = newMap.get(mapDate);
+            newMap.set(mapDate, {
+              ...entry,
+              events: filteredEvents, // new array, not mutated
+            });
+          }
+
+          return newMap;
+        });
         if (allDayEvents.length > 0) {
           setShowAllDayEvents(true);
         }

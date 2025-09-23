@@ -218,16 +218,27 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
   };
 
   return (
-    <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 md:gap-5 lg:gap-5 mt-5">
+    <motion.div
+      className={`${
+        remindersToRender.length < 1 ? "" : "grid"
+      } grid-cols-1 md:grid-cols-2 lg:grid-cols-3 md:gap-5 lg:gap-5 mt-5`}
+    >
       {remindersToRender.length < 1 && (
-        <div>
-          <div className="rounded-md p-3 shadow-md my-5 flex justify-between items-center">
-            <div>
-              <h2 className="font-semibold mb-2">No Upcoming Reminders</h2>
-              <BiAlarmSnooze />
-            </div>
-            <div className="text-2xl p-2" onClick={() => openModalAndSetType()}>
-              <IoIosAddCircle />
+        <div className="flex h-[50vh] justify-center items-center">
+          <div className="w-80 rounded-2xl p-5 shadow-lg my-5 bg-gradient-to-r from-red-300 via-rose-300 to-fuchsia-300 text-white">
+            <div className="flex justify-between items-center">
+              <div className="flex flex-col items-start">
+                <h2 className="text-lg font-semibold mb-2">
+                  No upcoming reminders
+                </h2>
+                <BiAlarmSnooze className="text-3xl opacity-80" />
+              </div>
+              <button
+                onClick={() => openModalAndSetType()}
+                className="text-3xl p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
+              >
+                <IoIosAddCircle className="text-white drop-shadow" />
+              </button>
             </div>
           </div>
         </div>

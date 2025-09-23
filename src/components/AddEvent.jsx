@@ -218,12 +218,18 @@ const AddEvent = () => {
             const mapDate = `${date.getFullYear()}-${date.getMonth()}`;
 
             if (newMap.has(mapDate)) {
-              newMap[mapDate]?.events?.push(newEvent);
+              const entry = newMap.get(mapDate);
+              newMap.set(mapDate, {
+                ...entry,
+                events: [...entry.events, newEvent], // new array, not mutated
+              });
             } else {
               newMap.set(mapDate, { events: [newEvent] });
             }
+
             return newMap;
           });
+
           if (res.data.reminders) {
             setReminders((prev) => [...prev, res.data.reminders]);
           }
