@@ -22,12 +22,14 @@ const MasonryView = () => {
   };
 
   useEffect(() => {
-    const dates = new Set(
-      Array.from([...eventMap.keys()]).map((k) =>
-        new Date(k).toLocaleDateString()
-      )
-    );
-    setUniqueDates(dates);
+    if (eventMap) {
+      const dates = new Set(
+        Array.from([...eventMap.keys()]).map((k) =>
+          new Date(k).toLocaleDateString()
+        )
+      );
+      setUniqueDates(dates);
+    }
   }, [eventMap]);
 
   useEffect(() => {
