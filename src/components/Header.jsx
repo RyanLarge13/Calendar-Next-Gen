@@ -110,8 +110,16 @@ const Header = () => {
                 className="text-xl cursor-pointer"
               />
               <h1 className="mx-5 text-[12px]">
-                {currentWeek[0].toLocaleDateString()} -{" "}
-                {currentWeek[currentWeek.length - 1].toLocaleDateString()}
+                {currentWeek[0].toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "2-digit",
+                })}{" "}
+                -{" "}
+                {currentWeek[currentWeek.length - 1].toLocaleDateString(
+                  "en-US",
+                  { month: "short", day: "numeric", year: "2-digit" }
+                )}
               </h1>
               <BsFillArrowRightCircleFill
                 onClick={() => setWeekOffset((prev) => prev + 1)}

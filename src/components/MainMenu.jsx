@@ -166,9 +166,8 @@ const Dashboard = ({ timeOfDay }) => {
                 className={`p-3 my-5 md:mx-3 lg:mx-5 rounded-md shadow-md ${stickies[0].color} text-black`}
               >
                 <p
-                  className={`font-semibold ${tailwindBgToHex(
-                    stickies[0].color
-                  )}`}
+                  style={{ color: tailwindBgToHex(stickies[0].color) }}
+                  className="font-semibold"
                 >
                   {stickies[0].title}
                 </p>

@@ -6,6 +6,7 @@ import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
 import { AiOutlinePlusCircle } from "react-icons/ai";
 import { BsFillCalendarDayFill } from "react-icons/bs";
+import { tailwindBgToHex } from "../utils/helpers.js";
 
 const WeekView = () => {
   const { events, holidays, preferences } = useContext(UserContext);
@@ -88,30 +89,68 @@ const WeekView = () => {
       {currentWeek.map((date, index) => (
         <div
           key={index}
-          className="w-full rounded-2xl border border-slate-200 shadow-sm bg-gradient-to-br from-purple-50 to-white dark:from-[#222] dark:to-[#333]"
+          className={`w-full rounded-2xl border border-slate-200 shadow-sm bg-gradient-to-br ${
+            preferences.darkMode
+              ? "from-[#222] to-[#333] text-white"
+              : "from-purple-50 to-white text-black"
+          }`}
         >
           {/* Day Header */}
           <div
-            className={`w-full flex justify-between items-center px-4 py-2 rounded-t-2xl shadow-sm ${
+            className={`w-full px-4 py-2 rounded-t-2xl shadow-sm ${
               date.getDay() === currentWeekday
                 ? "bg-purple-500 text-white"
                 : "bg-purple-100 dark:bg-[#444] dark:text-white"
             }`}
           >
-            <p className="font-semibold text-sm">
-              {date.toLocaleDateString("en-US", {
-                weekday: "short",
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-              })}
-            </p>
-            <div className="flex gap-x-4 items-center">
-              <BsFillCalendarDayFill className="text-lg" />
-              <AiOutlinePlusCircle
-                className="text-xl cursor-pointer hover:text-purple-700 dark:hover:text-purple-300 transition-colors"
-                onClick={() => addNewDataForDay(date)}
-              />
+            <div className={`w-full flex justify-between items-center}`}>
+              <p className="font-semibold text-sm">
+                {date.toLocaleDateString("en-US", {
+                  weekday: "short",
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+              </p>
+              <div className="flex gap-x-4 items-center">
+                <BsFillCalendarDayFill className="text-lg" />
+                <AiOutlinePlusCircle
+                  className="text-xl cursor-pointer hover:text-purple-700 dark:hover:text-purple-300 transition-colors"
+                  onClick={() => addNewDataForDay(date)}
+                />
+              </div>
+            </div>
+            <div className="mt-2">
+              {/* All Day Events */}
+              {weeklyEvents.length > 0 &&
+                weeklyEvents[index].map((weekEvent) => {
+                  const start = new Date(weekEvent?.start?.startTime);
+                  const end = new Date(weekEvent?.end?.endTime);
+
+                  if (!start || !end) {
+                    return (
+                      <motion.div
+                        key={weekEvent.id}
+                        style={{
+                          color: tailwindBgToHex(weekEvent.color),
+                        }}
+                        whileHover={{ scale: 1.03, y: -2 }}
+                        className={`rounded-xl shadow-lg cursor-pointer 
+          ${weekEvent.color}`}
+                        onClick={() => setEvent(weekEvent)}
+                      >
+                        <div className="flex flex-col h-full p-2">
+                          {/* Summary */}
+                          <p className="mt-1 text-sm font-medium leading-snug truncate">
+                            {weekEvent.summary}
+                          </p>
+                        </div>
+                      </motion.div>
+                    );
+                  } else {
+                    return null;
+                  }
+                })}
             </div>
           </div>
 
@@ -143,16 +182,21 @@ const WeekView = () => {
                     const start = new Date(weekEvent?.start?.startTime);
                     const end = new Date(weekEvent?.end?.endTime);
 
+                    if (!start || !end) {
+                      return null;
+                    }
+
                     return (
                       <motion.div
                         key={weekEvent.id}
                         style={{
                           width: `${calcDayEventWidth(start, end)}px`,
                           left: fromLeft(start),
+                          color: tailwindBgToHex(weekEvent.color),
                         }}
                         whileHover={{ scale: 1.03, y: -2 }}
-                        className={`absolute top-5 bottom-2 event-item rounded-xl shadow-md cursor-pointer 
-          bg-gradient-to-r from-purple-400 to-purple-600 text-white`}
+                        className={`absolute top-5 bottom-2 event-item rounded-xl shadow-lg cursor-pointer 
+          ${weekEvent.color}`}
                         onClick={() => setEvent(weekEvent)}
                       >
                         <div className="flex flex-col h-full p-2">
