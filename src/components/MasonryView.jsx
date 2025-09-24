@@ -23,11 +23,7 @@ const MasonryView = () => {
 
   useEffect(() => {
     if (eventMap) {
-      const dates = new Set(
-        Array.from([...eventMap.keys()]).map((k) =>
-          new Date(k).toLocaleDateString()
-        )
-      );
+      const dates = Array.from(new Set(Array.from([...eventMap.keys()])));
       setUniqueDates(dates);
     }
   }, [eventMap]);
@@ -77,60 +73,60 @@ const MasonryView = () => {
 
   return (
     <div className="pb-10">
-      {uniqueDates.map((dateString) => (
-        <div key={dateString} className="mt-5">
-          <div
-            className="rounded-md p-2 shadow-md flex justify-between items-center"
-            id={dateString}
-            ref={closestDateRef}
-          >
-            <h2 className="bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent">
-              {dateString}
-            </h2>
-            <div></div>
-          </div>
-          <Masonry
-            breakpointCols={breakpointColumnsObj}
-            className="my-masonry-grid"
-            columnClassName="my-masonry-grid_column"
-          >
-            {eventMap.get(dateString)?.events.map(
-              (event) =>
-                event.date === dateString && (
-                  <motion.div
-                    key={event.id}
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    style={{
-                      minHeight: `${getHeight(
-                        event.start.startTime,
-                        event.end.endTime
-                      )}px`,
-                    }}
-                    className={`m-2 p-3 rounded-md shadow-md ${event.color}`}
-                    onClick={() => setEvent(event)}
-                  >
-                    <p className="p-2 font-semibold rounded-md shadow-md mb-2 bg-white">
-                      {event.summary}
+      {uniqueDates.map((dateString) => {
+        const dayEvents = eventMap.get(dateString)?.events || [];
+
+        return (
+          <div key={dateString} className="mt-5">
+            <div
+              className="rounded-md p-2 shadow-md flex justify-between items-center"
+              id={dateString}
+              ref={closestDateRef}
+            >
+              <h2 className="bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent">
+                {dateString}
+              </h2>
+            </div>
+            <Masonry
+              breakpointCols={breakpointColumnsObj}
+              className="my-masonry-grid"
+              columnClassName="my-masonry-grid_column"
+            >
+              {dayEvents.map((event) => (
+                <motion.div
+                  key={event.id}
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  style={{
+                    minHeight: `${getHeight(
+                      event.start.startTime,
+                      event.end.endTime
+                    )}px`,
+                  }}
+                  className={`m-2 p-3 rounded-md shadow-md ${event.color}`}
+                  onClick={() => setEvent(event)}
+                >
+                  <p className="p-2 font-semibold rounded-md shadow-md mb-2 bg-white">
+                    {event.summary}
+                  </p>
+                  {event.description && (
+                    <p className="bg-white bg-opacity-30 rounded-md shadow-md p-2">
+                      {event.description
+                        .split(/\|\|\||\n/)
+                        .map((line, index) => (
+                          <React.Fragment key={index}>
+                            {line}
+                            <br />
+                          </React.Fragment>
+                        ))}
                     </p>
-                    {event.description && (
-                      <p className="bg-white bg-opacity-30 rounded-md shadow-md p-2">
-                        {event.description
-                          .split(/\|\|\||\n/)
-                          .map((line, index) => (
-                            <React.Fragment key={index}>
-                              {line}
-                              <br />
-                            </React.Fragment>
-                          ))}
-                      </p>
-                    )}
-                  </motion.div>
-                )
-            )}
-          </Masonry>
-        </div>
-      ))}
+                  )}
+                </motion.div>
+              ))}
+            </Masonry>
+          </div>
+        );
+      })}
     </div>
   );
 };

@@ -97,6 +97,7 @@ const ModalHeader = ({ allDayEvents }) => {
         setEvent(null);
         setEvents(filteredEvents);
         setEventMap((prev) => {
+          const date = new Date(string);
           const newMap = new Map(prev);
           const mapDate = `${date.getFullYear()}-${date.getMonth()}`;
 
