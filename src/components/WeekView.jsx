@@ -84,6 +84,22 @@ const WeekView = () => {
     setOpenModal(true);
   };
 
+  const isEventAllDay = (event) => {
+    const startDate = new Date(event.startDate);
+    const endDate = new Date(event.endDate);
+    startDate.setHours(0, 0, 0, 0);
+    endDate.setHours(0, 0, 0, 0);
+    const daysDifference = (endDate - startDate) / (24 * 60 * 60 * 1000);
+    if (
+      daysDifference >= 1 ||
+      event.end.endTime === null ||
+      event.start.startTime === null
+    ) {
+      return true;
+    }
+    return false;
+  };
+
   return (
     <section className="relative flex flex-col gap-6">
       {currentWeek.map((date, index) => (
@@ -100,7 +116,9 @@ const WeekView = () => {
             className={`w-full px-4 py-2 rounded-t-2xl shadow-sm ${
               date.getDay() === currentWeekday
                 ? "bg-purple-500 text-white"
-                : "bg-purple-100 dark:bg-[#444] dark:text-white"
+                : preferences.darkMode
+                ? "bg-[#222] text-white"
+                : "bg-purple-100 text-black"
             }`}
           >
             <div className={`w-full flex justify-between items-center}`}>
@@ -124,10 +142,7 @@ const WeekView = () => {
               {/* All Day Events */}
               {weeklyEvents.length > 0 &&
                 weeklyEvents[index].map((weekEvent) => {
-                  const start = new Date(weekEvent?.start?.startTime);
-                  const end = new Date(weekEvent?.end?.endTime);
-
-                  if (!start || !end) {
+                  if (isEventAllDay(weekEvent)) {
                     return (
                       <motion.div
                         key={weekEvent.id}
@@ -135,8 +150,7 @@ const WeekView = () => {
                           color: tailwindBgToHex(weekEvent.color),
                         }}
                         whileHover={{ scale: 1.03, y: -2 }}
-                        className={`rounded-xl shadow-lg cursor-pointer 
-          ${weekEvent.color}`}
+                        className={`rounded-xl shadow-lg cursor-pointer ${weekEvent.color}`}
                         onClick={() => setEvent(weekEvent)}
                       >
                         <div className="flex flex-col h-full p-2">
@@ -182,7 +196,7 @@ const WeekView = () => {
                     const start = new Date(weekEvent?.start?.startTime);
                     const end = new Date(weekEvent?.end?.endTime);
 
-                    if (!start || !end) {
+                    if (isEventAllDay(weekEvent)) {
                       return null;
                     }
 

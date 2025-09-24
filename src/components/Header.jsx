@@ -104,27 +104,34 @@ const Header = () => {
             </div>
           )}
           {view === "week" && (
-            <div className="flex justify-center items-center">
-              <BsFillArrowLeftCircleFill
-                onClick={() => setWeekOffset((prev) => prev - 1)}
-                className="text-xl cursor-pointer"
-              />
-              <h1 className="mx-5 text-[12px]">
+            <div className="flex flex-col justify-center items-center gap-y-1">
+              <h2 className="text-[14px] font-semibold">
                 {currentWeek[0].toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                  year: "2-digit",
-                })}{" "}
-                -{" "}
-                {currentWeek[currentWeek.length - 1].toLocaleDateString(
-                  "en-US",
-                  { month: "short", day: "numeric", year: "2-digit" }
-                )}
-              </h1>
-              <BsFillArrowRightCircleFill
-                onClick={() => setWeekOffset((prev) => prev + 1)}
-                className="text-xl cursor-pointer"
-              />
+                  year: "numeric",
+                })}
+              </h2>
+              <div className="flex justify-center items-center">
+                <BsFillArrowLeftCircleFill
+                  onClick={() => setWeekOffset((prev) => prev - 1)}
+                  className="text-xl cursor-pointer"
+                />
+                <h1 className="mx-5 text-[12px]">
+                  {currentWeek[0].toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "2-digit",
+                  })}{" "}
+                  -{" "}
+                  {currentWeek[currentWeek.length - 1].toLocaleDateString(
+                    "en-US",
+                    { month: "short", day: "numeric", year: "2-digit" }
+                  )}
+                </h1>
+                <BsFillArrowRightCircleFill
+                  onClick={() => setWeekOffset((prev) => prev + 1)}
+                  className="text-xl cursor-pointer"
+                />
+              </div>
             </div>
           )}
           <div className="w-[25px] h-[25px]">

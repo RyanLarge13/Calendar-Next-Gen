@@ -9,6 +9,7 @@ import { IoIosAlarm } from "react-icons/io";
 import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext.jsx";
+import Reminder from "./Reminder.jsx";
 
 const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
   const { setEvent, setAddEventWithStartEndTime, setType, setAddNewEvent } =
@@ -19,7 +20,6 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
   const [time, setTime] = useState(dateObj.toLocaleTimeString());
   const [height, setHeight] = useState(0);
   const [staticTimeHeight, setStaticTimeHeight] = useState(0);
-  const [combinedArray, setCombinedArray] = useState([]);
   const [times, setTimes] = useState([]);
   const [isSettingTime, setIsSettingTime] = useState(false);
 
@@ -35,18 +35,8 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
   }, [times]);
 
   useEffect(() => {
-    const combined = [...todaysEvents, ...todaysReminders];
-    combined.sort((a, b) => {
-      const dateA = new Date((a.start && a.start.startTime) || a.time);
-      const dateB = new Date((b.start && b.start.startTime) || b.time);
-      return dateA - dateB;
-    });
-    setCombinedArray(combined);
-    if (theDay.toLocaleDateString() === dateObj.toLocaleDateString()) {
-      getTime();
-    }
     return () => clearInterval(interval);
-  }, [todaysEvents, todaysReminders]);
+  }, []);
 
   const calcDayEventHeight = (start, end) => {
     if (!start || !end) {
@@ -83,7 +73,7 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
 
   useEffect(() => {
     return containerRef.current.scrollTo({ top: height, behavior: "smooth" });
-  }, [height]);
+  }, [height, time]);
 
   const getTime = () => {
     interval = setInterval(() => {
@@ -188,6 +178,7 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
 
   return (
     <div className="py-20">
+      {/* Timer Setter */}
       {isSettingTime ? (
         <div className="sticky top-5 w-fit left-5 z-40 bg-white rounded-md shadow-md p-3">
           <p>Create an event from</p>
@@ -231,7 +222,10 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
           </div>
         </div>
       ) : null}
+
+      {/* Day View Container */}
       <div ref={dayViewContainer} className="text-sm min-h-[800vh] relative">
+        {/* Timer */}
         {dateObj.toLocaleDateString() === theDay.toLocaleDateString() ? (
           <motion.div
             animate={{ top: height }}
@@ -244,7 +238,9 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
             </div>
           </motion.div>
         ) : null}
+
         <div>
+          {/* Static Time Display On Side */}
           <div className="">
             {staticTimes.map((staticTime, index) => (
               <motion.div
@@ -275,51 +271,60 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
               </motion.div>
             ))}
           </div>
-          {combinedArray.map((item) => (
+
+          {/* Events For The Day */}
+          {todaysEvents.map((event) => (
             <div
-              key={item.id}
-              style={
-                item.start
-                  ? {
-                      height: `${calcDayEventHeight(
-                        new Date(item.start.startTime),
-                        new Date(item.end.endTime)
-                      )}px`,
-                      top: fromTop(new Date(item.start.startTime)),
-                    }
-                  : {
-                      top: fromTop(new Date(item.time)),
-                    }
-              }
-              onClick={() => (item.start ? setEvent(item) : null)}
-              className={`${item.color || getColorReminder(item)} ${
-                item.start ? "z-[10]" : "z-[50]"
-              } absolute right-5 p-2 rounded-md shadow-md left-20`}
+              key={event.id}
+              style={{
+                height: `${calcDayEventHeight(
+                  new Date(event.start.startTime),
+                  new Date(event.end.endTime)
+                )}px`,
+                top: fromTop(new Date(event.start.startTime)),
+              }}
+              onClick={() => setEvent(event)}
+              className="absolute right-5 left-20 p-3 rounded-2xl shadow-lg bg-white/70 backdrop-blur-sm border border-gray-200 transition hover:scale-[1.02] hover:shadow-xl cursor-pointer flex"
             >
-              <div className="flex justify-between items-center bg-white bg-opacity-50 p-2 rounded-md">
-                <p className="font-bold">{item.summary || item.title}</p>
-                <div className="flex">
-                  <p>
-                    {(item?.kind === "Event" && <MdEventNote />) ||
-                      (item?.kind === "Reminder" && <MdEventAvailable />) ||
-                      (item?.kind === "Repeat" && <MdEventRepeat />)}
+              {/* Colored accent bar */}
+              <div className={`w-2 rounded-l-2xl ${event.color}`}></div>
+
+              {/* Content */}
+              <div className="flex-1 pl-3 flex flex-col justify-between">
+                {/* Header */}
+                <div className="flex justify-between items-center">
+                  <p className="font-semibold text-gray-800 truncate">
+                    {event.summary || event.title}
                   </p>
-                  <p>{item?.repeats?.repeat && <FiRepeat />}</p>
-                  <p>{item?.reminders?.reminder && <IoIosAlarm />}</p>
-                  <p>{item?.location && <MdLocationPin />}</p>
-                  <p>{item.title ? <IoIosAlarm /> : null}</p>
+                  <div className="flex gap-2 text-gray-500 text-lg">
+                    {event.repeats?.repeat && (
+                      <FiRepeat className="hover:text-blue-500" />
+                    )}
+                    {event.reminders?.reminder && (
+                      <IoIosAlarm className="hover:text-red-500" />
+                    )}
+                    {event.location && (
+                      <MdLocationPin className="hover:text-green-500" />
+                    )}
+                    {event.title && (
+                      <MdEventNote className="hover:text-purple-500" />
+                    )}
+                  </div>
                 </div>
-              </div>
-              <div className="mr-5 text-sm bg-white bg-opacity-30 rounded-md p-2 w-full mt-2">
-                {formatDbText(item.description || item.notes || "").map(
-                  (text, index) => (
-                    <p key={index} className="text-[14px]">
-                      {text}
-                    </p>
-                  )
+
+                {/* Description */}
+                {event.description && (
+                  <div className="mt-2 text-sm bg-gray-50/60 rounded-lg px-3 py-2 whitespace-pre-wrap text-gray-700 leading-relaxed">
+                    {event.description}
+                  </div>
                 )}
               </div>
             </div>
+          ))}
+
+          {/* Reminders for The Day */}
+          {todaysReminders.map((r) => (
+            <Reminder reminder={r} />
           ))}
         </div>
       </div>

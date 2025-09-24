@@ -133,22 +133,22 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
     }
   }, [search, searchTxt]);
 
-  const calcWidth = (time) => {
-    if (new Date(time).toLocaleDateString() !== dateObj.toLocaleDateString()) {
-      return 0;
-    }
-    const nowMinutes = dateObj.getMinutes();
-    const reminderMinutes = new Date(time).getMinutes();
-    const nowHours = dateObj.getHours() * 60;
-    const reminderHours = new Date(time).getHours() * 60;
-    const reminderTime = reminderMinutes + reminderHours;
-    const now = nowMinutes + nowHours;
-    const percentage = (now / reminderTime) * 100;
-    if (percentage >= 100) {
-      return 100;
-    }
-    return Math.floor(percentage);
-  };
+  // const calcWidth = (time) => {
+  //   if (new Date(time).toLocaleDateString() !== dateObj.toLocaleDateString()) {
+  //     return 0;
+  //   }
+  //   const nowMinutes = dateObj.getMinutes();
+  //   const reminderMinutes = new Date(time).getMinutes();
+  //   const nowHours = dateObj.getHours() * 60;
+  //   const reminderHours = new Date(time).getHours() * 60;
+  //   const reminderTime = reminderMinutes + reminderHours;
+  //   const now = nowMinutes + nowHours;
+  //   const percentage = (now / reminderTime) * 100;
+  //   if (percentage >= 100) {
+  //     return 100;
+  //   }
+  //   return Math.floor(percentage);
+  // };
 
   const startTime = (id) => {
     if (selected.length > 1 && selected.includes(id)) {

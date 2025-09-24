@@ -16,9 +16,10 @@ const MasonryView = () => {
   const closestDateRef = useRef(null);
 
   const breakpointColumnsObj = {
-    default: 3, // Number of columns by default
-    1100: 2, // Number of columns on screens > 1100px
-    700: 1, // Number of columns on screens > 700px
+    default: 2, // Number of columns by default
+    1700: 4,
+    1100: 3, // Number of columns on screens > 1100px
+    700: 2, // Number of columns on screens > 700px
   };
 
   useEffect(() => {
@@ -78,14 +79,19 @@ const MasonryView = () => {
 
         return (
           <div key={dateString} className="mt-5">
-            <div
-              className="rounded-md p-2 shadow-md flex justify-between items-center"
-              id={dateString}
-              ref={closestDateRef}
-            >
-              <h2 className="bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent">
-                {dateString}
-              </h2>
+            <div className="p-2" id={dateString} ref={closestDateRef}>
+              {dayEvents.length > 0 ? (
+                <h2 className="bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent font-semibold text-lg">
+                  {new Date(
+                    parseInt(dateString.split("-")[0], 10),
+                    parseInt(dateString.split("-")[1], 10),
+                    1
+                  ).toLocaleDateString("en-US", {
+                    month: "short",
+                    year: "2-digit",
+                  })}
+                </h2>
+              ) : null}
             </div>
             <Masonry
               breakpointCols={breakpointColumnsObj}
@@ -103,24 +109,36 @@ const MasonryView = () => {
                       event.end.endTime
                     )}px`,
                   }}
-                  className={`m-2 p-3 rounded-md shadow-md ${event.color}`}
+                  className={`m-1 p-3 rounded-lg shadow-lg ${event.color}`}
                   onClick={() => setEvent(event)}
                 >
-                  <p className="p-2 font-semibold rounded-md shadow-md mb-2 bg-white">
-                    {event.summary}
-                  </p>
-                  {event.description && (
-                    <p className="bg-white bg-opacity-30 rounded-md shadow-md p-2">
-                      {event.description
-                        .split(/\|\|\||\n/)
-                        .map((line, index) => (
-                          <React.Fragment key={index}>
-                            {line}
-                            <br />
-                          </React.Fragment>
-                        ))}
+                  <div className="flex justify-between items-center p-2 font-semibold rounded-md shadow-md mb-2 bg-white">
+                    <p>{event.summary}</p>
+                    <p>
+                      {new Date(event.date).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                      })}
                     </p>
-                  )}
+                  </div>
+                  <div className="bg-white bg-opacity-30 rounded-md shadow-md p-2">
+                    <span className="text-[10px] font-semibold opacity-90">
+                      {start.toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}{" "}
+                      -{" "}
+                      {end.toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
+                  </div>
+                  {event.description ? (
+                    <p className="bg-white bg-opacity-30 rounded-md shadow-md p-2 whitespace-pre-wrap">
+                      {event.description}
+                    </p>
+                  ) : null}
                 </motion.div>
               ))}
             </Masonry>
