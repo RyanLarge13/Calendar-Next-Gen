@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState, useContext } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { staticTimes } from "../constants.js";
-import { formatDbText } from "../utils/helpers.js";
 import { MdEventAvailable, MdEventNote, MdEventRepeat } from "react-icons/md";
 import { MdLocationPin } from "react-icons/md";
 import { FiRepeat } from "react-icons/fi";
@@ -10,6 +9,7 @@ import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext.jsx";
 import Reminder from "./Reminder.jsx";
+import { createPortal } from "react-dom";
 
 const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
   const { setEvent, setAddEventWithStartEndTime, setType, setAddNewEvent } =
@@ -73,7 +73,7 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
 
   useEffect(() => {
     return containerRef.current.scrollTo({ top: height, behavior: "smooth" });
-  }, [height, time]);
+  }, [height]);
 
   const getTime = () => {
     interval = setInterval(() => {
@@ -179,49 +179,77 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
   return (
     <div className="py-20">
       {/* Timer Setter */}
-      {isSettingTime ? (
-        <div className="sticky top-5 w-fit left-5 z-40 bg-white rounded-md shadow-md p-3">
-          <p>Create an event from</p>
-          <p>
-            <span className="font-semibold">
-              {new Date(
-                `${theDay.toDateString()} ${findTime(times[0])}`
-              ).toLocaleTimeString("en-US", {
-                hour: "numeric",
-                minute: "2-digit",
-              })}
-            </span>{" "}
-            to{" "}
-            <span className="font-semibold">
-              {new Date(
-                `${theDay.toDateString()} ${findTime(times[times.length - 1])}`
-              ).toLocaleTimeString("en-US", {
-                hour: "numeric",
-                minute: "2-digit",
-              })}
-            </span>{" "}
-            on{" "}
-            {new Date(theDay).toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-            })}
-          </p>
-          <div className="flex justify-between items-center mt-3">
-            <button
-              onClick={() => createEvent()}
-              className="px-3 py-2 rounded-md bg-cyan-200 shadow-md"
-            >
-              Yes
-            </button>
-            <button
-              onClick={() => setTimes([])}
-              className="px-3 py-2 rounded-md bg-rose-200 shadow-md"
-            >
-              No
-            </button>
-          </div>
-        </div>
-      ) : null}
+      {isSettingTime
+        ? createPortal(
+            <AnimatePresence>
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 50 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                className={`fixed bottom-6 right-20 z-50 w-[90%] max-w-md p-4 rounded-2xl shadow-lg border
+        ${
+          preferences.darkMode
+            ? "bg-[#1e1e1e]/90 border-gray-700 text-gray-100"
+            : "bg-white/90 backdrop-blur-md border-gray-200 text-gray-900"
+        }`}
+              >
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+                  Create an event from
+                </p>
+                <p className="text-base font-semibold">
+                  <span className="text-cyan-600 dark:text-cyan-400">
+                    {new Date(
+                      `${theDay.toDateString()} ${findTime(times[0])}`
+                    ).toLocaleTimeString("en-US", {
+                      hour: "numeric",
+                      minute: "2-digit",
+                    })}
+                  </span>{" "}
+                  –{" "}
+                  <span className="text-cyan-600 dark:text-cyan-400">
+                    {new Date(
+                      `${theDay.toDateString()} ${findTime(
+                        times[times.length - 1]
+                      )}`
+                    ).toLocaleTimeString("en-US", {
+                      hour: "numeric",
+                      minute: "2-digit",
+                    })}
+                  </span>{" "}
+                  on{" "}
+                  <span className="text-amber-600 dark:text-amber-400">
+                    {new Date(theDay).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </span>
+                </p>
+
+                {/* Buttons */}
+                <div className="flex justify-end gap-3 mt-4">
+                  <button
+                    onClick={() => createEvent()}
+                    className="px-4 py-2 rounded-xl font-medium shadow-sm 
+            bg-gradient-to-tr from-cyan-400 to-sky-500 text-white 
+            hover:scale-105 transition"
+                  >
+                    Yes, Create
+                  </button>
+                  <button
+                    onClick={() => setTimes([])}
+                    className="px-4 py-2 rounded-xl font-medium shadow-sm 
+            bg-gradient-to-tr from-rose-400 to-pink-500 text-white 
+            hover:scale-105 transition"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </motion.div>
+            </AnimatePresence>,
+            document.body
+          )
+        : null}
 
       {/* Day View Container */}
       <div ref={dayViewContainer} className="text-sm min-h-[800vh] relative">

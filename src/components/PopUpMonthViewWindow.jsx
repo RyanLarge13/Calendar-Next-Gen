@@ -1,20 +1,24 @@
 import { motion } from "framer-motion";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { formatDbText, formatTime } from "../utils/helpers";
 import {
   BsFillCalendar2EventFill,
   BsAlarmFill,
   BsListTask,
 } from "react-icons/bs";
-import UserContext, { UserProvider } from "../context/UserContext";
+import UserContext from "../context/UserContext";
 import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
 
 const PopUpMonthViewWindow = ({ positions, eventsToRender, day }) => {
   const { preferences } = useContext(UserContext);
   const { setString, setOpenModal } = useContext(DatesContext);
-  const { setMenu, setShowLogin, setAddNewEvent, setType } =
+  const { setMenu, setShowLogin, setAddNewEvent, setType, setEvent } =
     useContext(InteractiveContext);
+
+  useEffect(() => {
+    console.log(positions);
+  }, []);
 
   const openModalAndSetType = (type) => {
     setMenu(false);
@@ -27,82 +31,101 @@ const PopUpMonthViewWindow = ({ positions, eventsToRender, day }) => {
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
       style={{
-        top: `${positions.y}px`,
-        left: `${positions.x}px`,
-        transform: "translate(-17vw, -17vh)",
+        top: `${positions.y - 200}px`,
+        left: `${positions.x - 400}px`,
       }}
-      className={`absolute p-2 z-[900] shadow-lg rounded-md min-h-[100px] max-h-100 overflow-y-auto scrollbar-hide ${
-        preferences.darkMode ? "bg-[#222]" : "bg-white"
-      }`}
+      className={`absolute p-4 z-[900] rounded-2xl min-h-[120px] max-h-80 overflow-y-auto scrollbar-hide shadow-xl border
+        ${
+          preferences.darkMode
+            ? "bg-[#1e1e1e] border-gray-700 text-gray-100"
+            : "bg-white/90 backdrop-blur-md border-gray-200 text-gray-900"
+        }`}
       onWheel={(e) => e.stopPropagation()}
     >
+      {/* Date heading */}
       <p
-        className={`${
-          preferences.darkMode
-            ? "text-white bg-black"
-            : "text-black bg-slate-100"
-        } text-sm p-1 rounded-md mb-2 font-semibold`}
+        className={`text-sm font-semibold mb-3 px-3 py-1 w-fit rounded-lg
+          ${
+            preferences.darkMode
+              ? "bg-gray-800 text-white"
+              : "bg-gray-100 text-gray-700"
+          }`}
       >
         {formatTime(new Date(day))}
       </p>
+
+      {/* Events list */}
       {eventsToRender && eventsToRender.length > 0 ? (
-        eventsToRender.map((event) => (
-          <div
-            key={event.id}
-            className={`rounded-lg ${event.color} shadow-md p-2 my-2 w-40`}
-          >
-            <p className="text-sm font-semibold overflow-hidden">
-              {event.summary}
-            </p>
-            <div>
-              {formatDbText(event.description || "").map((text, index) => (
-                <p key={index} className="text-xs">
-                  {text}
-                </p>
-              ))}
-            </div>
-          </div>
-        ))
+        <div className="space-y-3">
+          {eventsToRender.map((event) => {
+            const start = new Date(event.start.startTime);
+            const end = new Date(event.end.endTime);
+
+            return (
+              <div
+                key={event.id}
+                onClick={() => setEvent(event)}
+                className="flex rounded-xl shadow-sm border transition hover:shadow-md cursor-pointer"
+              >
+                {/* Accent bar */}
+                <div className={`w-2 rounded-l-xl ${event.color}`}></div>
+
+                {/* Event content */}
+                <div className="flex-1 p-3">
+                  <p className="text-sm font-semibold truncate">
+                    {event.summary}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                    {start.toLocaleTimeString("en-US", {
+                      hour: "numeric",
+                      minute: "2-digit",
+                    })}{" "}
+                    –{" "}
+                    {end.toLocaleTimeString("en-US", {
+                      hour: "numeric",
+                      minute: "2-digit",
+                    })}
+                  </p>
+                  <div className="text-xs leading-snug text-gray-700 dark:text-gray-300">
+                    {formatDbText(event.description || "").map(
+                      (text, index) => (
+                        <p key={index}>{text}</p>
+                      )
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       ) : (
-        <p
-          className={`text-xs p-1 ${
-            preferences.darkMode ? "text-white" : "text-black"
-          }`}
-        >
-          No Events Today
-        </p>
+        <p className="text-xs italic text-gray-500">No Events Today</p>
       )}
-      <div className="flex justify-start items-center gap-x-1">
+
+      {/* Action buttons */}
+      <div className="flex justify-center gap-3 mt-4">
         <button
           onClick={() => openModalAndSetType("event")}
-          className={`${
-            preferences.darkMode
-              ? "rounded-md p-3"
-              : "text-black rounded-md p-3"
-          } text-sm hover:scale-[1.05] duration-200 bg-gradient-to-tr from-orange-300 to-amber-300`}
+          className="p-3 rounded-xl text-white shadow-md bg-gradient-to-tr from-orange-400 to-amber-400 hover:scale-105 transition"
+          title="Add Event"
         >
           <BsFillCalendar2EventFill />
         </button>
         <button
           onClick={() => openModalAndSetType("reminder")}
-          className={`${
-            preferences.darkMode
-              ? "rounded-md p-3"
-              : "text-black rounded-md p-3"
-          } text-sm hover:scale-[1.05] duration-200 bg-gradient-to-tr from-red-300 to-rose-300`}
+          className="p-3 rounded-xl text-white shadow-md bg-gradient-to-tr from-rose-400 to-red-400 hover:scale-105 transition"
+          title="Add Reminder"
         >
           <BsAlarmFill />
         </button>
         <button
           onClick={() => openModalAndSetType("task")}
-          className={`${
-            preferences.darkMode
-              ? "rounded-md p-3"
-              : "text-black rounded-md p-3"
-          } text-sm hover:scale-[1.05] duration-200 bg-gradient-to-tr from-cyan-300 to-sky-300`}
+          className="p-3 rounded-xl text-white shadow-md bg-gradient-to-tr from-sky-400 to-cyan-400 hover:scale-105 transition"
+          title="Add Task"
         >
           <BsListTask />
         </button>

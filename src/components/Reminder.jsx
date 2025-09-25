@@ -1,7 +1,11 @@
-import React from "react";
+import { useContext } from "react";
 import { motion } from "framer-motion";
 import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
+import { BiAlarmSnooze, BiCalendarEvent } from "react-icons/bi";
+import { BsFillPenFill, BsAlarmFill } from "react-icons/bs";
+import { MdOpenInNew } from "react-icons/md";
+import { formatTime } from "../utils/helpers";
 
 const Reminder = (reminder) => {
   const { dateObj } = useContext(DatesContext);
@@ -10,7 +14,10 @@ const Reminder = (reminder) => {
   const openRelatedEvent = (eventRefId) => {
     const eventOfReminder =
       events.find((event) => event.id === eventRefId) || null;
-    setEvent(eventOfReminder[0]);
+
+    if (eventOfReminder !== null) {
+      setEvent(eventOfReminder[0]);
+    }
   };
 
   return (

@@ -90,7 +90,7 @@ const SideBar = () => {
     <div
       className={`hidden xl:block ${
         preferences.darkMode ? "bg-[#222] border-none" : "bg-white"
-      } max-h-screen scrollbar-hide w-[20vw] border-slate-200 overflow-y-auto relative pt-[65px]`}
+      } max-h-screen scrollbar-hide w-[20vw] border-slate-200 overflow-y-auto relative pt-[70px]`}
     >
       <div
         className={`${

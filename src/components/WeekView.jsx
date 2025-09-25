@@ -179,7 +179,7 @@ const WeekView = () => {
                   <motion.div
                     key={time.string}
                     whileTap={{ backgroundColor: "#eee" }}
-                    className={`border-l h-[20vh] flex justify-start items-start px-2 text-[11px] w-full 
+                    className={`border-l h-[30vh] flex justify-start items-start px-2 text-[11px] w-full 
                       ${
                         preferences.darkMode
                           ? "bg-[#222] text-slate-200"

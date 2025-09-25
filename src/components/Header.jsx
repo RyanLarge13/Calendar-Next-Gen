@@ -119,12 +119,11 @@ const Header = () => {
                   {currentWeek[0].toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
-                    year: "2-digit",
                   })}{" "}
                   -{" "}
                   {currentWeek[currentWeek.length - 1].toLocaleDateString(
                     "en-US",
-                    { month: "short", day: "numeric", year: "2-digit" }
+                    { month: "short", day: "numeric" }
                   )}
                 </h1>
                 <BsFillArrowRightCircleFill

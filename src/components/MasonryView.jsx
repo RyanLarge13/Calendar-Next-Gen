@@ -123,12 +123,12 @@ const MasonryView = () => {
                   </div>
                   <div className="bg-white bg-opacity-30 rounded-md shadow-md p-2">
                     <span className="text-[10px] font-semibold opacity-90">
-                      {start.toLocaleTimeString([], {
+                      {event.start.startTime.toLocaleTimeString([], {
                         hour: "2-digit",
                         minute: "2-digit",
                       })}{" "}
                       -{" "}
-                      {end.toLocaleTimeString([], {
+                      {event.end.endTime.toLocaleTimeString([], {
                         hour: "2-digit",
                         minute: "2-digit",
                       })}
