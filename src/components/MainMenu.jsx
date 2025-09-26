@@ -28,6 +28,17 @@ const Dashboard = ({ timeOfDay }) => {
   const { setEvent } = useContext(InteractiveContext);
   const { string } = useContext(DatesContext);
 
+  const [todaysReminders, setTodaysReminders] = useState([]);
+
+  useEffect(() => {
+    const todaysReminders = reminders.filter(
+      (r) =>
+        new Date(r.time).toLocaleDateString() === theDay.toLocaleDateString()
+    );
+
+    setTodaysReminders(todaysReminders);
+  }, [reminders]);
+
   return (
     <motion.div
       initial={{ x: "-5%", opacity: 0 }}
@@ -99,26 +110,22 @@ const Dashboard = ({ timeOfDay }) => {
           <p className="text-sm text-gray-500">
             Quick glance at your reminders today
           </p>
-          {reminders.length > 0 ? (
+          {todaysReminders.length > 0 ? (
             <div className="space-y-3">
-              {reminders
-                .filter((r) => r.time === string)
-                .map((reminder) => (
-                  <div
-                    key={reminder.id}
-                    className="bg-white rounded-lg shadow-sm p-3 relative"
-                  >
-                    <p className="absolute top-2 right-2 text-gray-400 hover:text-cyan-600">
-                      <MdOutlineAccessAlarm />
-                    </p>
-                    <p className="text-sm font-semibold text-amber-500">
-                      {reminder.title}
-                    </p>
-                    <p className="text-base font-medium mt-1">
-                      {reminder.notes}
-                    </p>
-                  </div>
-                ))}
+              {todaysReminders.map((reminder) => (
+                <div
+                  key={reminder.id}
+                  className="bg-white rounded-lg shadow-sm p-3 relative"
+                >
+                  <p className="absolute top-2 right-2 text-gray-400 hover:text-cyan-600">
+                    <MdOutlineAccessAlarm />
+                  </p>
+                  <p className="text-sm font-semibold text-amber-500">
+                    {reminder.title}
+                  </p>
+                  <p className="text-base font-medium mt-1">{reminder.notes}</p>
+                </div>
+              ))}
             </div>
           ) : (
             <p className="text-sm text-gray-500">You have no reminders today</p>

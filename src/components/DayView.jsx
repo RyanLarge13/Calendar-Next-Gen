@@ -1,15 +1,23 @@
 import { useEffect, useRef, useState, useContext } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { staticTimes } from "../constants.js";
-import { MdEventAvailable, MdEventNote, MdEventRepeat } from "react-icons/md";
+import {
+  MdEventAvailable,
+  MdEventNote,
+  MdEventRepeat,
+  MdOpenInNew,
+} from "react-icons/md";
 import { MdLocationPin } from "react-icons/md";
 import { FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";
 import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext.jsx";
-import Reminder from "./Reminder.jsx";
+// import Reminder from "./Reminder.jsx";
 import { createPortal } from "react-dom";
+import { BiAlarmSnooze, BiCalendarEvent } from "react-icons/bi";
+import { BsFillPenFill, BsAlarmFill } from "react-icons/bs";
+import { formatTime } from "../utils/helpers";
 
 const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
   const { setEvent, setAddEventWithStartEndTime, setType, setAddNewEvent } =
@@ -35,8 +43,18 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
   }, [times]);
 
   useEffect(() => {
+    getTime();
     return () => clearInterval(interval);
   }, []);
+
+  const openRelatedEvent = (eventRefId) => {
+    const eventOfReminder =
+      events.find((event) => event.id === eventRefId) || null;
+
+    if (eventOfReminder !== null) {
+      setEvent(eventOfReminder[0]);
+    }
+  };
 
   const calcDayEventHeight = (start, end) => {
     if (!start || !end) {
@@ -72,7 +90,7 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
   };
 
   useEffect(() => {
-    return containerRef.current.scrollTo({ top: height, behavior: "smooth" });
+    containerRef.current.scrollTo({ top: height, behavior: "smooth" });
   }, [height]);
 
   const getTime = () => {
@@ -164,17 +182,17 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
     setTimes([]);
   };
 
-  const getColorReminder = (reminder) => {
-    if (reminder.eventRef) {
-      const eventAttached = events.filter((e) => e.id === reminder.eventRef)[0];
-      if (!eventAttached) {
-        return "bg-cyan-200";
-      }
-      return eventAttached.color;
-    } else {
-      return "bg-cyan-200";
-    }
-  };
+  // const getColorReminder = (reminder) => {
+  //   if (reminder.eventRef) {
+  //     const eventAttached = events.filter((e) => e.id === reminder.eventRef)[0];
+  //     if (!eventAttached) {
+  //       return "bg-cyan-200";
+  //     }
+  //     return eventAttached.color;
+  //   } else {
+  //     return "bg-cyan-200";
+  //   }
+  // };
 
   return (
     <div className="py-20">
@@ -351,8 +369,79 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
           ))}
 
           {/* Reminders for The Day */}
-          {todaysReminders.map((r) => (
-            <Reminder reminder={r} />
+          {todaysReminders.map((reminder) => (
+            <motion.div
+              key={reminder.id}
+              style={{
+                top: fromTop(new Date(reminder.time)),
+              }}
+              className={`${
+                new Date(reminder.time) < dateObj
+                  ? "border-l-4 border-rose-400"
+                  : new Date(reminder.time).toLocaleDateString() ===
+                    dateObj.toLocaleDateString()
+                  ? "border-l-4 border-amber-400"
+                  : "border-l-4 border-cyan-400"
+              } p-4 my-3 rounded-2xl relative text-gray-900`}
+            >
+              <div className="space-y-3">
+                {/* Date Row */}
+                <div className="flex justify-between items-center text-sm font-medium text-gray-600">
+                  <p>
+                    {new Date(reminder.time).toLocaleDateString("en-US", {
+                      weekday: "short",
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </p>
+                  {reminder.eventRefId ? (
+                    <BiCalendarEvent className="text-xl text-gray-500" />
+                  ) : (
+                    <BiAlarmSnooze className="text-xl text-gray-500" />
+                  )}
+                </div>
+
+                {/* Time + Title */}
+                <div className="flex items-center gap-3">
+                  <div className="flex flex-col">
+                    <p className="text-sm font-semibold text-gray-700">
+                      @{" "}
+                      {new Date(reminder.time).toLocaleTimeString("en-US", {
+                        timeZoneName: "short",
+                      })}
+                    </p>
+                    <div className="flex items-center gap-1 text-xs text-gray-500">
+                      <BsAlarmFill className="text-gray-400" />
+                      <p>{formatTime(new Date(reminder.time))}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex-1 p-3 bg-gray-50 rounded-xl shadow-inner cursor-pointer">
+                    <p className="text-base font-semibold">{reminder.title}</p>
+                  </div>
+                </div>
+
+                {/* Notes */}
+                {reminder.notes && (
+                  <div className="p-3 bg-gray-50 rounded-xl shadow-inner flex justify-between items-start text-xs text-gray-600">
+                    <p className="whitespace-pre-wrap">{reminder.notes}</p>
+                    <BsFillPenFill className="text-gray-400 ml-2 shrink-0" />
+                  </div>
+                )}
+
+                {/* Open Event Button */}
+                {reminder.eventRefId && (
+                  <button
+                    onClick={() => openRelatedEvent(reminder.eventRefId)}
+                    className="w-full px-4 py-2 flex justify-center items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 text-white text-sm font-medium hover:from-cyan-600 hover:to-blue-600 transition-colors duration-200"
+                  >
+                    Open Event
+                    <MdOpenInNew />
+                  </button>
+                )}
+              </div>
+            </motion.div>
           ))}
         </div>
       </div>
