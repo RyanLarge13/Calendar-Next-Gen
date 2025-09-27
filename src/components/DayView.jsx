@@ -205,7 +205,7 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 50 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
-                className={`fixed bottom-6 right-20 z-50 w-[90%] max-w-md p-4 rounded-2xl shadow-lg border
+                className={`fixed bottom-6 right-[5%] lg:right-20 z-50 w-[90%] max-w-md p-4 rounded-2xl shadow-lg border
         ${
           preferences.darkMode
             ? "bg-[#1e1e1e]/90 border-gray-700 text-gray-100"

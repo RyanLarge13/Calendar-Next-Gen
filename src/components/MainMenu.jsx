@@ -107,7 +107,7 @@ const Dashboard = ({ timeOfDay }) => {
             <MdOutlineAccessAlarm className="text-xl text-rose-600" />
             Reminders
           </h2>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-500 mb-3">
             Quick glance at your reminders today
           </p>
           {todaysReminders.length > 0 ? (
@@ -170,14 +170,21 @@ const Dashboard = ({ timeOfDay }) => {
             <div className="space-y-3">
               <div
                 key={stickies[0].id}
-                className={`p-3 my-5 md:mx-3 lg:mx-5 rounded-md shadow-md ${stickies[0].color} text-black`}
+                className={`p-5 my-5 md:mx-3 lg:mx-5 rounded-md shadow-md ${stickies[0].color} text-black`}
               >
                 <p
                   style={{ color: tailwindBgToHex(stickies[0].color) }}
-                  className="font-semibold"
+                  className="font-semibold text-lg"
                 >
                   {stickies[0].title}
                 </p>
+                <div
+                  className="mt-5"
+                  style={{ color: tailwindBgToHex(stickies[0].color) }}
+                  dangerouslySetInnerHTML={{
+                    __html: stickies[0].body.slice(0, 200) + "...",
+                  }}
+                ></div>
               </div>
             </div>
           ) : (
