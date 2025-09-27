@@ -5,10 +5,13 @@ import {
   BsFillCalendar2EventFill,
   BsAlarmFill,
   BsListTask,
+  BsFillPenFill,
 } from "react-icons/bs";
+import { BiAlarmSnooze, BiCalendarEvent } from "react-icons/bi";
 import UserContext from "../context/UserContext";
 import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
+import { MdOpenInNew } from "react-icons/md";
 
 const PopUpMonthViewWindow = ({
   positions,
@@ -17,7 +20,7 @@ const PopUpMonthViewWindow = ({
   day,
 }) => {
   const { preferences } = useContext(UserContext);
-  const { setString, setOpenModal } = useContext(DatesContext);
+  const { setString, setOpenModal, dateObj } = useContext(DatesContext);
   const { setMenu, setShowLogin, setAddNewEvent, setType, setEvent } =
     useContext(InteractiveContext);
 
@@ -71,15 +74,65 @@ const PopUpMonthViewWindow = ({
       {/* Reminder Grid */}
       {remindersToRender && remindersToRender.length > 0 ? (
         <div className="grid grid-cols-2 gap-1 mb-3">
-          {remindersToRender.map((r) => (
-            <div className="flex w-full aspect-square rounded-xl shadow-sm border overflow-hidden transition hover:shadow-md cursor-pointer">
-              <p className="text-center text-xs">
-                <BsAlarmFill />
-              </p>
-              <p className="text-sm font-semibold text-amber-500 truncate whitespace-pre-wrap mt-1">
-                {r.title}
-              </p>
-            </div>
+          {remindersToRender.map((reminder) => (
+            <motion.div
+              key={reminder.id}
+              className={`${
+                new Date(reminder.time) < dateObj
+                  ? "border-l-4 border-rose-400"
+                  : new Date(reminder.time).toLocaleDateString() ===
+                    dateObj.toLocaleDateString()
+                  ? "border-l-4 border-amber-400"
+                  : "border-l-4 border-cyan-400"
+              } max-w-[200px] aspect-square p-4 my-3 rounded-2xl text-gray-900`}
+            >
+              <div className="space-y-3">
+                {/* Date Row */}
+                <div className="flex justify-between items-center text-sm font-medium text-gray-600">
+                  <p>
+                    {new Date(reminder.time).toLocaleDateString("en-US", {
+                      weekday: "short",
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </p>
+                  {reminder.eventRefId ? (
+                    <BiCalendarEvent className="text-xl text-gray-500" />
+                  ) : (
+                    <BiAlarmSnooze className="text-xl text-gray-500" />
+                  )}
+                </div>
+
+                {/* Time + Title */}
+                <div className="flex items-center gap-3">
+                  <div className="flex flex-col">
+                    <p className="text-sm font-semibold text-gray-700">
+                      @{" "}
+                      {new Date(reminder.time).toLocaleTimeString("en-US", {
+                        timeZoneName: "short",
+                      })}
+                    </p>
+                    <div className="flex items-center gap-1 text-xs text-gray-500">
+                      <BsAlarmFill className="text-gray-400" />
+                      <p>{formatTime(new Date(reminder.time))}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex-1 p-3 bg-gray-50 rounded-xl shadow-inner cursor-pointer">
+                    <p className="text-base font-semibold">{reminder.title}</p>
+                  </div>
+                </div>
+
+                {/* Notes */}
+                {reminder.notes && (
+                  <div className="p-3 bg-gray-50 rounded-xl shadow-inner flex justify-between items-start text-xs text-gray-600">
+                    <p className="whitespace-pre-wrap">{reminder.notes}</p>
+                    <BsFillPenFill className="text-gray-400 ml-2 shrink-0" />
+                  </div>
+                )}
+              </div>
+            </motion.div>
           ))}
         </div>
       ) : null}

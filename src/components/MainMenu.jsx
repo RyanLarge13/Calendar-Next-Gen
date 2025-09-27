@@ -26,7 +26,7 @@ const Dashboard = ({ timeOfDay }) => {
     stickies,
   } = useContext(UserContext);
   const { setEvent } = useContext(InteractiveContext);
-  const { string } = useContext(DatesContext);
+  const { string, theDay } = useContext(DatesContext);
 
   const [todaysReminders, setTodaysReminders] = useState([]);
 
