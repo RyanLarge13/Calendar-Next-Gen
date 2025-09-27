@@ -29,6 +29,7 @@ const MonthView = () => {
     setSecondString,
     dateObj,
     setNav,
+    theDay,
   } = useContext(DatesContext);
 
   const [selected, setSelected] = useState([]);
@@ -39,6 +40,7 @@ const MonthView = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [popupTimeout, setPopupTimeout] = useState(null);
   const [popupEvents, setPopupEvents] = useState([]);
+  const [popUpReminders, setPopUpReminders] = useState([]);
   const [hoverDay, setHoverDay] = useState(null);
   const [renderPopup, setRenderPopup] = useState(false);
 
@@ -51,6 +53,7 @@ const MonthView = () => {
       setRenderPopup(false);
       setHoverDay(null);
       setPopupEvents([]);
+      setPopUpReminders([]);
       clearTimeout(popupTimeout);
     }
   }, [renderPopup]);
@@ -151,7 +154,7 @@ const MonthView = () => {
     setSelected([]);
   };
 
-  const createPopup = (e, eventsToRender, index) => {
+  const createPopup = (e, eventsToRender, remindersToRender, index) => {
     if (popupTimeout) {
       clearTimeout(popupTimeout);
       setPopupTimeout(null);
@@ -161,6 +164,7 @@ const MonthView = () => {
     }
     setNewPopup(false);
     setPopupEvents([]);
+    setPopUpReminders([]);
     setMousePosition({ x: 0, y: 0 });
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     if (isMobile || !renderPopup) {
@@ -173,6 +177,7 @@ const MonthView = () => {
     const timeoutId = setTimeout(() => {
       const theHoverDay = `${month + 1}/${index - paddingDays + 1}/${year}`;
       setPopupEvents(eventsToRender);
+      setPopUpReminders(remindersToRender);
       setMousePosition(mousePositions);
       setHoverDay(theHoverDay);
       setNewPopup(true);
@@ -202,6 +207,7 @@ const MonthView = () => {
       {newPopup && (
         <PopUpMonthViewWindow
           positions={mousePosition}
+          remindersToRender={popUpReminders}
           eventsToRender={popupEvents}
           day={hoverDay}
         />
@@ -213,8 +219,16 @@ const MonthView = () => {
           year === dateObj.getFullYear();
         const dateStr = `${month + 1}/${index - paddingDays + 1}/${year}`;
         const eventsToRender = getIndicesForEvents(dateStr);
+        const remindersToRender = reminders.filter(
+          (reminder) =>
+            new Date(reminder.time).toLocaleDateString() ===
+            theDay.toLocaleDateString()
+        );
+
         const hasReminders =
-          reminders.filter((r) => r.time === dateStr)?.length || 0;
+          reminders.filter(
+            (r) => new Date(r.time).toLocaleDateString() === dateStr
+          )?.length || 0;
 
         return (
           <motion.div
@@ -225,7 +239,9 @@ const MonthView = () => {
                 : "1px solid black",
               backgroundColor: preferences.darkMode ? "#333333" : "#f2f2f2",
             }}
-            onMouseEnter={(e) => createPopup(e, eventsToRender, index)}
+            onMouseEnter={(e) =>
+              createPopup(e, eventsToRender, remindersToRender, index)
+            }
             onContextMenu={(e) => {
               e.preventDefault();
               handleDayLongPress(index);

@@ -382,7 +382,7 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
                     dateObj.toLocaleDateString()
                   ? "border-l-4 border-amber-400"
                   : "border-l-4 border-cyan-400"
-              } p-4 my-3 rounded-2xl relative text-gray-900`}
+              } absolute left-20 p-4 my-3 rounded-2xl text-gray-900`}
             >
               <div className="space-y-3">
                 {/* Date Row */}

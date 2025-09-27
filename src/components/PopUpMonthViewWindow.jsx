@@ -10,7 +10,12 @@ import UserContext from "../context/UserContext";
 import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
 
-const PopUpMonthViewWindow = ({ positions, eventsToRender, day }) => {
+const PopUpMonthViewWindow = ({
+  positions,
+  remindersToRender,
+  eventsToRender,
+  day,
+}) => {
   const { preferences } = useContext(UserContext);
   const { setString, setOpenModal } = useContext(DatesContext);
   const { setMenu, setShowLogin, setAddNewEvent, setType, setEvent } =
@@ -57,6 +62,22 @@ const PopUpMonthViewWindow = ({ positions, eventsToRender, day }) => {
       >
         {formatTime(new Date(day))}
       </p>
+
+      {/* Reminder Grid */}
+      {remindersToRender && remindersToRender.length > 0 ? (
+        <div className="grid grid-cols-2 gap-1 mb-3">
+          {remindersToRender.map((r) => (
+            <div className="flex w-full aspect-square rounded-xl shadow-sm border overflow-hidden transition hover:shadow-md cursor-pointer">
+              <p className="text-center text-xs">
+                <BsAlarmFill />
+              </p>
+              <p className="text-sm font-semibold text-amber-500 truncate whitespace-pre-wrap mt-1">
+                {reminder.title}
+              </p>
+            </div>
+          ))}
+        </div>
+      ) : null}
 
       {/* Events list */}
       {eventsToRender && eventsToRender.length > 0 ? (
