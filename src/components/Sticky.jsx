@@ -155,10 +155,10 @@ const Sticky = ({ sticky, index }) => {
         width: fullScreen
           ? window.innerWidth
           : expand
-          ? 250
+          ? 280
           : minimize
-          ? 10
-          : 175,
+          ? 8
+          : 200,
       }}
       drag={fullScreen ? false : minimize ? "y" : !pin}
       dragControls={controls}
@@ -170,11 +170,10 @@ const Sticky = ({ sticky, index }) => {
         bottom: window.innerHeight - 200,
       }}
       ref={stickyRef}
-      className={`markdown z-[999] shadow-xl rounded-md fixed
-            w-[10px] h-[150px] ${sticky.color} ${
-        minimize
-          ? "text-transparent rounded-l-none outline-1 outline-white"
-          : "text-black"
+      className={`markdown z-[999] shadow-lg rounded-2xl fixed
+    w-[10px] h-[150px] transition-all duration-300 ease-in-out
+    ${sticky.color} ${
+        minimize ? "text-transparent rounded-l-none" : "text-gray-900"
       } overflow-hidden`}
       onClick={() => {
         if (minimize) {
@@ -187,28 +186,32 @@ const Sticky = ({ sticky, index }) => {
         }
       }}
     >
+      {/* Header */}
       <div
         className={`${
-          minimize ? "opacity-0 shadow-none" : "bg-slate-100 shadow-lg"
-        } rounded-t-md p-2 flex justify-between items-center cursor-pointer`}
+          minimize
+            ? "opacity-0 shadow-none"
+            : "bg-white/90 backdrop-blur-sm shadow-md"
+        } rounded-t-2xl px-3 py-2 flex justify-between items-center`}
         onPointerDown={startDrag}
         style={{ touchAction: "none" }}
       >
-        <div className="flex justify-between items-center gap-x-3">
-          <button onClick={() => setPin((prev) => !prev)}>
+        <div className="flex items-center gap-x-3 text-gray-500">
+          <button
+            onClick={() => setPin((prev) => !prev)}
+            className="hover:text-cyan-600 transition"
+          >
             {pin ? <AiFillPushpin /> : <AiOutlinePushpin />}
           </button>
           <button
             onClick={() => (!edit ? setEdit(true) : handleSave())}
-            className="flex justify-between text-sm items-center gap-x-3"
+            className="hover:text-green-600 transition"
           >
             {edit ? <MdSave /> : <BsFillPenFill />}
           </button>
           <button
             onClick={() => {
-              if (fullScreen && !expand) {
-                return;
-              }
+              if (fullScreen && !expand) return;
               if (fullScreen && expand) {
                 setFullScreen(false);
                 setExpand(false);
@@ -223,25 +226,35 @@ const Sticky = ({ sticky, index }) => {
                 setExpand(false);
               }
             }}
+            className="hover:text-blue-600 transition"
           >
             {expand ? <BiCollapse /> : <BiExpand />}
           </button>
         </div>
-        <button type="text" onClick={() => confirmDelete(sticky.id)}>
+        <button
+          type="text"
+          onClick={() => confirmDelete(sticky.id)}
+          className="text-gray-400 hover:text-red-500 transition"
+        >
           <AiFillCloseCircle />
         </button>
       </div>
-      {expand ? (
+
+      {/* Footer (only in expand mode) */}
+      {expand && (
         <div
           className={`${
-            minimize ? "bg-transparent shadow-none" : "bg-slate-100 shadow-md"
-          } rounded-b-md p-2 flex justify-between items-center`}
+            minimize
+              ? "bg-transparent shadow-none"
+              : "bg-white/90 backdrop-blur-sm"
+          } rounded-b-2xl px-3 py-2 flex justify-between items-center`}
         >
           <button
             onClick={() => {
               setFullScreen((prev) => !prev);
               handleViewChange("fullscreen");
             }}
+            className="text-gray-500 hover:text-indigo-600 transition"
           >
             <FiMaximize />
           </button>
@@ -252,41 +265,44 @@ const Sticky = ({ sticky, index }) => {
               setFullScreen(false);
               handleViewChange("minimized");
             }}
+            className="text-gray-500 hover:text-rose-500 transition"
           >
             <FaRegWindowMinimize />
           </button>
         </div>
-      ) : null}
+      )}
+
+      {/* Body */}
       <div
         className={`${expand ? "mt-20" : "mt-5"} ${
           minimize ? "opacity-0" : "opacity-100"
-        } p-2 overflow-y-auto scrollbar-slick overflow-x-hidden scrollbar-hide absolute inset-0 z-[-1] break-words`}
+        } px-4 pb-4 overflow-y-auto scrollbar-slick overflow-x-hidden scrollbar-hide absolute inset-0 z-[-1] break-words`}
       >
         {!edit ? (
           <div>
             <h2
               style={{ color: tailwindBgToHex(sticky.color) }}
-              className="mb-5 border-b border-b-black"
+              className="mb-4 pb-1 text-lg font-semibold border-b border-gray-300"
             >
               {sticky.title}
             </h2>
             <div
               style={{ color: tailwindBgToHex(sticky.color) }}
               dangerouslySetInnerHTML={{ __html: sticky.body }}
-              className="markdown scrollbar-slick"
+              className="markdown text-sm leading-relaxed"
             ></div>
           </div>
         ) : (
-          <div>
+          <div className="space-y-3">
             <input
-              className="mb-5 border-b border-b-black bg-transparent outline-none focus:outline-none"
+              className="w-full text-lg font-semibold border-b border-gray-300 bg-transparent outline-none"
               placeholder={sticky.title}
             />
             <ReactQuill
               style={{ color: tailwindBgToHex(sticky.color) }}
               value={editText}
               onChange={handleTextChange}
-              className="h-full scrollbar-slick text-md"
+              className="h-full scrollbar-slick text-sm"
             />
           </div>
         )}

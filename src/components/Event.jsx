@@ -152,23 +152,25 @@ const Event = ({ dayEvents }) => {
       initial={{ y: "100%" }}
       exit={{ y: "100%" }}
       animate={{ y: 0 }}
-      className={`z-[901] will-change-transform fixed inset-0 lg:left-0 lg:bottom-0 ${
+      className={`z-[901] fixed inset-0 lg:left-0 lg:bottom-0 ${
         maximize ? "lg:right-0" : "lg:right-[66%]"
-      } scrollbar-slick top-20 rounded-md ${
-        preferences.darkMode ? "bg-[#222]" : "bg-white"
-      } overflow-y-auto`}
+      } will-change-transform top-20 overflow-y-auto rounded-t-2xl shadow-2xl
+    ${
+      preferences.darkMode
+        ? "bg-[#1e1e1e] text-white border border-white/10"
+        : "bg-white text-gray-900 border border-gray-200"
+    }`}
     >
       {/* Header */}
       <div
         onPointerDown={startDrag}
         style={{ touchAction: "none" }}
-        className={`sticky top-0 z-20 flex items-center justify-between px-5 py-4 shadow-md
+        className={`sticky top-0 z-20 flex items-center justify-between p-3 border-b backdrop-blur-md rounded-t-2xl
       ${
         preferences.darkMode
-          ? "bg-[#1e1e1e] text-white"
-          : "bg-white text-gray-900"
-      }
-      rounded-t-2xl`}
+          ? "bg-[#222]/80 text-white border-white/10"
+          : "bg-white/80 text-gray-900 border-gray-200"
+      }`}
       >
         <button
           onClick={() => setEvent(null)}
@@ -180,20 +182,20 @@ const Event = ({ dayEvents }) => {
         <div className="flex gap-4 items-center">
           {!maximize ? (
             <button
-              className="hidden lg:block text-gray-400 hover:text-gray-700"
+              className="hidden lg:block text-gray-400 hover:text-cyan-500 transition"
               onClick={() => setMaximize(true)}
             >
               <FiMaximize />
             </button>
           ) : (
             <button
-              className="hidden lg:block text-gray-400 hover:text-gray-700"
+              className="hidden lg:block text-gray-400 hover:text-cyan-500 transition"
               onClick={() => setMaximize(false)}
             >
               <FiMinimize />
             </button>
           )}
-          <button className="text-gray-400 hover:text-gray-600">
+          <button className="text-gray-400 hover:text-cyan-500 transition">
             <MdOutlineDragIndicator />
           </button>
         </div>
@@ -204,7 +206,7 @@ const Event = ({ dayEvents }) => {
         {/* Title */}
         <form
           onSubmit={updateTitle}
-          className={`${event.color} p-3 rounded-xl shadow-sm`}
+          className={`p-3 rounded-xl shadow-sm border ${event.color}`}
         >
           <input
             style={{ color: tailwindBgToHex(event.color) }}
@@ -217,7 +219,7 @@ const Event = ({ dayEvents }) => {
         </form>
 
         {/* Description */}
-        <div className={`${event.color} p-3 rounded-xl shadow-sm`}>
+        <div className={`p-3 rounded-xl shadow-sm border ${event.color}`}>
           <textarea
             style={{ color: tailwindBgToHex(event.color) }}
             className="w-full text-base bg-transparent resize-none focus:outline-none whitespace-pre-wrap"
@@ -232,10 +234,10 @@ const Event = ({ dayEvents }) => {
         {event.start.startTime && (
           <div className="space-y-3">
             {/* Until Start */}
-            <div className="relative ${event.color} rounded-xl shadow-sm p-3 flex items-center justify-between overflow-hidden">
+            <div className="relative rounded-xl shadow-sm p-3 flex items-center justify-between overflow-hidden border">
               <motion.div
                 animate={{ width: `${width}%` }}
-                className="absolute left-0 top-0 bottom-0 bg-gradient-to-r from-cyan-400 to-blue-500 opacity-40 rounded-xl"
+                className="absolute left-0 top-0 bottom-0 bg-gradient-to-r from-cyan-400 to-blue-500 opacity-30 rounded-xl"
               />
               <span className="z-10 font-semibold">{timeLeft}</span>
               <span className="z-10 text-sm text-gray-500">
@@ -244,10 +246,10 @@ const Event = ({ dayEvents }) => {
             </div>
 
             {/* In Progress */}
-            <div className="relative ${event.color} rounded-xl shadow-sm p-3 flex items-center justify-between overflow-hidden">
+            <div className="relative rounded-xl shadow-sm p-3 flex items-center justify-between overflow-hidden border">
               <motion.div
                 animate={{ width: `${timeInEvent}%` }}
-                className="absolute left-0 top-0 bottom-0 bg-gradient-to-r from-green-400 to-emerald-500 opacity-40 rounded-xl"
+                className="absolute left-0 top-0 bottom-0 bg-gradient-to-r from-green-400 to-emerald-500 opacity-30 rounded-xl"
               />
               <span className="z-10 text-sm text-gray-500">
                 {new Date(event.start.startTime).toLocaleTimeString()}
@@ -260,26 +262,26 @@ const Event = ({ dayEvents }) => {
         )}
 
         {/* Date */}
-        <div className={`${event.color} p-3 rounded-xl shadow-sm`}>
+        <div className="p-3 rounded-xl shadow-sm border">
           <p className="font-semibold">{formatTime(new Date(event.date))}</p>
         </div>
 
         {/* Location */}
-        <div className={`${event.color} p-3 rounded-xl shadow-sm`}>
+        <div className="p-3 rounded-xl shadow-sm border">
           <div className="flex justify-between items-center mb-2">
             <h3 className="font-semibold flex items-center gap-2">
               <MdLocationPin /> Location
             </h3>
             {event.location && (
               <div className="flex gap-3 text-gray-500">
-                <button className="hover:text-red-500">
+                <button className="hover:text-red-500 transition">
                   <FaTrash />
                 </button>
-                <button className="hover:text-blue-500">
+                <button className="hover:text-blue-500 transition">
                   <FaEdit />
                 </button>
                 <button
-                  className="hover:text-green-500"
+                  className="hover:text-green-500 transition"
                   onClick={() =>
                     (window.location.href = `https://www.google.com/maps/dir/?api=1&destination=${event.location.string}`)
                   }
@@ -292,7 +294,7 @@ const Event = ({ dayEvents }) => {
           {event.location ? (
             <>
               <input
-                className="w-full p-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-sm focus:outline-none"
+                className="w-full p-2 rounded-lg bg-gray-50 text-sm focus:outline-none"
                 value={event.location.string}
                 readOnly
               />
@@ -306,12 +308,14 @@ const Event = ({ dayEvents }) => {
         </div>
 
         {/* Reminders */}
-        <div className={`${event.color} p-3 rounded-xl shadow-sm`}>
+        <div className="p-3 rounded-xl shadow-sm border">
           <div className="flex justify-between items-center mb-2">
             <h3 className="font-semibold flex items-center gap-2">
               <IoIosAlarm /> Reminder
             </h3>
-            <button className="text-sm text-cyan-600 font-medium">+ Add</button>
+            <button className="text-sm font-medium text-cyan-600 hover:underline">
+              + Add
+            </button>
           </div>
           {event.reminders.reminder ? (
             <p className="text-sm">
@@ -326,12 +330,12 @@ const Event = ({ dayEvents }) => {
         </div>
 
         {/* Repeat */}
-        <div className={`${event.color} p-3 rounded-xl shadow-sm`}>
+        <div className="p-3 rounded-xl shadow-sm border">
           <div className="flex justify-between items-center mb-2">
             <h3 className="font-semibold flex items-center gap-2">
               <FiRepeat /> Repeat
             </h3>
-            <button className="text-sm text-cyan-600 font-medium">
+            <button className="text-sm font-medium text-cyan-600 hover:underline">
               + Create
             </button>
           </div>
@@ -343,12 +347,14 @@ const Event = ({ dayEvents }) => {
         </div>
 
         {/* Attachments */}
-        <div className={`${event.color} p-3 rounded-xl shadow-sm`}>
+        <div className="p-3 rounded-xl shadow-sm border">
           <div className="flex justify-between items-center mb-2">
             <h3 className="font-semibold flex items-center gap-2">
               <FaImage /> Attachments
             </h3>
-            <button className="text-sm text-cyan-600 font-medium">+ Add</button>
+            <button className="text-sm font-medium text-cyan-600 hover:underline">
+              + Add
+            </button>
           </div>
           {imagesLoading ? (
             <p className="text-sm text-gray-500">
@@ -361,7 +367,7 @@ const Event = ({ dayEvents }) => {
                   key={img}
                   src={img}
                   alt="attachment"
-                  className="rounded-lg shadow-sm"
+                  className="rounded-lg shadow-sm hover:shadow-md transition"
                 />
               ))}
             </Masonry>

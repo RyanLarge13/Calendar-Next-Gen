@@ -9,7 +9,8 @@ const StaticStickies = () => {
   const { stickies } = useContext(UserContext);
 
   const breakpointColumnsObj = {
-    default: 3, // Number of columns by default
+    default: 4, // Number of columns by default
+    1700: 3,
     1100: 2, // Number of columns on screens > 1100px
     700: 1, // Number of columns on screens > 700px
   };
@@ -23,14 +24,14 @@ const StaticStickies = () => {
       {stickies.map((sticky) => (
         <div
           key={sticky.id}
-          className={`${sticky.color} w-full max-h-screen overflow-auto p-5
-          rounded-md shadow-md my-5`}
+          className={`${sticky.color} w-full max-h-screen overflow-auto 
+  p-6 rounded-2xl shadow-lg my-5 transition-all duration-300`}
         >
           <p
             style={{
               color: tailwindBgToHex(sticky.color),
             }}
-            className="text-2xl mb-3 border-b font-semibold border-b-black"
+            className="text-xl font-semibold mb-4 border-b pb-2 border-black/20"
           >
             {sticky.title}
           </p>
@@ -39,7 +40,7 @@ const StaticStickies = () => {
               color: tailwindBgToHex(sticky.color),
             }}
             dangerouslySetInnerHTML={{ __html: sticky.body }}
-            className="markdown scrollbar-slick"
+            className="markdown scrollbar-slick text-base leading-relaxed"
           ></div>
         </div>
       ))}

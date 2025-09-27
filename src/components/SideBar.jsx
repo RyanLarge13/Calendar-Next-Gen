@@ -188,7 +188,7 @@ const SideBar = () => {
                 <MdOutlineOpenInNew />
               </button>
               <div
-                className={`${event.color} absolute left-0 top-0 bottom-0 w-2 rounded-md`}
+                className={`${event.color} absolute left-0 top-0 bottom-0 w-2 rounded-l-md`}
               ></div>
               {event.diff < 1 && event.diff >= 0 ? (
                 <p className="text-2xl font-semibold mb-2">Today</p>

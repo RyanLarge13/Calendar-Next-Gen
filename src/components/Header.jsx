@@ -14,7 +14,7 @@ import MenuNavigation from "./MenuNavigation";
 const Header = () => {
   const { dt, setNav, theDay, setTheDay, currentWeek, setWeekOffset } =
     useContext(DatesContext);
-  const { user, preferences } = useContext(UserContext);
+  const { user, preferences, notifications } = useContext(UserContext);
   const { menu, setShowDatePicker, setMenu, setShowLogin, view } =
     useContext(InteractiveContext);
 
@@ -135,15 +135,22 @@ const Header = () => {
           )}
           <div className="w-[25px] h-[25px]">
             {user ? (
-              <img
-                src={user.avatarUrl}
-                onClick={() => {
-                  setMenu(false);
-                  setShowLogin((prev) => !prev);
-                }}
-                alt="user"
-                className="w-[25px] h-[25px] rounded-full cursor-pointer shadow-md"
-              />
+              <>
+                <img
+                  src={user.avatarUrl}
+                  onClick={() => {
+                    setMenu(false);
+                    setShowLogin((prev) => !prev);
+                  }}
+                  alt="user"
+                  className="w-[25px] h-[25px] rounded-full cursor-pointer shadow-md"
+                />
+                {notifications.length > 0 ? (
+                  <div
+                    className={`absolute flex justify-center items-center top-4 right-4 rounded-full shadow-md w-[9px] h-[9px] bg-red-300 text-[12px]`}
+                  ></div>
+                ) : null}
+              </>
             ) : (
               <BsThreeDotsVertical
                 onClick={() => {

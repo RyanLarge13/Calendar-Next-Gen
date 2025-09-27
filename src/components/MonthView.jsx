@@ -10,6 +10,7 @@ import DatesContext from "../context/DatesContext";
 import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
 import PopUpMonthViewWindow from "./PopUpMonthViewWindow";
+import { BiCalendarEvent } from "react-icons/bi";
 
 const MonthView = () => {
   const { events, eventMap, holidays, preferences, reminders } =
@@ -220,9 +221,7 @@ const MonthView = () => {
         const dateStr = `${month + 1}/${index - paddingDays + 1}/${year}`;
         const eventsToRender = getIndicesForEvents(dateStr);
         const remindersToRender = reminders.filter(
-          (reminder) =>
-            new Date(reminder.time).toLocaleDateString() ===
-            theDay.toLocaleDateString()
+          (reminder) => new Date(reminder.time).toLocaleDateString() === dateStr
         );
 
         const hasReminders =
@@ -256,17 +255,8 @@ const MonthView = () => {
               "shadow-cyan-400 shadow-md outline outline-slate-400"
             }`}
           >
-            <div className="absolute top-1 left-1 right-0 z-800 flex justify-start gap-x-2 items-center">
-              {hasReminders ? (
-                <IoIosAlarm
-                  className={`${
-                    preferences.darkMode ? "text-white" : "text-black"
-                  } text-sm`}
-                />
-              ) : null}
-            </div>
             <div
-              className={`text-center flex justify-center items-center text-sm my-1 ${
+              className={`text-center flex justify-center items-center text-sm mt-1 ${
                 isCurrentDate
                   ? "w-[25px] h-[25px] rounded-full bg-white shadow-md text-black"
                   : preferences.darkMode
@@ -276,8 +266,28 @@ const MonthView = () => {
             >
               <p>{index >= paddingDays && index - paddingDays + 1}</p>
             </div>
+            <div className="flex justify-start gap-x-2 items-center">
+              {hasReminders ? (
+                <p>
+                  <IoIosAlarm
+                    className={`${
+                      preferences.darkMode ? "text-white" : "text-black"
+                    } text-sm`}
+                  />
+                </p>
+              ) : null}
+              {eventsToRender.length > 0 ? (
+                <p>
+                  <BiCalendarEvent
+                    className={`${
+                      preferences.darkMode ? "text-white" : "text-black"
+                    } text-sm`}
+                  />
+                </p>
+              ) : null}
+            </div>
             <div
-              className={`w-full absolute inset-0 pt-8 overflow-y-clip ${
+              className={`w-full absolute inset-0 pt-11 overflow-y-clip ${
                 selected.includes(index)
                   ? "bg-cyan-100 bg-opacity-50"
                   : "bg-transparent"
