@@ -16,7 +16,7 @@ const MasonryView = () => {
   const closestDateRef = useRef(null);
 
   const breakpointColumnsObj = {
-    default: 2, // Number of columns by default
+    default: 4, // Number of columns by default
     1700: 4,
     1100: 3, // Number of columns on screens > 1100px
     700: 2, // Number of columns on screens > 700px
@@ -78,7 +78,7 @@ const MasonryView = () => {
         const dayEvents = eventMap.get(dateString)?.events || [];
 
         return (
-          <div key={dateString} className="mt-5">
+          <div key={dateString} className="mt-5 border-1 border-gray-400">
             <div className="p-2" id={dateString} ref={closestDateRef}>
               {dayEvents.length > 0 ? (
                 <h2 className="bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent font-semibold text-lg">
@@ -88,7 +88,7 @@ const MasonryView = () => {
                     1
                   ).toLocaleDateString("en-US", {
                     month: "short",
-                    year: "2-digit",
+                    year: "numeric",
                   })}
                 </h2>
               ) : null}
@@ -109,7 +109,7 @@ const MasonryView = () => {
                       event.end.endTime
                     )}px`,
                   }}
-                  className={`m-1 p-3 rounded-lg shadow-lg ${event.color}`}
+                  className={`m-3 p-3 whitespace-pre-wrap overflow-hidden rounded-lg shadow-lg ${event.color}`}
                   onClick={() => setEvent(event)}
                 >
                   <div className="flex justify-between items-center p-2 font-semibold rounded-md shadow-md mb-2 bg-white">
@@ -121,7 +121,7 @@ const MasonryView = () => {
                       })}
                     </p>
                   </div>
-                  <div className="bg-white bg-opacity-30 rounded-md shadow-md p-2">
+                  <div className="bg-white bg-opacity-30 rounded-md shadow-md p-2 mb-3">
                     <span className="text-[10px] font-semibold opacity-90">
                       {event.start?.startTime
                         ? `${new Date(event.start.startTime).toLocaleTimeString(

@@ -60,7 +60,12 @@ const PopUpMonthViewWindow = ({
               : "bg-gray-100 text-gray-700"
           }`}
       >
-        {formatTime(new Date(day))}
+        {new Date(day).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        })}{" "}
+        - {formatTime(new Date(day))}
       </p>
 
       {/* Reminder Grid */}
@@ -72,7 +77,7 @@ const PopUpMonthViewWindow = ({
                 <BsAlarmFill />
               </p>
               <p className="text-sm font-semibold text-amber-500 truncate whitespace-pre-wrap mt-1">
-                {reminder.title}
+                {r.title}
               </p>
             </div>
           ))}

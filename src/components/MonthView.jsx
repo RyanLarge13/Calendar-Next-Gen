@@ -258,11 +258,7 @@ const MonthView = () => {
           >
             <div className="absolute top-0 left-0 right-0 z-800 flex justify-start gap-x-2 items-center">
               {hasReminders ? (
-                <IoIosAlarm
-                  className={`${
-                    preferences.darkMode ? "text-white" : "text-black"
-                  }`}
-                />
+                <IoIosAlarm className="text-xs text-emerald-400" />
               ) : null}
             </div>
             <div

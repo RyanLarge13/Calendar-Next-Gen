@@ -86,7 +86,7 @@ li {
 }
 
 .my-masonry-grid_column {
-  padding-left: 30px; /* gutter size */
+  padding-left: 15px; /* gutter size */
   background-clip: padding-box;
 }
 
@@ -97,7 +97,7 @@ li {
 }
 
 .my-masonry-grid_column-attachments {
-  padding-left: 10px; /* gutter size */
+  padding-left: 5px; /* gutter size */
   padding-top: 10px;
   background-clip: padding-box;
 }
