@@ -21,10 +21,13 @@ import GoogleMaps from "./GoogleMaps";
 import Masonry from "react-masonry-css";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext";
+import { BiAlarmSnooze, BiCalendarEvent } from "react-icons/bi";
+import DatesContext from "../context/DatesContext.jsx";
 
 const Event = ({ dayEvents }) => {
   const { event, setEvent } = useContext(InteractiveContext);
   const { preferences, lists } = useContext(UserContext);
+  const { dateObj } = useContext(DatesContext);
 
   const [timeLeft, setTimeLeft] = useState(null);
   const [width, setWidth] = useState(0);
@@ -202,11 +205,19 @@ const Event = ({ dayEvents }) => {
       </div>
 
       {/* Content */}
-      <div className="p-6 space-y-6">
+      <div
+        className={`p-6 ${
+          maximize
+            ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 auto-rows-min"
+            : "space-y-6"
+        }`}
+      >
         {/* Title */}
         <form
           onSubmit={updateTitle}
-          className={`p-3 rounded-xl shadow-sm border ${event.color}`}
+          className={`p-3 rounded-xl shadow-sm border ${event.color} ${
+            maximize ? "" : ""
+          }`}
         >
           <input
             style={{ color: tailwindBgToHex(event.color) }}
@@ -318,12 +329,35 @@ const Event = ({ dayEvents }) => {
             </button>
           </div>
           {event.reminders.reminder ? (
-            <p className="text-sm">
-              You have a reminder set for{" "}
-              <span className="font-semibold">
-                {new Date(event.reminders.when).toLocaleString()}
-              </span>
-            </p>
+            <motion.div
+              key={event.reminders.reminderTimeString}
+              className={`${
+                new Date(event.reminders.when) < dateObj
+                  ? "border-l-4 border-rose-400"
+                  : new Date(event.reminders.when).toLocaleDateString() ===
+                    dateObj.toLocaleDateString()
+                  ? "border-l-4 border-amber-400"
+                  : "border-l-4 border-cyan-400"
+              } min-w-[200px] max-w-[200px] shadow-lg p-4 my-3 mx-2 rounded-2xl text-gray-900`}
+            >
+              <div className="">
+                {/* Time + Title */}
+                <div>
+                  <div className="flex justify-between items-center">
+                    <p className="text-sm font-semibold text-gray-700">
+                      {new Date(event.reminders.when).toLocaleTimeString(
+                        "en-US",
+                        {
+                          timeZoneName: "short",
+                          hour: "numeric",
+                          minute: "numeric",
+                        }
+                      )}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
           ) : (
             <p className="text-sm text-gray-500">No reminders set</p>
           )}
@@ -347,7 +381,7 @@ const Event = ({ dayEvents }) => {
         </div>
 
         {/* Attachments */}
-        <div className="p-3 rounded-xl shadow-sm border">
+        <div className="p-3 rounded-xl shadow-sm border col-span-full">
           <div className="flex justify-between items-center mb-2">
             <h3 className="font-semibold flex items-center gap-2">
               <FaImage /> Attachments

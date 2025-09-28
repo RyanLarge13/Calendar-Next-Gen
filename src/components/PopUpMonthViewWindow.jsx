@@ -37,6 +37,8 @@ const PopUpMonthViewWindow = ({
     setType(type);
   };
 
+  const openReminders = () => {};
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
@@ -56,7 +58,7 @@ const PopUpMonthViewWindow = ({
     >
       {/* Date heading */}
       <p
-        className={`text-sm font-semibold mb-3 px-3 py-1 w-fit rounded-lg
+        className={`text-sm font-semibold mb-3 px-4 py-2 w-fit rounded-lg
           ${
             preferences.darkMode
               ? "bg-gray-800 text-white"
@@ -73,7 +75,7 @@ const PopUpMonthViewWindow = ({
 
       {/* Reminder Grid */}
       {remindersToRender && remindersToRender.length > 0 ? (
-        <div className="grid grid-cols-2 gap-1 mb-3">
+        <div className="grid grid-cols-2 gap-3 my-5">
           {remindersToRender.map((reminder) => (
             <motion.div
               key={reminder.id}
@@ -84,7 +86,7 @@ const PopUpMonthViewWindow = ({
                     dateObj.toLocaleDateString()
                   ? "border-l-4 border-amber-400"
                   : "border-l-4 border-cyan-400"
-              } min-w-[200px] max-w-[200px] shadow-lg p-4 my-3 mx-2 rounded-2xl text-gray-900`}
+              } min-w-[200px] max-w-[200px] shadow-lg p-4 rounded-2xl text-gray-900`}
             >
               <div className="space-y-3">
                 {/* Time + Title */}

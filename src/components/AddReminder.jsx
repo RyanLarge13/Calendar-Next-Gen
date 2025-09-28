@@ -37,7 +37,12 @@ const AddReminder = () => {
     const key = `${date.getFullYear()}-${date.getMonth()}`;
 
     if (eventMap.has(key)) {
-      const events = eventMap.get(key)?.events || [];
+      const events =
+        eventMap
+          .get(key)
+          ?.events.filter(
+            (e) => new Date(e.date).toLocaleDateString() === string
+          ) || [];
 
       if (events.length < 1) {
         setTodaysEvent({ loading: false, events: [] });
@@ -206,7 +211,9 @@ const AddReminder = () => {
           <p>...</p>
         ) : todaysEvents.events.length > 0 ? (
           <div>
-            <p>Is this reminder for an Event today?</p>
+            <p className="mb-2 text-sm p-3 rounded-xl shadow-lg">
+              Is this reminder for an event today?
+            </p>
             <div>
               {todaysEvents.events.map((event) => (
                 <button
@@ -225,7 +232,7 @@ const AddReminder = () => {
                       ? "bg-[#222] "
                       : "bg-white"
                   } duration-300 p-3 rounded-md
-                            shadow-lg my-1 relative pl-5 w-full text-left`}
+                            hover:scale-[1.02] will-change-transform shadow-lg my-1 relative pl-5 w-full text-left`}
                 >
                   <div
                     className={`${event.color} absolute left-0 top-0
