@@ -196,6 +196,15 @@ export const getReminders = (username, token) => {
   return res;
 };
 
+export const updateReminderComplete = (reminderInfo, token) => {
+  const res = Axios.patch(
+    `${productionUrl}/update/reminder/complete`,
+    { reminder: reminderInfo },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return res;
+};
+
 export const addReminder = (reminder, token) => {
   const res = Axios.post(
     `${productionUrl}/new/reminder`,

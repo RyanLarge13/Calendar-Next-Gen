@@ -3,7 +3,7 @@ import { IoIosAddCircle } from "react-icons/io";
 import { BiAlarmSnooze, BiCalendarEvent } from "react-icons/bi";
 import { BsFillPenFill } from "react-icons/bs";
 import { motion } from "framer-motion";
-import { deleteReminder } from "../utils/api.js";
+import { deleteReminder, updateReminderComplete } from "../utils/api.js";
 import { formatTime } from "../utils/helpers.js";
 import UserContext from "../context/UserContext.jsx";
 import DatesContext from "../context/DatesContext.jsx";
@@ -217,6 +217,29 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
     setAddNewEvent(true);
   };
 
+  const toggleComplete = async (reminderInfo) => {
+    console.log("toggling");
+    const token = localStorage.getItem("authToken");
+    try {
+      await updateReminderComplete(reminderInfo, token);
+
+      const newReminders = reminders.map((r) => {
+        if (r.id === reminderInfo.reminderId) {
+          return {
+            ...r,
+            complete: reminderInfo.completed,
+          };
+        } else {
+          return r;
+        }
+      });
+
+      setReminders(newReminders);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <motion.div
       className={`${
@@ -283,11 +306,25 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
                   day: "numeric",
                 })}
               </p>
-              {reminder.eventRefId ? (
-                <BiCalendarEvent className="text-xl text-gray-500" />
-              ) : (
-                <BiAlarmSnooze className="text-xl text-gray-500" />
-              )}
+              <button
+                onClick={() =>
+                  toggleComplete({
+                    completed: !reminder.complete,
+                    reminderId: reminder.id,
+                  })
+                }
+                className={`shadow-inner p-2 rounded-full bg-gradient-to-tr ${
+                  reminder.complete
+                    ? "from-cyan-300 to-sky-100"
+                    : "from-white to-slate-100"
+                }`}
+              >
+                {reminder.eventRefId ? (
+                  <BiCalendarEvent className="text-xl text-gray-500" />
+                ) : (
+                  <BiAlarmSnooze className="text-xl text-gray-500" />
+                )}
+              </button>
             </div>
 
             {/* Time + Title */}
