@@ -276,15 +276,6 @@ const MonthView = () => {
                   />
                 </p>
               ) : null}
-              {eventsToRender.length > 0 ? (
-                <p>
-                  <BiCalendarEvent
-                    className={`${
-                      preferences.darkMode ? "text-white" : "text-black"
-                    } text-sm`}
-                  />
-                </p>
-              ) : null}
             </div>
             <div
               className={`w-full absolute inset-0 pt-11 overflow-y-clip ${

@@ -144,7 +144,7 @@ const Dashboard = ({ timeOfDay }) => {
           {userTasks?.length > 0 ? (
             <div className="space-y-3">
               {userTasks
-                .filter((t) => t.date === string)
+                .filter((t) => new Date(t.date).toLocaleDateString() === string)
                 .map((t) => (
                   <div
                     key={t.id}

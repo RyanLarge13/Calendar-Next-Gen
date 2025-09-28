@@ -11,6 +11,25 @@ export const getReminders = async (req, res) => {
   res.status(201).json({ reminders: reminders });
 };
 
+export const updateReminderComplete = async (req, res) => {
+  const { reminderId, completed } = req.body.reminder;
+  const { id } = req.user;
+
+  try {
+    await prisma.reminder.update({
+      where: { userId: id, id: reminderId },
+      data: {
+        completed: completed,
+      },
+    });
+  } catch (err) {
+    console.log(
+      "Error updating reminder in database for completing a reminder"
+    );
+    console.log(err);
+  }
+};
+
 export const addNewReminder = async (req, res) => {
   const { title, notes, time } = req.body.reminder;
   const { id } = req.user;
