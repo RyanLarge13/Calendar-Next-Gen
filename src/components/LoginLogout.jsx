@@ -125,42 +125,61 @@ const LoginLogout = () => {
               }`}
             >
               {user ? (
-                <div>
+                <div className="space-y-4">
+                  {/* Top bar with logout + notifications */}
                   <div
-                    className={`flex justify-between items-center bg-cyan-100 rounded-md shadow-md p-2 mb-5 text-black`}
+                    className="flex justify-between items-center bg-gradient-to-r from-cyan-200 to-cyan-100 
+    rounded-xl shadow-md p-3 text-gray-800"
                   >
-                    <BiLogOutCircle
+                    {/* Logout */}
+                    <button
                       onClick={() => confirmLogout()}
-                      className="text-xl left-2 top-2 cursor-pointer"
-                    />
+                      className="text-xl text-gray-600 hover:text-rose-500 transition"
+                    >
+                      <BiLogOutCircle />
+                    </button>
+
+                    {/* Notifications */}
                     <div
                       onClick={() => setShowNotifs((prev) => !prev)}
-                      className="relative cursor-pointer"
+                      className="relative cursor-pointer text-gray-600 hover:text-cyan-600 transition"
                     >
                       {unReadLength > 0 && (
-                        <div
-                          className={`absolute flex justify-center items-center top-[-8px] right-[-8px] rounded-full shadow-md w-[15px] h-[15px] bg-red-300 text-[12px]`}
+                        <span
+                          className="absolute -top-2 -right-2 flex justify-center items-center 
+          w-[18px] h-[18px] rounded-full bg-rose-500 text-white text-[11px] font-bold shadow-md"
                         >
                           {unReadLength > 9 ? "9+" : unReadLength}
-                        </div>
+                        </span>
                       )}
-                      <BsFillBellFill />
+                      <BsFillBellFill className="text-lg" />
                     </div>
                   </div>
-                  <div className="flex justify-start items-end">
+
+                  {/* User Avatar + Edit */}
+                  <div className="flex items-end gap-2">
                     <img
                       src={user.avatarUrl}
                       alt="user"
-                      className="w-[50px] h-[50px] rounded-full shadow-sm mr-1"
+                      className="w-14 h-14 rounded-full shadow-md border-2 border-white"
                     />
-                    <button className="text-xs font-semibold">Edit</button>
+                    <button className="px-2 py-1 rounded-md text-xs font-semibold bg-cyan-100 hover:bg-cyan-200 text-gray-700 transition">
+                      Edit
+                    </button>
                   </div>
-                  <div className="text-xs font-bold mt-2">
-                    <p>{user.username}</p>
-                    <a href={`mailto:${user.email}`}>
-                      <p>{user.email}</p>
+
+                  {/* User Info */}
+                  <div className="text-sm font-semibold text-gray-800">
+                    <p className="text-base">{user.username}</p>
+                    <a
+                      href={`mailto:${user.email}`}
+                      className="text-cyan-600 hover:underline break-words"
+                    >
+                      {user.email}
                     </a>
                   </div>
+
+                  {/* Options */}
                   <Options setOption={setOption} />
                 </div>
               ) : (

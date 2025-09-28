@@ -179,10 +179,10 @@ const SideBar = () => {
               key={event.id}
               className={`${
                 preferences.darkMode ? "text-white" : "text-black"
-              } p-3 rounded-md shadow-lg my-5 relative pl-5`}
+              } p-3 rounded-md shadow-lg my-5 relative hover:scale-[1.01] duration-200 hover:shadow-xl will-change-transform pl-5`}
             >
               <button
-                className="absolute top-0 right-0"
+                className="absolute top-0 right-0 hover:scale-[1.3] hover:text-red-400 duration-200"
                 onClick={() => setEvent(event)}
               >
                 <MdOutlineOpenInNew />

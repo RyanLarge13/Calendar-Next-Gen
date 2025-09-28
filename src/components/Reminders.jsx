@@ -218,7 +218,6 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
   };
 
   const toggleComplete = async (reminderInfo) => {
-    console.log("toggling");
     const token = localStorage.getItem("authToken");
     try {
       await updateReminderComplete(reminderInfo, token);
@@ -313,7 +312,7 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
                     reminderId: reminder.id,
                   })
                 }
-                className={`shadow-inner p-2 rounded-full bg-gradient-to-tr ${
+                className={`shadow-inner p-2 rounded-full bg-gradient-to-tr hover:shadow-lg duration-200 hover:from-sky-100 ${
                   reminder.complete
                     ? "from-cyan-300 to-sky-100"
                     : "from-white to-slate-100"

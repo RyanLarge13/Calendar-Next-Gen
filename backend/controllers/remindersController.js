@@ -22,11 +22,16 @@ export const updateReminderComplete = async (req, res) => {
         completed: completed,
       },
     });
+
+    res.status(200).json({ message: "reminder update" });
   } catch (err) {
     console.log(
       "Error updating reminder in database for completing a reminder"
     );
     console.log(err);
+    res
+      .status(500)
+      .json({ message: `Error updating reminder on server. Error: ${err}` });
   }
 };
 

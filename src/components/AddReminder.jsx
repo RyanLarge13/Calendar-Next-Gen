@@ -150,104 +150,110 @@ const AddReminder = () => {
   };
 
   return (
-    <div>
-      <input
-        placeholder="Reminder"
-        className={`p-2 pt-10 text-4xl w-full focus:outline-none my-5 ${
-          preferences.darkMode ? "bg-[#222] text-white" : "bg-white text-black"
-        }`}
-        onChange={(e) => setTitle(e.target.value)}
-      />
-      <textarea
-        onChange={(e) => setNotes(e.target.value)}
-        cols="30"
-        rows="10"
-        placeholder="Notes..."
-        className={`my-5 w-full p-2 focus:outline-none focus:shadow-sm ${
-          preferences.darkMode ? "bg-[#222] text-white" : "bg-white text-black"
-        }`}
-      ></textarea>
-      <div className="my-2 p-3 border-b">
-        <div className="flex justify-between items-center">
-          <p>Set Time</p>
-          <Toggle condition={addTime} setCondition={setAddTime} />
-        </div>
-        {addTime ? (
-          <div className="mt-2">
-            {!time ? (
-              <TimeSetter
-                setDateTime={setTime}
-                setDateTimeString={setTimeString}
-                openTimeSetter={setAddTime}
-              />
-            ) : (
-              <div className="p-2">
-                <p className="font-semibold">{timeString}</p>
-                <button
-                  className="text-xs rounded-md bg-emerald-300 font-semibold px-2 py-1 mt-2"
-                  onClick={() => {
-                    setTime(null);
-                    setTimeString("");
-                  }}
-                >
-                  Change
-                </button>
-              </div>
-            )}
+    <div className="flex flex-col justify-between min-h-[95vh]">
+      <div>
+        <input
+          placeholder="Reminder"
+          className={`p-2 pt-10 text-4xl w-full focus:outline-none my-5 ${
+            preferences.darkMode
+              ? "bg-[#222] text-white"
+              : "bg-white text-black"
+          }`}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+        <textarea
+          onChange={(e) => setNotes(e.target.value)}
+          cols="30"
+          rows="10"
+          placeholder="Notes..."
+          className={`my-5 w-full p-2 focus:outline-none focus:shadow-sm ${
+            preferences.darkMode
+              ? "bg-[#222] text-white"
+              : "bg-white text-black"
+          }`}
+        ></textarea>
+        <div className="my-2 p-3 border-b">
+          <div className="flex justify-between items-center">
+            <p>Set Time</p>
+            <Toggle condition={addTime} setCondition={setAddTime} />
           </div>
-        ) : null}
-      </div>
-      <div className="my-2 p-3 border-b">
-        <div className="flex justify-between items-center">
-          <div className="flex justify-center items-center">
-            <AiFillInfoCircle className="mr-2" />
-            <p>Only notify</p>
-          </div>
-          <Toggle condition={onlyNotify} setCondition={setOnlyNotify} />
-        </div>
-      </div>
-      <div className="my-10 p-3">
-        {todaysEvents.loading ? (
-          <p>...</p>
-        ) : todaysEvents.events.length > 0 ? (
-          <div>
-            <p className="mb-2 text-sm p-3 rounded-xl shadow-lg">
-              Is this reminder for an event today?
-            </p>
-            <div>
-              {todaysEvents.events.map((event) => (
-                <button
-                  key={event.id}
-                  onClick={() =>
-                    setEventForReminder((prev) =>
-                      prev?.id === event.id ? null : event
-                    )
-                  }
-                  className={`${
-                    eventForReminder?.id === event.id
-                      ? preferences.darkMode
-                        ? "bg-slate-700"
-                        : "bg-slate-200"
-                      : preferences.darkMode
-                      ? "bg-[#222] "
-                      : "bg-white"
-                  } duration-300 p-3 rounded-md
-                            hover:scale-[1.02] will-change-transform shadow-lg my-1 relative pl-5 w-full text-left`}
-                >
-                  <div
-                    className={`${event.color} absolute left-0 top-0
-                            bottom-0 w-2 rounded-md`}
-                  ></div>
-                  {event.summary}
-                </button>
-              ))}
+          {addTime ? (
+            <div className="mt-2">
+              {!time ? (
+                <TimeSetter
+                  setDateTime={setTime}
+                  setDateTimeString={setTimeString}
+                  openTimeSetter={setAddTime}
+                />
+              ) : (
+                <div className="p-2">
+                  <p className="font-semibold">{timeString}</p>
+                  <button
+                    className="text-xs rounded-md bg-emerald-300 font-semibold px-2 py-1 mt-2"
+                    onClick={() => {
+                      setTime(null);
+                      setTimeString("");
+                    }}
+                  >
+                    Change
+                  </button>
+                </div>
+              )}
             </div>
+          ) : null}
+        </div>
+        <div className="my-2 p-3 border-b">
+          <div className="flex justify-between items-center">
+            <div className="flex justify-center items-center">
+              <AiFillInfoCircle className="mr-2" />
+              <p>Only notify</p>
+            </div>
+            <Toggle condition={onlyNotify} setCondition={setOnlyNotify} />
           </div>
-        ) : null}
+        </div>
+        <div className="my-10 p-3">
+          {todaysEvents.loading ? (
+            <p>...</p>
+          ) : todaysEvents.events.length > 0 ? (
+            <div>
+              <p className="mb-2 text-sm p-3 rounded-xl shadow-lg">
+                Is this reminder for an event today?
+              </p>
+              <div>
+                {todaysEvents.events.map((event) => (
+                  <button
+                    key={event.id}
+                    onClick={() =>
+                      setEventForReminder((prev) =>
+                        prev?.id === event.id ? null : event
+                      )
+                    }
+                    className={`${
+                      eventForReminder?.id === event.id
+                        ? preferences.darkMode
+                          ? "bg-slate-700"
+                          : "bg-slate-200"
+                        : preferences.darkMode
+                        ? "bg-[#222] "
+                        : "bg-white"
+                    } duration-300 p-3 rounded-md
+                            hover:scale-[1.02] will-change-transform shadow-lg my-1 relative pl-5 w-full text-left`}
+                  >
+                    <div
+                      className={`${event.color} absolute left-0 top-0
+                            bottom-0 w-2 rounded-md`}
+                    ></div>
+                    {event.summary}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : null}
+        </div>
       </div>
       <div
-        className="flex flex-col gap-y-2 absolute bottom-4 right-4 left-4 text-xs font-semibold
-        text-black"
+        className="flex flex-col gap-y-2 text-xs font-semibold
+        text-black mt-5"
       >
         <button
           onClick={() => addAReminder()}

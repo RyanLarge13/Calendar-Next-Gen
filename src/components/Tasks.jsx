@@ -110,21 +110,23 @@ const Tasks = ({ taskSort, taskSortOpt, taskSearch, taskSearchTxt }) => {
     <div
       className={`${
         tasksToRender.length < 1 ? "" : "grid"
-      } grid-cols-1 md:grid-cols-2 lg:grid-cols-3`}
+      } grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10`}
     >
       {tasksToRender.length < 1 ? (
         <div className="flex h-[50vh] justify-center items-center">
-          <div className="w-80 rounded-2xl p-5 shadow-lg my-5 bg-gradient-to-r from-lime-300 via-emerald-300 to-green-300 text-white">
+          <div className="w-80 rounded-2xl p-6 shadow-lg bg-gradient-to-r from-lime-300 via-emerald-300 to-green-400 text-white">
             <div className="flex justify-between items-center">
               <div className="flex flex-col items-start">
-                <h2 className="text-lg font-semibold mb-2">No Tasks to Show</h2>
-                <BsListTask className="text-3xl opacity-80" />
+                <h2 className="text-lg font-semibold mb-2">No Tasks Yet</h2>
+                <p className="text-sm opacity-90">
+                  Start by adding your first task.
+                </p>
               </div>
               <button
                 onClick={() => openModalAndSetType()}
-                className="text-3xl p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
+                className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
               >
-                <IoIosAddCircle className="text-white drop-shadow" />
+                <IoIosAddCircle className="text-4xl text-white drop-shadow" />
               </button>
             </div>
           </div>
@@ -133,29 +135,42 @@ const Tasks = ({ taskSort, taskSortOpt, taskSearch, taskSearchTxt }) => {
         tasksToRender.map((task) => (
           <div
             key={task.id}
-            className={`p-3 my-5 md:mx-3 lg:mx-5 rounded-md shadow-md ${task.color} text-black`}
+            className={`p-4 rounded-xl shadow-md ${task.color} text-black transition hover:shadow-lg`}
           >
-            <div className="rounded-md shadow-md bg-white p-2 mb-2">
+            {/* Header */}
+            <div className="bg-white rounded-lg shadow-sm p-3 mb-3">
               <div className="flex justify-between items-center">
-                <p>
+                <p className="text-sm font-medium text-gray-600">
                   {new Date(task.date).toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
                     year: "numeric",
                   })}
                 </p>
-                <div className="mb-3 flex justify-center items-center gap-x-3">
-                  <button onClick={() => editTitle(task)}>
+                <div className="flex items-center gap-3 text-gray-500">
+                  <button
+                    onClick={() => editTitle(task)}
+                    className="hover:text-blue-500 transition-colors"
+                  >
                     <BsPenFill />
                   </button>
-                  <BsShareFill />
-                  <button onClick={() => confirmDeleteTask(task.id)}>
+                  <button className="hover:text-emerald-500 transition-colors">
+                    <BsShareFill />
+                  </button>
+                  <button
+                    onClick={() => confirmDeleteTask(task.id)}
+                    className="hover:text-rose-500 transition-colors"
+                  >
                     <BsTrashFill />
                   </button>
                 </div>
               </div>
             </div>
-            <TaskItems task={task} />
+
+            {/* Task Body */}
+            <div className="bg-white rounded-lg shadow-sm p-3">
+              <TaskItems task={task} />
+            </div>
           </div>
         ))
       )}
