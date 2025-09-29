@@ -278,7 +278,9 @@ const MonthView = () => {
               </div>
             ) : null}
             <div
-              className={`w-full absolute inset-0 pt-11 overflow-y-clip ${
+              className={`w-full absolute inset-0 ${
+                hasReminders ? "pt-11" : "pt-5"
+              } overflow-y-clip ${
                 selected.includes(index)
                   ? "bg-cyan-100 bg-opacity-50"
                   : "bg-transparent"

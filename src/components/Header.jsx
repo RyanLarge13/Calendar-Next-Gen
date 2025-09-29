@@ -12,8 +12,15 @@ import DatesContext from "../context/DatesContext";
 import MenuNavigation from "./MenuNavigation";
 
 const Header = () => {
-  const { dt, setNav, theDay, setTheDay, currentWeek, setWeekOffset } =
-    useContext(DatesContext);
+  const {
+    dt,
+    setNav,
+    theDay,
+    setTheDay,
+    currentWeek,
+    setWeekOffset,
+    setFullDatePicker,
+  } = useContext(DatesContext);
   const { user, preferences, notifications } = useContext(UserContext);
   const { menu, setShowDatePicker, setMenu, setShowLogin, view } =
     useContext(InteractiveContext);
@@ -85,7 +92,10 @@ const Header = () => {
             </div>
           )}
           {view === "day" && (
-            <div className="flex justify-center items-center">
+            <button
+              onClick={() => setFullDatePicker(true)}
+              className="flex justify-center items-center"
+            >
               <BsFillArrowLeftCircleFill
                 onClick={() => changeDay("minus")}
                 className="text-xl cursor-pointer"
@@ -101,7 +111,7 @@ const Header = () => {
                 onClick={() => changeDay("plus")}
                 className="text-xl cursor-pointer"
               />
-            </div>
+            </button>
           )}
           {view === "week" && (
             <div className="flex flex-col justify-center items-center gap-y-1">

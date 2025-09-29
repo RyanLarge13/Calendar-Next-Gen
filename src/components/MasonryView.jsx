@@ -95,9 +95,13 @@ const MasonryView = () => {
 
   return (
     <div className="pb-10 flex">
-      <div className="w-10 h-[100svh] overflow-y-scroll scrollbar-slick">
+      <div className="min-w-20 max-w-20 h-[100vh] overflow-y-scroll scrollbar-slick">
         {uniqueDates.map((d) => (
-          <button key={d} onClick={() => scrollToArea(d)} className="text-xs">
+          <button
+            key={d}
+            onClick={() => scrollToArea(d)}
+            className="text-xs my-3"
+          >
             <p>
               {new Date(
                 parseInt(d.split("-")[0], 10),
