@@ -83,6 +83,7 @@ const MasonryView = () => {
   const scrollToArea = (dateStr) => {
     const element = document.getElementById(dateStr);
     if (element) {
+      console.log("Element exists");
       const padding = 50; // Adjust the padding value as needed
       const scrollOptions = {
         behavior: "smooth",
@@ -119,7 +120,7 @@ const MasonryView = () => {
           ) : null;
         })}
       </div>
-      <div className="ml-3 flex-1 min-w-0">
+      <div className="flex-1 min-w-0 ml-20">
         {uniqueDates.map((dateString) => {
           const dayEvents = eventMap.get(dateString)?.events || [];
 
@@ -155,7 +156,7 @@ const MasonryView = () => {
                         event.end.endTime
                       )}px`,
                     }}
-                    className={`p-3 whitespace-pre-wrap overflow-hidden rounded-lg shadow-lg ${event.color}`}
+                    className={`my-3 p-3 whitespace-pre-wrap overflow-hidden rounded-lg shadow-lg ${event.color}`}
                     onClick={() => setEvent(event)}
                   >
                     <div className="flex justify-between items-center p-2 font-semibold rounded-md shadow-md mb-2 bg-white">

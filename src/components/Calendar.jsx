@@ -176,7 +176,7 @@ const Calendar = () => {
         {showDatePicker && <DatePicker />}
         {showFullDatePicker && (
           <FullDatePicker
-            stateSetter={view === day ? setDayViewDay : setSecondDateObject}
+            stateSetter={view === "day" ? setDayViewDay : setSecondDateObject}
           />
         )}
         {openModal || event ? (
