@@ -100,8 +100,8 @@ const MasonryView = () => {
           <button key={d} onClick={() => scrollToArea(d)} className="text-xs">
             <p>
               {new Date(
-                parseInt(dateString.split("-")[0], 10),
-                parseInt(dateString.split("-")[1], 10),
+                parseInt(d.split("-")[0], 10),
+                parseInt(d.split("-")[1], 10),
                 1
               ).toLocaleDateString("en-US", {
                 month: "short",
@@ -109,8 +109,8 @@ const MasonryView = () => {
             </p>
             <p>
               {new Date(
-                parseInt(dateString.split("-")[0], 10),
-                parseInt(dateString.split("-")[1], 10),
+                parseInt(d.split("-")[0], 10),
+                parseInt(d.split("-")[1], 10),
                 1
               ).toLocaleDateString("en-US", {
                 year: "numeric",
