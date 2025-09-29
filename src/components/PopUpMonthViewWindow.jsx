@@ -149,12 +149,8 @@ const PopUpMonthViewWindow = ({
                       minute: "2-digit",
                     })}
                   </p>
-                  <div className="text-xs leading-snug text-gray-700 dark:text-gray-300">
-                    {formatDbText(event.description || "").map(
-                      (text, index) => (
-                        <p key={index}>{text}</p>
-                      )
-                    )}
+                  <div className="text-xs leading-snug text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                    <p>{event.description}</p>
                   </div>
                 </div>
               </div>

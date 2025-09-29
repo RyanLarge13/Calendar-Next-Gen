@@ -36,6 +36,43 @@ const Sticky = ({ sticky, index }) => {
 
   const controls = useDragControls();
 
+  const modules = {
+    toolbar: [
+      [{ header: "1" }, { header: "2" }, { font: [] }],
+      [{ size: [] }],
+      ["bold", "italic", "underline", "strike", "blockquote"],
+      [
+        { list: "ordered" },
+        { list: "bullet" },
+        { indent: "-1" },
+        { indent: "+1" },
+      ],
+      [{ color: [] }, { background: [] }], // Color and Background buttons
+      ["link", "image", "video"],
+      ["clean"],
+    ],
+  };
+
+  const formats = [
+    "header",
+    "font",
+    "size",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "blockquote",
+    "list",
+    "bullet",
+    "indent",
+    "link",
+    "image",
+    "video",
+    "color",
+    "background",
+    "clean",
+  ];
+
   useEffect(() => {
     const viewState = sticky.viewState;
     switch (viewState) {
@@ -295,14 +332,17 @@ const Sticky = ({ sticky, index }) => {
         ) : (
           <div className="space-y-3">
             <input
-              className="w-full text-lg font-semibold border-b border-gray-300 bg-transparent outline-none"
+              style={{ color: tailwindBgToHex(sticky.color) }}
+              className="mb-4 pb-1 text-3xl font-semibold border-b border-gray-300 bg-transparent placeholder:text-white outline-none focus:outline-none"
               placeholder={sticky.title}
             />
             <ReactQuill
+              modules={modules}
+              formats={formats}
               style={{ color: tailwindBgToHex(sticky.color) }}
               value={editText}
               onChange={handleTextChange}
-              className="h-full scrollbar-slick text-sm"
+              className="h-full scrollbar-slick"
             />
           </div>
         )}

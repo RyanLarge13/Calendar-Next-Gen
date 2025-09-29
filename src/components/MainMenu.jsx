@@ -13,7 +13,9 @@ import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
 import weatherCodeMap from "../utils/weatherCodes";
 import DatesContext from "../context/DatesContext";
+import TaskItems from "./TaskItems";
 import { tailwindBgToHex } from "../utils/helpers";
+import { AiFillCloseCircle } from "react-icons/ai";
 
 const Dashboard = ({ timeOfDay }) => {
   const {
@@ -150,7 +152,26 @@ const Dashboard = ({ timeOfDay }) => {
                     key={t.id}
                     className={`p-3 my-5 md:mx-3 lg:mx-5 rounded-md shadow-md ${t.color} text-black`}
                   >
-                    <tItems t={{ ...t, tasks: t.tasks.slice(0, 5) }} />
+                    <p>{t.title}</p>
+                    <p>Completed: {t.tasks.filter((t) => t.complete).length}</p>
+                    <p>
+                      Tasks to still finish today:{" "}
+                      {t.tasks.filter((t) => !t.complete).length}
+                    </p>
+                    <div className="mt-3">
+                      {t.tasks
+                        .filter((t) => !t.complete)
+                        .map((taskItem) => (
+                          <div
+                            key={taskItem.id}
+                            className="p-3 py-4 border-b border-b-slate-300 bg-white rounded-sm"
+                          >
+                            <div className=" ml-5 w-full flex justify-between items-center">
+                              <p className="mr-2">{taskItem.text}</p>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
                   </div>
                 ))}
             </div>
@@ -201,14 +222,19 @@ const Dashboard = ({ timeOfDay }) => {
             </h2>
             <div>
               <p className="text-sm text-gray-500">
-                {weatherData.current_weather.temperature}°F,{" "}
-                {weatherCodeMap[weatherData.current_weather.weathercode].name}
+                {weatherData?.current_weather?.temperature || 0}°F,{" "}
+                {weatherCodeMap[weatherData?.current_weather?.weathercode]
+                  ?.name || ""}
               </p>
             </div>
           </div>
           <img
-            src={weatherCodeMap[weatherData.current_weather.weathercode].icon}
-            alt={weatherCodeMap[weatherData.current_weather.weathercode].name}
+            src={
+              weatherCodeMap[weatherData?.current_weather?.weathercode]?.icon
+            }
+            alt={
+              weatherCodeMap[weatherData?.current_weather?.weathercode]?.name
+            }
             className="object-cover aspect-square w-20 ml-2 flex-shrink-0"
           />
         </div>

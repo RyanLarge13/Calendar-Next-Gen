@@ -9,6 +9,7 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import Toggle from "./Toggle";
 import DatesContext from "../context/DatesContext.jsx";
+import { tailwindBgToHex } from "../utils/helpers.js";
 
 const AddSticky = () => {
   const { setStickies, setSystemNotif, preferences } = useContext(UserContext);
@@ -19,6 +20,43 @@ const AddSticky = () => {
   const [color, setColor] = useState("");
   const [text, setText] = useState("");
   const [pin, setPin] = useState(false);
+
+  const modules = {
+    toolbar: [
+      [{ header: "1" }, { header: "2" }, { font: [] }],
+      [{ size: [] }],
+      ["bold", "italic", "underline", "strike", "blockquote"],
+      [
+        { list: "ordered" },
+        { list: "bullet" },
+        { indent: "-1" },
+        { indent: "+1" },
+      ],
+      [{ color: [] }, { background: [] }], // Color and Background buttons
+      ["link", "image", "video"],
+      ["clean"],
+    ],
+  };
+
+  const formats = [
+    "header",
+    "font",
+    "size",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "blockquote",
+    "list",
+    "bullet",
+    "indent",
+    "link",
+    "image",
+    "video",
+    "color",
+    "background",
+    "clean",
+  ];
 
   const handleTextChange = (value) => {
     setText(value);
@@ -117,7 +155,9 @@ const AddSticky = () => {
         <ReactQuill
           value={text}
           onChange={handleTextChange}
-          className="h-full"
+          modules={modules}
+          formats={formats}
+          className="h-full scrollbar-slick normal"
         />
       </div>
       <div className="rounded-md shadow-md p-3 flex justify-between items-center mb-10">
