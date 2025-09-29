@@ -19,17 +19,24 @@ import FullDatePicker from "./FullDatePicker";
 const Calendar = () => {
   const { events, holidays, reminders, weekDays, preferences } =
     useContext(UserContext);
-  const { showDatePicker, showFullDatePicker, view, event } =
-    useContext(InteractiveContext);
+  const {
+    showDatePicker,
+    showFullDatePicker,
+    view,
+    event,
+    setShowFullDatePicker,
+  } = useContext(InteractiveContext);
   const {
     finish,
     loading,
     theDay,
     openModal,
     dateString,
+    setOpenModal,
     setNav,
     string,
     dateObj,
+    setTheDay,
   } = useContext(DatesContext);
 
   const [todaysEvents, setTodaysEvents] = useState([]);
@@ -106,6 +113,19 @@ const Calendar = () => {
     }
   };
 
+  const setSecondDateObject = (newString) => {
+    setSecondString(newString);
+    setShowFullDatePicker(false);
+    setOpenModal(true);
+    setType("event");
+    setAddNewEvent(true);
+  };
+
+  const setDayViewDay = (newString) => {
+    setTheDay(new Date(newString));
+    setShowFullDatePicker(false);
+  };
+
   return (
     <main
       ref={containerRef}
@@ -154,7 +174,11 @@ const Calendar = () => {
           ) : null}
         </section>
         {showDatePicker && <DatePicker />}
-        {showFullDatePicker && <FullDatePicker />}
+        {showFullDatePicker && (
+          <FullDatePicker
+            stateSetter={view === day ? setDayViewDay : setSecondDateObject}
+          />
+        )}
         {openModal || event ? (
           <ModalHeader allDayEvents={allDayEvents} />
         ) : null}

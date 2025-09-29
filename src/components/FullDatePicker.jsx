@@ -9,7 +9,7 @@ import InteractiveContext from "../context/InteractiveContext";
 import DatesContext from "../context/DatesContext";
 import UserContext from "../context/UserContext";
 
-const FullDatePicker = () => {
+const FullDatePicker = ({ stateSetter }) => {
   const { setShowFullDatePicker, setAddNewEvent, setType } =
     useContext(InteractiveContext);
   const { preferences } = useContext(UserContext);
@@ -195,16 +195,18 @@ const FullDatePicker = () => {
   };
 
   const submitDateString = () => {
+    // Set up the date object
     const newDt = new Date();
     newDt.setMonth(newMonth);
     newDt.setFullYear(newYear);
     newDt.setDate(newDay + 1);
+
+    // Build the date string to be set
     const stringTwo = newDt.toLocaleDateString();
-    setSecondString(stringTwo);
-    setShowFullDatePicker(false);
-    setOpenModal(true);
-    setType("event");
-    setAddNewEvent(true);
+
+    // Set states
+
+    stateSetter(stringTwo);
   };
 
   return (

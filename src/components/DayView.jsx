@@ -95,10 +95,9 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
 
   const getTime = () => {
     interval = setInterval(() => {
+      const now = new Date();
       const percentageOfDay =
-        (dateObj.getHours() * 3600 +
-          dateObj.getMinutes() * 60 +
-          dateObj.getSeconds()) /
+        (now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds()) /
         (24 * 3600);
       const containerHeight = dayViewContainer.current.clientHeight;
       const newPosition = Math.floor(percentageOfDay * containerHeight);
@@ -274,7 +273,7 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
         {/* Timer */}
         {dateObj.toLocaleDateString() === theDay.toLocaleDateString() ? (
           <motion.div
-            animate={{ top: height }}
+            animate={{ top: `${height}px` }}
             className="absolute right-0 z-[200] translate-y-[-50%]"
           >
             <div className="w-[20px] h-[20px] rounded-full shadow-md bg-cyan-300 after:w-20 after:h-[2px] after:bg-black after:absolute after:top-[50%] after:z-[-1] after:left-[-350%]">

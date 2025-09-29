@@ -32,8 +32,16 @@ const MasonryView = () => {
   useEffect(() => {
     if (uniqueDates.length > 0) {
       const closestDate = uniqueDates.reduce((a, b) => {
-        const dateA = new Date(a);
-        const dateB = new Date(b);
+        const dateA = new Date(
+          parseInt(a.split("-")[0], 10),
+          parseInt(a.split("-")[1], 10),
+          1
+        );
+        const dateB = new Date(
+          parseInt(b.split("-")[0], 10),
+          parseInt(b.split("-")[1], 10),
+          1
+        );
         return Math.abs(dateA - dateObj) < Math.abs(dateB - dateObj) ? a : b;
       });
       // Update the closestDateRef with the ref to the element representing the closest date
@@ -72,85 +80,123 @@ const MasonryView = () => {
     return result;
   };
 
-  return (
-    <div className="pb-10">
-      {uniqueDates.map((dateString) => {
-        const dayEvents = eventMap.get(dateString)?.events || [];
+  const scrollToArea = (dateStr) => {
+    const element = document.getElementById(dateStr);
+    if (element) {
+      const padding = 50; // Adjust the padding value as needed
+      const scrollOptions = {
+        behavior: "smooth",
+        left: 0,
+        top: element.offsetTop - padding,
+      };
+      window.scrollTo(scrollOptions);
+    }
+  };
 
-        return (
-          <div key={dateString} className="mt-5 border-1 border-gray-400">
-            <div className="p-2" id={dateString} ref={closestDateRef}>
-              {dayEvents.length > 0 ? (
-                <h2 className="bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent font-semibold text-lg">
-                  {new Date(
-                    parseInt(dateString.split("-")[0], 10),
-                    parseInt(dateString.split("-")[1], 10),
-                    1
-                  ).toLocaleDateString("en-US", {
-                    month: "short",
-                    year: "numeric",
-                  })}
-                </h2>
-              ) : null}
-            </div>
-            <Masonry
-              breakpointCols={breakpointColumnsObj}
-              className="my-masonry-grid"
-              columnClassName="my-masonry-grid_column"
-            >
-              {dayEvents.map((event) => (
-                <motion.div
-                  key={event.id}
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  style={{
-                    minHeight: `${getHeight(
-                      event.start.startTime,
-                      event.end.endTime
-                    )}px`,
-                  }}
-                  className={`m-3 p-3 whitespace-pre-wrap overflow-hidden rounded-lg shadow-lg ${event.color}`}
-                  onClick={() => setEvent(event)}
-                >
-                  <div className="flex justify-between items-center p-2 font-semibold rounded-md shadow-md mb-2 bg-white">
-                    <p>{event.summary}</p>
-                    <p>
-                      {new Date(event.date).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                      })}
-                    </p>
-                  </div>
-                  <div className="bg-white bg-opacity-30 rounded-md shadow-md p-2 mb-3">
-                    <span className="text-[10px] font-semibold opacity-90">
-                      {event.start?.startTime
-                        ? `${new Date(event.start.startTime).toLocaleTimeString(
-                            [],
-                            {
+  return (
+    <div className="pb-10 flex">
+      <div className="w-10 h-[100svh] overflow-y-scroll scrollbar-slick">
+        {uniqueDates.map((d) => (
+          <button key={d} onClick={() => scrollToArea(d)} className="text-xs">
+            <p>
+              {new Date(
+                parseInt(dateString.split("-")[0], 10),
+                parseInt(dateString.split("-")[1], 10),
+                1
+              ).toLocaleDateString("en-US", {
+                month: "short",
+              })}
+            </p>
+            <p>
+              {new Date(
+                parseInt(dateString.split("-")[0], 10),
+                parseInt(dateString.split("-")[1], 10),
+                1
+              ).toLocaleDateString("en-US", {
+                year: "numeric",
+              })}
+            </p>
+          </button>
+        ))}
+      </div>
+      <div className="ml-3 w-full">
+        {uniqueDates.map((dateString) => {
+          const dayEvents = eventMap.get(dateString)?.events || [];
+
+          return (
+            <div key={dateString} className="mt-5 border-1 border-gray-400">
+              <div className="p-2" id={dateString} ref={closestDateRef}>
+                {dayEvents.length > 0 ? (
+                  <h2 className="bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent font-semibold text-lg">
+                    {new Date(
+                      parseInt(dateString.split("-")[0], 10),
+                      parseInt(dateString.split("-")[1], 10),
+                      1
+                    ).toLocaleDateString("en-US", {
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </h2>
+                ) : null}
+              </div>
+              <Masonry
+                breakpointCols={breakpointColumnsObj}
+                className="my-masonry-grid"
+                columnClassName="my-masonry-grid_column"
+              >
+                {dayEvents.map((event) => (
+                  <motion.div
+                    key={event.id}
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    style={{
+                      minHeight: `${getHeight(
+                        event.start.startTime,
+                        event.end.endTime
+                      )}px`,
+                    }}
+                    className={`m-3 p-3 whitespace-pre-wrap overflow-hidden rounded-lg shadow-lg ${event.color}`}
+                    onClick={() => setEvent(event)}
+                  >
+                    <div className="flex justify-between items-center p-2 font-semibold rounded-md shadow-md mb-2 bg-white">
+                      <p>{event.summary}</p>
+                      <p>
+                        {new Date(event.date).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                        })}
+                      </p>
+                    </div>
+                    <div className="bg-white bg-opacity-30 rounded-md shadow-md p-2 mb-3">
+                      <span className="text-[10px] font-semibold opacity-90">
+                        {event.start?.startTime
+                          ? `${new Date(
+                              event.start.startTime
+                            ).toLocaleTimeString([], {
                               hour: "2-digit",
                               minute: "2-digit",
-                            }
-                          )} - `
-                        : ""}
-                      {event.end?.endTime
-                        ? new Date(event.end.endTime).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })
-                        : ""}
-                    </span>
-                  </div>
-                  {event.description ? (
-                    <p className="bg-white bg-opacity-30 rounded-md shadow-md p-2 whitespace-pre-wrap">
-                      {event.description}
-                    </p>
-                  ) : null}
-                </motion.div>
-              ))}
-            </Masonry>
-          </div>
-        );
-      })}
+                            })} - `
+                          : ""}
+                        {event.end?.endTime
+                          ? new Date(event.end.endTime).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })
+                          : ""}
+                      </span>
+                    </div>
+                    {event.description ? (
+                      <p className="bg-white bg-opacity-30 rounded-md shadow-md p-2 whitespace-pre-wrap">
+                        {event.description}
+                      </p>
+                    ) : null}
+                  </motion.div>
+                ))}
+              </Masonry>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };
