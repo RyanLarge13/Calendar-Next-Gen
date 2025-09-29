@@ -64,7 +64,7 @@ const MasonryView = () => {
       };
       window.scrollTo(scrollOptions);
     }
-  }, [shouldScroll]);
+  }, [shouldScroll, dateObj]);
 
   const getHeight = (start, end) => {
     if (!start || !end) {
@@ -94,42 +94,38 @@ const MasonryView = () => {
   };
 
   return (
-    <div className="pb-10 flex">
-      <div className="min-w-20 max-w-20 h-[100vh] overflow-y-scroll scrollbar-slick">
-        {uniqueDates.map((d) => (
-          <button
-            key={d}
-            onClick={() => scrollToArea(d)}
-            className="text-xs my-3"
-          >
-            <p>
-              {new Date(
-                parseInt(d.split("-")[0], 10),
-                parseInt(d.split("-")[1], 10),
-                1
-              ).toLocaleDateString("en-US", {
-                month: "short",
-              })}
-            </p>
-            <p>
-              {new Date(
-                parseInt(d.split("-")[0], 10),
-                parseInt(d.split("-")[1], 10),
-                1
-              ).toLocaleDateString("en-US", {
-                year: "numeric",
-              })}
-            </p>
-          </button>
-        ))}
+    <div className="pb-10 flex w-full max-w-screen">
+      <div className="fixed top-0 left-0 ml-2 min-w-20 max-w-20 h-[100vh] overflow-y-scroll scrollbar-slick">
+        {uniqueDates.map((d) => {
+          const dayEventsLen = eventMap.get(d)?.events.length || 0;
+
+          return dayEventsLen > 0 ? (
+            <button
+              key={d}
+              onClick={() => scrollToArea(d)}
+              className="text-xs my-3 whitespace-break-spaces"
+            >
+              <p>
+                {new Date(
+                  parseInt(d.split("-")[0], 10),
+                  parseInt(d.split("-")[1], 10),
+                  1
+                ).toLocaleDateString("en-US", {
+                  month: "short",
+                  year: "numeric",
+                })}
+              </p>
+            </button>
+          ) : null;
+        })}
       </div>
-      <div className="ml-3 w-full">
+      <div className="ml-3 flex-1 min-w-0">
         {uniqueDates.map((dateString) => {
           const dayEvents = eventMap.get(dateString)?.events || [];
 
           return (
             <div key={dateString} className="mt-5 border-1 border-gray-400">
-              <div className="p-2" id={dateString} ref={closestDateRef}>
+              <div className="p-2" id={dateString}>
                 {dayEvents.length > 0 ? (
                   <h2 className="bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent font-semibold text-lg">
                     {new Date(
@@ -159,7 +155,7 @@ const MasonryView = () => {
                         event.end.endTime
                       )}px`,
                     }}
-                    className={`m-3 p-3 whitespace-pre-wrap overflow-hidden rounded-lg shadow-lg ${event.color}`}
+                    className={`p-3 whitespace-pre-wrap overflow-hidden rounded-lg shadow-lg ${event.color}`}
                     onClick={() => setEvent(event)}
                   >
                     <div className="flex justify-between items-center p-2 font-semibold rounded-md shadow-md mb-2 bg-white">

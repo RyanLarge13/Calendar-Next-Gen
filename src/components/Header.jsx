@@ -12,18 +12,17 @@ import DatesContext from "../context/DatesContext";
 import MenuNavigation from "./MenuNavigation";
 
 const Header = () => {
-  const {
-    dt,
-    setNav,
-    theDay,
-    setTheDay,
-    currentWeek,
-    setWeekOffset,
-    setFullDatePicker,
-  } = useContext(DatesContext);
+  const { dt, setNav, theDay, setTheDay, currentWeek, setWeekOffset } =
+    useContext(DatesContext);
   const { user, preferences, notifications } = useContext(UserContext);
-  const { menu, setShowDatePicker, setMenu, setShowLogin, view } =
-    useContext(InteractiveContext);
+  const {
+    menu,
+    setShowDatePicker,
+    setMenu,
+    setShowLogin,
+    setShowFullDatePicker,
+    view,
+  } = useContext(InteractiveContext);
 
   const changeDay = (operand) => {
     const newDay = new Date(theDay);
@@ -93,7 +92,7 @@ const Header = () => {
           )}
           {view === "day" && (
             <button
-              onClick={() => setFullDatePicker(true)}
+              onClick={() => setShowFullDatePicker(true)}
               className="flex justify-center items-center"
             >
               <BsFillArrowLeftCircleFill

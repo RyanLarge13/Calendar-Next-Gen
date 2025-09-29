@@ -30,6 +30,7 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
   const [staticTimeHeight, setStaticTimeHeight] = useState(0);
   const [times, setTimes] = useState([]);
   const [isSettingTime, setIsSettingTime] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   const dayViewContainer = useRef(null);
   let interval;
@@ -90,8 +91,11 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
   };
 
   useEffect(() => {
-    containerRef.current.scrollTo({ top: height, behavior: "smooth" });
-  }, [height]);
+    if (!scrolled) {
+      containerRef.current.scrollTo({ top: height, behavior: "smooth" });
+      setScrolled(true);
+    }
+  }, [height, scrolled]);
 
   const getTime = () => {
     interval = setInterval(() => {
