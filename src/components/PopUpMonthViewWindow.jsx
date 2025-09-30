@@ -106,7 +106,9 @@ const PopUpMonthViewWindow = ({
                       })}
                     </p>
                   </div>
-
+                  <p className="text-xs text-gray-600">
+                    {formatTime(new Date(reminder.time))}
+                  </p>
                   <div className="flex-1 p-3 bg-gray-50 rounded-xl shadow-inner cursor-pointer">
                     <p className="text-sm font-semibold">{reminder.title}</p>
                   </div>
@@ -138,17 +140,23 @@ const PopUpMonthViewWindow = ({
                   <p className="text-sm font-semibold truncate">
                     {event.summary}
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                    {start.toLocaleTimeString("en-US", {
-                      hour: "numeric",
-                      minute: "2-digit",
-                    })}{" "}
-                    –{" "}
-                    {end.toLocaleTimeString("en-US", {
-                      hour: "numeric",
-                      minute: "2-digit",
-                    })}
-                  </p>
+                  {event.start.startTime && event.end.endTime ? (
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                      {start.toLocaleTimeString("en-US", {
+                        hour: "numeric",
+                        minute: "2-digit",
+                      })}{" "}
+                      –{" "}
+                      {end.toLocaleTimeString("en-US", {
+                        hour: "numeric",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                  ) : (
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                      All Day Event
+                    </p>
+                  )}
                   <div className="text-xs leading-snug text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
                     <p>{event.description}</p>
                   </div>

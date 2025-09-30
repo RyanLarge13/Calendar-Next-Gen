@@ -5,7 +5,7 @@ import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
 import DatesContext from "../context/DatesContext";
 
-const MasonryView = () => {
+const MasonryView = ({ containerRef }) => {
   const { holidays, reminders, eventMap } = useContext(UserContext);
   const { setEvent } = useContext(InteractiveContext);
   const { dateObj } = useContext(DatesContext);
@@ -55,14 +55,14 @@ const MasonryView = () => {
 
   useEffect(() => {
     // Step 4: Scroll to the closest date element on component mount
-    if (closestDateRef.current && shouldScroll) {
+    if (closestDateRef.current && shouldScroll && containerRef?.current) {
       const padding = 50; // Adjust the padding value as needed
       const scrollOptions = {
         behavior: "smooth",
         left: 0,
         top: closestDateRef.current.offsetTop - padding,
       };
-      window.scrollTo(scrollOptions);
+      containerRef.current.scrollTo(scrollOptions);
     }
   }, [shouldScroll, dateObj]);
 
@@ -82,21 +82,22 @@ const MasonryView = () => {
 
   const scrollToArea = (dateStr) => {
     const element = document.getElementById(dateStr);
-    if (element) {
+    if (element && containerRef?.current) {
       console.log("Element exists");
+      console.log(element.offsetTop);
       const padding = 50; // Adjust the padding value as needed
       const scrollOptions = {
         behavior: "smooth",
         left: 0,
         top: element.offsetTop - padding,
       };
-      window.scrollTo(scrollOptions);
+      containerRef.current.scrollTo(scrollOptions);
     }
   };
 
   return (
     <div className="pb-10 flex w-full max-w-screen">
-      <div className="fixed top-0 left-0 ml-2 min-w-20 max-w-20 h-[100vh] overflow-y-scroll scrollbar-slick">
+      <div className="sticky top-0 left-0 ml-2 min-w-20 max-w-20 h-[100vh] overflow-y-scroll scrollbar-hide">
         {uniqueDates.map((d) => {
           const dayEventsLen = eventMap.get(d)?.events.length || 0;
 
@@ -104,7 +105,7 @@ const MasonryView = () => {
             <button
               key={d}
               onClick={() => scrollToArea(d)}
-              className="text-xs my-3 whitespace-break-spaces"
+              className=" text-xs my-3 px-2 whitespace-break-spaces"
             >
               <p>
                 {new Date(
@@ -120,7 +121,7 @@ const MasonryView = () => {
           ) : null;
         })}
       </div>
-      <div className="flex-1 min-w-0 ml-20">
+      <div className="flex-1 min-w-0 ml-0">
         {uniqueDates.map((dateString) => {
           const dayEvents = eventMap.get(dateString)?.events || [];
 
@@ -169,22 +170,31 @@ const MasonryView = () => {
                       </p>
                     </div>
                     <div className="bg-white bg-opacity-30 rounded-md shadow-md p-2 mb-3">
-                      <span className="text-[10px] font-semibold opacity-90">
-                        {event.start?.startTime
-                          ? `${new Date(
-                              event.start.startTime
-                            ).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })} - `
-                          : ""}
-                        {event.end?.endTime
-                          ? new Date(event.end.endTime).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })
-                          : ""}
-                      </span>
+                      {event.start.startTime && event.end.endTime ? (
+                        <span className="text-[10px] font-semibold opacity-90">
+                          {event.start?.startTime
+                            ? `${new Date(
+                                event.start.startTime
+                              ).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })} - `
+                            : ""}
+                          {event.end?.endTime
+                            ? new Date(event.end.endTime).toLocaleTimeString(
+                                [],
+                                {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                }
+                              )
+                            : ""}
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-semibold opacity-90">
+                          All Day Event
+                        </span>
+                      )}
                     </div>
                     {event.description ? (
                       <p className="bg-white bg-opacity-30 rounded-md shadow-md p-2 whitespace-pre-wrap">

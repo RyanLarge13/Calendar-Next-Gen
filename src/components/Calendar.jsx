@@ -167,7 +167,9 @@ const Calendar = () => {
                   />
                 )}
                 {view === "week" && <WeekView />}
-                {view === "masonry" && <MasonryView />}
+                {view === "masonry" && (
+                  <MasonryView containerRef={containerRef} />
+                )}
                 {view === "agenda" && <AgendaView />}
               </div>
             </motion.div>

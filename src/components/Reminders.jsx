@@ -226,7 +226,7 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
         if (r.id === reminderInfo.reminderId) {
           return {
             ...r,
-            complete: reminderInfo.completed,
+            completed: reminderInfo.completed,
           };
         } else {
           return r;
@@ -308,12 +308,12 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
               <button
                 onClick={() =>
                   toggleComplete({
-                    completed: !reminder.complete,
+                    completed: !reminder.completed,
                     reminderId: reminder.id,
                   })
                 }
                 className={`shadow-inner p-2 rounded-full bg-gradient-to-tr hover:shadow-lg duration-200 hover:from-sky-100 ${
-                  reminder.complete
+                  reminder.completed
                     ? "from-cyan-300 to-sky-100"
                     : "from-white to-slate-100"
                 }`}
