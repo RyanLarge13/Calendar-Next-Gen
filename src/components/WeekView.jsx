@@ -150,7 +150,7 @@ const WeekView = () => {
                           color: tailwindBgToHex(weekEvent.color),
                         }}
                         whileHover={{ scale: 1.03, y: -2 }}
-                        className="rounded-xl my-1 shadow-lg cursor-pointer relative"
+                        className="rounded-xl my-2 shadow-md cursor-pointer relative"
                         onClick={() => setEvent(weekEvent)}
                       >
                         <div
