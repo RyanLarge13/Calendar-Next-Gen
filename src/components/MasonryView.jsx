@@ -12,8 +12,10 @@ const MasonryView = ({ containerRef }) => {
 
   const [uniqueDates, setUniqueDates] = useState([]);
   const [shouldScroll, setShouldScroll] = useState(false);
+  const [refDate, setRefDate] = useState(null);
 
   const closestDateRef = useRef(null);
+  const dateMapRef = useRef(null);
 
   const breakpointColumnsObj = {
     default: 4, // Number of columns by default
@@ -83,8 +85,6 @@ const MasonryView = ({ containerRef }) => {
   const scrollToArea = (dateStr) => {
     const element = document.getElementById(dateStr);
     if (element && containerRef?.current) {
-      console.log("Element exists");
-      console.log(element.offsetTop);
       const padding = 50; // Adjust the padding value as needed
       const scrollOptions = {
         behavior: "smooth",
@@ -92,12 +92,16 @@ const MasonryView = ({ containerRef }) => {
         top: element.offsetTop - padding,
       };
       containerRef.current.scrollTo(scrollOptions);
+      setRefDate(dateStr);
     }
   };
 
   return (
     <div className="pb-10 flex w-full max-w-screen">
-      <div className="sticky top-0 left-0 ml-2 min-w-20 max-w-20 h-[100vh] overflow-y-scroll scrollbar-hide">
+      <div
+        className="sticky top-0 left-0 ml-2 min-w-16 max-w-16 h-[100vh] overflow-y-scroll scrollbar-hide"
+        ref={dateMapRef}
+      >
         {uniqueDates.map((d) => {
           const dayEventsLen = eventMap.get(d)?.events.length || 0;
 
@@ -105,17 +109,25 @@ const MasonryView = ({ containerRef }) => {
             <button
               key={d}
               onClick={() => scrollToArea(d)}
-              className=" text-xs my-3 px-2 whitespace-break-spaces"
+              className={`text-sm py-3 my-3 w-16 flex justify-center items-center border bg-gradient-to-r
+                 from-purple-500 via-blue-500 to-black to-[80%] bg-clip-text text-transparent bg-[length:200%_100%] 
+                 transition-[background-position] duration-700 ease-in-out ${
+                   refDate === d ? "bg-left" : "bg-right"
+                 }
+`}
             >
               <p>
                 {new Date(
                   parseInt(d.split("-")[0], 10),
                   parseInt(d.split("-")[1], 10),
                   1
-                ).toLocaleDateString("en-US", {
-                  month: "short",
-                  year: "numeric",
-                })}
+                )
+                  .toLocaleDateString("en-US", {
+                    month: "short",
+                    year: "numeric",
+                  })
+                  .split(" ")
+                  .join("\n")}
               </p>
             </button>
           ) : null;
@@ -157,12 +169,17 @@ const MasonryView = ({ containerRef }) => {
                         event.end.endTime
                       )}px`,
                     }}
-                    className={`my-3 p-3 whitespace-pre-wrap overflow-hidden rounded-lg shadow-lg ${event.color}`}
+                    className="my-3 relative p-2 pl-4 whitespace-pre-wrap overflow-hidden rounded-xl border shadow-lg"
                     onClick={() => setEvent(event)}
                   >
-                    <div className="flex justify-between items-center p-2 font-semibold rounded-md shadow-md mb-2 bg-white">
-                      <p>{event.summary}</p>
-                      <p>
+                    <div
+                      className={`w-2 rounded-l-xl absolute left-0 top-0 bottom-0 ${event.color}`}
+                    ></div>
+                    <div className="p-3 font-semibold rounded-md shadow-md mb-2">
+                      <p className="mb-1 text-sm font-semibold truncate">
+                        {event.summary}
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
                         {new Date(event.date).toLocaleDateString("en-US", {
                           month: "short",
                           day: "numeric",
@@ -171,7 +188,7 @@ const MasonryView = ({ containerRef }) => {
                     </div>
                     <div className="bg-white bg-opacity-30 rounded-md shadow-md p-2 mb-3">
                       {event.start.startTime && event.end.endTime ? (
-                        <span className="text-[10px] font-semibold opacity-90">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
                           {event.start?.startTime
                             ? `${new Date(
                                 event.start.startTime
@@ -189,15 +206,15 @@ const MasonryView = ({ containerRef }) => {
                                 }
                               )
                             : ""}
-                        </span>
+                        </p>
                       ) : (
-                        <span className="text-[10px] font-semibold opacity-90">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
                           All Day Event
-                        </span>
+                        </p>
                       )}
                     </div>
                     {event.description ? (
-                      <p className="bg-white bg-opacity-30 rounded-md shadow-md p-2 whitespace-pre-wrap">
+                      <p className="text-xs leading-snug text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
                         {event.description}
                       </p>
                     ) : null}

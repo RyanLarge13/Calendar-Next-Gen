@@ -1,5 +1,43 @@
 import prisma from "../utils/prismaClient.js";
 
+export const updateTaskTitle = async (req, res) => {
+  const { newTitle, taskId } = req.body;
+  const { id } = req.user;
+
+  if (!id) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to make this request" });
+    return;
+  }
+
+  if (!newTitle || !taskId) {
+    res.status(404).json({
+      message:
+        "Please pass in both the new task title and the id of the task to update",
+    });
+    return;
+  }
+
+  try {
+    await prisma.tasks.update({
+      where: { userId: id, id: taskId },
+      data: { title: newTitle },
+    });
+
+    res.status(200).json({ message: "Successfully updated task title" });
+    return;
+  } catch (err) {
+    console.log(err);
+    res.status(500),
+      json({
+        message:
+          "Something went wrong updating your task. Please contact the developer",
+      });
+    return;
+  }
+};
+
 export const getTasks = async (req, res) => {
   const { id } = req.user;
   const allTasks = await prisma.task.findMany({ where: { userId: id } });

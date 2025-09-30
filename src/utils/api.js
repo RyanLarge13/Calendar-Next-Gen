@@ -406,6 +406,16 @@ export const deleteList = (token, listId) => {
 };
 
 //Tasks
+
+export const updateTaskTitle = (taskId, newTitle, token) => {
+  const res = Axios.patch(
+    `${productionUrl}/update/task/title`,
+    { newTitle, taskId },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return res;
+};
+
 export const getAllTasks = (token) => {
   const res = Axios.get(`${productionUrl}/all/tasks`, {
     headers: { Authorization: `Bearer ${token}` },

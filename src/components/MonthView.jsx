@@ -303,9 +303,12 @@ const MonthView = () => {
                     </p>
                   ) : (
                     <>
-                      <div
-                        className={`absolute left-0 w-2 translate-x-[-75%] top-[50%] translate-y-[-50%] rounded-full ${event.color} h-1`}
-                      ></div>
+                      {/* Remove below line condition if weird sausage link issues arise */}
+                      {event.start.startDate !== event.end.endDate ? (
+                        <div
+                          className={`absolute left-0 w-2 translate-x-[-75%] top-[50%] translate-y-[-50%] rounded-full ${event.color} h-1`}
+                        ></div>
+                      ) : null}
                       <p className="text-xs whitespace-nowrap overflow-hidden">
                         {event.summary}
                       </p>

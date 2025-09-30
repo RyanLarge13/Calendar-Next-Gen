@@ -185,7 +185,12 @@ const Calendar = () => {
           <ModalHeader allDayEvents={allDayEvents} />
         ) : null}
         <AnimatePresence>
-          {openModal && <Modal allDayEvents={allDayEvents} />}
+          {openModal && (
+            <Modal
+              allDayEvents={allDayEvents}
+              todaysReminders={todaysReminders}
+            />
+          )}
         </AnimatePresence>
         <Menu />
         <LoginLogout />
