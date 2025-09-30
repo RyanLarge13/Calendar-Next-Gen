@@ -115,10 +115,10 @@ const WeekView = () => {
           <div
             className={`w-full px-4 py-2 rounded-t-2xl shadow-sm ${
               date.getDay() === currentWeekday
-                ? "bg-purple-500 text-white"
+                ? "bg-purple-100 text-black"
                 : preferences.darkMode
                 ? "bg-[#222] text-white"
-                : "bg-purple-100 text-black"
+                : "bg-white text-black"
             }`}
           >
             <div className={`w-full flex justify-between items-center}`}>
@@ -150,12 +150,15 @@ const WeekView = () => {
                           color: tailwindBgToHex(weekEvent.color),
                         }}
                         whileHover={{ scale: 1.03, y: -2 }}
-                        className={`rounded-xl shadow-lg cursor-pointer ${weekEvent.color}`}
+                        className="rounded-xl my-1 shadow-lg cursor-pointer relative"
                         onClick={() => setEvent(weekEvent)}
                       >
+                        <div
+                          className={`w-2 rounded-l-xl absolute left-0 top-0 bottom-0 ${weekEvent.color}`}
+                        ></div>
                         <div className="flex flex-col h-full p-2">
                           {/* Summary */}
-                          <p className="mt-1 text-sm font-medium leading-snug truncate">
+                          <p className="ml-3 text-sm font-semibold leading-snug truncate">
                             {weekEvent.summary}
                           </p>
                         </div>
@@ -179,7 +182,7 @@ const WeekView = () => {
                   <motion.div
                     key={time.string}
                     whileTap={{ backgroundColor: "#eee" }}
-                    className={`border-l h-[30vh] flex justify-start items-start px-2 text-[11px] w-full 
+                    className={`border-l h-[30vh] flex justify-start items-start px-2 text-[11px] w-[200px] 
                       ${
                         preferences.darkMode
                           ? "bg-[#222] text-slate-200"

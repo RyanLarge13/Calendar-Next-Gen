@@ -91,7 +91,7 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
   };
 
   useEffect(() => {
-    if (!scrolled) {
+    if (containerRef.current && !scrolled) {
       containerRef.current.scrollTo({ top: height, behavior: "smooth" });
       setScrolled(true);
     }
