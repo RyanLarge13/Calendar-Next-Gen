@@ -32,6 +32,66 @@ const MasonryView = ({ containerRef }) => {
   }, [eventMap]);
 
   useEffect(() => {
+    let isSyncingContainer = false;
+    let isSyncingDateMap = false;
+
+    const handleContainerScroll = () => {
+      if (isSyncingDateMap) return;
+      if (dateMapRef.current && containerRef.current) {
+        const container = containerRef.current;
+        const map = dateMapRef.current;
+
+        const ratio =
+          container.scrollTop /
+          (container.scrollHeight - container.clientHeight);
+
+        isSyncingContainer = true;
+        map.scrollTo({
+          top: ratio * (map.scrollHeight - map.clientHeight),
+          behavior: "smooth",
+        });
+        isSyncingContainer = false;
+      }
+    };
+
+    const handleDateMapScroll = () => {
+      if (isSyncingContainer) return;
+      if (dateMapRef.current && containerRef.current) {
+        const container = containerRef.current;
+        const map = dateMapRef.current;
+
+        const ratio = map.scrollTop / (map.scrollHeight - map.clientHeight);
+
+        isSyncingDateMap = true;
+        container.scrollTo({
+          top: ratio * (container.scrollHeight - container.clientHeight),
+          behavior: "smooth",
+        });
+        isSyncingDateMap = false;
+      }
+    };
+
+    if (containerRef.current) {
+      containerRef.current.addEventListener("scroll", handleContainerScroll);
+    }
+    if (dateMapRef.current) {
+      dateMapRef.current.addEventListener("scroll", handleDateMapScroll);
+    }
+
+    return () => {
+      if (containerRef.current) {
+        containerRef.current.removeEventListener(
+          "scroll",
+          handleContainerScroll
+        );
+      }
+      if (dateMapRef.current) {
+        dateMapRef.current.removeEventListener("scroll", handleDateMapScroll);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     if (uniqueDates.length > 0) {
       const closestDate = uniqueDates.reduce((a, b) => {
         const dateA = new Date(
@@ -85,7 +145,7 @@ const MasonryView = ({ containerRef }) => {
   const scrollToArea = (dateStr) => {
     const element = document.getElementById(dateStr);
     if (element && containerRef?.current) {
-      const padding = 50; // Adjust the padding value as needed
+      const padding = 0; // Adjust the padding value as needed
       const scrollOptions = {
         behavior: "smooth",
         left: 0,
@@ -109,10 +169,12 @@ const MasonryView = ({ containerRef }) => {
             <button
               key={d}
               onClick={() => scrollToArea(d)}
-              className={`text-sm py-3 my-3 w-16 flex justify-center items-center border bg-gradient-to-r
-                 from-purple-500 via-blue-500 to-black to-[80%] bg-clip-text text-transparent bg-[length:200%_100%] 
+              className={`text-sm p-3 my-3 w-16 flex justify-center items-center border bg-gradient-to-r
+                 from-purple-500 via-blue-500 to-black to-[80%] rounded-md bg-clip-text text-transparent bg-[length:200%_100%] 
                  transition-[background-position] duration-700 ease-in-out ${
-                   refDate === d ? "bg-left" : "bg-right"
+                   refDate === d
+                     ? "bg-left font-semibold shadow-lg"
+                     : "bg-right shadow-none"
                  }
 `}
             >
@@ -121,13 +183,10 @@ const MasonryView = ({ containerRef }) => {
                   parseInt(d.split("-")[0], 10),
                   parseInt(d.split("-")[1], 10),
                   1
-                )
-                  .toLocaleDateString("en-US", {
-                    month: "short",
-                    year: "numeric",
-                  })
-                  .split(" ")
-                  .join("\n")}
+                ).toLocaleDateString("en-US", {
+                  month: "short",
+                  year: "numeric",
+                })}
               </p>
             </button>
           ) : null;
@@ -138,10 +197,10 @@ const MasonryView = ({ containerRef }) => {
           const dayEvents = eventMap.get(dateString)?.events || [];
 
           return (
-            <div key={dateString} className="mt-5 border-1 border-gray-400">
+            <div key={dateString} className="mt-10 border-1 border-gray-400">
               <div className="p-2" id={dateString}>
                 {dayEvents.length > 0 ? (
-                  <h2 className="bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent font-semibold text-lg">
+                  <h2 className="bg-gradient-to-r ml-2 from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent font-semibold text-lg">
                     {new Date(
                       parseInt(dateString.split("-")[0], 10),
                       parseInt(dateString.split("-")[1], 10),
@@ -175,7 +234,7 @@ const MasonryView = ({ containerRef }) => {
                     <div
                       className={`w-2 rounded-l-xl absolute left-0 top-0 bottom-0 ${event.color}`}
                     ></div>
-                    <div className="p-3 font-semibold rounded-md shadow-md mb-2">
+                    <div className="p-2 font-semibold rounded-lg shadow-md mb-2">
                       <p className="mb-1 text-sm font-semibold truncate">
                         {event.summary}
                       </p>
@@ -186,7 +245,7 @@ const MasonryView = ({ containerRef }) => {
                         })}
                       </p>
                     </div>
-                    <div className="bg-white bg-opacity-30 rounded-md shadow-md p-2 mb-3">
+                    <div className="bg-white bg-opacity-30 rounded-lg shadow-md p-2 mb-3">
                       {event.start.startTime && event.end.endTime ? (
                         <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
                           {event.start?.startTime
@@ -214,7 +273,7 @@ const MasonryView = ({ containerRef }) => {
                       )}
                     </div>
                     {event.description ? (
-                      <p className="text-xs leading-snug text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                      <p className="text-xs leading-snug text-gray-700 whitespace-pre-wrap">
                         {event.description}
                       </p>
                     ) : null}

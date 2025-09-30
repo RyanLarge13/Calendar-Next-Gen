@@ -41,6 +41,7 @@ const Calendar = () => {
 
   const [todaysEvents, setTodaysEvents] = useState([]);
   const [todaysReminders, setTodaysReminder] = useState([]);
+  const [remindersOfDay, setRemindersOfDay] = useState([]);
   const [allDayEvents, setAllDayEvents] = useState([]);
 
   const containerRef = useRef(null);
@@ -96,7 +97,11 @@ const Calendar = () => {
         new Date(reminder.time).toLocaleDateString() ===
         theDay.toLocaleDateString()
     );
+    const remindersOfTheDay = reminders.filter(
+      (r) => new Date(r.time).toLocaleDateString() === string
+    );
     setTodaysReminder(remindersToday);
+    setRemindersOfDay(remindersOfTheDay);
   }, [theDay, events, reminders, string]);
 
   const checkScroll = (e) => {
@@ -188,7 +193,7 @@ const Calendar = () => {
           {openModal && (
             <Modal
               allDayEvents={allDayEvents}
-              todaysReminders={todaysReminders}
+              todaysReminders={remindersOfDay}
             />
           )}
         </AnimatePresence>
