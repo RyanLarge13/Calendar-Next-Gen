@@ -50,7 +50,6 @@ const MasonryView = ({ containerRef }) => {
           top: ratio * (map.scrollHeight - map.clientHeight),
           behavior: "smooth",
         });
-        isSyncingContainer = false;
       }
     };
 
@@ -67,15 +66,24 @@ const MasonryView = ({ containerRef }) => {
           top: ratio * (container.scrollHeight - container.clientHeight),
           behavior: "smooth",
         });
-        isSyncingDateMap = false;
       }
+    };
+
+    const scrollEndContainerRef = () => {
+      isSyncingContainer = false;
+    };
+
+    const scrollEndDateMapRef = () => {
+      isSyncingDateMap = false;
     };
 
     if (containerRef.current) {
       containerRef.current.addEventListener("scroll", handleContainerScroll);
+      containerRef.current.addEventListener("scrollend", scrollEndContainerRef);
     }
     if (dateMapRef.current) {
       dateMapRef.current.addEventListener("scroll", handleDateMapScroll);
+      dateMapRef.current.addEventListener("scrollend", scrollEndDateMapRef);
     }
 
     return () => {
@@ -84,9 +92,17 @@ const MasonryView = ({ containerRef }) => {
           "scroll",
           handleContainerScroll
         );
+        containerRef.current.removeEventListener(
+          "scrollend",
+          scrollEndContainerRef
+        );
       }
       if (dateMapRef.current) {
         dateMapRef.current.removeEventListener("scroll", handleDateMapScroll);
+        dateMapRef.current.removeEventListener(
+          "scrollend",
+          scrollEndDateMapRef
+        );
       }
     };
   }, []);
@@ -234,46 +250,39 @@ const MasonryView = ({ containerRef }) => {
                     <div
                       className={`w-2 rounded-l-xl absolute left-0 top-0 bottom-0 ${event.color}`}
                     ></div>
-                    <div className="p-2 font-semibold rounded-lg shadow-md mb-2">
-                      <p className="mb-1 text-sm font-semibold truncate">
-                        {event.summary}
-                      </p>
+                    <p className="mb-1 text-sm font-semibold truncate">
+                      {event.summary}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                      {new Date(event.date).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </p>
+                    {event.start.startTime && event.end.endTime ? (
                       <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                        {new Date(event.date).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                        })}
+                        {event.start?.startTime
+                          ? `${new Date(
+                              event.start.startTime
+                            ).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })} - `
+                          : ""}
+                        {event.end?.endTime
+                          ? new Date(event.end.endTime).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })
+                          : ""}
                       </p>
-                    </div>
-                    <div className="bg-white bg-opacity-30 rounded-lg shadow-md p-2 mb-3">
-                      {event.start.startTime && event.end.endTime ? (
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                          {event.start?.startTime
-                            ? `${new Date(
-                                event.start.startTime
-                              ).toLocaleTimeString([], {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })} - `
-                            : ""}
-                          {event.end?.endTime
-                            ? new Date(event.end.endTime).toLocaleTimeString(
-                                [],
-                                {
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                }
-                              )
-                            : ""}
-                        </p>
-                      ) : (
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                          All Day Event
-                        </p>
-                      )}
-                    </div>
+                    ) : (
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                        All Day Event
+                      </p>
+                    )}
                     {event.description ? (
-                      <p className="text-xs leading-snug text-gray-700 whitespace-pre-wrap">
+                      <p className="text-xs leading-snug text-gray-500 whitespace-pre-wrap">
                         {event.description}
                       </p>
                     ) : null}
