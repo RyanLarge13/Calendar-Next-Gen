@@ -354,7 +354,7 @@ const Event = ({ dayEvents }) => {
         >
           <input
             style={{ color: tailwindBgToHex(event.color) }}
-            type="submit"
+            type="text"
             className="w-full text-2xl font-bold bg-transparent focus:outline-none"
             placeholder={title}
             value={title}
@@ -374,7 +374,6 @@ const Event = ({ dayEvents }) => {
             placeholder="Add a description..."
             rows={6}
             value={description}
-            type="submit"
             onBlur={updateDesc}
             onChange={(e) => setDescription(e.target.value)}
           />
@@ -447,7 +446,7 @@ const Event = ({ dayEvents }) => {
                 <input
                   className="w-full p-2 rounded-lg bg-gray-50 text-sm focus:outline-none"
                   value={location}
-                  type="submit"
+                  type="text"
                   onBlur={updateLocation}
                   onChange={(e) => setLocation(e.target.value)}
                 />

@@ -77,12 +77,14 @@ const MasonryView = ({ containerRef }) => {
       }, SYNC_DELAY);
     };
 
-    if (containerRef.current) {
-      containerRef.current.addEventListener("scroll", handleContainerScroll);
-    }
-    if (dateMapRef.current) {
-      dateMapRef.current.addEventListener("scroll", handleDateMapScroll);
-    }
+    setTimeout(() => {
+      if (containerRef.current) {
+        containerRef.current.addEventListener("scroll", handleContainerScroll);
+      }
+      if (dateMapRef.current) {
+        dateMapRef.current.addEventListener("scroll", handleDateMapScroll);
+      }
+    }, 2000);
 
     return () => {
       if (containerRef.current) {

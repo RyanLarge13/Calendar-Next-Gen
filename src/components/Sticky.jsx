@@ -12,10 +12,8 @@ import {
   AiOutlinePushpin,
 } from "react-icons/ai";
 import { BiExpand, BiCollapse } from "react-icons/bi";
-import { BsFillPenFill } from "react-icons/bs";
 import { FaRegWindowMinimize } from "react-icons/fa";
 import { FiMaximize } from "react-icons/fi";
-import { MdSave } from "react-icons/md";
 import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
 import ReactQuill from "react-quill";
@@ -29,8 +27,8 @@ const Sticky = ({ sticky, index }) => {
   const [pin, setPin] = useState(sticky.pin);
   const [fullScreen, setFullScreen] = useState(false);
   const [minimize, setMinimize] = useState(true);
-  const [edit, setEdit] = useState(false);
   const [editText, setEditText] = useState(sticky.body);
+  const [initialText, setInitialText] = useState(sticky.body);
 
   const stickyRef = useRef(null);
 
@@ -106,20 +104,18 @@ const Sticky = ({ sticky, index }) => {
     setEditText(value);
   };
 
-  const handleSave = () => {
-    sticky.body = editText;
-    setEdit(false);
+  const handleSave = async () => {
+    if (initialText === editText) {
+      return;
+    }
+
     try {
       const token = localStorage.getItem("authToken");
-      updateSticky(token, sticky.id, editText)
-        .then((res) => {
-          console.log(res);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      await updateSticky(token, sticky.id, editText);
+
+      setInitialText(editText);
     } catch (err) {
-      console.log(err);
+      console.log(`Error from server saving sticky note. Error: ${err}`);
     }
   };
 
@@ -241,12 +237,6 @@ const Sticky = ({ sticky, index }) => {
             {pin ? <AiFillPushpin /> : <AiOutlinePushpin />}
           </button>
           <button
-            onClick={() => (!edit ? setEdit(true) : handleSave())}
-            className="hover:text-green-600 transition"
-          >
-            {edit ? <MdSave /> : <BsFillPenFill />}
-          </button>
-          <button
             onClick={() => {
               if (fullScreen && !expand) return;
               if (fullScreen && expand) {
@@ -315,37 +305,22 @@ const Sticky = ({ sticky, index }) => {
           minimize ? "opacity-0" : "opacity-100"
         } px-4 pb-4 overflow-y-auto scrollbar-slick overflow-x-hidden scrollbar-hide absolute inset-0 z-[-1] break-words`}
       >
-        {!edit ? (
-          <div>
-            <h2
-              style={{ color: tailwindBgToHex(sticky.color) }}
-              className="mb-4 pb-1 text-lg font-semibold border-b border-gray-300"
-            >
-              {sticky.title}
-            </h2>
-            <div
-              style={{ color: tailwindBgToHex(sticky.color) }}
-              dangerouslySetInnerHTML={{ __html: sticky.body }}
-              className="markdown text-sm leading-relaxed"
-            ></div>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            <input
-              style={{ color: tailwindBgToHex(sticky.color) }}
-              className="mb-4 pb-1 text-3xl font-semibold border-b border-gray-300 bg-transparent placeholder:text-white outline-none focus:outline-none"
-              placeholder={sticky.title}
-            />
-            <ReactQuill
-              modules={modules}
-              formats={formats}
-              style={{ color: tailwindBgToHex(sticky.color) }}
-              value={editText}
-              onChange={handleTextChange}
-              className="h-full scrollbar-slick"
-            />
-          </div>
-        )}
+        <div className="space-y-3">
+          <input
+            style={{ color: tailwindBgToHex(sticky.color) }}
+            className="mb-4 pb-1 text-3xl font-semibold border-b border-gray-300 bg-transparent placeholder:text-white outline-none focus:outline-none"
+            placeholder={sticky.title}
+          />
+          <ReactQuill
+            modules={modules}
+            formats={formats}
+            style={{ color: tailwindBgToHex(sticky.color) }}
+            value={editText}
+            onChange={handleTextChange}
+            onBlur={handleSave}
+            className="h-full scrollbar-slick"
+          />
+        </div>
       </div>
     </motion.div>
   );

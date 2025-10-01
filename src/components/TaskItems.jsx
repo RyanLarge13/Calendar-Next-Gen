@@ -108,7 +108,7 @@ const TaskItems = ({ task }) => {
         <form className="w-full" onSubmit={updateTitle}>
           <input
             onChange={(e) => setNewTitle(e.target.value)}
-            type="submit"
+            type="text"
             onBlur={updateTitle}
             value={newTitle}
             className="text-xl font-semibold w-full placeholder:text-gray-500 bg-transparent outline-none focus:outline-none"

@@ -199,7 +199,7 @@ const Lists = ({ listSort, listSortOpt, listSearch, listSearchTxt }) => {
                       onChange={(e) => setTitle(e.target.value)}
                       placeholder="Add your title..."
                       onBlur={updateTitleOnList}
-                      type="submit"
+                      type="text"
                     />
                   </form>
                   <div className="flex gap-x-3 text-sm">
