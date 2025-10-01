@@ -203,7 +203,7 @@ const Modal = ({ allDayEvents, todaysReminders }) => {
                 return (
                   <motion.div
                     key={r.id}
-                    style={{ top: top }}
+                    style={{ top: `${top}px` }}
                     className={`${
                       new Date(r.time) < dateObj
                         ? "border-l-4 border-rose-400"
@@ -211,7 +211,7 @@ const Modal = ({ allDayEvents, todaysReminders }) => {
                           dateObj.toLocaleDateString()
                         ? "border-l-4 border-amber-400"
                         : "border-l-4 border-cyan-400"
-                    } min-w-[200px] max-w-[200px] shadow-lg p-4 rounded-2xl text-gray-900`}
+                    } min-w-[70%] absolute right-0 max-w-[70%] shadow-lg p-4 rounded-2xl text-gray-900`}
                   >
                     <div className="space-y-3">
                       {/* Time + Title */}

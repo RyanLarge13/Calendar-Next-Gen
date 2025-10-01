@@ -135,11 +135,38 @@ export const updateStartAndEndTimeOnEvent = async (eventId, offset, token) => {
 };
 
 export const API_UpdateEventTitle = (eventId, title, token) => {
-  const res = Axios.patch(`${productionUrl}/patch/event/title`, {
-    eventId,
-    title,
-    token,
-  });
+  const res = Axios.patch(
+    `${productionUrl}/update/event/title`,
+    {
+      newTitle: title,
+      eventId,
+    },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return res;
+};
+
+export const API_UpdateEventDesc = (eventId, newDesc, token) => {
+  const res = Axios.patch(
+    `${productionUrl}/update/event/desc`,
+    {
+      newDesc,
+      eventId,
+    },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return res;
+};
+
+export const API_UpdateEventLocation = (eventId, newLocation, token) => {
+  const res = Axios.patch(
+    `${productionUrl}/update/event/location`,
+    {
+      newLocation,
+      eventId,
+    },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
   return res;
 };
 

@@ -10,6 +10,9 @@ import {
   createAttachments,
   deleteManyEvents,
   updateEventStartAndEndTime,
+  updateEventTitle,
+  updateEventDescription,
+  updateEventLocation,
 } from "../controllers/eventsController.js";
 
 const eventsRouter = express.Router();
@@ -23,6 +26,9 @@ eventsRouter.patch(
   auth,
   updateEventStartAndEndTime
 );
+eventsRouter.patch("/update/event/title", auth, updateEventTitle);
+eventsRouter.patch("/update/event/desc", auth, updateEventDescription);
+eventsRouter.patch("/update/event/location", auth, updateEventLocation);
 eventsRouter.delete(
   "/:username/delete/event/:eventId",
   auth,

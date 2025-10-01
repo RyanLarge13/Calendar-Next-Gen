@@ -18,6 +18,7 @@ const TaskItems = ({ task }) => {
   const [itemsCopy, setItemsCopy] = useState(task.tasks);
   const [newTaskText, setNewTaskText] = useState("");
   const [newTitle, setNewTitle] = useState(task.title);
+  const [titleTracker, setTitleTracker] = useState(task.title);
 
   useEffect(() => {
     console.log(task);
@@ -83,9 +84,14 @@ const TaskItems = ({ task }) => {
       return;
     }
 
+    if (newTitle === titleTracker) {
+      return;
+    }
+
     try {
       const token = localStorage.getItem("authToken");
       await updateTaskTitle(task.id, newTitle, token);
+      setTitleTracker(newTitle);
       setUserTasks((prev) =>
         prev.map((t) => (t.id === task.id ? { ...t, title: newTitle } : t))
       );
@@ -98,16 +104,17 @@ const TaskItems = ({ task }) => {
   return (
     <div>
       <div className="mb-2 bg-white rounded-md shadow-md p-3 flex justify-start items-center gap-x-3">
-        <form className="w-full" onSubmit={(e) => updateTitle(e)}>
+        <form className="w-full" onSubmit={updateTitle}>
           <input
             onChange={(e) => setNewTitle(e.target.value)}
+            type="submit"
+            onBlur={updateTitle}
             value={newTitle}
-            className="text-xl font-semibold w-full placeholder:text-black bg-transparent"
+            className="text-xl font-semibold w-full placeholder:text-black bg-transparent outline-none focus:outline-none"
           />
         </form>
         <p className="font-semibold text-sm">
-          {itemsCopy.filter((tsk) => tsk.complete).length}/{itemsCopy.length}{" "}
-          complete
+          {itemsCopy.filter((tsk) => tsk.complete).length}/{itemsCopy.length}
         </p>
       </div>
       <div className="mb-2 bg-white rounded-md shadow-md p-3 flex justify-start items-center gap-x-3">

@@ -292,6 +292,108 @@ export const getAttachments = async (req, res) => {
   res.status(201).json({ message: "Success", attachments: attachments });
 };
 
+export const updateEventTitle = async (req, res) => {
+  const { newTitle, eventId } = req.body;
+  const { id } = req.user;
+
+  if (!id) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to make this request" });
+    return;
+  }
+
+  if (!newTitle || !eventId) {
+    res
+      .status(404)
+      .json({ message: "Bad request, missing new event title or eventId" });
+    return;
+  }
+
+  try {
+    await prisma.event.update({
+      where: { userId: id, id: eventId },
+      data: {
+        summary: newTitle,
+      },
+    });
+
+    res.status(200).json({ message: "Event title successfully updated" });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: `Server error updating event title. Error: ${err}` });
+    console.log(`Error updating event title. Error: ${err}`);
+  }
+};
+
+export const updateEventDescription = async (req, res) => {
+  const { eventId, newDesc } = req.body;
+  const { id } = req.user;
+
+  if (!id) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to make this request" });
+    return;
+  }
+
+  if (!eventId || !newDesc) {
+    res.status(404).json({
+      message: "Bad request, missing new event description or eventId",
+    });
+    return;
+  }
+
+  try {
+    await prisma.event.update({
+      where: { id: eventId, userId: id },
+      data: { description: newDesc },
+    });
+
+    res.status(200).json({ message: "Successfully updated event description" });
+    return;
+  } catch (err) {
+    console.log(`Error updating event description. Error: ${err}`);
+    res.status(500).json({
+      message: `Server error updating event description. Error: ${err}`,
+    });
+  }
+};
+
+export const updateEventLocation = async (req, res) => {
+  const { eventId, newLocation } = req.body;
+  const { id } = req.user;
+
+  if (!id) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to make this request" });
+    return;
+  }
+
+  if (!eventId || !newLocation) {
+    res.status(404).json({
+      message: "Bad request, missing new event location or eventId",
+    });
+    return;
+  }
+
+  try {
+    await prisma.event.update({
+      where: { id: eventId, userId: id },
+      data: { location: newLocation },
+    });
+
+    res.status(200).json({ message: "Successfully updated event location" });
+  } catch (err) {
+    console.log(`Error updating event location. Error: ${err}`);
+    res.status(500).json({
+      message: `Server error updating event location. Error: ${err}`,
+    });
+  }
+};
+
 export const updateEventStartAndEndTime = async (req, res) => {
   const { eventId, offset } = req.body;
   const event = await prisma.event.findUnique({ where: { id: eventId } });

@@ -14,7 +14,12 @@ import {
   FaTrash,
 } from "react-icons/fa";
 import { motion, useDragControls } from "framer-motion";
-import { fetchAttachments } from "../utils/api";
+import {
+  API_UpdateEventDesc,
+  API_UpdateEventLocation,
+  API_UpdateEventTitle,
+  fetchAttachments,
+} from "../utils/api";
 import { formatDbText, formatText, formatTime } from "../utils/helpers";
 import ListItems from "./ListItems";
 import GoogleMaps from "./GoogleMaps";
@@ -26,7 +31,7 @@ import DatesContext from "../context/DatesContext.jsx";
 
 const Event = ({ dayEvents }) => {
   const { event, setEvent } = useContext(InteractiveContext);
-  const { preferences, lists } = useContext(UserContext);
+  const { preferences, lists, setEventMap } = useContext(UserContext);
   const { dateObj } = useContext(DatesContext);
 
   const [timeLeft, setTimeLeft] = useState(null);
@@ -39,9 +44,15 @@ const Event = ({ dayEvents }) => {
   const [eventLists, setEventLists] = useState(
     lists.filter((list) => list.eventId === event.id)
   );
-  const [newDescription, setNewDescription] = useState(event.description);
-
   const [title, setTitle] = useState(event.summary);
+  const [description, setDescription] = useState(event.description);
+  const [location, setLocation] = useState(event.location.string);
+
+  const [inputChanges, setInputChanges] = useState({
+    summary: event.summary,
+    description: event.description,
+    location: event.location,
+  });
 
   const controls = useDragControls();
 
@@ -135,10 +146,132 @@ const Event = ({ dayEvents }) => {
   const updateTitle = async (e) => {
     e.preventDefault();
 
-    const oldTitle = event.summary;
+    if (!title) {
+      // set notification
+      return;
+    }
+
+    if (inputChanges.summary === title) {
+      return;
+    }
 
     try {
-      const response = await API_UpdateEventTitle();
+      const token = localStorage.getItem("authToken");
+      await API_UpdateEventTitle(event.id, title, token);
+
+      setInputChanges((prev) => ({ ...prev, summary: title }));
+      setEventMap((prev) => {
+        const date = new Date(string);
+        const newMap = new Map(prev);
+        const mapDate = `${date.getFullYear()}-${date.getMonth()}`;
+
+        if (newMap.has(mapDate)) {
+          const entry = newMap.get(mapDate);
+          const entryEvents = entry?.events || [];
+
+          const newEvents = entryEvents.map((e) =>
+            e.id === event.id ? { ...e, summary: title } : e
+          );
+          newMap.set(mapDate, {
+            ...entry,
+            events: newEvents, // new array, not mutated
+          });
+        }
+
+        return newMap;
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const updateDesc = async (e) => {
+    e.preventDefault();
+
+    if (!description) {
+      // set notification
+      return;
+    }
+
+    if (inputChanges.description === description) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("authToken");
+      await API_UpdateEventDesc(event.id, description, token);
+
+      setInputChanges((prev) => ({ ...prev, description: description }));
+      setEventMap((prev) => {
+        const date = new Date(string);
+        const newMap = new Map(prev);
+        const mapDate = `${date.getFullYear()}-${date.getMonth()}`;
+
+        if (newMap.has(mapDate)) {
+          const entry = newMap.get(mapDate);
+          const entryEvents = entry?.events || [];
+
+          const newEvents = entryEvents.map((e) =>
+            e.id === event.id ? { ...e, description: description } : e
+          );
+          newMap.set(mapDate, {
+            ...entry,
+            events: newEvents, // new array, not mutated
+          });
+        }
+
+        return newMap;
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const updateLocation = async (e) => {
+    e.preventDefault();
+
+    /*
+      TODO:
+        IMPLEMENT:
+          1. Update google maps with new location when updating location
+    */
+
+    if (!location) {
+      // set notification
+      return;
+    }
+
+    if (inputChanges.location === location) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("authToken");
+      await API_UpdateEventLocation(event.id, location, token);
+
+      setInputChanges((prev) => ({ ...prev, location: location }));
+      setEventMap((prev) => {
+        const date = new Date(string);
+        const newMap = new Map(prev);
+        const mapDate = `${date.getFullYear()}-${date.getMonth()}`;
+
+        if (newMap.has(mapDate)) {
+          const entry = newMap.get(mapDate);
+          const entryEvents = entry?.events || [];
+
+          const newEvents = entryEvents.map((e) =>
+            e.id === event.id
+              ? { ...e, location: { ...e.location, string: location } }
+              : e
+          );
+          newMap.set(mapDate, {
+            ...entry,
+            events: newEvents, // new array, not mutated
+          });
+        }
+
+        return newMap;
+      });
     } catch (err) {
       console.log(err);
     }
@@ -221,6 +354,7 @@ const Event = ({ dayEvents }) => {
         >
           <input
             style={{ color: tailwindBgToHex(event.color) }}
+            type="submit"
             className="w-full text-2xl font-bold bg-transparent focus:outline-none"
             placeholder={title}
             value={title}
@@ -230,16 +364,21 @@ const Event = ({ dayEvents }) => {
         </form>
 
         {/* Description */}
-        <div className={`p-3 rounded-xl shadow-sm border ${event.color}`}>
+        <form
+          onSubmit={updateDesc}
+          className={`p-3 rounded-xl shadow-sm border ${event.color}`}
+        >
           <textarea
             style={{ color: tailwindBgToHex(event.color) }}
-            className="w-full text-base bg-transparent resize-none focus:outline-none whitespace-pre-wrap"
+            className="w-full text-base outline-none bg-transparent resize-none focus:outline-none whitespace-pre-wrap"
             placeholder="Add a description..."
             rows={6}
-            value={newDescription}
-            onChange={(e) => setNewDescription(e.target.value)}
+            value={description}
+            type="submit"
+            onBlur={updateDesc}
+            onChange={(e) => setDescription(e.target.value)}
           />
-        </div>
+        </form>
 
         {/* Time progress */}
         {event.start.startTime && (
@@ -304,11 +443,15 @@ const Event = ({ dayEvents }) => {
           </div>
           {event.location ? (
             <>
-              <input
-                className="w-full p-2 rounded-lg bg-gray-50 text-sm focus:outline-none"
-                value={event.location.string}
-                readOnly
-              />
+              <form onSubmit={updateLocation} className="w-full">
+                <input
+                  className="w-full p-2 rounded-lg bg-gray-50 text-sm focus:outline-none"
+                  value={location}
+                  type="submit"
+                  onBlur={updateLocation}
+                  onChange={(e) => setLocation(e.target.value)}
+                />
+              </form>
               <div className="mt-4">
                 <GoogleMaps coordinates={event.location.coordinates} />
               </div>
