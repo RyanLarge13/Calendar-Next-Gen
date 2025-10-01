@@ -31,13 +31,20 @@ const MasonryView = ({ containerRef }) => {
     }
   }, [eventMap]);
 
+  // AI implementation of my attempt of scrolling sync behavior commented out below
   useEffect(() => {
-    let isSyncingContainer = false;
-    let isSyncingDateMap = false;
+    let containerTimeout = null;
+    let dateMapTimeout = null;
+
+    const SYNC_DELAY = 50; // ms debounce so we wait for user scroll to settle
 
     const handleContainerScroll = () => {
-      if (isSyncingDateMap) return;
-      if (dateMapRef.current && containerRef.current) {
+      if (!containerRef.current || !dateMapRef.current) return;
+
+      // clear any pending syncs
+      if (containerTimeout) clearTimeout(containerTimeout);
+
+      containerTimeout = setTimeout(() => {
         const container = containerRef.current;
         const map = dateMapRef.current;
 
@@ -45,45 +52,36 @@ const MasonryView = ({ containerRef }) => {
           container.scrollTop /
           (container.scrollHeight - container.clientHeight);
 
-        isSyncingContainer = true;
         map.scrollTo({
           top: ratio * (map.scrollHeight - map.clientHeight),
           behavior: "smooth",
         });
-      }
+      }, SYNC_DELAY);
     };
 
     const handleDateMapScroll = () => {
-      if (isSyncingContainer) return;
-      if (dateMapRef.current && containerRef.current) {
+      if (!dateMapRef.current || !containerRef.current) return;
+
+      if (dateMapTimeout) clearTimeout(dateMapTimeout);
+
+      dateMapTimeout = setTimeout(() => {
         const container = containerRef.current;
         const map = dateMapRef.current;
 
         const ratio = map.scrollTop / (map.scrollHeight - map.clientHeight);
 
-        isSyncingDateMap = true;
         container.scrollTo({
           top: ratio * (container.scrollHeight - container.clientHeight),
           behavior: "smooth",
         });
-      }
-    };
-
-    const scrollEndContainerRef = () => {
-      isSyncingContainer = false;
-    };
-
-    const scrollEndDateMapRef = () => {
-      isSyncingDateMap = false;
+      }, SYNC_DELAY);
     };
 
     if (containerRef.current) {
       containerRef.current.addEventListener("scroll", handleContainerScroll);
-      containerRef.current.addEventListener("scrollend", scrollEndContainerRef);
     }
     if (dateMapRef.current) {
       dateMapRef.current.addEventListener("scroll", handleDateMapScroll);
-      dateMapRef.current.addEventListener("scrollend", scrollEndDateMapRef);
     }
 
     return () => {
@@ -92,20 +90,91 @@ const MasonryView = ({ containerRef }) => {
           "scroll",
           handleContainerScroll
         );
-        containerRef.current.removeEventListener(
-          "scrollend",
-          scrollEndContainerRef
-        );
       }
       if (dateMapRef.current) {
         dateMapRef.current.removeEventListener("scroll", handleDateMapScroll);
-        dateMapRef.current.removeEventListener(
-          "scrollend",
-          scrollEndDateMapRef
-        );
       }
+      if (containerTimeout) clearTimeout(containerTimeout);
+      if (dateMapTimeout) clearTimeout(dateMapTimeout);
     };
   }, []);
+
+  // Testing AI, commenting out bottom code to see if AI can replace it with one that properly waits for scroll events to finish. AI implementation above
+  // useEffect(() => {
+  //   let isSyncingContainer = false;
+  //   let isSyncingDateMap = false;
+
+  //   const handleContainerScroll = () => {
+  //     if (isSyncingDateMap) return;
+  //     if (dateMapRef.current && containerRef.current) {
+  //       isSyncingContainer = true;
+  //       const container = containerRef.current;
+  //       const map = dateMapRef.current;
+
+  //       const ratio =
+  //         container.scrollTop /
+  //         (container.scrollHeight - container.clientHeight);
+
+  //       map.scrollTo({
+  //         top: ratio * (map.scrollHeight - map.clientHeight),
+  //         behavior: "smooth",
+  //       });
+  //     }
+  //   };
+
+  //   const handleDateMapScroll = () => {
+  //     if (isSyncingContainer) return;
+  //     isSyncingDateMap = true;
+  //     if (dateMapRef.current && containerRef.current) {
+  //       const container = containerRef.current;
+  //       const map = dateMapRef.current;
+
+  //       const ratio = map.scrollTop / (map.scrollHeight - map.clientHeight);
+
+  //       container.scrollTo({
+  //         top: ratio * (container.scrollHeight - container.clientHeight),
+  //         behavior: "smooth",
+  //       });
+  //     }
+  //   };
+
+  //   const scrollEndContainerRef = () => {
+  //     isSyncingContainer = false;
+  //   };
+
+  //   const scrollEndDateMapRef = () => {
+  //     isSyncingDateMap = false;
+  //   };
+
+  //   if (containerRef.current) {
+  //     containerRef.current.addEventListener("scroll", handleContainerScroll);
+  //     containerRef.current.addEventListener("scrollend", scrollEndContainerRef);
+  //   }
+  //   if (dateMapRef.current) {
+  //     dateMapRef.current.addEventListener("scroll", handleDateMapScroll);
+  //     dateMapRef.current.addEventListener("scrollend", scrollEndDateMapRef);
+  //   }
+
+  //   return () => {
+  //     if (containerRef.current) {
+  //       containerRef.current.removeEventListener(
+  //         "scroll",
+  //         handleContainerScroll
+  //       );
+  //       containerRef.current.removeEventListener(
+  //         "scrollend",
+  //         scrollEndContainerRef
+  //       );
+  //     }
+  //     if (dateMapRef.current) {
+  //       dateMapRef.current.removeEventListener("scroll", handleDateMapScroll);
+  //       dateMapRef.current.removeEventListener(
+  //         "scrollend",
+  //         scrollEndDateMapRef
+  //       );
+  //     }
+  //   };
+  // }, []);
 
   useEffect(() => {
     if (uniqueDates.length > 0) {

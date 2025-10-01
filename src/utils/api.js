@@ -408,6 +408,15 @@ export const createNewList = (token, username, newList) => {
   return res;
 };
 
+export const updateListTitle = (listId, newTitle, token) => {
+  const res = Axios.patch(
+    `${productionUrl}/update/list/title`,
+    { listId, newTitle },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return res;
+};
+
 export const updateList = (token, listUpdate) => {
   const res = Axios.patch(
     `${productionUrl}/update/lists`,

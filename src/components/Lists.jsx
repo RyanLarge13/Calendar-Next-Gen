@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import ListItems from "./ListItems";
-import { deleteList } from "../utils/api";
+import { deleteList, updateListTitle } from "../utils/api";
 import { Reorder, motion, useDragControls } from "framer-motion";
 import {
   BsFillTrashFill,
@@ -150,73 +150,116 @@ const Lists = ({ listSort, listSortOpt, listSearch, listSearchTxt }) => {
           className="my-masonry-grid"
           columnClassName="my-masonry-grid_column"
         >
-          {listsToRender.map((list) => (
-            <Reorder.Item
-              key={list.id}
-              value={list}
-              drag
-              className={`scrollbar-hide p-3 rounded-md
+          {listsToRender.map((list) => {
+            const [title, setTitle] = useState(list.title);
+            const [titleUpdate, setTitleUpdate] = useState(list.title);
+
+            const updateTitleOnList = async (e) => {
+              e.preventDefault();
+
+              if (!title) {
+                return;
+              }
+
+              if (title === titleUpdate) {
+                return;
+              }
+
+              try {
+                const token = localStorage.getItem("authToken");
+                await updateListTitle(list.id, title, token);
+                setTitleUpdate(title);
+
+                setLists((prev) =>
+                  prev.map((l) =>
+                    l.id === list.id ? { ...l, title: title } : l
+                  )
+                );
+              } catch (err) {
+                console.log(
+                  `Error from server updating list title. Error: ${err}`
+                );
+              }
+            };
+
+            return (
+              <Reorder.Item
+                key={list.id}
+                value={list}
+                drag
+                className={`scrollbar-hide p-3 rounded-md
             shadow-md ${list.color} my-5 mx-0 mr-7 md:mr-0 pr-10 md:pr-3
             text-black list-none`}
-            >
-              <div className="mb-2 bg-white rounded-md shadow-md p-3 flex justify-between items-center">
-                <p className="font-semibold mr-2">{list.title}</p>
-                <div className="flex gap-x-3 text-sm">
-                  <button onClick={() => copyAsPlainText(list.items)}>
-                    {" "}
-                    <RiFileCopy2Line />
-                  </button>
-                  {!addItems.includes(list.id) ? (
-                    <BiListPlus
-                      onClick={() => setAddItems((prev) => [...prev, list.id])}
-                      className="text-lg cursor-pointer"
+              >
+                <div className="mb-2 bg-white rounded-md shadow-md p-3 flex justify-between items-center">
+                  <form onSubmit={updateTitleOnList} className="w-full mr-2">
+                    <input
+                      className="font-semibold outline-none focus:outline-none w-full"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      placeholder="Add your title..."
+                      onBlur={updateTitleOnList}
+                      type="submit"
                     />
-                  ) : (
-                    <BiListMinus
+                  </form>
+                  <div className="flex gap-x-3 text-sm">
+                    <button onClick={() => copyAsPlainText(list.items)}>
+                      {" "}
+                      <RiFileCopy2Line />
+                    </button>
+                    {!addItems.includes(list.id) ? (
+                      <BiListPlus
+                        onClick={() =>
+                          setAddItems((prev) => [...prev, list.id])
+                        }
+                        className="text-lg cursor-pointer"
+                      />
+                    ) : (
+                      <BiListMinus
+                        onClick={() => {
+                          const newIds = addItems.filter((i) => i !== list.id);
+                          setAddItems(newIds);
+                        }}
+                        className="text-lg cursor-pointer"
+                      />
+                    )}
+                    <BsFillShareFill />
+                    <BsFillTrashFill
                       onClick={() => {
-                        const newIds = addItems.filter((i) => i !== list.id);
-                        setAddItems(newIds);
+                        const newNotif = {
+                          show: true,
+                          title: "Delete List",
+                          text: `Are you sure you want to delete this list ${list.title}?`,
+                          color: "bg-red-300",
+                          hasCancel: true,
+                          actions: [
+                            {
+                              text: "cancel",
+                              func: () =>
+                                setSystemNotif({
+                                  show: false,
+                                }),
+                            },
+                            {
+                              text: "delete",
+                              func: () => deleteEntireList(list.id),
+                            },
+                          ],
+                        };
+                        setSystemNotif(newNotif);
                       }}
-                      className="text-lg cursor-pointer"
                     />
-                  )}
-                  <BsFillShareFill />
-                  <BsFillPenFill />
-                  <BsFillTrashFill
-                    onClick={() => {
-                      const newNotif = {
-                        show: true,
-                        title: "Delete List",
-                        text: `Are you sure you want to delete this list ${list.title}?`,
-                        color: "bg-red-300",
-                        hasCancel: true,
-                        actions: [
-                          {
-                            text: "cancel",
-                            func: () =>
-                              setSystemNotif({
-                                show: false,
-                              }),
-                          },
-                          {
-                            text: "delete",
-                            func: () => deleteEntireList(list.id),
-                          },
-                        ],
-                      };
-                      setSystemNotif(newNotif);
-                    }}
-                  />
+                  </div>
                 </div>
-              </div>
-              <ListItems
-                listColor={list.color}
-                addItems={addItems}
-                listId={list.id}
-                items={list?.items}
-              />
-            </Reorder.Item>
-          ))}
+                <ListItems
+                  listColor={list.color}
+                  addItems={addItems}
+                  listId={list.id}
+                  items={list?.items}
+                />
+              </Reorder.Item>
+            );
+          })}
         </Masonry>
       </Reorder.Group>
     </motion.div>
