@@ -35,8 +35,9 @@ const Event = ({ dayEvents }) => {
   const [maximize, setMaximize] = useState(false);
   const [title, setTitle] = useState(event.summary);
   const [description, setDescription] = useState(event.description);
-  const [location, setLocation] = useState(event.location?.string);
+  const [location, setLocation] = useState(event.location?.string || "");
   const [newAttachments, setNewAttachments] = useState([]);
+  const [imageViewer, setImageViewer] = useState({ image: null, show: false });
 
   const [inputChanges, setInputChanges] = useState({
     summary: event.summary,
@@ -329,6 +330,28 @@ const Event = ({ dayEvents }) => {
         : "bg-white text-gray-900 border border-gray-200"
     }`}
     >
+      {/* Image Viewer */}
+      {imageViewer.image && imageViewer.show ? (
+        <div className="fixed inset-0 bg-black/80 flex justify-center items-center z-50">
+          <div className="relative w-full h-full flex justify-center items-center p-4">
+            {/* Close button */}
+            <button
+              onClick={() => setImageViewer({ image: null, show: false })}
+              className="absolute top-6 right-6 text-white text-3xl hover:text-red-400 transition-colors"
+            >
+              ✕
+            </button>
+
+            {/* Image */}
+            <img
+              src={imageViewer.image}
+              alt="Preview"
+              className="max-h-full max-w-full rounded-2xl shadow-lg object-contain"
+            />
+          </div>
+        </div>
+      ) : null}
+
       {/* Header */}
       <div
         onPointerDown={startDrag}
@@ -472,17 +495,18 @@ const Event = ({ dayEvents }) => {
               </div>
             )}
           </div>
+          <form onSubmit={updateLocation} className="w-full">
+            <input
+              className="w-full p-2 rounded-lg bg-gray-50 text-sm focus:outline-none"
+              value={location}
+              type="text"
+              placeholder="Type your location here..."
+              onBlur={updateLocation}
+              onChange={(e) => setLocation(e.target.value)}
+            />
+          </form>
           {event.location ? (
             <>
-              <form onSubmit={updateLocation} className="w-full">
-                <input
-                  className="w-full p-2 rounded-lg bg-gray-50 text-sm focus:outline-none"
-                  value={location}
-                  type="text"
-                  onBlur={updateLocation}
-                  onChange={(e) => setLocation(e.target.value)}
-                />
-              </form>
               <div className="mt-4">
                 <GoogleMaps coordinates={event.location.coordinates} />
               </div>
@@ -583,7 +607,7 @@ const Event = ({ dayEvents }) => {
               columnClassName="my-masonry-grid_column-attachments"
             >
               {/* Map through both newly uploaded attachments and attachments already associated with the event */}
-              {[...fetchedImages, newAttachments].map((img) => (
+              {[...fetchedImages, ...newAttachments].map((img) => (
                 <img
                   key={img}
                   src={img}
