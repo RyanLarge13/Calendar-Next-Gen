@@ -65,16 +65,11 @@ const Event = ({ dayEvents }) => {
   useEffect(() => {
     if (event.attachmentLength > 0) {
       setImagesLoading(true);
-      fetchAttachments(event.id)
+      const token = localStorage.getItem("authToken");
+      fetchAttachments(event.id, token)
         .then((res) => {
-          res.data.attachments.forEach((file) => {
-            const blob = new Blob([new Uint8Array(file.content.data)], {
-              type: file.mimetype,
-            });
-            const url = URL.createObjectURL(blob);
-            setFetchedImages((prevUrls) => [...prevUrls, url]);
-            setImagesLoading(false);
-          });
+          setFetchedImages(res.data.attachments);
+          setImagesLoading(false);
         })
         .catch((err) => console.log(err));
     }

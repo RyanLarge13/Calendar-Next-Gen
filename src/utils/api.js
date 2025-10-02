@@ -107,8 +107,10 @@ export const getEvents = async (username, token) => {
   return res;
 };
 
-export const fetchAttachments = async (eventId) => {
-  const res = Axios.get(`${productionUrl}/attachments/${eventId}`);
+export const fetchAttachments = async (eventId, token) => {
+  const res = Axios.get(`${productionUrl}/attachments/${eventId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
   return res;
 };
 
