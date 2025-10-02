@@ -11,8 +11,10 @@ import {
   API_UpdateEventDesc,
   API_UpdateEventLocation,
   API_UpdateEventTitle,
+  createAttachments,
   fetchAttachments,
 } from "../utils/api";
+import Compressor from "compressorjs";
 import { formatTime } from "../utils/helpers";
 import GoogleMaps from "./GoogleMaps";
 import Masonry from "react-masonry-css";
@@ -34,6 +36,7 @@ const Event = ({ dayEvents }) => {
   const [title, setTitle] = useState(event.summary);
   const [description, setDescription] = useState(event.description);
   const [location, setLocation] = useState(event.location?.string);
+  const [newAttachments, setNewAttachments] = useState([]);
 
   const [inputChanges, setInputChanges] = useState({
     summary: event.summary,
@@ -45,6 +48,7 @@ const Event = ({ dayEvents }) => {
 
   const breakpointColumnsObj = {
     default: 4,
+    1700: 4,
     1100: 3,
     700: 2,
   };
@@ -258,6 +262,50 @@ const Event = ({ dayEvents }) => {
       });
     } catch (err) {
       console.log(err);
+    }
+  };
+
+  const compressImage = (file) => {
+    return new Promise((resolve, reject) => {
+      new Compressor(file, {
+        quality: 0.3, // Adjust the quality value as needed (0.0 to 1.0)
+        success: (compressedFile) => {
+          resolve(compressedFile);
+        },
+        error: (error) => {
+          reject(error);
+        },
+      });
+    });
+  };
+
+  const uploadFiles = async (e) => {
+    const newFiles = [...e.target.files];
+    const uploadableAttachments = [];
+
+    for (const file of newFiles) {
+      try {
+        const compressedFile = await compressImage(file);
+        const compressedArrayBuffer = await compressedFile.arrayBuffer();
+        const compressedFileContent = new Uint8Array(compressedArrayBuffer);
+        const newFile = {
+          img: URL.createObjectURL(compressedFile),
+          mimetype: file.type,
+          filename: file.name,
+          content: compressedFileContent,
+        };
+        setNewAttachments((prevFiles) => [...prevFiles, newFile]);
+        uploadableAttachments.push(newFile);
+      } catch (err) {
+        console.log(`Error compressing image: ${err}`);
+      }
+    }
+
+    try {
+      const token = localStorage.getItem("authToken");
+      await createAttachments(uploadableAttachments, event.id, token);
+    } catch (err) {
+      console.log(`Error uploading new attachments. Error: ${err}`);
     }
   };
 
@@ -512,22 +560,35 @@ const Event = ({ dayEvents }) => {
             <h3 className="font-semibold flex items-center gap-2">
               <FaImage /> Attachments
             </h3>
-            <button className="text-sm font-medium text-cyan-600 hover:underline">
+            <label className="text-sm font-medium text-cyan-600 hover:underline">
               + Add
-            </button>
+              <input
+                type="file"
+                accept=".jpeg .png .svg .pdf .docx"
+                onChange={uploadFiles}
+                multiple
+                placeholder="png svg jpeg pdf word"
+                className="w-0 h-0"
+              />
+            </label>
           </div>
           {imagesLoading ? (
             <p className="text-sm text-gray-500">
               Loading {event.attachmentLength} images...
             </p>
           ) : fetchedImages.length > 0 ? (
-            <Masonry breakpointCols={breakpointColumnsObj} className="gap-3">
-              {fetchedImages.map((img) => (
+            <Masonry
+              breakpointCols={breakpointColumnsObj}
+              className="my-masonry-grid-attachments"
+              columnClassName="my-masonry-grid_column-attachments"
+            >
+              {/* Map through both newly uploaded attachments and attachments already associated with the event */}
+              {[...fetchedImages, newAttachments].map((img) => (
                 <img
                   key={img}
                   src={img}
                   alt="attachment"
-                  className="rounded-lg shadow-sm hover:shadow-md transition"
+                  className="rounded-lg m-1 shadow-sm hover:shadow-md transition"
                 />
               ))}
             </Masonry>

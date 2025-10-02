@@ -84,6 +84,7 @@ const AddEvent = () => {
 
   const breakpointColumnsObj = {
     default: 4, // Number of columns by default
+    1700: 4,
     1100: 3, // Number of columns on screens > 1100px
     700: 2, // Number of columns on screens > 700px
   };
@@ -675,7 +676,7 @@ const AddEvent = () => {
                       src={attachment.img}
                       alt="preview"
                       onClick={() => setPreview(attachment.img)}
-                      className="mt-3 rounded-sm shadow-sm"
+                      className="rounded-sm shadow-sm m-1 transition hover:shadow-md"
                     />
                   </div>
                 ) : (
