@@ -345,7 +345,9 @@ export const getAttachments = async (req, res) => {
     where: { eventId: eventId, userId: id },
   });
 
-  const tempAttachmentUrls = attachments.map((a) => getSignedUrl(a.content));
+  const tempAttachmentUrls = attachments.map(
+    async (a) => await getSignedUrl(a.content)
+  );
 
   res.status(201).json({ message: "Success", attachments: tempAttachmentUrls });
 };
@@ -485,17 +487,45 @@ export const updateEventStartAndEndTime = async (req, res) => {
     .json({ message: "Successfully updating your event time" });
 };
 
+const deleteAttachments = async (eventId) => {
+  try {
+    const attachments = await prisma.attachment.findMany({
+      where: { eventId: eventId },
+    });
+
+    if (!attachments) {
+      return;
+    }
+
+    attachments.forEach(async (a) => {
+      const filename = a.content;
+      const file = bucket.file(filename);
+      await file.delete().catch((err) => {
+        console.log(
+          `Error deleting an attachment connected to an event. Error: ${err}`
+        );
+        // Probably email myself of notify myself or something. Do not want photos in storage taking up space that shouldn't be there
+      });
+    });
+
+    await prisma.attachment.deleteMany({ where: { eventId: eventId } });
+  } catch (err) {
+    console.log(`Error deleting attachments. Error: ${err}`);
+  }
+};
+
 export const deleteEvent = async (req, res) => {
   const id = req.params.eventId;
-  const deletedReminders = await prisma.reminder.deleteMany({
-    where: { eventRefId: id },
-  });
   const deletedEvent = await prisma.event.delete({
     where: {
       id: id,
     },
   });
   if (deletedEvent) {
+    await prisma.reminder.deleteMany({
+      where: { eventRefId: id },
+    });
+    await deleteAttachments(id);
     return res.json({
       message: "Successfully deleted event",
       eventId: deletedEvent.id,
