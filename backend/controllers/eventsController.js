@@ -345,11 +345,11 @@ export const getAttachments = async (req, res) => {
     where: { eventId: eventId, userId: id },
   });
 
-  const tempAttachmentUrls = attachments.map(
-    async (a) => await getSignedUrl(a.content)
+  const tempAttachmentUrls = await Promise.all(
+    attachments.map((a) => getSignedUrl(a.content))
   );
 
-  res.status(201).json({ message: "Success", attachments: tempAttachmentUrls });
+  res.status(200).json({ message: "Success", attachments: tempAttachmentUrls });
 };
 
 export const updateEventTitle = async (req, res) => {
@@ -497,7 +497,7 @@ const deleteAttachments = async (eventId) => {
       return;
     }
 
-    attachments.forEach(async (a) => {
+    for (const a of attachments) {
       const filename = a.content;
       const file = bucket.file(filename);
       await file.delete().catch((err) => {
@@ -506,7 +506,7 @@ const deleteAttachments = async (eventId) => {
         );
         // Probably email myself of notify myself or something. Do not want photos in storage taking up space that shouldn't be there
       });
-    });
+    }
 
     await prisma.attachment.deleteMany({ where: { eventId: eventId } });
   } catch (err) {

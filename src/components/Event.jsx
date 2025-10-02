@@ -68,6 +68,8 @@ const Event = ({ dayEvents }) => {
       const token = localStorage.getItem("authToken");
       fetchAttachments(event.id, token)
         .then((res) => {
+          console.log("Attachment response from server for event");
+          console.log(res);
           setFetchedImages(res.data.attachments);
           setImagesLoading(false);
         })
