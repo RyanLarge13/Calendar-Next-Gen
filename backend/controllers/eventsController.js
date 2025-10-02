@@ -1,5 +1,19 @@
 import prisma from "../utils/prismaClient.js";
 import { v4 as v4 } from "uuid";
+import { bucket } from "../utils/googleStorage.js";
+
+const getSignedUrl = async (filename) => {
+  const file = bucket.file(filename);
+
+  // Expires in 15 minutes
+  const [url] = await file.getSignedUrl({
+    version: "v4",
+    action: "read",
+    expires: Date.now() + 20000,
+  });
+
+  return url;
+};
 
 const addMultipleEvents = async (newEvent) => {
   const howOften = newEvent.repeats.howOften;
@@ -224,21 +238,46 @@ const createMultipleReminders = async (event) => {
 export const createAttachments = async (req, res) => {
   const newEventId = req.params.newEventId;
   const { attachments } = req.body;
+  const { id } = req.user;
+
+  if (!id) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to make this request" });
+    return;
+  }
+
   try {
     const createdAttachments = await Promise.all(
       attachments.map(async (attachment) => {
+        // Logic body
         const { filename, mimetype, content } = attachment;
         const byteBuffer = Buffer.from(Object.values(content));
+
+        const file = bucket.file(filename);
+
+        await file.save(byteBuffer, {
+          metadata: { contentType: mimetype },
+          resumable: false,
+        });
+
+        // await file.makePublic();
+
+        // const pubUrl = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
+
         return prisma.attachment.create({
           data: {
             filename,
             mimetype,
-            content: byteBuffer,
+            content: filename,
             eventId: newEventId,
+            userId: id,
           },
         });
+        // Logic body
       })
     );
+
     if (createdAttachments) {
       res.status(201).json({
         message: `Successfully created new attachments for event ${newEventId}`,
@@ -288,8 +327,27 @@ export const addEvent = async (req, res) => {
 
 export const getAttachments = async (req, res) => {
   const eventId = req.params.eventId;
-  const attachments = await prisma.attachment.findMany({ where: { eventId } });
-  res.status(201).json({ message: "Success", attachments: attachments });
+  const { id } = req.user;
+
+  if (!id) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to make this request" });
+    return;
+  }
+
+  if (!eventId) {
+    res.status(400).json({ message: "Please pass in a valid event id" });
+    return;
+  }
+
+  const attachments = await prisma.attachment.findMany({
+    where: { eventId: eventId, userId: id },
+  });
+
+  const tempAttachmentUrls = attachments.map((a) => getSignedUrl(a.content));
+
+  res.status(201).json({ message: "Success", attachments: tempAttachmentUrls });
 };
 
 export const updateEventTitle = async (req, res) => {

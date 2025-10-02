@@ -121,6 +121,7 @@ end Json?
 
 model Attachment {
 id String      @id @default(uuid())
+userId String
 filename String
 mimetype String
 content String
