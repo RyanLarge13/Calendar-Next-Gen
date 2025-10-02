@@ -5,14 +5,7 @@ import { FiMaximize, FiMinimize, FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";
 import { MdLocationPin, MdOutlineDragIndicator } from "react-icons/md";
 import { tailwindBgToHex } from "../utils/helpers.js";
-import {
-  FaCalendarPlus,
-  FaEdit,
-  FaExternalLinkAlt,
-  FaImage,
-  FaPlusCircle,
-  FaTrash,
-} from "react-icons/fa";
+import { FaEdit, FaExternalLinkAlt, FaImage, FaTrash } from "react-icons/fa";
 import { motion, useDragControls } from "framer-motion";
 import {
   API_UpdateEventDesc,
@@ -20,19 +13,17 @@ import {
   API_UpdateEventTitle,
   fetchAttachments,
 } from "../utils/api";
-import { formatDbText, formatText, formatTime } from "../utils/helpers";
-import ListItems from "./ListItems";
+import { formatTime } from "../utils/helpers";
 import GoogleMaps from "./GoogleMaps";
 import Masonry from "react-masonry-css";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext";
-import { BiAlarmSnooze, BiCalendarEvent } from "react-icons/bi";
 import DatesContext from "../context/DatesContext.jsx";
 
 const Event = ({ dayEvents }) => {
   const { event, setEvent } = useContext(InteractiveContext);
-  const { preferences, lists, setEventMap } = useContext(UserContext);
-  const { dateObj } = useContext(DatesContext);
+  const { preferences, setEventMap } = useContext(UserContext);
+  const { dateObj, string } = useContext(DatesContext);
 
   const [timeLeft, setTimeLeft] = useState(null);
   const [width, setWidth] = useState(0);
@@ -40,10 +31,6 @@ const Event = ({ dayEvents }) => {
   const [fetchedImages, setFetchedImages] = useState([]);
   const [imagesLoading, setImagesLoading] = useState(false);
   const [maximize, setMaximize] = useState(false);
-  const [addItems, setAddItems] = useState([]);
-  const [eventLists, setEventLists] = useState(
-    lists.filter((list) => list.eventId === event.id)
-  );
   const [title, setTitle] = useState(event.summary);
   const [description, setDescription] = useState(event.description);
   const [location, setLocation] = useState(event.location?.string);

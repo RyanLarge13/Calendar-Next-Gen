@@ -20,7 +20,7 @@ export const updateTaskTitle = async (req, res) => {
   }
 
   try {
-    await prisma.tasks.update({
+    await prisma.task.update({
       where: { userId: id, id: taskId },
       data: { title: newTitle },
     });
@@ -29,11 +29,10 @@ export const updateTaskTitle = async (req, res) => {
     return;
   } catch (err) {
     console.log(err);
-    res.status(500),
-      json({
-        message:
-          "Something went wrong updating your task. Please contact the developer",
-      });
+    res.status(500).json({
+      message:
+        "Something went wrong updating your task. Please contact the developer",
+    });
     return;
   }
 };
