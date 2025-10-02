@@ -611,6 +611,7 @@ const Event = ({ dayEvents }) => {
                 <img
                   key={img}
                   src={img}
+                  onClick={() => setImageViewer({ image: img, show: true })}
                   alt="attachment"
                   className="rounded-lg m-1 shadow-sm hover:shadow-md transition"
                 />
