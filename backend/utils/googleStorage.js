@@ -17,7 +17,7 @@ const storage = new Storage({
   projectId: parsedCredentials.project_id,
   credentials: {
     client_email: parsedCredentials.client_email,
-    private_key: parsedCredentials.private_key,
+    private_key: parsedCredentials.private_key.replace(/\\n/g, "\n"),
   },
 });
 
