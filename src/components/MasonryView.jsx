@@ -32,74 +32,73 @@ const MasonryView = ({ containerRef }) => {
   }, [eventMap]);
 
   // AI implementation of my attempt of scrolling sync behavior commented out below
-  useEffect(() => {
-    let containerTimeout = null;
-    let dateMapTimeout = null;
+  // useEffect(() => {
+  //   let containerTimeout = null;
+  //   let dateMapTimeout = null;
 
-    const SYNC_DELAY = 50; // ms debounce so we wait for user scroll to settle
+  //   const SYNC_DELAY = 50; // ms debounce so we wait for user scroll to settle
 
-    const handleContainerScroll = () => {
-      if (!containerRef.current || !dateMapRef.current) return;
+  //   const handleContainerScroll = () => {
+  //     if (!containerRef.current || !dateMapRef.current) return;
 
-      // clear any pending syncs
-      if (containerTimeout) clearTimeout(containerTimeout);
+  //     // clear any pending syncs
+  //     if (containerTimeout) clearTimeout(containerTimeout);
 
-      containerTimeout = setTimeout(() => {
-        const container = containerRef.current;
-        const map = dateMapRef.current;
+  //     containerTimeout = setTimeout(() => {
+  //       const container = containerRef.current;
+  //       const map = dateMapRef.current;
 
-        const ratio =
-          container.scrollTop /
-          (container.scrollHeight - container.clientHeight);
+  //       const ratio =
+  //         container.scrollTop /
+  //         (container.scrollHeight - container.clientHeight);
 
-        map.scrollTo({
-          top: ratio * (map.scrollHeight - map.clientHeight),
-          behavior: "smooth",
-        });
-      }, SYNC_DELAY);
-    };
+  //       map.scrollTo({
+  //         top: ratio * (map.scrollHeight - map.clientHeight * 3.5),
+  //         behavior: "smooth",
+  //       });
+  //     }, SYNC_DELAY);
+  //   };
 
-    const handleDateMapScroll = () => {
-      if (!dateMapRef.current || !containerRef.current) return;
+  //   const handleDateMapScroll = () => {
+  //     if (!dateMapRef.current || !containerRef.current) return;
 
-      if (dateMapTimeout) clearTimeout(dateMapTimeout);
+  //     if (dateMapTimeout) clearTimeout(dateMapTimeout);
 
-      dateMapTimeout = setTimeout(() => {
-        const container = containerRef.current;
-        const map = dateMapRef.current;
+  //     dateMapTimeout = setTimeout(() => {
+  //       const container = containerRef.current;
+  //       const map = dateMapRef.current;
 
-        const ratio = map.scrollTop / (map.scrollHeight - map.clientHeight);
+  //       const ratio =
+  //         map.scrollTop / (map.scrollHeight - map.clientHeight * 3.5);
 
-        container.scrollTo({
-          top: ratio * (container.scrollHeight - container.clientHeight),
-          behavior: "smooth",
-        });
-      }, SYNC_DELAY);
-    };
+  //       container.scrollTo({
+  //         top: ratio * (container.scrollHeight - container.clientHeight),
+  //         behavior: "smooth",
+  //       });
+  //     }, SYNC_DELAY);
+  //   };
 
-    setTimeout(() => {
-      if (containerRef.current) {
-        containerRef.current.addEventListener("scroll", handleContainerScroll);
-      }
-      if (dateMapRef.current) {
-        dateMapRef.current.addEventListener("scroll", handleDateMapScroll);
-      }
-    }, 2000);
+  //   if (containerRef.current) {
+  //     containerRef.current.addEventListener("scroll", handleContainerScroll);
+  //   }
+  //   if (dateMapRef.current) {
+  //     dateMapRef.current.addEventListener("scroll", handleDateMapScroll);
+  //   }
 
-    return () => {
-      if (containerRef.current) {
-        containerRef.current.removeEventListener(
-          "scroll",
-          handleContainerScroll
-        );
-      }
-      if (dateMapRef.current) {
-        dateMapRef.current.removeEventListener("scroll", handleDateMapScroll);
-      }
-      if (containerTimeout) clearTimeout(containerTimeout);
-      if (dateMapTimeout) clearTimeout(dateMapTimeout);
-    };
-  }, []);
+  //   return () => {
+  //     if (containerRef.current) {
+  //       containerRef.current.removeEventListener(
+  //         "scroll",
+  //         handleContainerScroll
+  //       );
+  //     }
+  //     if (dateMapRef.current) {
+  //       dateMapRef.current.removeEventListener("scroll", handleDateMapScroll);
+  //     }
+  //     if (containerTimeout) clearTimeout(containerTimeout);
+  //     if (dateMapTimeout) clearTimeout(dateMapTimeout);
+  //   };
+  // }, []);
 
   // Testing AI, commenting out bottom code to see if AI can replace it with one that properly waits for scroll events to finish. AI implementation above
   // useEffect(() => {

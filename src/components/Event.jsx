@@ -46,7 +46,7 @@ const Event = ({ dayEvents }) => {
   );
   const [title, setTitle] = useState(event.summary);
   const [description, setDescription] = useState(event.description);
-  const [location, setLocation] = useState(event.location.string);
+  const [location, setLocation] = useState(event.location?.string);
 
   const [inputChanges, setInputChanges] = useState({
     summary: event.summary,
