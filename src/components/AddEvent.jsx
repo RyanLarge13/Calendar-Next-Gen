@@ -391,7 +391,10 @@ const AddEvent = () => {
           </div>
           {location && (
             <div>
-              <SuggestCities setLocationObject={setLocationObject} />
+              <SuggestCities
+                setLocationObject={setLocationObject}
+                placeholder="Type in your location..."
+              />
             </div>
           )}
         </div>

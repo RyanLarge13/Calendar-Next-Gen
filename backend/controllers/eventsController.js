@@ -422,7 +422,7 @@ export const updateEventDescription = async (req, res) => {
 };
 
 export const updateEventLocation = async (req, res) => {
-  const { eventId, newLocation } = req.body;
+  const { eventId, newLocation, newCoords } = req.body;
   const { id } = req.user;
 
   if (!id) {
@@ -432,7 +432,7 @@ export const updateEventLocation = async (req, res) => {
     return;
   }
 
-  if (!eventId || !newLocation) {
+  if (!eventId) {
     res.status(404).json({
       message: "Bad request, missing new event location or eventId",
     });
@@ -442,7 +442,7 @@ export const updateEventLocation = async (req, res) => {
   try {
     await prisma.event.update({
       where: { id: eventId, userId: id },
-      data: { location: newLocation },
+      data: { location: { string: newLocation, coordinates: newCoords } },
     });
 
     res.status(200).json({ message: "Successfully updated event location" });

@@ -6,7 +6,7 @@ import UserContext from "../context/UserContext";
 
 const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
-const SuggestCities = ({ setLocationObject }) => {
+const SuggestCities = ({ setLocationObject, placeholder }) => {
   const { preferences } = useContext(UserContext);
 
   const [inputValue, setInputValue] = useState("");
@@ -69,12 +69,13 @@ const SuggestCities = ({ setLocationObject }) => {
         if (status === window.google.maps.places.PlacesServiceStatus.OK) {
           setSelectedPlace({
             id: place.place_id,
-            name: place.name,
+            name: place.formatted_address,
             coordinates: {
               lat: place.geometry.location.lat(),
               lng: place.geometry.location.lng(),
             },
           });
+          setInputValue(place.formatted_address);
           setLocationObject({
             string: place.formatted_address,
             coordinates: {
@@ -82,6 +83,7 @@ const SuggestCities = ({ setLocationObject }) => {
               lng: place.geometry.location.lng(),
             },
           });
+          setSuggestions([]);
         }
       });
     }
@@ -93,7 +95,7 @@ const SuggestCities = ({ setLocationObject }) => {
         type="text"
         value={inputValue}
         onChange={handleInputChange}
-        placeholder="Type a city or place"
+        placeholder={placeholder}
         className={`${
           preferences.darkMode ? "bg-[#444] text-white" : "bg-white text-black"
         } my-2 p-2 rounded-md shadow-sm w-full focus:outline-none outline-none focus:shadow-md duration-200`}
