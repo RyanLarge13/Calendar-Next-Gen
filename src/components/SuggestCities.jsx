@@ -6,7 +6,7 @@ import UserContext from "../context/UserContext";
 
 const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
-const SuggestCities = ({ setLocationObject, placeholder }) => {
+const SuggestCities = ({ setLocationObject, placeholder, showGoogleMap }) => {
   const { preferences } = useContext(UserContext);
 
   const [inputValue, setInputValue] = useState("");
@@ -114,7 +114,7 @@ const SuggestCities = ({ setLocationObject, placeholder }) => {
           </motion.div>
         ))}
       </div>
-      {selectedPlace ? (
+      {selectedPlace && showGoogleMap ? (
         <div>
           <GoogleMaps coordinates={selectedPlace.coordinates} />
         </div>

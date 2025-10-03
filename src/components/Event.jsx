@@ -4,7 +4,7 @@ import { FiMaximize, FiMinimize, FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";
 import { MdLocationPin, MdOutlineDragIndicator } from "react-icons/md";
 import { tailwindBgToHex } from "../utils/helpers.js";
-import { FaEdit, FaExternalLinkAlt, FaImage, FaTrash } from "react-icons/fa";
+import { FaExternalLinkAlt, FaImage, FaTrash } from "react-icons/fa";
 import { motion, useDragControls, AnimatePresence } from "framer-motion";
 import {
   API_UpdateEventDesc,
@@ -35,9 +35,9 @@ const Event = ({ dayEvents }) => {
   const [maximize, setMaximize] = useState(false);
   const [title, setTitle] = useState(event.summary);
   const [description, setDescription] = useState(event.description);
-  const [location, setLocation] = useState(event.location?.string || "");
   const [newAttachments, setNewAttachments] = useState([]);
   const [imageViewer, setImageViewer] = useState({ image: null, show: false });
+  const [location, setLocation] = useState(event.location);
 
   const [inputChanges, setInputChanges] = useState({
     summary: event.summary,
@@ -228,7 +228,7 @@ const Event = ({ dayEvents }) => {
       return;
     }
 
-    if (inputChanges.location === newLocationObject.string) {
+    if (inputChanges.location.string === newLocationObject.string) {
       return;
     }
 
@@ -238,8 +238,9 @@ const Event = ({ dayEvents }) => {
 
       setInputChanges((prev) => ({
         ...prev,
-        location: newLocationObject.string,
+        location: newLocationObject,
       }));
+      setLocation(newLocationObject);
       setEventMap((prev) => {
         const date = new Date(string);
         const newMap = new Map(prev);
@@ -484,7 +485,7 @@ const Event = ({ dayEvents }) => {
               <h3 className="font-semibold flex items-center gap-2">
                 <MdLocationPin /> Location
               </h3>
-              {event.location && (
+              {location.string && location.coordinates ? (
                 <div className="flex gap-3 text-gray-500">
                   <button
                     onClick={() =>
@@ -503,18 +504,19 @@ const Event = ({ dayEvents }) => {
                     <FaExternalLinkAlt />
                   </button>
                 </div>
-              )}
+              ) : null}
             </div>
-            <p className="text-sm text-gray-700 ml-2">
-              {event.location.string}
-            </p>
+            {location.string && location.coordinates ? (
+              <p className="text-sm text-gray-700 ml-2">{location.string}</p>
+            ) : null}
             <SuggestCities
               setLocationObject={updateLocation}
               placeholder="Change event location..."
+              showGoogleMap={false}
             />
-            {event.location ? (
+            {location.string && location.coordinates ? (
               <div className="mt-4">
-                <GoogleMaps coordinates={event.location.coordinates} />
+                <GoogleMaps coordinates={location.coordinates} />
               </div>
             ) : (
               <p className="text-sm text-gray-500">No Location Provided</p>

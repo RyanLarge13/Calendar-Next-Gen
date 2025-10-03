@@ -394,6 +394,7 @@ const AddEvent = () => {
               <SuggestCities
                 setLocationObject={setLocationObject}
                 placeholder="Type in your location..."
+                showGoogleMap={true}
               />
             </div>
           )}
