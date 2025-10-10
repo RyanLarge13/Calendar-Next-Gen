@@ -147,7 +147,7 @@ const Dashboard = ({ timeOfDay }) => {
             <div className="space-y-3">
               <div
                 key={t[0].id}
-                className={`p-3 my-5 md:mx-3 lg:mx-5 rounded-md shadow-md ${t.color} text-black`}
+                className={`p-3 my-5 md:mx-3 lg:mx-5 rounded-md shadow-md ${t[0].color} text-black`}
               >
                 <p>{t[0].title}</p>
                 <p>Completed: {t[0].tasks.filter((t) => t.complete).length}</p>
