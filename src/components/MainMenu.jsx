@@ -146,17 +146,20 @@ const Dashboard = ({ timeOfDay }) => {
           {userTasks?.length > 0 ? (
             <div className="space-y-3">
               <div
-                key={t[0].id}
-                className={`p-3 my-5 md:mx-3 lg:mx-5 rounded-md shadow-md ${t[0].color} text-black`}
+                key={userTasks[0].id}
+                className={`p-3 my-5 md:mx-3 lg:mx-5 rounded-md shadow-md ${userTasks[0].color} text-black`}
               >
-                <p>{t[0].title}</p>
-                <p>Completed: {t[0].tasks.filter((t) => t.complete).length}</p>
+                <p>{userTasks[0].title}</p>
+                <p>
+                  Completed:{" "}
+                  {userTasks[0].tasks.filter((t) => t.complete).length}
+                </p>
                 <p>
                   Tasks to still finish today:{" "}
-                  {t[0].tasks.filter((t) => !t.complete).length}
+                  {userTasks[0].tasks.filter((t) => !t.complete).length}
                 </p>
                 <div className="mt-3">
-                  {t[0].tasks
+                  {userTasks[0].tasks
                     .filter((t) => !t.complete)
                     .map((taskItem) => (
                       <div
