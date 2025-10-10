@@ -145,35 +145,31 @@ const Dashboard = ({ timeOfDay }) => {
           </p>
           {userTasks?.length > 0 ? (
             <div className="space-y-3">
-              {userTasks
-                .filter((t) => new Date(t.date).toLocaleDateString() === string)
-                .map((t) => (
-                  <div
-                    key={t.id}
-                    className={`p-3 my-5 md:mx-3 lg:mx-5 rounded-md shadow-md ${t.color} text-black`}
-                  >
-                    <p>{t.title}</p>
-                    <p>Completed: {t.tasks.filter((t) => t.complete).length}</p>
-                    <p>
-                      Tasks to still finish today:{" "}
-                      {t.tasks.filter((t) => !t.complete).length}
-                    </p>
-                    <div className="mt-3">
-                      {t.tasks
-                        .filter((t) => !t.complete)
-                        .map((taskItem) => (
-                          <div
-                            key={taskItem.id}
-                            className="p-3 py-4 border-b border-b-slate-300 bg-white rounded-sm"
-                          >
-                            <div className=" ml-5 w-full flex justify-between items-center">
-                              <p className="mr-2">{taskItem.text}</p>
-                            </div>
-                          </div>
-                        ))}
-                    </div>
-                  </div>
-                ))}
+              <div
+                key={t[0].id}
+                className={`p-3 my-5 md:mx-3 lg:mx-5 rounded-md shadow-md ${t.color} text-black`}
+              >
+                <p>{t[0].title}</p>
+                <p>Completed: {t[0].tasks.filter((t) => t.complete).length}</p>
+                <p>
+                  Tasks to still finish today:{" "}
+                  {t[0].tasks.filter((t) => !t.complete).length}
+                </p>
+                <div className="mt-3">
+                  {t[0].tasks
+                    .filter((t) => !t.complete)
+                    .map((taskItem) => (
+                      <div
+                        key={taskItem.id}
+                        className="p-3 py-4 border-b border-b-slate-300 bg-white rounded-sm"
+                      >
+                        <div className=" ml-5 w-full flex justify-between items-center">
+                          <p className="mr-2">{taskItem.text}</p>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
             </div>
           ) : (
             <p className="text-sm text-gray-500">You have no tasks today</p>

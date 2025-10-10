@@ -175,6 +175,24 @@ export const API_UpdateEventLocation = (eventId, location, token) => {
   return res;
 };
 
+export const updateReminderNotes = (reminderId, newDesc, token) => {
+  const res = Axios.patch(
+    `${productionUrl}/update/reminder/notes`,
+    { reminderId: reminderId, newDesc: newDesc },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return res;
+};
+
+export const updateReminderTitle = (reminderId, newTitle, token) => {
+  const res = Axios.patch(
+    `${productionUrl}/update/reminder/title`,
+    { reminderId: reminderId, newTitle: newTitle },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return res;
+};
+
 export const createAttachments = (attachments, eventId, token) => {
   const res = Axios.post(
     `${productionUrl}/new/attachments/${eventId}`,

@@ -485,7 +485,7 @@ const Event = ({ dayEvents }) => {
               <h3 className="font-semibold flex items-center gap-2">
                 <MdLocationPin /> Location
               </h3>
-              {location.string && location.coordinates ? (
+              {location?.string && location?.coordinates ? (
                 <div className="flex gap-3 text-gray-500">
                   <button
                     onClick={() =>
@@ -506,7 +506,7 @@ const Event = ({ dayEvents }) => {
                 </div>
               ) : null}
             </div>
-            {location.string && location.coordinates ? (
+            {location?.string && location?.coordinates ? (
               <p className="text-sm text-gray-700 ml-2">{location.string}</p>
             ) : null}
             <SuggestCities
@@ -514,7 +514,7 @@ const Event = ({ dayEvents }) => {
               placeholder="Change event location..."
               showGoogleMap={false}
             />
-            {location.string && location.coordinates ? (
+            {location?.string && location?.coordinates ? (
               <div className="mt-4">
                 <GoogleMaps coordinates={location.coordinates} />
               </div>

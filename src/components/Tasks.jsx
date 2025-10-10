@@ -1,11 +1,6 @@
 import { useContext, useState, useEffect } from "react";
 import { IoIosAddCircle } from "react-icons/io";
-import {
-  BsListTask,
-  BsPenFill,
-  BsShareFill,
-  BsTrashFill,
-} from "react-icons/bs";
+import { BsShareFill, BsTrashFill } from "react-icons/bs";
 import { deleteTask } from "../utils/api";
 import TaskItems from "./TaskItems";
 import UserContext from "../context/UserContext";
@@ -148,12 +143,6 @@ const Tasks = ({ taskSort, taskSortOpt, taskSearch, taskSearchTxt }) => {
                   })}
                 </p>
                 <div className="flex items-center gap-3 text-gray-500">
-                  <button
-                    onClick={() => editTitle(task)}
-                    className="hover:text-blue-500 transition-colors"
-                  >
-                    <BsPenFill />
-                  </button>
                   <button className="hover:text-emerald-500 transition-colors">
                     <BsShareFill />
                   </button>

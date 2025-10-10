@@ -89,6 +89,15 @@ const Sticky = ({ sticky, index }) => {
     }
   }, []);
 
+  useEffect(() => {
+    let timeout;
+    timeout = setTimeout(() => {
+      handleSave();
+    }, 2000);
+
+    return () => clearTimeout(timeout);
+  }, [editText]);
+
   const handleViewChange = (newView) => {
     const token = localStorage.getItem("authToken");
     updateStickyView(token, sticky.id, newView)
@@ -316,8 +325,8 @@ const Sticky = ({ sticky, index }) => {
             formats={formats}
             style={{ color: tailwindBgToHex(sticky.color) }}
             value={editText}
-            onChange={handleTextChange}
             onBlur={handleSave}
+            onChange={handleTextChange}
             className="h-full scrollbar-slick"
           />
         </div>

@@ -334,11 +334,17 @@ export const UserProvider = ({ children }) => {
     const sortedLists = user.lists.sort(
       (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
     );
+    const sortedTasks = user.tasks.sort(
+      (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+    );
+    const sortedStickies = user.stickies.sort(
+      (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+    );
     setLists(sortedLists);
     setKanbans(user.kanbans);
-    setStickies(user.stickies);
+    setStickies(sortedStickies);
     generateQrCode(user.email);
-    setUserTasks(user.tasks);
+    setUserTasks(sortedTasks);
     if (fresh) {
       continueRequests(user);
     }
