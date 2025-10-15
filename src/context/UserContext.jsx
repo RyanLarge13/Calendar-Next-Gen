@@ -226,6 +226,14 @@ export const UserProvider = ({ children }) => {
       } else {
         newMap.get(key).events.push(evt);
       }
+
+      if (evt.repeats.repeat) {
+        if (!newMap.has("repeat-events")) {
+          newMap.set("repeat-events", { events: [evt] });
+        } else {
+          newMap.get("repeat-events").events.push(evt);
+        }
+      }
     });
     setEventMap(new Map(newMap));
   };

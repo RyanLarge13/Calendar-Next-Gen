@@ -90,6 +90,7 @@ const ModalHeader = ({ allDayEvents }) => {
   }, [event, addNewEvent]);
 
   const deleteAnEvent = () => {
+    // Update to handle repeated events
     const authToken = localStorage.getItem("authToken");
     deleteEvent(user.username, event.id, authToken)
       .then((res) => {
@@ -119,34 +120,35 @@ const ModalHeader = ({ allDayEvents }) => {
   };
 
   const deleteAllEvents = () => {
-    try {
-      const token = localStorage.getItem("authToken");
-      deleteRepeats(user.username, event.id, event.parentId, token)
-        .then((res) => {
-          const filteredEvents = events.filter((e) => {
-            if (e.id === event.id || e.id === event.parentId) {
-              return;
-            }
-            if (e.repeats.repeat && e.parentId === event.parentId) {
-              return;
-            }
-            if (e.parentId === event.id) {
-              return;
-            }
-            return e;
-          });
-          setEvent(null);
-          setEvents(filteredEvents);
-          if (allDayEvents.length > 0) {
-            setShowAllDayEvents(true);
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    } catch (err) {
-      console.log(err);
-    }
+    // Rewrite ------------------------------------
+    // try {
+    //   const token = localStorage.getItem("authToken");
+    //   deleteRepeats(user.username, event.id, event.parentId, token)
+    //     .then((res) => {
+    //       const filteredEvents = events.filter((e) => {
+    //         if (e.id === event.id || e.id === event.parentId) {
+    //           return;
+    //         }
+    //         if (e.repeats.repeat && e.parentId === event.parentId) {
+    //           return;
+    //         }
+    //         if (e.parentId === event.id) {
+    //           return;
+    //         }
+    //         return e;
+    //       });
+    //       setEvent(null);
+    //       setEvents(filteredEvents);
+    //       if (allDayEvents.length > 0) {
+    //         setShowAllDayEvents(true);
+    //       }
+    //     })
+    //     .catch((err) => {
+    //       console.log(err);
+    //     });
+    // } catch (err) {
+    //   console.log(err);
+    // }
   };
 
   const switchDays = (e, info) => {

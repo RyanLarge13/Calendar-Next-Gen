@@ -92,7 +92,6 @@ export const addSubscriptionToUser = async (req, res) => {
 };
 
 const processNotifications = async (userId, res) => {
-  console.log("Processing notifications");
   try {
     const notifications = await prisma.notification.findMany({
       where: {
