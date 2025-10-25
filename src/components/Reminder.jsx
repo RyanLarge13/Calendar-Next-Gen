@@ -1,28 +1,204 @@
-import { useContext } from "react";
+import { useContext, useRef, useState } from "react";
+import UserContext from "../context/UserContext";
+import {
+  updateReminderComplete,
+  updateReminderNotes,
+  updateReminderTitle,
+  deleteReminder,
+} from "../utils/api";
 import { motion } from "framer-motion";
-import DatesContext from "../context/DatesContext";
-import InteractiveContext from "../context/InteractiveContext";
-import { BiAlarmSnooze, BiCalendarEvent } from "react-icons/bi";
-import { BsFillPenFill, BsAlarmFill } from "react-icons/bs";
+import { BsAlarmFill } from "react-icons/bs";
 import { MdOpenInNew } from "react-icons/md";
-import { formatTime } from "../utils/helpers";
+import { formatTime } from "../utils/helpers.js";
+import { BiAlarmSnooze, BiCalendarEvent } from "react-icons/bi";
+import InteractiveContext from "../context/InteractiveContext.jsx";
+import DatesContext from "../context/DatesContext.jsx";
 
-const Reminder = (reminder) => {
-  const { dateObj } = useContext(DatesContext);
+const Reminder = ({ reminder }) => {
+  const {
+    reminders = [],
+    events = [],
+    setReminders,
+    user,
+  } = useContext(UserContext);
   const { setEvent } = useContext(InteractiveContext);
+  const { dateObj } = useContext(DatesContext);
+
+  const [originalReminderNote, setOriginalReminderNote] = useState(
+    reminder.notes
+  );
+  const [originalReminderTitle, setOriginalReminderTitle] = useState(
+    reminder.title
+  );
+  const [reminderNote, setReminderNote] = useState(reminder.notes);
+  const [reminderTitle, setReminderTitle] = useState(reminder.title);
+  const [selected, setSelected] = useState([]);
+  const [selectable, setSelectable] = useState(false);
+  let timeout = useRef(null);
+
+  const saveReminderNote = async () => {
+    if (originalReminderNote === reminderNote) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("authToken");
+      await updateReminderNotes(reminder.id, reminderNote, token);
+
+      setOriginalReminderNote(reminderNote);
+
+      setReminders((prev) =>
+        prev.map((r) => {
+          if (r.id === reminder.id) {
+            return { ...r, notes: reminderNote };
+          } else {
+            return r;
+          }
+        })
+      );
+    } catch (err) {
+      console.log("Error trying to update reminder note");
+      console.log(err);
+    }
+  };
+
+  const saveReminderTitle = async () => {
+    if (originalReminderTitle === reminderTitle) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("authToken");
+      await updateReminderTitle(reminder.id, reminderTitle, token);
+
+      setReminders((prev) => {
+        prev.map((r) => {
+          if (r.id === reminder.id) {
+            return { ...r, title: reminderTitle };
+          } else {
+            return r;
+          }
+        });
+      });
+    } catch (err) {
+      console.log("Error trying to update reminder title");
+      console.log(err);
+    }
+  };
+
+  const toggleComplete = async (reminderInfo) => {
+    const token = localStorage.getItem("authToken");
+    try {
+      await updateReminderComplete(reminderInfo, token);
+
+      const newReminders = reminders.map((r) => {
+        if (r.id === reminderInfo.reminderId) {
+          return {
+            ...r,
+            completed: reminderInfo.completed,
+          };
+        } else {
+          return r;
+        }
+      });
+
+      setReminders(newReminders);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  // const calcWidth = (time) => {
+  //   if (new Date(time).toLocaleDateString() !== dateObj.toLocaleDateString()) {
+  //     return 0;
+  //   }
+  //   const nowMinutes = dateObj.getMinutes();
+  //   const reminderMinutes = new Date(time).getMinutes();
+  //   const nowHours = dateObj.getHours() * 60;
+  //   const reminderHours = new Date(time).getHours() * 60;
+  //   const reminderTime = reminderMinutes + reminderHours;
+  //   const now = nowMinutes + nowHours;
+  //   const percentage = (now / reminderTime) * 100;
+  //   if (percentage >= 100) {
+  //     return 100;
+  //   }
+  //   return Math.floor(percentage);
+  // };
 
   const openRelatedEvent = (eventRefId) => {
-    const eventOfReminder =
-      events.find((event) => event.id === eventRefId) || null;
+    const eventOfReminder = events.filter((event) => event.id === eventRefId);
+    setEvent(eventOfReminder[0]);
+  };
 
-    if (eventOfReminder !== null) {
-      setEvent(eventOfReminder[0]);
+  const addSelected = (id) => {
+    setSelected((prev) => [...prev, id]);
+  };
+
+  const removeSelected = (id) => {
+    const newList = selected.filter((item) => item !== id);
+    setSelected(newList);
+  };
+
+  const stopTime = (id) => {
+    if (selectable === false) {
+      clearTimeout(timeout.current);
+    }
+  };
+
+  const startTime = (id) => {
+    if (selected.length > 1 && selected.includes(id)) {
+      return removeSelected(id);
+    }
+    if (selected.length === 1 && selected.includes(id)) {
+      setSelectable(false);
+      return removeSelected(id);
+    }
+    if (selectable === true) {
+      return addSelected(id);
+    }
+    timeout.current = setTimeout(() => {
+      setSelectable(true);
+      addSelected(id);
+    }, 750);
+  };
+
+  const deleteAReminder = (id) => {
+    const token = localStorage.getItem("authToken");
+
+    if (token) {
+      deleteReminder(user.username, id, token)
+        .then((res) => {
+          const newReminders = reminders.filter(
+            (reminder) => reminder.id !== res.data.reminderId
+          );
+          setReminders(newReminders);
+          const newSelected = selected.filter((itemId) => itemId !== id);
+          setSelected(newSelected);
+          if (newSelected.length < 1) {
+            return setSelectable(false);
+          }
+        })
+        .catch((err) => console.log(err));
     }
   };
 
   return (
     <motion.div
       key={reminder.id}
+      animate={
+        selected.includes(reminder.id)
+          ? {
+              scale: 1.03,
+              boxShadow: "0 0 20px rgba(59,130,246,0.4)", // blue glow
+              backgroundColor: "#f0f9ff",
+            }
+          : {
+              scale: 1,
+              boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+              backgroundColor: "#fff",
+            }
+      }
+      transition={{ type: "spring", stiffness: 180, damping: 15 }}
       className={`${
         new Date(reminder.time) < dateObj
           ? "border-l-4 border-rose-400"
@@ -31,6 +207,9 @@ const Reminder = (reminder) => {
           ? "border-l-4 border-amber-400"
           : "border-l-4 border-cyan-400"
       } p-4 my-3 rounded-2xl relative text-gray-900`}
+      onPointerDown={() => startTime(reminder.id)}
+      onPointerUp={() => stopTime(reminder.id)}
+      onPointerCancel={() => clearTimeout(timeout.current)}
     >
       <div className="space-y-3">
         {/* Date Row */}
@@ -43,11 +222,25 @@ const Reminder = (reminder) => {
               day: "numeric",
             })}
           </p>
-          {reminder.eventRefId ? (
-            <BiCalendarEvent className="text-xl text-gray-500" />
-          ) : (
-            <BiAlarmSnooze className="text-xl text-gray-500" />
-          )}
+          <button
+            onClick={() =>
+              toggleComplete({
+                completed: !reminder.completed,
+                reminderId: reminder.id,
+              })
+            }
+            className={`shadow-inner p-2 rounded-full bg-gradient-to-tr hover:shadow-lg duration-200 hover:from-sky-100 ${
+              reminder.completed
+                ? "from-cyan-300 to-sky-100"
+                : "from-white to-slate-100"
+            }`}
+          >
+            {reminder.eventRefId ? (
+              <BiCalendarEvent className="text-xl text-gray-500" />
+            ) : (
+              <BiAlarmSnooze className="text-xl text-gray-500" />
+            )}
+          </button>
         </div>
 
         {/* Time + Title */}
@@ -65,17 +258,24 @@ const Reminder = (reminder) => {
             </div>
           </div>
 
-          <div className="flex-1 p-3 bg-gray-50 rounded-xl shadow-inner cursor-pointer">
-            <p className="text-base font-semibold">{reminder.title}</p>
-          </div>
+          <input
+            className="flex-1 p-3 bg-gray-50 rounded-xl shadow-inner cursor-pointer text-base font-semibold"
+            placeholder="Create a title"
+            value={reminderTitle}
+            onChange={(e) => setReminderTitle(e.target.value)}
+            onBlur={saveReminderTitle}
+          />
         </div>
 
         {/* Notes */}
         {reminder.notes && (
-          <div className="p-3 bg-gray-50 rounded-xl shadow-inner flex justify-between items-start text-xs text-gray-600">
-            <p className="whitespace-pre-wrap">{reminder.notes}</p>
-            <BsFillPenFill className="text-gray-400 ml-2 shrink-0" />
-          </div>
+          <input
+            className="p-3 bg-gray-50 rounded-xl shadow-inner text-xs text-gray-600"
+            placeholder="Write a note..."
+            value={reminderNote}
+            onChange={(e) => setReminderNote(e.target.value)}
+            onBlur={saveReminderNote}
+          />
         )}
 
         {/* Open Event Button */}
@@ -89,6 +289,21 @@ const Reminder = (reminder) => {
           </button>
         )}
       </div>
+
+      {/* Delete Button */}
+      {selected.includes(reminder.id) && (
+        <motion.button
+          initial={{ x: 40, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          className="px-3 py-1 rounded-lg shadow-md bg-rose-500 text-white text-xs absolute right-2 top-2 hover:bg-rose-600 transition-colors"
+          onPointerDown={(e) => {
+            e.stopPropagation();
+            deleteAReminder(reminder.id);
+          }}
+        >
+          Delete
+        </motion.button>
+      )}
     </motion.div>
   );
 };
