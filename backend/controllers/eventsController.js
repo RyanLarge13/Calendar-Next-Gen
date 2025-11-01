@@ -115,6 +115,7 @@ const createMultipleReminders = async (event) => {
 
 export const createAttachments = async (req, res) => {
   const newEventId = req.params.newEventId;
+  // Does new event id exist? It should always from frontend...
   const { attachments } = req.body;
   const { id } = req.user;
 
@@ -122,6 +123,45 @@ export const createAttachments = async (req, res) => {
     res
       .status(401)
       .json({ message: "You are not authorized to make this request" });
+    return;
+  }
+
+  // Why did we not first create or check if first the event already exists before creating attachments?? Hmmmmmmmmmm
+  // Well we know in the frontend that you can only create attachments if you are currently making a new event
+  // or if..... you already have an event and are trying to update it.
+
+  // So what do we do, lets review.
+
+  // Well, do we check to see if the event is there and has an attachments property? I must say yes, probably. Because if this is anm update
+  //Then we need to make sure the event has a true value in that spot!!!!
+
+  try {
+  const event = await prisma.event.findUnique({where: {id: newEventId}});
+
+  if (!event) {
+    console.log("Why is there no event here when trying to create an attachment!?");
+    res.status(400).json({message:"Yes, a 400 status. This is most likely you doing something you should not be doing on my app."});
+    return
+  }
+
+  // Nope! Do not need to check for length only add length.
+  // Another try catch for custom error handling? This is crazy
+  // I just thought.. Hopefully the event exists first huh? I guess I should look back at the steps before we get here
+
+  try {
+    await prisma.event.update({where: {id: newEventId}, data: {attachmentLength: event.attachmentLength + attachments.length}});
+    res.status(200).json({message: "Nice. New attachments created!"});
+  } catch (err) {
+    console.log("Error updating event in db for longer attachment length");
+    console.log(err);
+    res.status(500).json({message: "Sorry, server dump"});
+  return;
+  }
+
+  } catch (err) {
+    console.log("Error checking for event in DB when creating attachments")
+    console.log(err);
+    res.status(500).json({message: "Failed to create attachments due to server taking dump? I mean, I guess. Sorry"});
     return;
   }
 
