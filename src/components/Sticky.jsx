@@ -12,7 +12,7 @@ import {
   AiOutlinePushpin
 } from "react-icons/ai";
 import { BiExpand, BiCollapse } from "react-icons/bi";
-import { BsFillPenFill } from "react-icons/bs";
+import { BsFillPenFill, BsTrash, BsTrash2Fill } from "react-icons/bs";
 import { FaRegWindowMinimize } from "react-icons/fa";
 import { FiMaximize } from "react-icons/fi";
 import { MdSave } from "react-icons/md";
@@ -35,24 +35,6 @@ const Sticky = ({ sticky, index }) => {
   const stickyRef = useRef(null);
 
   const controls = useDragControls();
-
-  useEffect(() => {
-    const viewState = sticky.viewState;
-    switch (viewState) {
-      case "minimized":
-        break;
-      case "fullscreen":
-        setFullScreen(true);
-        break;
-      case "expand":
-        setFullScreen(false);
-        setMinimize(false);
-        setExpand(true);
-        break;
-      default:
-        null;
-    }
-  }, []);
 
   const handleViewChange = newView => {
     const token = localStorage.getItem("authToken");
@@ -192,13 +174,13 @@ const Sticky = ({ sticky, index }) => {
         onPointerDown={startDrag}
         style={{ touchAction: "none" }}
       >
-        <div className="flex justify-between items-center gap-x-3">
-          <button onClick={() => setPin(prev => !prev)}>
+        <div className="flex justify-between items-center gap-x-1">
+          <button onClick={() => setPin(prev => !prev)} className="rounded-sm p-1 hover:bg-slate-300 duration-300 hover:outline hover:outline-1">
             {pin ? <AiFillPushpin /> : <AiOutlinePushpin />}
           </button>
           <button
             onClick={() => (!edit ? setEdit(true) : handleSave())}
-            className="flex justify-between text-sm items-center gap-x-3"
+            className="rounded-sm p-1 hover:bg-slate-300 duration-300 hover:outline hover:outline-1 text-sm"
           >
             {edit ? <MdSave /> : <BsFillPenFill />}
           </button>
@@ -221,12 +203,13 @@ const Sticky = ({ sticky, index }) => {
                 setExpand(false);
               }
             }}
+            className="rounded-sm p-1 hover:bg-slate-300 duration-300 hover:outline hover:outline-1"
           >
             {expand ? <BiCollapse /> : <BiExpand />}
           </button>
         </div>
-        <button type="text" onClick={() => confirmDelete(sticky.id)}>
-          <AiFillCloseCircle />
+        <button type="text" onClick={() => confirmDelete(sticky.id)} className="rounded-sm p-1 hover:bg-slate-300 duration-300 hover:outline hover:outline-1">
+          <BsTrash2Fill className="text-sm" />
         </button>
       </div>
       {expand && (
@@ -240,6 +223,7 @@ const Sticky = ({ sticky, index }) => {
               setFullScreen(prev => !prev);
               handleViewChange("fullscreen");
             }}
+            className="rounded-sm p-1 hover:bg-slate-300 duration-300 hover:outline hover:outline-1"
           >
             <FiMaximize />
           </button>
@@ -250,6 +234,7 @@ const Sticky = ({ sticky, index }) => {
               setFullScreen(false);
               handleViewChange("minimized");
             }}
+            className="rounded-sm p-1 hover:bg-slate-300 duration-300 hover:outline hover:outline-1"
           >
             <FaRegWindowMinimize />
           </button>
