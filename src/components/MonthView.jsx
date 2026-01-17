@@ -75,7 +75,7 @@ const MonthView = () => {
       };
     }
     if (selected.includes(index)) {
-      return { backgroundColor: "#cffaf" };
+      return { backgroundColor: "#1b1b1b" };
     } else {
       return { backgroundColor: preferences.darkMode ? "#222" : "#fff" };
     }

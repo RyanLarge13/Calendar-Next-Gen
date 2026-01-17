@@ -115,72 +115,113 @@ const UsernamePassLogin = () => {
   };
 
   return (
-    <motion.form
-      initial={{ opacity: 0, y: 50 }}
-      exit={{ opacity: 0, y: 50, position: "absolute" }}
-      animate={{
-        opacity: 1,
-        y: 0,
-        transition: { delay: 0.25 },
-      }}
-      onSubmit={loginPasswordUsername}
-      className="flex flex-col items-center gap-y-3 justify-center w-full"
-    >
-      <input
-        onChange={(e) => setUsername(e.target.value)}
-        onBlur={() => checkValidInput("username")}
-        type="text"
-        placeholder="Username"
-        value={username}
-        id="username"
-        name="username"
-        className={`${
-          validUserName === null
-            ? ""
-            : validUserName
-            ? "shadow-green-200"
-            : "shadow-red-200"
-        } w-full p-3 my-2 rounded-md shadow-lg focus:outline-none ${
-          preferences.darkMode ? "bg-transparent" : "bg-white"
-        }`}
-      />
-      <input
-        onChange={(e) => setEmail(e.target.value)}
-        type="email"
-        placeholder="Email"
-        value={email}
-        id="email"
-        name="email"
-        className={`w-full p-3 rounded-md shadow-lg focus:outline-none ${
-          preferences.darkMode ? "bg-transparent" : "bg-white"
-        }`}
-      />
-      <input
-        onChange={(e) => setPassword(e.target.value)}
-        onBlur={() => checkValidInput("password")}
-        type="password"
-        placeholder="Password"
-        value={password}
-        id="password"
-        name="password"
-        className={`${
-          validPassword === null
-            ? ""
-            : validPassword
-            ? "shadow-green-200"
-            : "shadow-red-200"
-        } w-full p-3 my-2 rounded-md shadow-lg focus:outline-none ${
-          preferences.darkMode ? "bg-transparent" : "bg-white"
-        }`}
-      />
-      <button
-        disabled={loading}
-        type="submit"
-        className="px-3 py-2 rounded-md shadow-lg w-full mt-4 duration-200 hover:shadow-lg hover:scale-[1.01] hover:bg-white bg-slate-100"
-      >
-        Go!
-      </button>
-    </motion.form>
+   <motion.form
+  initial={{ opacity: 0, y: 40 }}
+  exit={{ opacity: 0, y: 40, position: "absolute" }}
+  animate={{
+    opacity: 1,
+    y: 0,
+    transition: { delay: 0.2, ease: "easeOut" },
+  }}
+  onSubmit={loginPasswordUsername}
+  className="flex flex-col items-center justify-center w-full gap-y-4"
+>
+  {/* Username */}
+  <input
+    onChange={(e) => setUsername(e.target.value)}
+    onBlur={() => checkValidInput("username")}
+    type="text"
+    placeholder="Username"
+    value={username}
+    id="username"
+    name="username"
+    className={`
+      w-full rounded-xl px-4 py-3 text-sm
+      backdrop-blur-md
+      transition-all duration-200
+      border
+      ${
+        validUserName === null
+          ? "border-cyan-200"
+          : validUserName
+          ? "border-emerald-300 ring-1 ring-emerald-200"
+          : "border-red-300 ring-1 ring-red-200"
+      }
+      focus:outline-none focus:ring-2 focus:ring-cyan-300 focus:border-cyan-300
+      hover:bg-cyan-50
+      shadow-sm
+      ${preferences.darkMode ? "bg-white/5 text-white" : "bg-white text-slate-800"}
+    `}
+  />
+
+  {/* Email */}
+  <input
+    onChange={(e) => setEmail(e.target.value)}
+    type="email"
+    placeholder="Email"
+    value={email}
+    id="email"
+    name="email"
+    className={`
+      w-full rounded-xl px-4 py-3 text-sm
+      backdrop-blur-md
+      transition-all duration-200
+      border border-cyan-200
+      focus:outline-none focus:ring-2 focus:ring-cyan-300 focus:border-cyan-300
+      hover:bg-cyan-50
+      shadow-sm
+      ${preferences.darkMode ? "bg-white/5 text-white" : "bg-white text-slate-800"}
+    `}
+  />
+
+  {/* Password */}
+  <input
+    onChange={(e) => setPassword(e.target.value)}
+    onBlur={() => checkValidInput("password")}
+    type="password"
+    placeholder="Password"
+    value={password}
+    id="password"
+    name="password"
+    className={`
+      w-full rounded-xl px-4 py-3 text-sm
+      backdrop-blur-md
+      transition-all duration-200
+      border
+      ${
+        validPassword === null
+          ? "border-cyan-200"
+          : validPassword
+          ? "border-emerald-300 ring-1 ring-emerald-200"
+          : "border-red-300 ring-1 ring-red-200"
+      }
+      focus:outline-none focus:ring-2 focus:ring-cyan-300 focus:border-cyan-300
+      hover:bg-cyan-50
+      shadow-sm
+      ${preferences.darkMode ? "bg-white/5 text-white" : "bg-white text-slate-800"}
+    `}
+  />
+
+  {/* Submit */}
+  <button
+    disabled={loading}
+    type="submit"
+    className={`
+      w-full mt-5 rounded-xl px-4 py-3 text-sm font-medium
+      transition-all duration-200
+      bg-gradient-to-r from-cyan-400 to-cyan-500
+      text-white
+      shadow-md
+      hover:shadow-lg hover:scale-[1.015]
+      focus:outline-none focus:ring-2 focus:ring-cyan-300
+      disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100
+      will-change-transform
+    `}
+  >
+    {loading ? "Signing in…" : "Continue"}
+  </button>
+</motion.form>
+
   );
 };
 
