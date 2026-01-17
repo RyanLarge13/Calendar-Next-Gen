@@ -19,21 +19,29 @@ import FullDatePicker from "./FullDatePicker";
 const Calendar = () => {
   const { events, holidays, reminders, weekDays, preferences } =
     useContext(UserContext);
-  const { showDatePicker, showFullDatePicker, view, event } =
-    useContext(InteractiveContext);
+  const {
+    showDatePicker,
+    showFullDatePicker,
+    view,
+    event,
+    setShowFullDatePicker,
+  } = useContext(InteractiveContext);
   const {
     finish,
     loading,
     theDay,
     openModal,
     dateString,
+    setOpenModal,
     setNav,
     string,
     dateObj,
+    setTheDay,
   } = useContext(DatesContext);
 
   const [todaysEvents, setTodaysEvents] = useState([]);
   const [todaysReminders, setTodaysReminder] = useState([]);
+  const [remindersOfDay, setRemindersOfDay] = useState([]);
   const [allDayEvents, setAllDayEvents] = useState([]);
 
   const containerRef = useRef(null);
@@ -89,7 +97,11 @@ const Calendar = () => {
         new Date(reminder.time).toLocaleDateString() ===
         theDay.toLocaleDateString()
     );
+    const remindersOfTheDay = reminders.filter(
+      (r) => new Date(r.time).toLocaleDateString() === string
+    );
     setTodaysReminder(remindersToday);
+    setRemindersOfDay(remindersOfTheDay);
   }, [theDay, events, reminders, string]);
 
   const checkScroll = (e) => {
@@ -106,6 +118,19 @@ const Calendar = () => {
     }
   };
 
+  const setSecondDateObject = (newString) => {
+    setSecondString(newString);
+    setShowFullDatePicker(false);
+    setOpenModal(true);
+    setType("event");
+    setAddNewEvent(true);
+  };
+
+  const setDayViewDay = (newString) => {
+    setTheDay(new Date(newString));
+    setShowFullDatePicker(false);
+  };
+
   return (
     <main
       ref={containerRef}
@@ -114,7 +139,7 @@ const Calendar = () => {
       }`}
     >
       <section>
-        <div className="grid grid-cols-7 gap-2 justify-center items-center mt-5 mb-10">
+        <div className="grid grid-cols-7 gap-2 justify-center items-center my-5">
           {view === "month" &&
             weekDays.map((day) => (
               <p
@@ -147,19 +172,30 @@ const Calendar = () => {
                   />
                 )}
                 {view === "week" && <WeekView />}
-                {view === "masonry" && <MasonryView />}
+                {view === "masonry" && (
+                  <MasonryView containerRef={containerRef} />
+                )}
                 {view === "agenda" && <AgendaView />}
               </div>
             </motion.div>
           ) : null}
         </section>
         {showDatePicker && <DatePicker />}
-        {showFullDatePicker && <FullDatePicker />}
+        {showFullDatePicker && (
+          <FullDatePicker
+            stateSetter={view === "day" ? setDayViewDay : setSecondDateObject}
+          />
+        )}
         {openModal || event ? (
           <ModalHeader allDayEvents={allDayEvents} />
         ) : null}
         <AnimatePresence>
-          {openModal && <Modal allDayEvents={allDayEvents} />}
+          {openModal && (
+            <Modal
+              allDayEvents={allDayEvents}
+              todaysReminders={remindersOfDay}
+            />
+          )}
         </AnimatePresence>
         <Menu />
         <LoginLogout />

@@ -144,89 +144,135 @@ const DatePicker = () => {
         onClick={() => setShowDatePicker(false)}
       ></motion.div>
       <motion.div
-        initial={{ opacity: 0, scale: 0.75, x: "-50%" }}
-        animate={{ opacity: 1, scale: 1, x: "-50%" }}
-        className={`fixed top-40 left-[50%] translate-x-[-50%] rounded-md shadow-md p-5 z-[999] ${
-          preferences.darkMode ? "bg-[#222] text-white" : "bg-white text-black"
-        }`}
+        initial={{ opacity: 0, scale: 0.85, y: -20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.85, y: -20 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+        className={`fixed top-40 left-[5%] lg:left-1/2 -translate-x-1/2 
+    rounded-2xl shadow-2xl border z-[999] w-[90%] max-w-md
+    ${
+      preferences.darkMode
+        ? "bg-[#1e1e1e]/95 text-white border-gray-700"
+        : "bg-white/95 text-gray-900 border-gray-200"
+    } backdrop-blur-md`}
       >
-        <div className="flex gap-x-3">
-          <div>
-            <h2 className="text-lg">Month</h2>
-            <motion.div
+        {/* Header */}
+        <h2
+          className="text-lg font-semibold text-center py-2 border-b 
+    border-gray-200 dark:border-gray-700"
+        >
+          Pick a Date
+        </h2>
+
+        <div className="flex gap-x-6 p-5 justify-center">
+          {/* Month selector */}
+          <div className="flex flex-col items-center">
+            <h3 className="text-base font-medium mb-2">Month</h3>
+            <motion.button
               whileTap={{ scale: 0.9 }}
-              className="text-sm mt-1 mb-2 p-3 flex justify-center items-center bg-cyan-100 rounded-md shadow-md"
-              onClick={() => decreaseMonth()}
+              onClick={decreaseMonth}
+              className="p-3 rounded-full shadow-md 
+          bg-gradient-to-tr from-cyan-400 to-sky-500 
+          text-white hover:scale-105 transition"
             >
-              <BsFillArrowUpCircleFill className="text-black" />
-            </motion.div>
+              <BsFillArrowUpCircleFill size={20} />
+            </motion.button>
+
             <div
-              className="overflow-y-scroll max-h-[60px] text-[40px] scrollbar-hide"
               ref={scrollMonthRef}
               onScroll={handleMonthScroll}
+              className="overflow-y-scroll max-h-[60px] text-2xl 
+          font-semibold my-2 px-2 text-center 
+          scrollbar-hide snap-y snap-mandatory"
             >
-              <div>
-                {staticMonths.map((mon, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ scale: 0.5, opacity: 0 }}
-                    whileInView={{ scale: 1, opacity: 1 }}
-                    className="h-[60px]"
-                  >
-                    {mon.name}
-                  </motion.div>
-                ))}
-              </div>
+              {staticMonths.map((mon, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  whileInView={{ scale: 1, opacity: 1 }}
+                  className="h-[60px] flex items-center justify-center snap-center"
+                >
+                  {mon.name}
+                </motion.div>
+              ))}
             </div>
-            <motion.div
+
+            <motion.button
               whileTap={{ scale: 0.9 }}
-              className="text-sm mt-2 mb-1 p-3 flex justify-center items-center bg-cyan-100 rounded-md shadow-md"
-              onClick={() => increaseMonth()}
+              onClick={increaseMonth}
+              className="p-3 rounded-full shadow-md 
+          bg-gradient-to-tr from-cyan-400 to-sky-500 
+          text-white hover:scale-105 transition"
             >
-              <BsFillArrowDownCircleFill className="text-black" />
-            </motion.div>
+              <BsFillArrowDownCircleFill size={20} />
+            </motion.button>
           </div>
-          <div>
-            <h2 className="text-lg">Year</h2>
-            <motion.div
+
+          {/* Year selector */}
+          <div className="flex flex-col items-center">
+            <h3 className="text-base font-medium mb-2">Year</h3>
+            <motion.button
               whileTap={{ scale: 0.9 }}
-              className="text-sm mt-1 mb-2 p-3 flex justify-center items-center bg-cyan-100 rounded-md shadow-md"
-              onClick={() => decreaseYear()}
+              onClick={decreaseYear}
+              className="p-3 rounded-full shadow-md 
+          bg-gradient-to-tr from-cyan-400 to-sky-500 
+          text-white hover:scale-105 transition"
             >
-              <BsFillArrowUpCircleFill className="text-black" />
-            </motion.div>
+              <BsFillArrowUpCircleFill size={20} />
+            </motion.button>
+
             <div
-              className="overflow-y-scroll max-h-[60px] text-[40px] scrollbar-hide"
               ref={scrollYearRef}
               onScroll={handleYearScroll}
+              className="overflow-y-scroll max-h-[60px] text-2xl 
+          font-semibold my-2 px-2 text-center 
+          scrollbar-hide snap-y snap-mandatory"
             >
-              <div>
-                {staticYears.map((stYr, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ scale: 0 }}
-                    whileInView={{ scale: 1 }}
-                    className="h-[60px]"
-                  >
-                    {stYr}
-                  </motion.div>
-                ))}
-              </div>
+              {staticYears.map((stYr, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  whileInView={{ scale: 1, opacity: 1 }}
+                  className="h-[60px] flex items-center justify-center snap-center"
+                >
+                  {stYr}
+                </motion.div>
+              ))}
             </div>
-            <motion.div
+
+            <motion.button
               whileTap={{ scale: 0.9 }}
-              className="text-sm mt-2 mb-1 p-3 flex justify-center items-center bg-cyan-100 rounded-md shadow-md"
-              onClick={() => increaseYear()}
+              onClick={increaseYear}
+              className="p-3 rounded-full shadow-md 
+          bg-gradient-to-tr from-cyan-400 to-sky-500 
+          text-white hover:scale-105 transition"
             >
-              <BsFillArrowDownCircleFill className="text-black" />
-            </motion.div>
+              <BsFillArrowDownCircleFill size={20} />
+            </motion.button>
           </div>
         </div>
-        <div className="flex justify-between items-center mt-5 border-t p-3">
-          <button type="text" onClick={() => setShowDatePicker(false)}>
+
+        {/* Footer buttons */}
+        <div
+          className="flex justify-between items-center border-t 
+    border-gray-200 dark:border-gray-700 p-4"
+        >
+          <button
+            type="button"
+            onClick={() => setShowDatePicker(false)}
+            className="px-4 py-2 rounded-xl font-medium 
+        bg-gradient-to-tr from-rose-400 to-pink-500 text-white
+        shadow-sm hover:scale-105 transition"
+          >
             Cancel
           </button>
-          <button type="text" onClick={() => submitMonthAndTime()}>
+          <button
+            type="button"
+            onClick={submitMonthAndTime}
+            className="px-4 py-2 rounded-xl font-medium 
+        bg-gradient-to-tr from-cyan-400 to-sky-500 text-white
+        shadow-sm hover:scale-105 transition"
+          >
             Okay
           </button>
         </div>

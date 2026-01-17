@@ -14,9 +14,15 @@ import MenuNavigation from "./MenuNavigation";
 const Header = () => {
   const { dt, setNav, theDay, setTheDay, currentWeek, setWeekOffset } =
     useContext(DatesContext);
-  const { user, preferences } = useContext(UserContext);
-  const { menu, setShowDatePicker, setMenu, setShowLogin, view } =
-    useContext(InteractiveContext);
+  const { user, preferences, notifications } = useContext(UserContext);
+  const {
+    menu,
+    setShowDatePicker,
+    setMenu,
+    setShowLogin,
+    setShowFullDatePicker,
+    view,
+  } = useContext(InteractiveContext);
 
   const changeDay = (operand) => {
     const newDay = new Date(theDay);
@@ -53,7 +59,7 @@ const Header = () => {
             preferences.darkMode
               ? "bg-[#222] text-white"
               : "bg-white text-black"
-          } fixed top-0 left-0 right-0 z-[10] flex justify-between px-5 py-4 mb-5 shadow-lg rounded-b-lg`}
+          } fixed top-0 left-0 right-0 z-[10] flex justify-between px-5 py-4 shadow-lg rounded-b-lg`}
         >
           <button
             onClick={() => {
@@ -85,7 +91,10 @@ const Header = () => {
             </div>
           )}
           {view === "day" && (
-            <div className="flex justify-center items-center">
+            <button
+              onClick={() => setShowFullDatePicker(true)}
+              className="flex justify-center items-center"
+            >
               <BsFillArrowLeftCircleFill
                 onClick={() => changeDay("minus")}
                 className="text-xl cursor-pointer"
@@ -101,35 +110,56 @@ const Header = () => {
                 onClick={() => changeDay("plus")}
                 className="text-xl cursor-pointer"
               />
-            </div>
+            </button>
           )}
           {view === "week" && (
-            <div className="flex justify-center items-center">
-              <BsFillArrowLeftCircleFill
-                onClick={() => setWeekOffset((prev) => prev - 1)}
-                className="text-xl cursor-pointer"
-              />
-              <h1 className="mx-5 text-[12px]">
-                {currentWeek[0].toLocaleDateString()} -{" "}
-                {currentWeek[currentWeek.length - 1].toLocaleDateString()}
-              </h1>
-              <BsFillArrowRightCircleFill
-                onClick={() => setWeekOffset((prev) => prev + 1)}
-                className="text-xl cursor-pointer"
-              />
+            <div className="flex flex-col justify-center items-center gap-y-1">
+              <h2 className="text-[14px] font-semibold">
+                {currentWeek[0].toLocaleDateString("en-US", {
+                  year: "numeric",
+                })}
+              </h2>
+              <div className="flex justify-center items-center">
+                <BsFillArrowLeftCircleFill
+                  onClick={() => setWeekOffset((prev) => prev - 1)}
+                  className="text-xl cursor-pointer"
+                />
+                <h1 className="mx-5 text-[12px]">
+                  {currentWeek[0].toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                  })}{" "}
+                  -{" "}
+                  {currentWeek[currentWeek.length - 1].toLocaleDateString(
+                    "en-US",
+                    { month: "short", day: "numeric" }
+                  )}
+                </h1>
+                <BsFillArrowRightCircleFill
+                  onClick={() => setWeekOffset((prev) => prev + 1)}
+                  className="text-xl cursor-pointer"
+                />
+              </div>
             </div>
           )}
           <div className="w-[25px] h-[25px]">
             {user ? (
-              <img
-                src={user.avatarUrl}
-                onClick={() => {
-                  setMenu(false);
-                  setShowLogin((prev) => !prev);
-                }}
-                alt="user"
-                className="w-[25px] h-[25px] rounded-full cursor-pointer shadow-md"
-              />
+              <>
+                <img
+                  src={user.avatarUrl}
+                  onClick={() => {
+                    setMenu(false);
+                    setShowLogin((prev) => !prev);
+                  }}
+                  alt="user"
+                  className="w-[25px] h-[25px] rounded-full cursor-pointer shadow-md"
+                />
+                {notifications.length > 0 ? (
+                  <div
+                    className={`absolute flex justify-center items-center top-4 right-4 rounded-full shadow-md w-[9px] h-[9px] bg-red-300 text-[12px]`}
+                  ></div>
+                ) : null}
+              </>
             ) : (
               <BsThreeDotsVertical
                 onClick={() => {

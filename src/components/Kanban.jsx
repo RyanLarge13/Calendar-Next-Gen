@@ -20,58 +20,75 @@ const Kanban = ({ kanban, setKanbanView }) => {
   return (
     <div
       onContextMenu={() => {}}
-      className={`bg-gradient-to-tr ${startColor} ${endColor} p-2 rounded-md shadow-lg w-full cursor-pointer`}
+      className={`${
+        startColor && endColor
+          ? `bg-gradient-to-tr ${startColor} ${endColor}`
+          : "bg-white"
+      } p-4 rounded-2xl shadow-lg w-full cursor-pointer transition-all duration-300 hover:shadow-xl`}
     >
-      <div className="from-violet-100 to-violet-300 from-amber-100 to-amber-300 from-indigo-100 to-indigo-300"></div>
-      <div className="flex justify-between items-center p-2 rounded-md shadow-md bg-white">
-        <h2 className="text-xl font-semibold mr-4">{kanban.title}</h2>
-        <div className="flex justify-end items-center gap-x-3 text-sm">
-          <button>
+      {/* Header */}
+      <div className="flex justify-between items-center bg-white/90 backdrop-blur-sm rounded-xl shadow-sm px-4 py-3">
+        <h2 className="text-lg font-semibold truncate">{kanban.title}</h2>
+        <div className="flex items-center gap-x-3 text-slate-600">
+          <button className="hover:text-indigo-500 transition-colors">
             <FaShareAlt />
           </button>
-          <button>
+          <button className="hover:text-green-500 transition-colors">
             <FaEdit />
           </button>
-          <button>
+          <button className="hover:text-amber-500 transition-colors">
             <FaBell />
           </button>
-          <button>
+          <button className="hover:text-red-500 transition-colors">
             <FaTrashAlt />
           </button>
         </div>
       </div>
-      <p className="mt-2 text-xs bg-white px-2 py-1 rounded-md w-min">
-        {new Date(kanban.createdAt).toLocaleDateString()}
-      </p>
-      <div className="flex justify-start items-center gap-x-2 bg-white px-2 py-1 rounded-md mt-1 w-min">
-        <p className="font-semibold text-xs">{kanban.folders.length}</p>
-        <FaFolder className="text-slate-500" />
+
+      {/* Meta info */}
+      <div className="flex gap-2 mt-3">
+        <p className="text-xs bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm">
+          Created On,{" "}
+          {new Date(kanban.createdAt).toLocaleDateString("en-US", {
+            month: "short",
+            year: "numeric",
+          })}
+        </p>
+        <div className="flex items-center gap-1 bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm">
+          <p className="font-semibold text-xs">{kanban.folders.length}</p>
+          <FaFolder className="text-slate-500" />
+        </div>
       </div>
+
+      {/* Footer */}
       <div className="mt-5 flex justify-between items-center">
-        <div className="flex justify-center items-center">
+        {/* Avatars */}
+        <div className="flex items-center">
           <img
             src={user.avatarUrl}
             alt="associate"
-            className="w-5 h-5 rounded-full shadow-sm"
+            className="w-7 h-7 rounded-full shadow-sm border-2 border-white"
           />
           {kanban?.users?.map((usr, index) => (
             <div
               key={index}
-              style={{ transform: `translateX(-${5 * index})px` }}
+              style={{ transform: `translateX(-${6 * (index + 1)}px)` }}
             >
               <img
                 src={usr.avatarUrl}
                 alt="associate"
-                className="w-5 h-5 rounded-full shadow-sm"
+                className="w-7 h-7 rounded-full shadow-sm border-2 border-white"
               />
             </div>
           ))}
         </div>
+
+        {/* Open button */}
         <button
           onClick={() => setKanbanView(kanban)}
-          className="p-2 rounded-full bg-white text-center"
+          className="p-2 rounded-full bg-white/90 shadow-md hover:bg-indigo-100 transition-colors"
         >
-          <FaFolderOpen />
+          <FaFolderOpen className="text-indigo-600" />
         </button>
       </div>
     </div>

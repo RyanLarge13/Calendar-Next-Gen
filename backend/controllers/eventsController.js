@@ -1,126 +1,18 @@
 import prisma from "../utils/prismaClient.js";
 import { v4 as v4 } from "uuid";
+import { bucket } from "../utils/googleStorage.js";
 
-const addMultipleEvents = async (newEvent) => {
-  const howOften = newEvent.repeats.howOften;
-  if (!howOften || howOften < 1) return [];
+const getSignedUrl = async (filename) => {
+  const file = bucket.file(filename);
 
-  const repeats = [];
-  let startDate = new Date(newEvent.startDate);
-  let endDate = new Date(newEvent.endDate);
-
-  for (let i = 1; i <= newEvent.repeats.interval - 1; i++) {
-    const nextEventStartDate = new Date(startDate);
-    const nextEventEndDate = new Date(endDate);
-    let nextStartDate;
-    let nextEndDate;
-
-    if (howOften === "Daily") {
-      nextStartDate = nextEventStartDate.setDate(startDate.getDate() + i);
-      nextEndDate = nextEventEndDate.setDate(endDate.getDate() + i);
-    }
-    if (howOften === "Weekly") {
-      nextStartDate = nextEventStartDate.setDate(startDate.getDate() + 7 * i);
-      nextEndDate = nextEventEndDate.setDate(endDate.getDate() + 7 * i);
-    }
-    if (howOften === "Bi Weekly") {
-      nextStartDate = nextEventStartDate.setDate(startDate.getDate() + 14 * i);
-      nextEndDate = nextEventEndDate.setDate(endDate.getDate() + 14 * i);
-    }
-    if (howOften === "Monthly") {
-      nextStartDate = nextEventStartDate.setMonth(startDate.getMonth() + i);
-      nextEndDate = nextEventEndDate.setMonth(endDate.getMonth() + i);
-    }
-    if (howOften === "Yearly") {
-      nextStartDate = nextEventStartDate.setFullYear(
-        startDate.getFullYear() + i
-      );
-      nextEndDate = nextEventEndDate.setFullYear(endDate.getFullYear() + i);
-    }
-    if (newEvent.reminders.reminder) {
-      const reminderTime = new Date(newEvent.reminders.when);
-      let reminderDate = new Date(reminderTime); // Create a copy of reminderTime
-
-      if (howOften === "Daily") {
-        reminderDate.setDate(reminderDate.getDate() + i);
-      }
-      if (howOften === "Weekly") {
-        reminderDate.setDate(reminderDate.getDate() + 7 * i);
-      }
-      if (howOften === "Bi Weekly") {
-        reminderDate.setDate(reminderDate.getDate() + 14 * i);
-      }
-      if (howOften === "Monthly") {
-        reminderDate.setMonth(reminderDate.getMonth() + i);
-      }
-      if (howOften === "Yearly") {
-        reminderDate.setFullYear(reminderDate.getFullYear() + i);
-      }
-      const newReminderTime = reminderDate;
-      const nextEvent = {
-        ...newEvent,
-        id: v4(),
-        parentId: newEvent.id,
-        date: new Date(nextStartDate).toLocaleDateString(),
-        startDate: new Date(nextStartDate),
-        endDate: new Date(nextEndDate),
-        // nextStartDate: new Date(nextStartDate),
-        reminders: {
-          when: newReminderTime,
-          reminderTimeString: newReminderTime.toLocaleTimeString(),
-        },
-      };
-      // const newNotif = {
-      //   type: "event",
-      //   read: false,
-      //   readTime: null,
-      //   time: nextStartDate.toString(),
-      //   notifData: newReminder,
-      //   sentNotification: false,
-      //   sentWebPush: false,
-      //   userId: newEvent.userId,
-      // };
-      // createNotification(newNotif)
-      repeats.push(nextEvent);
-      // const newReminder = {
-      //   eventRefId: newEvent.id,
-      //   title: newEvent.summary,
-      //   notes: newEvent.description,
-      //   time: newReminderTime,
-      //   userId: newEvent.userId,
-      // };
-      // const newNotif = {
-      //   type: "event",
-      //   read: false,
-      //   readTime: null,
-      //   time: newReminderTime,
-      //   notifData: newReminder,
-      //   sentNotification: false,
-      //   sentWebPush: false,
-      //   userId: event.userId,
-      // };
-      // createNotification(newReminderTime, newNotif, newEvent.userId);
-      // createReminder(nextEvent);
-    } else {
-      // Reminders are disabled
-      const nextEvent = {
-        ...newEvent,
-        id: v4(),
-        parentId: newEvent.id,
-        date: new Date(nextStartDate).toLocaleDateString(),
-        startDate: new Date(nextStartDate),
-        endDate: new Date(nextEndDate),
-        // nextStartDate: new Date(nextStartDate),
-      };
-      repeats.push(nextEvent);
-      // date = new Date(nextStartDate);
-    }
-  }
-  // Save to the database using Prisma
-  await prisma.event.createMany({
-    data: repeats,
+  // Expires in 15 minutes
+  const [url] = await file.getSignedUrl({
+    version: "v4",
+    action: "read",
+    expires: Date.now() + 20000,
   });
-  return repeats;
+
+  return url;
 };
 
 export const getEvents = async (req, res) => {
@@ -223,22 +115,87 @@ const createMultipleReminders = async (event) => {
 
 export const createAttachments = async (req, res) => {
   const newEventId = req.params.newEventId;
+  // Does new event id exist? It should always from frontend...
   const { attachments } = req.body;
+  const { id } = req.user;
+
+  if (!id) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to make this request" });
+    return;
+  }
+
+  // Why did we not first create or check if first the event already exists before creating attachments?? Hmmmmmmmmmm
+  // Well we know in the frontend that you can only create attachments if you are currently making a new event
+  // or if..... you already have an event and are trying to update it.
+
+  // So what do we do, lets review.
+
+  // Well, do we check to see if the event is there and has an attachments property? I must say yes, probably. Because if this is anm update
+  //Then we need to make sure the event has a true value in that spot!!!!
+
+  try {
+  const event = await prisma.event.findUnique({where: {id: newEventId}});
+
+  if (!event) {
+    console.log("Why is there no event here when trying to create an attachment!?");
+    res.status(400).json({message:"Yes, a 400 status. This is most likely you doing something you should not be doing on my app."});
+    return
+  }
+
+  // Nope! Do not need to check for length only add length.
+  // Another try catch for custom error handling? This is crazy
+  // I just thought.. Hopefully the event exists first huh? I guess I should look back at the steps before we get here
+
+  try {
+    await prisma.event.update({where: {id: newEventId}, data: {attachmentLength: event.attachmentLength + attachments.length}});
+    res.status(200).json({message: "Nice. New attachments created!"});
+  } catch (err) {
+    console.log("Error updating event in db for longer attachment length");
+    console.log(err);
+    res.status(500).json({message: "Sorry, server dump"});
+  return;
+  }
+
+  } catch (err) {
+    console.log("Error checking for event in DB when creating attachments")
+    console.log(err);
+    res.status(500).json({message: "Failed to create attachments due to server taking dump? I mean, I guess. Sorry"});
+    return;
+  }
+
   try {
     const createdAttachments = await Promise.all(
       attachments.map(async (attachment) => {
+        // Logic body
         const { filename, mimetype, content } = attachment;
         const byteBuffer = Buffer.from(Object.values(content));
+
+        const file = bucket.file(filename);
+
+        await file.save(byteBuffer, {
+          metadata: { contentType: mimetype },
+          resumable: false,
+        });
+
+        // await file.makePublic();
+
+        // const pubUrl = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
+
         return prisma.attachment.create({
           data: {
             filename,
             mimetype,
-            content: byteBuffer,
+            content: filename,
             eventId: newEventId,
+            userId: id,
           },
         });
+        // Logic body
       })
     );
+
     if (createdAttachments) {
       res.status(201).json({
         message: `Successfully created new attachments for event ${newEventId}`,
@@ -260,7 +217,6 @@ export const addEvent = async (req, res) => {
     data: { ...newEvent, id: newEvent.id },
   });
   if (createdEvent) {
-    const repeatEvents = await addMultipleEvents(createdEvent);
     if (newEvent.reminders.reminder) {
       reminder = await createReminder(newEvent);
     }
@@ -280,7 +236,7 @@ export const addEvent = async (req, res) => {
         id: user.id,
         createdAt: user.createAt,
       },
-      event: [createdEvent, ...repeatEvents],
+      event: [createdEvent],
       reminders: reminder,
     });
   }
@@ -288,8 +244,131 @@ export const addEvent = async (req, res) => {
 
 export const getAttachments = async (req, res) => {
   const eventId = req.params.eventId;
-  const attachments = await prisma.attachment.findMany({ where: { eventId } });
-  res.status(201).json({ message: "Success", attachments: attachments });
+  const { id } = req.user;
+
+  if (!id) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to make this request" });
+    return;
+  }
+
+  if (!eventId) {
+    res.status(400).json({ message: "Please pass in a valid event id" });
+    return;
+  }
+
+  const attachments = await prisma.attachment.findMany({
+    where: { eventId: eventId, userId: id },
+  });
+
+  const tempAttachmentUrls = await Promise.all(
+    attachments.map((a) => getSignedUrl(a.content))
+  );
+
+  res.status(200).json({ message: "Success", attachments: tempAttachmentUrls });
+};
+
+export const updateEventTitle = async (req, res) => {
+  const { newTitle, eventId } = req.body;
+  const { id } = req.user;
+
+  if (!id) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to make this request" });
+    return;
+  }
+
+  if (!newTitle || !eventId) {
+    res
+      .status(404)
+      .json({ message: "Bad request, missing new event title or eventId" });
+    return;
+  }
+
+  try {
+    await prisma.event.update({
+      where: { userId: id, id: eventId },
+      data: {
+        summary: newTitle,
+      },
+    });
+
+    res.status(200).json({ message: "Event title successfully updated" });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: `Server error updating event title. Error: ${err}` });
+    console.log(`Error updating event title. Error: ${err}`);
+  }
+};
+
+export const updateEventDescription = async (req, res) => {
+  const { eventId, newDesc } = req.body;
+  const { id } = req.user;
+
+  if (!id) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to make this request" });
+    return;
+  }
+
+  if (!eventId || !newDesc) {
+    res.status(404).json({
+      message: "Bad request, missing new event description or eventId",
+    });
+    return;
+  }
+
+  try {
+    await prisma.event.update({
+      where: { id: eventId, userId: id },
+      data: { description: newDesc },
+    });
+
+    res.status(200).json({ message: "Successfully updated event description" });
+    return;
+  } catch (err) {
+    console.log(`Error updating event description. Error: ${err}`);
+    res.status(500).json({
+      message: `Server error updating event description. Error: ${err}`,
+    });
+  }
+};
+
+export const updateEventLocation = async (req, res) => {
+  const { eventId, newLocation, newCoords } = req.body;
+  const { id } = req.user;
+
+  if (!id) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to make this request" });
+    return;
+  }
+
+  if (!eventId) {
+    res.status(404).json({
+      message: "Bad request, missing new event location or eventId",
+    });
+    return;
+  }
+
+  try {
+    await prisma.event.update({
+      where: { id: eventId, userId: id },
+      data: { location: { string: newLocation, coordinates: newCoords } },
+    });
+
+    res.status(200).json({ message: "Successfully updated event location" });
+  } catch (err) {
+    console.log(`Error updating event location. Error: ${err}`);
+    res.status(500).json({
+      message: `Server error updating event location. Error: ${err}`,
+    });
+  }
 };
 
 export const updateEventStartAndEndTime = async (req, res) => {
@@ -325,17 +404,45 @@ export const updateEventStartAndEndTime = async (req, res) => {
     .json({ message: "Successfully updating your event time" });
 };
 
+const deleteAttachments = async (eventId) => {
+  try {
+    const attachments = await prisma.attachment.findMany({
+      where: { eventId: eventId },
+    });
+
+    if (!attachments) {
+      return;
+    }
+
+    for (const a of attachments) {
+      const filename = a.content;
+      const file = bucket.file(filename);
+      await file.delete().catch((err) => {
+        console.log(
+          `Error deleting an attachment connected to an event. Error: ${err}`
+        );
+        // Probably email myself of notify myself or something. Do not want photos in storage taking up space that shouldn't be there
+      });
+    }
+
+    await prisma.attachment.deleteMany({ where: { eventId: eventId } });
+  } catch (err) {
+    console.log(`Error deleting attachments. Error: ${err}`);
+  }
+};
+
 export const deleteEvent = async (req, res) => {
   const id = req.params.eventId;
-  const deletedReminders = await prisma.reminder.deleteMany({
-    where: { eventRefId: id },
-  });
   const deletedEvent = await prisma.event.delete({
     where: {
       id: id,
     },
   });
   if (deletedEvent) {
+    await prisma.reminder.deleteMany({
+      where: { eventRefId: id },
+    });
+    await deleteAttachments(id);
     return res.json({
       message: "Successfully deleted event",
       eventId: deletedEvent.id,
@@ -343,6 +450,7 @@ export const deleteEvent = async (req, res) => {
   }
 };
 
+// Deprecated ------------------
 export const deleteManyEvents = async (req, res) => {
   const user = req.user;
   if (!user) {

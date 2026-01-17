@@ -10,12 +10,15 @@ import {
   createAttachments,
   deleteManyEvents,
   updateEventStartAndEndTime,
+  updateEventTitle,
+  updateEventDescription,
+  updateEventLocation,
 } from "../controllers/eventsController.js";
 
 const eventsRouter = express.Router();
 
 eventsRouter.get("/:username/events", auth, getEvents);
-eventsRouter.get("/attachments/:eventId", getAttachments);
+eventsRouter.get("/attachments/:eventId", auth, getAttachments);
 eventsRouter.post("/new/event", auth, addEvent);
 eventsRouter.post("/new/attachments/:newEventId", auth, createAttachments);
 eventsRouter.patch(
@@ -23,6 +26,9 @@ eventsRouter.patch(
   auth,
   updateEventStartAndEndTime
 );
+eventsRouter.patch("/update/event/title", auth, updateEventTitle);
+eventsRouter.patch("/update/event/desc", auth, updateEventDescription);
+eventsRouter.patch("/update/event/location", auth, updateEventLocation);
 eventsRouter.delete(
   "/:username/delete/event/:eventId",
   auth,

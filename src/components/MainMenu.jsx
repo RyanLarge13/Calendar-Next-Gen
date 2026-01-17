@@ -1,72 +1,256 @@
-import { useContext } from "react";
+import { useContext, useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { formatDbText } from "../utils/helpers";
-import { MdOutlineOpenInNew } from "react-icons/md";
+import {
+  MdOutlineEvent,
+  MdOutlineCheckCircle,
+  MdOutlineStickyNote2,
+  MdOutlineAccessAlarm,
+  MdOutlineOpenInNew,
+  MdOutlineLocationOn,
+  MdOutlineWbSunny,
+} from "react-icons/md";
 import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
+import weatherCodeMap from "../utils/weatherCodes";
+import DatesContext from "../context/DatesContext";
+import TaskItems from "./TaskItems";
+import { tailwindBgToHex } from "../utils/helpers";
+import { AiFillCloseCircle } from "react-icons/ai";
 
-const MainMenu = ({ timeOfDay }) => {
-  const { user, upcoming } = useContext(UserContext);
+const Dashboard = ({ timeOfDay }) => {
+  const {
+    user,
+    upcoming,
+    weatherData,
+    location,
+    reminders,
+    userTasks,
+    stickies,
+  } = useContext(UserContext);
   const { setEvent } = useContext(InteractiveContext);
+  const { string, theDay } = useContext(DatesContext);
+
+  const [todaysReminders, setTodaysReminders] = useState([]);
+
+  useEffect(() => {
+    const todaysReminders = reminders.filter(
+      (r) =>
+        new Date(r.time).toLocaleDateString() === theDay.toLocaleDateString()
+    );
+
+    setTodaysReminders(todaysReminders);
+  }, [reminders]);
 
   return (
     <motion.div
-      initial={{ x: "-10%", opacity: 0 }}
-      exit={{ x: "-10%", opacity: 0 }}
+      initial={{ x: "-5%", opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
-      className="pt-20 lg:px-40"
+      exit={{ x: "-5%", opacity: 0 }}
+      className="pt-20 px-2 lg:px-16"
     >
-      <h1 className="text-4xl pb-2 font-semibold">{timeOfDay}</h1>
-      {user.username && <p className="ml-5 font-semibold">{user.username}</p>}
-      <div className="px-5 mt-5 overflow-visible">
-        {upcoming.length > 0 ? (
-          <p className="text-sm">
-            You have a few upcoming Events on your agenda this week
-          </p>
-        ) : (
-          <p className="text-sm">You have no upcoming events this week</p>
+      {/* Greeting */}
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold tracking-tight">{timeOfDay},</h1>
+        {user.username && (
+          <p className="text-xl text-gray-600 mt-1">{user.username}</p>
         )}
-        <div className="mt-3 lg:grid lg:grid-cols-2 lg:place-items-center lg:gap-5">
-          {upcoming.length > 0 &&
-            upcoming.map((event) => (
-              <div
-                key={event.id}
-                className={`p-3 rounded-md shadow-lg my-5 lg:my-0 relative pl-5 w-full`}
-              >
-                <button
-                  className="absolute top-0 right-0"
-                  onClick={() => setEvent(event)}
-                >
-                  <MdOutlineOpenInNew />
-                </button>
+      </div>
+
+      {/* Tile Layout */}
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        {/* Upcoming Events */}
+        <div className="p-5 bg-gradient-to-br from-cyan-100 to-blue-100 rounded-2xl shadow-md">
+          <div className="flex justify-between items-center mb-3">
+            <h2 className="text-lg font-semibold flex items-center gap-2">
+              <MdOutlineEvent className="text-xl text-cyan-600" />
+              Upcoming Events
+            </h2>
+            <span className="text-xs text-gray-500">
+              {upcoming.length} total
+            </span>
+          </div>
+          {upcoming.length > 0 ? (
+            <div className="space-y-3">
+              {upcoming.slice(0, 3).map((event) => (
                 <div
-                  className={`${event.color} absolute left-0 top-0 bottom-0 w-2 rounded-md`}
-                ></div>
-                {event.diff < 1 && event.diff >= 0 ? (
-                  <p className="text-2xl font-semibold mb-2">Today</p>
-                ) : event.diff >= 1 && event.diff < 2 ? (
-                  <p className="text-2xl font-semibold mb-2">Tomorrow</p>
-                ) : (
-                  <p className="mb-2">
-                    In{" "}
-                    <span className="text-2xl font-semibold">{event.diff}</span>{" "}
-                    days
-                  </p>
-                )}
-                <p className="text-sm p-2font-semibold">{event.summary}</p>
-                <div className="mt-3">
-                  {formatDbText(event.description || "").map((text, index) => (
-                    <p key={index} className="text-[14px] font-semibold">
-                      {text}
+                  key={event.id}
+                  className="bg-white rounded-lg shadow-sm p-3 relative"
+                >
+                  <button
+                    className="absolute top-2 right-2 text-gray-400 hover:text-cyan-600"
+                    onClick={() => setEvent(event)}
+                  >
+                    <MdOutlineOpenInNew />
+                  </button>
+                  {event.diff < 1 ? (
+                    <p className="text-sm font-semibold text-rose-500">Today</p>
+                  ) : event.diff < 2 ? (
+                    <p className="text-sm font-semibold text-amber-500">
+                      Tomorrow
                     </p>
-                  ))}
+                  ) : (
+                    <p className="text-sm text-gray-500">
+                      In <span className="font-semibold">{event.diff}</span>{" "}
+                      days
+                    </p>
+                  )}
+                  <p className="text-base font-medium mt-1">{event.summary}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-gray-500">You have no upcoming events</p>
+          )}
+        </div>
+
+        {/* Reminders */}
+        <div className="p-5 bg-gradient-to-br from-rose-100 to-pink-100 rounded-2xl shadow-md">
+          <h2 className="text-lg font-semibold flex items-center gap-2 mb-3">
+            <MdOutlineAccessAlarm className="text-xl text-rose-600" />
+            Reminders
+          </h2>
+          <p className="text-sm text-gray-500 mb-3">
+            Quick glance at your reminders today
+          </p>
+          {todaysReminders.length > 0 ? (
+            <div className="space-y-3">
+              {todaysReminders.map((reminder) => (
+                <div
+                  key={reminder.id}
+                  className="bg-white rounded-lg shadow-sm p-3 relative"
+                >
+                  <p className="absolute top-2 right-2 text-gray-400 hover:text-cyan-600">
+                    <MdOutlineAccessAlarm />
+                  </p>
+                  <p className="text-sm font-semibold text-amber-500">
+                    {reminder.title}
+                  </p>
+                  <p className="text-base font-medium mt-1">{reminder.notes}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-gray-500">You have no reminders today</p>
+          )}
+        </div>
+
+        {/* Tasks */}
+        <div className="p-5 bg-gradient-to-br from-emerald-100 to-green-100 rounded-2xl shadow-md">
+          <h2 className="text-lg font-semibold flex items-center gap-2 mb-3">
+            <MdOutlineCheckCircle className="text-xl text-emerald-600" />
+            Tasks
+          </h2>
+          <p className="text-sm text-gray-500">
+            Stay on top of your to-do list
+          </p>
+          {userTasks?.length > 0 ? (
+            <div className="space-y-3">
+              <div
+                key={userTasks[0].id}
+                className={`p-3 my-5 md:mx-3 lg:mx-5 rounded-md shadow-md ${userTasks[0].color} text-black`}
+              >
+                <p>{userTasks[0].title}</p>
+                <p>
+                  Completed:{" "}
+                  {userTasks[0].tasks.filter((t) => t.complete).length}
+                </p>
+                <p>
+                  Tasks to still finish today:{" "}
+                  {userTasks[0].tasks.filter((t) => !t.complete).length}
+                </p>
+                <div className="mt-3">
+                  {userTasks[0].tasks
+                    .filter((t) => !t.complete)
+                    .map((taskItem) => (
+                      <div
+                        key={taskItem.id}
+                        className="p-3 py-4 border-b border-b-slate-300 bg-white rounded-sm"
+                      >
+                        <div className=" ml-5 w-full flex justify-between items-center">
+                          <p className="mr-2">{taskItem.text}</p>
+                        </div>
+                      </div>
+                    ))}
                 </div>
               </div>
-            ))}
+            </div>
+          ) : (
+            <p className="text-sm text-gray-500">You have no tasks today</p>
+          )}
+        </div>
+
+        {/* Notes */}
+        <div className="p-5 bg-gradient-to-br from-amber-100 to-yellow-100 rounded-2xl shadow-md">
+          <h2 className="text-lg font-semibold flex items-center gap-2 mb-3">
+            <MdOutlineStickyNote2 className="text-xl text-amber-600" />
+            Notes
+          </h2>
+          <p className="text-sm text-gray-500">Your latest note</p>
+          {stickies?.length > 0 ? (
+            <div className="space-y-3">
+              <div
+                key={stickies[0].id}
+                className={`p-5 my-5 md:mx-3 lg:mx-5 rounded-md shadow-md ${stickies[0].color} text-black`}
+              >
+                <p
+                  style={{ color: tailwindBgToHex(stickies[0].color) }}
+                  className="font-semibold text-lg"
+                >
+                  {stickies[0].title}
+                </p>
+                <div
+                  className="mt-5"
+                  style={{ color: tailwindBgToHex(stickies[0].color) }}
+                  dangerouslySetInnerHTML={{
+                    __html: stickies[0].body.slice(0, 200) + "...",
+                  }}
+                ></div>
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm text-gray-500">You have no notes</p>
+          )}
+        </div>
+
+        {/* Weather */}
+        <div className="p-5 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-2xl shadow-md flex justify-between items-start">
+          <div>
+            <h2 className="text-lg font-semibold flex items-center gap-2 mb-3">
+              <MdOutlineWbSunny className="text-xl text-indigo-600" />
+              Weather
+            </h2>
+            <div>
+              <p className="text-sm text-gray-500">
+                {weatherData?.current_weather?.temperature || 0}°F,{" "}
+                {weatherCodeMap[weatherData?.current_weather?.weathercode]
+                  ?.name || ""}
+              </p>
+            </div>
+          </div>
+          <img
+            src={
+              weatherCodeMap[weatherData?.current_weather?.weathercode]?.icon
+            }
+            alt={
+              weatherCodeMap[weatherData?.current_weather?.weathercode]?.name
+            }
+            className="object-cover aspect-square w-20 ml-2 flex-shrink-0"
+          />
+        </div>
+
+        {/* Location */}
+        <div className="p-5 bg-gradient-to-br from-slate-100 to-gray-100 rounded-2xl shadow-md">
+          <h2 className="text-lg font-semibold flex items-center gap-2 mb-3">
+            <MdOutlineLocationOn className="text-xl text-slate-600" />
+            Location
+          </h2>
+          <p className="text-sm text-gray-500">
+            {location.city}, {location.state}
+          </p>
         </div>
       </div>
     </motion.div>
   );
 };
 
-export default MainMenu;
+export default Dashboard;

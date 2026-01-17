@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { addReminder, createNotification } from "../utils/api";
 import { AiFillInfoCircle } from "react-icons/ai";
 import Toggle from "./Toggle";
@@ -6,13 +6,20 @@ import TimeSetter from "./TimeSetter";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext";
 import DatesContext from "../context/DatesContext";
+import { BsClock } from "react-icons/bs";
 
 const AddReminder = () => {
   const { setMenu, setAddNewEvent, setType, setShowCategory } =
     useContext(InteractiveContext);
-  const { reminders, user, setReminders, setSystemNotif, preferences } =
-    useContext(UserContext);
-  const { setOpenModal } = useContext(DatesContext);
+  const {
+    reminders,
+    user,
+    setReminders,
+    setSystemNotif,
+    preferences,
+    eventMap,
+  } = useContext(UserContext);
+  const { setOpenModal, string } = useContext(DatesContext);
 
   const [time, setTime] = useState(null);
   const [title, setTitle] = useState("");
@@ -20,9 +27,65 @@ const AddReminder = () => {
   const [timeString, setTimeString] = useState("");
   const [addTime, setAddTime] = useState(false);
   const [onlyNotify, setOnlyNotify] = useState(false);
+  const [todaysEvents, setTodaysEvent] = useState({
+    loading: true,
+    events: [],
+  });
+  const [eventForReminder, setEventForReminder] = useState(null);
+  const [quickTimeSelect, setQuickTimeSelect] = useState({
+    fifteen: false,
+    thirty: false,
+    hour: false,
+  });
+
+  useEffect(() => {
+    const date = new Date(string);
+    const key = `${date.getFullYear()}-${date.getMonth()}`;
+
+    if (eventMap.has(key)) {
+      const events =
+        eventMap
+          .get(key)
+          ?.events.filter(
+            (e) => new Date(e.date).toLocaleDateString() === string
+          ) || [];
+
+      if (events.length < 1) {
+        setTodaysEvent({ loading: false, events: [] });
+      } else {
+        setTodaysEvent({ loading: false, events: events });
+      }
+    } else {
+      setTodaysEvent({ loading: false, events: [] });
+    }
+  }, [eventMap]);
+
+  const getTime = () => {
+    if (quickTimeSelect.fifteen) {
+      const newDate = new Date();
+      newDate.setMinutes(newDate.getMinutes() + 15);
+      return newDate.toString();
+    }
+    if (quickTimeSelect.thirty) {
+      const newDate = new Date();
+      newDate.setMinutes(newDate.getMinutes() + 30);
+      return newDate.toString();
+    }
+
+    // Handle hour here
+
+    const newDate = new Date();
+    newDate.setHours(newDate.getHours() + 1);
+    return newDate.toString();
+  };
 
   const addAReminder = () => {
-    if (!time || !addTime) {
+    if (
+      !time &&
+      !quickTimeSelect.fifteen &&
+      !quickTimeSelect.thirty &&
+      !quickTimeSelect.hour
+    ) {
       const newError = {
         show: true,
         title: "Select A Time",
@@ -52,11 +115,11 @@ const AddReminder = () => {
     const newReminder = {
       title,
       notes,
-      time,
+      time: time ? time : getTime(),
     };
     const newNotification = {
       type: "reminder",
-      time,
+      time: time ? time : getTime(),
       read: false,
       readTime: "",
       notifData: {
@@ -116,31 +179,79 @@ const AddReminder = () => {
       .catch((err) => console.log(err));
   };
 
+  const setFifteen = () => {
+    setQuickTimeSelect({
+      fifteen: !quickTimeSelect.fifteen,
+      thirty: false,
+      hour: false,
+    });
+  };
+
+  const setThirty = () => {
+    setQuickTimeSelect({
+      fifteen: false,
+      thirty: !quickTimeSelect.thirty,
+      hour: false,
+    });
+  };
+
+  const setHour = () => {
+    setQuickTimeSelect({
+      fifteen: false,
+      thirty: false,
+      hour: !quickTimeSelect.hour,
+    });
+  };
+
   return (
-    <div>
-      <input
-        placeholder="Reminder"
-        className={`p-2 text-4xl w-full focus:outline-none my-5 ${
-          preferences.darkMode ? "bg-[#222] text-white" : "bg-white text-black"
-        }`}
-        onChange={(e) => setTitle(e.target.value)}
-      />
-      <textarea
-        onChange={(e) => setNotes(e.target.value)}
-        cols="30"
-        rows="10"
-        placeholder="Notes..."
-        className={`my-5 w-full p-2 focus:outline-none focus:shadow-sm ${
-          preferences.darkMode ? "bg-[#222] text-white" : "bg-white text-black"
-        }`}
-      ></textarea>
-      <div className="my-2 p-3 border-b">
+<div className="flex flex-col justify-between min-h-[95vh] pt-12">
+  <div className="space-y-6">
+    {/* Title */}
+    <input
+      placeholder="Reminder"
+      className={`
+        w-full px-4 pt-3 pb-3 text-4xl font-semibold
+        rounded-2xl
+        focus:outline-none
+        transition-all duration-200
+        border border-cyan-200
+        focus:ring-2 focus:ring-cyan-300
+        ${preferences.darkMode
+          ? "bg-white/5 text-white"
+          : "bg-white text-slate-900"}
+      `}
+      onChange={(e) => setTitle(e.target.value)}
+    />
+
+    {/* Notes */}
+    <textarea
+      onChange={(e) => setNotes(e.target.value)}
+      rows="8"
+      placeholder="Notes..."
+      className={`
+        w-full p-4 rounded-2xl text-sm
+        resize-none
+        transition-all duration-200
+        border border-cyan-200
+        focus:outline-none focus:ring-2 focus:ring-cyan-300
+        ${preferences.darkMode
+          ? "bg-white/5 text-white"
+          : "bg-white text-slate-800"}
+      `}
+    />
+
+    {/* Custom Time */}
+    {quickTimeSelect.fifteen ||
+    quickTimeSelect.thirty ||
+    quickTimeSelect.hour ? <div className="bg-transparent pb-14"></div> : (
+      <div className="rounded-2xl border border-cyan-200 p-4 bg-cyan-50/50">
         <div className="flex justify-between items-center">
-          <p>Time</p>
+          <p className="font-medium text-slate-700">Set Time</p>
           <Toggle condition={addTime} setCondition={setAddTime} />
         </div>
+
         {addTime && (
-          <div className="mt-2">
+          <div className="mt-3">
             {!time ? (
               <TimeSetter
                 setDateTime={setTime}
@@ -148,38 +259,144 @@ const AddReminder = () => {
                 openTimeSetter={setAddTime}
               />
             ) : (
-              <p>{timeString}</p>
+              <div className="p-3 rounded-xl bg-white shadow-sm">
+                <p className="font-semibold text-sm">{timeString}</p>
+                <button
+                  className="mt-2 text-xs font-medium text-cyan-600 hover:underline"
+                  onClick={() => {
+                    setTime(null);
+                    setTimeString("");
+                  }}
+                >
+                  Change
+                </button>
+              </div>
             )}
           </div>
         )}
       </div>
-      <div className="my-2 p-3 border-b">
-        <div className="flex justify-between items-center">
-          <div className="flex justify-center items-center">
-            <AiFillInfoCircle className="mr-2" />
-            <p>Only notify</p>
-          </div>
-          <Toggle condition={onlyNotify} setCondition={setOnlyNotify} />
+    )}
+
+    {/* Only Notify */}
+    <div className="rounded-2xl border border-cyan-200 p-4 bg-cyan-50/50">
+      <div className="flex justify-between items-center">
+        <div className="flex items-center gap-2 text-slate-700">
+          <AiFillInfoCircle className="text-cyan-400" />
+          <p className="font-medium">Only notify</p>
         </div>
-      </div>
-      <div className="absolute bottom-4 right-4 left-4 text-xs font-semibold text-black">
-        <button
-          onClick={() => addAReminder()}
-          className="px-3 py-2 rounded-md shadow-md bg-gradient-to-r from-lime-200 to-green-200 underline w-full"
-        >
-          save
-        </button>
-        <button
-          onClick={() => {
-            setType(null);
-            setAddNewEvent(false);
-          }}
-          className="px-3 py-2 mt-3 w-full rounded-md shadow-md bg-gradient-to-tr from-red-200 to-rose-200 underline"
-        >
-          cancel
-        </button>
+        <Toggle condition={onlyNotify} setCondition={setOnlyNotify} />
       </div>
     </div>
+
+    {/* Quick Selects */}
+    <div className="space-y-3">
+      {[
+        { label: "15 Minutes", value: quickTimeSelect.fifteen, set: setFifteen, offset: 15 },
+        { label: "30 Minutes", value: quickTimeSelect.thirty, set: setThirty, offset: 30 },
+        { label: "1 Hour", value: quickTimeSelect.hour, set: setHour, offset: 60 },
+      ].map(({ label, value, set, offset }) => (
+        <div
+          key={label}
+          className="rounded-2xl border border-cyan-200 p-4 bg-white shadow-sm"
+        >
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-3">
+              <BsClock className="text-cyan-400" />
+              <p className="font-medium">{label}</p>
+            </div>
+            <Toggle condition={value} setCondition={set} />
+          </div>
+
+          {value && (
+            <p className="mt-2 text-sm font-semibold text-slate-600">
+              {new Date(
+                new Date().setMinutes(
+                  new Date().getMinutes() + offset
+                )
+              ).toLocaleTimeString("en-US", {
+                hour: "numeric",
+                minute: "numeric",
+              })}
+            </p>
+          )}
+        </div>
+      ))}
+    </div>
+
+    {/* Today's Events */}
+    <div className="space-y-3">
+      {todaysEvents.loading ? (
+        <p className="text-sm text-slate-500">Loading…</p>
+      ) : todaysEvents.events.length > 0 ? (
+        <>
+          <p className="text-sm font-medium text-slate-600">
+            Is this reminder for an event today?
+          </p>
+
+          {todaysEvents.events.map((event) => (
+            <button
+              key={event.id}
+              onClick={() =>
+                setEventForReminder((prev) =>
+                  prev?.id === event.id ? null : event
+                )
+              }
+              className={`
+                relative w-full text-left pl-6 p-4 rounded-2xl
+                transition-all duration-200
+                shadow-sm hover:shadow-md hover:scale-[1.01]
+                ${
+                  eventForReminder?.id === event.id
+                    ? "bg-cyan-100"
+                    : preferences.darkMode
+                    ? "bg-white/5"
+                    : "bg-white"
+                }
+              `}
+            >
+              <div
+                className={`${event.color} absolute left-0 top-0 bottom-0 w-2 rounded-l-2xl`}
+              />
+              {event.summary}
+            </button>
+          ))}
+        </>
+      ) : null}
+    </div>
+  </div>
+
+  {/* Actions */}
+  <div className="flex flex-col gap-y-3 mt-6">
+    <button
+      onClick={() => addAReminder()}
+      className="
+        rounded-2xl py-3 text-sm font-semibold text-white
+        bg-gradient-to-r from-cyan-400 to-cyan-500
+        shadow-md hover:shadow-lg hover:scale-[1.015]
+        active:scale-[0.97] transition-all duration-200
+      "
+    >
+      Save Reminder
+    </button>
+
+    <button
+      onClick={() => {
+        setType(null);
+        setAddNewEvent(false);
+      }}
+      className="
+        rounded-2xl py-3 text-sm font-semibold
+        bg-rose-100 text-rose-700
+        hover:bg-rose-200
+        shadow-sm hover:shadow-md
+        active:scale-[0.97] transition-all duration-200
+      "
+    >
+      Cancel
+    </button>
+  </div>
+</div>
+
   );
 };
 

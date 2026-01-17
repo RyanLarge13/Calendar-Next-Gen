@@ -10,6 +10,7 @@ import DatesContext from "../context/DatesContext";
 import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
 import PopUpMonthViewWindow from "./PopUpMonthViewWindow";
+import { BiCalendarEvent } from "react-icons/bi";
 
 const MonthView = () => {
   const { events, eventMap, holidays, preferences, reminders } =
@@ -29,6 +30,7 @@ const MonthView = () => {
     setSecondString,
     dateObj,
     setNav,
+    theDay,
   } = useContext(DatesContext);
 
   const [selected, setSelected] = useState([]);
@@ -39,6 +41,7 @@ const MonthView = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [popupTimeout, setPopupTimeout] = useState(null);
   const [popupEvents, setPopupEvents] = useState([]);
+  const [popUpReminders, setPopUpReminders] = useState([]);
   const [hoverDay, setHoverDay] = useState(null);
   const [renderPopup, setRenderPopup] = useState(false);
 
@@ -51,6 +54,7 @@ const MonthView = () => {
       setRenderPopup(false);
       setHoverDay(null);
       setPopupEvents([]);
+      setPopUpReminders([]);
       clearTimeout(popupTimeout);
     }
   }, [renderPopup]);
@@ -71,7 +75,7 @@ const MonthView = () => {
       };
     }
     if (selected.includes(index)) {
-      return { backgroundColor: "#cffaf" };
+      return { backgroundColor: "#1b1b1b" };
     } else {
       return { backgroundColor: preferences.darkMode ? "#222" : "#fff" };
     }
@@ -151,7 +155,7 @@ const MonthView = () => {
     setSelected([]);
   };
 
-  const createPopup = (e, eventsToRender, index) => {
+  const createPopup = (e, eventsToRender, remindersToRender, index) => {
     if (popupTimeout) {
       clearTimeout(popupTimeout);
       setPopupTimeout(null);
@@ -161,6 +165,7 @@ const MonthView = () => {
     }
     setNewPopup(false);
     setPopupEvents([]);
+    setPopUpReminders([]);
     setMousePosition({ x: 0, y: 0 });
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     if (isMobile || !renderPopup) {
@@ -173,6 +178,7 @@ const MonthView = () => {
     const timeoutId = setTimeout(() => {
       const theHoverDay = `${month + 1}/${index - paddingDays + 1}/${year}`;
       setPopupEvents(eventsToRender);
+      setPopUpReminders(remindersToRender);
       setMousePosition(mousePositions);
       setHoverDay(theHoverDay);
       setNewPopup(true);
@@ -202,6 +208,7 @@ const MonthView = () => {
       {newPopup && (
         <PopUpMonthViewWindow
           positions={mousePosition}
+          remindersToRender={popUpReminders}
           eventsToRender={popupEvents}
           day={hoverDay}
         />
@@ -213,8 +220,14 @@ const MonthView = () => {
           year === dateObj.getFullYear();
         const dateStr = `${month + 1}/${index - paddingDays + 1}/${year}`;
         const eventsToRender = getIndicesForEvents(dateStr);
+        const remindersToRender = reminders.filter(
+          (reminder) => new Date(reminder.time).toLocaleDateString() === dateStr
+        );
+
         const hasReminders =
-          reminders.filter((r) => r.time === dateStr)?.length || 0;
+          reminders.filter(
+            (r) => new Date(r.time).toLocaleDateString() === dateStr
+          )?.length || 0;
 
         return (
           <motion.div
@@ -225,7 +238,9 @@ const MonthView = () => {
                 : "1px solid black",
               backgroundColor: preferences.darkMode ? "#333333" : "#f2f2f2",
             }}
-            onMouseEnter={(e) => createPopup(e, eventsToRender, index)}
+            onMouseEnter={(e) =>
+              createPopup(e, eventsToRender, remindersToRender, index)
+            }
             onContextMenu={(e) => {
               e.preventDefault();
               handleDayLongPress(index);
@@ -240,17 +255,8 @@ const MonthView = () => {
               "shadow-cyan-400 shadow-md outline outline-slate-400"
             }`}
           >
-            <div className="absolute top-0 left-0 right-0 z-800 flex justify-start gap-x-2 items-center">
-              {hasReminders ? (
-                <IoIosAlarm
-                  className={`${
-                    preferences.darkMode ? "text-white" : "text-black"
-                  }`}
-                />
-              ) : null}
-            </div>
             <div
-              className={`text-center flex justify-center items-center text-sm my-1 ${
+              className={`text-center flex justify-center items-center text-sm mt-1 ${
                 isCurrentDate
                   ? "w-[25px] h-[25px] rounded-full bg-white shadow-md text-black"
                   : preferences.darkMode
@@ -260,8 +266,19 @@ const MonthView = () => {
             >
               <p>{index >= paddingDays && index - paddingDays + 1}</p>
             </div>
+            {hasReminders ? (
+              <div className="flex justify-start gap-x-2 items-center">
+                <p>
+                  <IoIosAlarm
+                    className={`${
+                      preferences.darkMode ? "text-white" : "text-black"
+                    } text-sm`}
+                  />
+                </p>
+              </div>
+            ) : null}
             <div
-              className={`w-full absolute inset-0 pt-8 overflow-y-clip ${
+              className={`w-full absolute inset-0 pt-11 overflow-y-clip ${
                 selected.includes(index)
                   ? "bg-cyan-100 bg-opacity-50"
                   : "bg-transparent"
@@ -286,6 +303,7 @@ const MonthView = () => {
                     </p>
                   ) : (
                     <>
+                      {/* On Desktop microsoft chrome Sausage Links are acting strange */}
                       <div
                         className={`absolute left-0 w-2 translate-x-[-75%] top-[50%] translate-y-[-50%] rounded-full ${event.color} h-1`}
                       ></div>

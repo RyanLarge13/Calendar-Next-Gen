@@ -11,8 +11,10 @@ import AddList from "./AddList";
 import AddKanban from "./AddKanban";
 import AddTask from "./AddTask";
 import AddSticky from "./AddSticky";
+import { formatTime } from "../utils/helpers";
+import { BiCalendarEvent, BiAlarmSnooze } from "react-icons/bi";
 
-const Modal = ({ allDayEvents }) => {
+const Modal = ({ allDayEvents, todaysReminders }) => {
   const { events, holidays, preferences } = useContext(UserContext);
   const { string, setOpenModal, dateObj, setSecondString } =
     useContext(DatesContext);
@@ -35,7 +37,7 @@ const Modal = ({ allDayEvents }) => {
     if (string === dateObj.toLocaleDateString()) {
       const todaysHours = dateObj.getHours();
       !addNewEvent
-        ? modalRef.current.scrollTo(0, todaysHours * 237)
+        ? modalRef.current.scrollTo(0, todaysHours * 240)
         : modalRef.current.scrollTo(0, 0);
     }
     addNewEvent && modalRef.current.scrollTo(0, 0);
@@ -62,7 +64,7 @@ const Modal = ({ allDayEvents }) => {
         timedEvents[0]?.start?.startTime
       ).getHours();
       !addNewEvent
-        ? modalRef.current.scrollTo(0, firstEventHour * 237)
+        ? modalRef.current.scrollTo(0, firstEventHour * 240)
         : modalRef.current.scrollTo(0, 0);
     }
     setDayEvents(timedEvents);
@@ -193,6 +195,51 @@ const Modal = ({ allDayEvents }) => {
                     top={top}
                     thirtyMinuteHeight={staticTimeHeight}
                   />
+                );
+              })}
+              {todaysReminders.map((r) => {
+                const top = fromTop(new Date(r.time));
+
+                return (
+                  <motion.div
+                    key={r.id}
+                    style={{ top: `${top}px` }}
+                    className={`${
+                      new Date(r.time) < dateObj
+                        ? "border-l-4 border-rose-400"
+                        : new Date(r.time).toLocaleDateString() ===
+                          dateObj.toLocaleDateString()
+                        ? "border-l-4 border-amber-400"
+                        : "border-l-4 border-cyan-400"
+                    } min-w-[70%] absolute right-0 max-w-[70%] shadow-lg p-4 rounded-2xl text-gray-900`}
+                  >
+                    <div className="space-y-3">
+                      {/* Time + Title */}
+                      <div>
+                        <div className="flex justify-between items-center mb-3">
+                          {/* Date Row */}
+                          {r.eventRefId ? (
+                            <BiCalendarEvent className="text-xl text-gray-500" />
+                          ) : (
+                            <BiAlarmSnooze className="text-xl text-gray-500" />
+                          )}
+                          <p className="text-sm font-semibold text-gray-700">
+                            {new Date(r.time).toLocaleTimeString("en-US", {
+                              timeZoneName: "short",
+                              hour: "numeric",
+                              minute: "numeric",
+                            })}
+                          </p>
+                        </div>
+                        <p className="text-xs text-gray-600">
+                          {formatTime(new Date(r.time))}
+                        </p>
+                        <div className="flex-1 p-3 bg-gray-50 rounded-xl shadow-inner cursor-pointer">
+                          <p className="text-sm font-semibold">{r.title}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
                 );
               })}
             </div>

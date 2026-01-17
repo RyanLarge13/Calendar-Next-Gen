@@ -13,7 +13,6 @@ body {
   padding-top: env(safe-area-inset-top); /* iOS 11.2+ */
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior-y: contain;
-  white-space: pre-wrap;
 }
 
 ul {
@@ -82,23 +81,83 @@ li {
 
 .my-masonry-grid {
   display: flex;
-  margin-left: -30px; /* gutter size offset */
+  margin-left: 5px; /* gutter size offset */
   width: auto;
 }
 
 .my-masonry-grid_column {
-  padding-left: 30px; /* gutter size */
+  padding-left: 10px; /* gutter size */
   background-clip: padding-box;
 }
 
 .my-masonry-grid-attachments {
   display: flex;
-  margin-left: -10px; /* gutter size offset */
+  margin-left: 0px; /* gutter size offset */
   width: auto;
 }
 
 .my-masonry-grid_column-attachments {
-  padding-left: 10px; /* gutter size */
-  padding-top: 10px;
+  padding-left: 5px; /* gutter size */
+  padding-top: 5px;
   background-clip: padding-box;
+}
+
+.ql-editor {
+  font-size: 14px; /* make text larger overall */
+  line-height: 1.6; /* improve readability */
+  outline: none !important;
+  padding: 0 !important;
+  padding-top: 2em !important;
+}
+
+/* Default button color */
+.ql-toolbar.ql-snow .ql-formats button,
+.ql-toolbar.ql-snow .ql-formats .ql-picker {
+  color: white !important;
+}
+
+/* Hover / active state */
+.ql-toolbar.ql-snow .ql-formats button:hover,
+.ql-toolbar.ql-snow .ql-formats .ql-picker:hover,
+.ql-toolbar.ql-snow .ql-formats button.ql-active,
+.ql-toolbar.ql-snow .ql-formats .ql-picker.ql-expanded {
+  color: #222 !important;
+}
+
+.ql-container.ql-snow {
+  border: none !important; /* remove border around the editor */
+}
+
+/* Toolbar button icons default white */
+.ql-snow .ql-stroke {
+  stroke: white !important;
+}
+
+.ql-snow .ql-fill {
+  fill: white !important;
+}
+
+/* Active/hovered buttons = blue */
+.ql-snow .ql-toolbar button:hover .ql-stroke,
+.ql-snow .ql-toolbar button.ql-active .ql-stroke,
+.ql-snow .ql-toolbar button:hover .ql-fill,
+.ql-snow .ql-toolbar button.ql-active .ql-fill {
+  stroke: blue !important;
+  fill: blue !important;
+}
+
+.normal {
+  color: #000 !important;
+}
+
+.normal .ql-fill {
+  fill: #000 !important;
+}
+.normal .ql-stroke {
+  stroke: #000 !important;
+}
+
+.normal .ql-toolbar.ql-snow .ql-formats button,
+.normal .ql-toolbar.ql-snow .ql-formats .ql-picker {
+  color: #000 !important;
 }

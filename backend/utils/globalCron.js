@@ -2,7 +2,6 @@ import prisma from "./prismaClient.js";
 import { sendNotification } from "./notificationService.js";
 
 const processPushNotifications = async () => {
-  console.log("Processing global user notifications");
   try {
     const notificationIdsToUpdate = [];
     const usersWithNotificationSub = await prisma.user.findMany({

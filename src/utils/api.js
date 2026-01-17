@@ -107,8 +107,10 @@ export const getEvents = async (username, token) => {
   return res;
 };
 
-export const fetchAttachments = async (eventId) => {
-  const res = Axios.get(`${productionUrl}/attachments/${eventId}`);
+export const fetchAttachments = async (eventId, token) => {
+  const res = Axios.get(`${productionUrl}/attachments/${eventId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
   return res;
 };
 
@@ -135,11 +137,59 @@ export const updateStartAndEndTimeOnEvent = async (eventId, offset, token) => {
 };
 
 export const API_UpdateEventTitle = (eventId, title, token) => {
-  const res = Axios.patch(`${productionUrl}/patch/event/title`, {
-    eventId,
-    title,
-    token,
-  });
+  const res = Axios.patch(
+    `${productionUrl}/update/event/title`,
+    {
+      newTitle: title,
+      eventId,
+    },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return res;
+};
+
+export const API_UpdateEventDesc = (eventId, newDesc, token) => {
+  const res = Axios.patch(
+    `${productionUrl}/update/event/desc`,
+    {
+      newDesc,
+      eventId,
+    },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return res;
+};
+
+export const API_UpdateEventLocation = (eventId, location, token) => {
+  const newLocation = location.string;
+  const newCoords = location.coordinates;
+  const res = Axios.patch(
+    `${productionUrl}/update/event/location`,
+    {
+      newLocation,
+      newCoords,
+      eventId,
+    },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return res;
+};
+
+export const updateReminderNotes = (reminderId, newDesc, token) => {
+  const res = Axios.patch(
+    `${productionUrl}/update/reminder/notes`,
+    { reminderId: reminderId, newDesc: newDesc },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return res;
+};
+
+export const updateReminderTitle = (reminderId, newTitle, token) => {
+  const res = Axios.patch(
+    `${productionUrl}/update/reminder/title`,
+    { reminderId: reminderId, newTitle: newTitle },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
   return res;
 };
 
@@ -193,6 +243,15 @@ export const getReminders = (username, token) => {
       Authorization: `Bearer ${token}`,
     },
   });
+  return res;
+};
+
+export const updateReminderComplete = (reminderInfo, token) => {
+  const res = Axios.patch(
+    `${productionUrl}/update/reminder/complete`,
+    { reminder: reminderInfo },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
   return res;
 };
 
@@ -372,6 +431,15 @@ export const createNewList = (token, username, newList) => {
   return res;
 };
 
+export const updateListTitle = (listId, newTitle, token) => {
+  const res = Axios.patch(
+    `${productionUrl}/update/list/title`,
+    { listId, newTitle },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return res;
+};
+
 export const updateList = (token, listUpdate) => {
   const res = Axios.patch(
     `${productionUrl}/update/lists`,
@@ -397,6 +465,16 @@ export const deleteList = (token, listId) => {
 };
 
 //Tasks
+
+export const updateTaskTitle = (taskId, newTitle, token) => {
+  const res = Axios.patch(
+    `${productionUrl}/update/task/title`,
+    { newTitle, taskId },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return res;
+};
+
 export const getAllTasks = (token) => {
   const res = Axios.get(`${productionUrl}/all/tasks`, {
     headers: { Authorization: `Bearer ${token}` },

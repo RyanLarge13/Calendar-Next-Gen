@@ -36,6 +36,39 @@ export const addNewList = async (req, res) => {
   }
 };
 
+export const updateListTitle = async (req, res) => {
+  const { listId, newTitle } = req.body;
+  const { id } = req.user;
+
+  if (!id) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to make this request" });
+    return;
+  }
+
+  if (!newTitle || !listId) {
+    res
+      .status(400)
+      .json({ message: "Please provide a valid list and title to update" });
+    return;
+  }
+
+  try {
+    await prisma.list.update({
+      where: { id: listId, userId: id },
+      data: { title: newTitle },
+    });
+    res.status(200).sjon({ message: "Successfully updated list title" });
+    return;
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: `Server error updating list title. Error: ${err}` });
+    return;
+  }
+};
+
 export const updateList = async (req, res) => {
   const lists = req.body.listUpdate;
   const updateLists = async () => {

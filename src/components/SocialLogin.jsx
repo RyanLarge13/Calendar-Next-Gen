@@ -57,15 +57,16 @@ const SocialLogin = () => {
         y: 0,
         transition: { delay: 0.25 },
       }}
-      className="flex flex-col justify-start items-center p-10"
+      className="flex flex-col justify-between min-h-screen overflow-y-auto p-10 px-12"
     >
       <button
-        className="text-sm absolute top-5 left-3"
+        className="text-sm absolute top-5 left-3 text-xs font-bold duration-200 hover:scale-[0.95] bg-gradient-to-tr shadow-xl from-red-200 to-red-300 px-3 py-1 rounded-md"
         onClick={() => setShowLogin(false)}
       >
         Cancel
       </button>
-      <p className="text-3xl mb-20 mt-10 text-center">Login or Sign Up With</p>
+      <div>
+      <p className="text-3xl mb-20 mt-10 text-center font-bold">Login Or Sign Up With</p>
       <div className="flex justify-center items-center gap-x-5 w-full">
         <button
           onClick={() => loginGoogle()}
@@ -81,8 +82,11 @@ const SocialLogin = () => {
           callback={loginFb}
         />
       </div>
-      <p className="mt-10">Or</p>
-      <hr className="w-full mb-10 mt-3" />
+      </div>
+      <div className="text-center">
+        <p>or</p>
+        <hr className="w-full mt-3" />
+      </div>
       <UsernamePassLogin />
     </motion.div>
   );

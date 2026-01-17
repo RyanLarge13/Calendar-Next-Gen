@@ -90,7 +90,7 @@ const SideBar = () => {
     <div
       className={`hidden xl:block ${
         preferences.darkMode ? "bg-[#222] border-none" : "bg-white"
-      } max-h-screen scrollbar-hide w-[20vw] border-slate-200 overflow-y-auto relative pt-[65px]`}
+      } max-h-screen scrollbar-hide w-[20vw] border-slate-200 overflow-y-auto relative pt-[70px]`}
     >
       <div
         className={`${
@@ -177,18 +177,13 @@ const SideBar = () => {
           upcoming.map((event) => (
             <div
               key={event.id}
+              onClick={() => setEvent(event)}
               className={`${
                 preferences.darkMode ? "text-white" : "text-black"
-              } p-3 rounded-md shadow-lg my-5 relative pl-5`}
+              } p-3 rounded-xl shadow-lg my-5 relative hover:scale-[1.01] cursor-pointer duration-200 hover:shadow-xl will-change-transform pl-5`}
             >
-              <button
-                className="absolute top-0 right-0"
-                onClick={() => setEvent(event)}
-              >
-                <MdOutlineOpenInNew />
-              </button>
               <div
-                className={`${event.color} absolute left-0 top-0 bottom-0 w-2 rounded-md`}
+                className={`${event.color} absolute left-0 top-0 bottom-0 w-2 rounded-l-md`}
               ></div>
               {event.diff < 1 && event.diff >= 0 ? (
                 <p className="text-2xl font-semibold mb-2">Today</p>
@@ -201,13 +196,28 @@ const SideBar = () => {
                   days
                 </p>
               )}
-              <p className="text-sm p-2 font-semibold">{event.summary}</p>
-              <div className="mt-3">
-                {formatDbText(event.description || "").map((text, index) => (
-                  <p key={index} className="text-[14px] font-semibold">
-                    {text}
-                  </p>
-                ))}
+              <p className="text-sm font-semibold truncate mt-3 mb-1">
+                {event.summary}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mb-5">
+                {event.start?.startTime
+                  ? new Date(event.start.startTime).toLocaleTimeString(
+                      "en-US",
+                      {
+                        hour: "numeric",
+                        minute: "2-digit",
+                      }
+                    ) + "-"
+                  : "All Day Event"}{" "}
+                {event.end?.endTime
+                  ? new Date(event.end.endTime).toLocaleTimeString("en-US", {
+                      hour: "numeric",
+                      minute: "2-digit",
+                    })
+                  : ""}
+              </p>
+              <div className="text-xs leading-snug text-gray-700 whitespace-pre-wrap">
+                <p>{event.description}</p>
               </div>
             </div>
           ))}

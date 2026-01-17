@@ -3,19 +3,21 @@ import { motion, useDragControls } from "framer-motion";
 import {
   deleteStickyNote,
   updateSticky,
-  updateStickyView
+  updateStickyView,
 } from "../utils/api.js";
 import { tailwindBgToHex } from "../utils/helpers.js";
 import {
   AiFillPushpin,
   AiFillCloseCircle,
-  AiOutlinePushpin
+  AiOutlinePushpin,
 } from "react-icons/ai";
 import { BiExpand, BiCollapse } from "react-icons/bi";
+<<<<<<< HEAD
 import { BsFillPenFill, BsTrash, BsTrash2Fill } from "react-icons/bs";
+=======
+>>>>>>> main
 import { FaRegWindowMinimize } from "react-icons/fa";
 import { FiMaximize } from "react-icons/fi";
-import { MdSave } from "react-icons/md";
 import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
 import ReactQuill from "react-quill";
@@ -29,50 +31,116 @@ const Sticky = ({ sticky, index }) => {
   const [pin, setPin] = useState(sticky.pin);
   const [fullScreen, setFullScreen] = useState(false);
   const [minimize, setMinimize] = useState(true);
-  const [edit, setEdit] = useState(false);
   const [editText, setEditText] = useState(sticky.body);
+  const [initialText, setInitialText] = useState(sticky.body);
 
   const stickyRef = useRef(null);
 
   const controls = useDragControls();
 
+<<<<<<< HEAD
   const handleViewChange = newView => {
+=======
+  const modules = {
+    toolbar: [
+      [{ header: "1" }, { header: "2" }, { font: [] }],
+      [{ size: [] }],
+      ["bold", "italic", "underline", "strike", "blockquote"],
+      [
+        { list: "ordered" },
+        { list: "bullet" },
+        { indent: "-1" },
+        { indent: "+1" },
+      ],
+      [{ color: [] }, { background: [] }], // Color and Background buttons
+      ["link", "image", "video"],
+      ["clean"],
+    ],
+  };
+
+  const formats = [
+    "header",
+    "font",
+    "size",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "blockquote",
+    "list",
+    "bullet",
+    "indent",
+    "link",
+    "image",
+    "video",
+    "color",
+    "background",
+    "clean",
+  ];
+
+  useEffect(() => {
+    const viewState = sticky.viewState;
+    switch (viewState) {
+      case "minimized":
+        break;
+      case "fullscreen":
+        setFullScreen(true);
+        break;
+      case "expand":
+        setFullScreen(false);
+        setMinimize(false);
+        setExpand(true);
+        break;
+      default:
+        null;
+    }
+  }, []);
+
+  useEffect(() => {
+    let timeout;
+    timeout = setTimeout(() => {
+      handleSave();
+    }, 2000);
+
+    return () => clearTimeout(timeout);
+  }, [editText]);
+
+  const handleViewChange = (newView) => {
+>>>>>>> main
     const token = localStorage.getItem("authToken");
     updateStickyView(token, sticky.id, newView)
-      .then(res => {
+      .then((res) => {
         console.log(`Success Updating sticky view: ${res}`);
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(`Error updating sticky view: ${err}`);
       });
   };
 
-  const handleTextChange = value => {
+  const handleTextChange = (value) => {
     setEditText(value);
   };
 
-  const handleSave = () => {
-    sticky.body = editText;
-    setEdit(false);
+  const handleSave = async () => {
+    if (initialText === editText) {
+      return;
+    }
+
     try {
       const token = localStorage.getItem("authToken");
-      updateSticky(token, sticky.id, editText)
-        .then(res => {
-          console.log(res);
-        })
-        .catch(err => {
-          console.log(err);
-        });
+      await updateSticky(token, sticky.id, editText);
+
+      setInitialText(editText);
     } catch (err) {
-      console.log(err);
+      console.log(`Error from server saving sticky note. Error: ${err}`);
     }
   };
 
-  const startDrag = e => {
+  const startDrag = (e) => {
     controls.start(e);
   };
 
-  const confirmDelete = stickyId => {
+  const confirmDelete = (stickyId) => {
     const newConfirmation = {
       show: true,
       title: "Delete sticky",
@@ -81,21 +149,21 @@ const Sticky = ({ sticky, index }) => {
       hasCancel: true,
       actions: [
         { text: "close", func: () => setSystemNotif({ show: false }) },
-        { text: "delete", func: () => deleteSticky(stickyId) }
-      ]
+        { text: "delete", func: () => deleteSticky(stickyId) },
+      ],
     };
     setSystemNotif(newConfirmation);
   };
 
-  const deleteSticky = stickyId => {
+  const deleteSticky = (stickyId) => {
     setSystemNotif({ show: false });
     const token = localStorage.getItem("authToken");
     if (!token) {
     }
     if (token) {
       deleteStickyNote(token, stickyId)
-        .then(res => {
-          const newStickies = stickies.filter(item => item.id !== stickyId);
+        .then((res) => {
+          const newStickies = stickies.filter((item) => item.id !== stickyId);
           setStickies(newStickies);
           const newSuccess = {
             show: true,
@@ -106,14 +174,14 @@ const Sticky = ({ sticky, index }) => {
             actions: [
               {
                 text: "close",
-                func: () => setSystemNotif({ show: false })
+                func: () => setSystemNotif({ show: false }),
               },
-              { text: "undo", func: () => {} }
-            ]
+              { text: "undo", func: () => {} },
+            ],
           };
           setSystemNotif(newSuccess);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
         });
     }
@@ -137,10 +205,10 @@ const Sticky = ({ sticky, index }) => {
         width: fullScreen
           ? window.innerWidth
           : expand
-          ? 250
+          ? 280
           : minimize
-          ? 10
-          : 175
+          ? 8
+          : 200,
       }}
       drag={fullScreen ? false : minimize ? "y" : !pin}
       dragControls={controls}
@@ -149,13 +217,14 @@ const Sticky = ({ sticky, index }) => {
         top: 0,
         right: window.innerWidth - 200,
         left: 0,
-        bottom: window.innerHeight - 200
+        bottom: window.innerHeight - 200,
       }}
       ref={stickyRef}
-      className={`markdown z-[999] shadow-xl rounded-md fixed
-            w-[10px] h-[150px] ${sticky.color} ${
-              minimize ? "text-transparent" : "text-black"
-            } overflow-hidden`}
+      className={`markdown z-[999] shadow-lg rounded-2xl fixed
+    w-[10px] h-[150px] transition-all duration-300 ease-in-out
+    ${sticky.color} ${
+        minimize ? "text-transparent rounded-l-none" : "text-gray-900"
+      } overflow-hidden`}
       onClick={() => {
         if (minimize) {
           if ("vibrate" in navigator) {
@@ -167,13 +236,17 @@ const Sticky = ({ sticky, index }) => {
         }
       }}
     >
+      {/* Header */}
       <div
         className={`${
-          minimize ? "opacity-0 shadow-none" : "bg-slate-100 shadow-lg"
-        } rounded-t-md p-2 flex justify-between items-center cursor-pointer`}
+          minimize
+            ? "opacity-0 shadow-none"
+            : "bg-white/90 backdrop-blur-sm shadow-md"
+        } rounded-t-2xl px-3 py-2 flex justify-between items-center`}
         onPointerDown={startDrag}
         style={{ touchAction: "none" }}
       >
+<<<<<<< HEAD
         <div className="flex justify-between items-center gap-x-1">
           <button onClick={() => setPin(prev => !prev)} className="rounded-sm p-1 hover:bg-slate-300 duration-300 hover:outline hover:outline-1">
             {pin ? <AiFillPushpin /> : <AiOutlinePushpin />}
@@ -185,10 +258,18 @@ const Sticky = ({ sticky, index }) => {
             {edit ? <MdSave /> : <BsFillPenFill />}
           </button>
           <button
+=======
+        <div className="flex items-center gap-x-3 text-gray-500">
+          <button
+            onClick={() => setPin((prev) => !prev)}
+            className="hover:text-cyan-600 transition"
+          >
+            {pin ? <AiFillPushpin /> : <AiOutlinePushpin />}
+          </button>
+          <button
+>>>>>>> main
             onClick={() => {
-              if (fullScreen && !expand) {
-                return;
-              }
+              if (fullScreen && !expand) return;
               if (fullScreen && expand) {
                 setFullScreen(false);
                 setExpand(false);
@@ -203,27 +284,48 @@ const Sticky = ({ sticky, index }) => {
                 setExpand(false);
               }
             }}
+<<<<<<< HEAD
             className="rounded-sm p-1 hover:bg-slate-300 duration-300 hover:outline hover:outline-1"
+=======
+            className="hover:text-blue-600 transition"
+>>>>>>> main
           >
             {expand ? <BiCollapse /> : <BiExpand />}
           </button>
         </div>
+<<<<<<< HEAD
         <button type="text" onClick={() => confirmDelete(sticky.id)} className="rounded-sm p-1 hover:bg-slate-300 duration-300 hover:outline hover:outline-1">
           <BsTrash2Fill className="text-sm" />
+=======
+        <button
+          type="text"
+          onClick={() => confirmDelete(sticky.id)}
+          className="text-gray-400 hover:text-red-500 transition"
+        >
+          <AiFillCloseCircle />
+>>>>>>> main
         </button>
       </div>
+
+      {/* Footer (only in expand mode) */}
       {expand && (
         <div
           className={`${
-            minimize ? "bg-transparent shadow-none" : "bg-slate-100 shadow-md"
-          } rounded-b-md p-2 flex justify-between items-center`}
+            minimize
+              ? "bg-transparent shadow-none"
+              : "bg-white/90 backdrop-blur-sm"
+          } rounded-b-2xl px-3 py-2 flex justify-between items-center`}
         >
           <button
             onClick={() => {
-              setFullScreen(prev => !prev);
+              setFullScreen((prev) => !prev);
               handleViewChange("fullscreen");
             }}
+<<<<<<< HEAD
             className="rounded-sm p-1 hover:bg-slate-300 duration-300 hover:outline hover:outline-1"
+=======
+            className="text-gray-500 hover:text-indigo-600 transition"
+>>>>>>> main
           >
             <FiMaximize />
           </button>
@@ -234,42 +336,39 @@ const Sticky = ({ sticky, index }) => {
               setFullScreen(false);
               handleViewChange("minimized");
             }}
+<<<<<<< HEAD
             className="rounded-sm p-1 hover:bg-slate-300 duration-300 hover:outline hover:outline-1"
+=======
+            className="text-gray-500 hover:text-rose-500 transition"
+>>>>>>> main
           >
             <FaRegWindowMinimize />
           </button>
         </div>
       )}
+
+      {/* Body */}
       <div
-        className={`${
-          expand ? "mt-20" : "mt-5"
-        } p-2 overflow-y-auto scrollbar-slick overflow-x-hidden scrollbar-hide absolute inset-0 z-[-1] break-words`}
+        className={`${expand ? "mt-20" : "mt-5"} ${
+          minimize ? "opacity-0" : "opacity-100"
+        } px-4 pb-4 overflow-y-auto scrollbar-slick overflow-x-hidden scrollbar-hide absolute inset-0 z-[-1] break-words`}
       >
-        {!edit ? (
-          <>
-            <h2
-            style={{color: tailwindBgToHex(sticky.color)}}
-            className="mb-5 border-b border-b-black">{sticky.title}</h2>
-            <div
-            style={{color: tailwindBgToHex(sticky.color)}}
-              dangerouslySetInnerHTML={{ __html: sticky.body }}
-              className="markdown scrollbar-slick"
-            ></div>
-          </>
-        ) : (
-          <>
-            <input
-              className="mb-5 border-b border-b-black bg-transparent outline-none focus:outline-none"
-              placeholder={sticky.title}
-            />
-            <ReactQuill
-            style={{color: tailwindBgToHex(sticky.color)}}
-              value={editText}
-              onChange={handleTextChange}
-              className="h-full scrollbar-slick text-md"
-            />
-          </>
-        )}
+        <div className="space-y-3">
+          <input
+            style={{ color: tailwindBgToHex(sticky.color) }}
+            className="mb-4 pb-1 text-3xl font-semibold border-b border-gray-300 bg-transparent placeholder:text-white outline-none focus:outline-none"
+            placeholder={sticky.title}
+          />
+          <ReactQuill
+            modules={modules}
+            formats={formats}
+            style={{ color: tailwindBgToHex(sticky.color) }}
+            value={editText}
+            onBlur={handleSave}
+            onChange={handleTextChange}
+            className="h-full scrollbar-slick"
+          />
+        </div>
       </div>
     </motion.div>
   );

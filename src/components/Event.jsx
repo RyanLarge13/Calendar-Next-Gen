@@ -1,30 +1,31 @@
 import { useState, useEffect, useContext } from "react";
 import { AiFillCloseCircle } from "react-icons/ai";
-import { BsFillTrashFill } from "react-icons/bs";
 import { FiMaximize, FiMinimize, FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";
 import { MdLocationPin, MdOutlineDragIndicator } from "react-icons/md";
 import { tailwindBgToHex } from "../utils/helpers.js";
+import { FaExternalLinkAlt, FaImage, FaTrash } from "react-icons/fa";
+import { motion, useDragControls, AnimatePresence } from "framer-motion";
 import {
-  FaCalendarPlus,
-  FaEdit,
-  FaExternalLinkAlt,
-  FaImage,
-  FaPlusCircle,
-  FaTrash,
-} from "react-icons/fa";
-import { motion, useDragControls } from "framer-motion";
-import { fetchAttachments } from "../utils/api";
-import { formatDbText, formatText, formatTime } from "../utils/helpers";
-import ListItems from "./ListItems";
+  API_UpdateEventDesc,
+  API_UpdateEventLocation,
+  API_UpdateEventTitle,
+  createAttachments,
+  fetchAttachments,
+} from "../utils/api";
+import Compressor from "compressorjs";
+import { formatTime } from "../utils/helpers";
 import GoogleMaps from "./GoogleMaps";
 import Masonry from "react-masonry-css";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext";
+import DatesContext from "../context/DatesContext.jsx";
+import SuggestCities from "./SuggestCities.jsx";
 
 const Event = ({ dayEvents }) => {
   const { event, setEvent } = useContext(InteractiveContext);
-  const { preferences, lists } = useContext(UserContext);
+  const { preferences, setEventMap } = useContext(UserContext);
+  const { dateObj, string } = useContext(DatesContext);
 
   const [timeLeft, setTimeLeft] = useState(null);
   const [width, setWidth] = useState(0);
@@ -32,18 +33,23 @@ const Event = ({ dayEvents }) => {
   const [fetchedImages, setFetchedImages] = useState([]);
   const [imagesLoading, setImagesLoading] = useState(false);
   const [maximize, setMaximize] = useState(false);
-  const [addItems, setAddItems] = useState([]);
-  const [eventLists, setEventLists] = useState(
-    lists.filter((list) => list.eventId === event.id)
-  );
-  const [newDescription, setNewDescription] = useState(event.description);
-
   const [title, setTitle] = useState(event.summary);
+  const [description, setDescription] = useState(event.description);
+  const [newAttachments, setNewAttachments] = useState([]);
+  const [imageViewer, setImageViewer] = useState({ image: null, show: false });
+  const [location, setLocation] = useState(event.location);
+
+  const [inputChanges, setInputChanges] = useState({
+    summary: event.summary,
+    description: event.description,
+    location: event.location,
+  });
 
   const controls = useDragControls();
 
   const breakpointColumnsObj = {
     default: 4,
+    1700: 4,
     1100: 3,
     700: 2,
   };
@@ -51,16 +57,13 @@ const Event = ({ dayEvents }) => {
   useEffect(() => {
     if (event.attachmentLength > 0) {
       setImagesLoading(true);
-      fetchAttachments(event.id)
+      const token = localStorage.getItem("authToken");
+      fetchAttachments(event.id, token)
         .then((res) => {
-          res.data.attachments.forEach((file) => {
-            const blob = new Blob([new Uint8Array(file.content.data)], {
-              type: file.mimetype,
-            });
-            const url = URL.createObjectURL(blob);
-            setFetchedImages((prevUrls) => [...prevUrls, url]);
-            setImagesLoading(false);
-          });
+          console.log("Attachment response from server for event");
+          console.log(res);
+          setFetchedImages(res.data.attachments);
+          setImagesLoading(false);
         })
         .catch((err) => console.log(err));
     }
@@ -132,342 +135,502 @@ const Event = ({ dayEvents }) => {
   const updateTitle = async (e) => {
     e.preventDefault();
 
-    const oldTitle = event.summary;
+    if (!title) {
+      // set notification
+      return;
+    }
+
+    if (inputChanges.summary === title) {
+      return;
+    }
 
     try {
-      const response = await API_UpdateEventTitle();
+      const token = localStorage.getItem("authToken");
+      await API_UpdateEventTitle(event.id, title, token);
+
+      setInputChanges((prev) => ({ ...prev, summary: title }));
+      setEventMap((prev) => {
+        const date = new Date(string);
+        const newMap = new Map(prev);
+        const mapDate = `${date.getFullYear()}-${date.getMonth()}`;
+
+        if (newMap.has(mapDate)) {
+          const entry = newMap.get(mapDate);
+          const entryEvents = entry?.events || [];
+
+          const newEvents = entryEvents.map((e) =>
+            e.id === event.id ? { ...e, summary: title } : e
+          );
+          newMap.set(mapDate, {
+            ...entry,
+            events: newEvents, // new array, not mutated
+          });
+        }
+
+        return newMap;
+      });
     } catch (err) {
       console.log(err);
     }
   };
 
+  const updateDesc = async (e) => {
+    e.preventDefault();
+
+    if (!description) {
+      // set notification
+      return;
+    }
+
+    if (inputChanges.description === description) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("authToken");
+      await API_UpdateEventDesc(event.id, description, token);
+
+      setInputChanges((prev) => ({ ...prev, description: description }));
+      setEventMap((prev) => {
+        const date = new Date(string);
+        const newMap = new Map(prev);
+        const mapDate = `${date.getFullYear()}-${date.getMonth()}`;
+
+        if (newMap.has(mapDate)) {
+          const entry = newMap.get(mapDate);
+          const entryEvents = entry?.events || [];
+
+          const newEvents = entryEvents.map((e) =>
+            e.id === event.id ? { ...e, description: description } : e
+          );
+          newMap.set(mapDate, {
+            ...entry,
+            events: newEvents, // new array, not mutated
+          });
+        }
+
+        return newMap;
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const updateLocation = async (newLocationObject) => {
+    /*
+      TODO:
+        IMPLEMENT:
+          1. Update google maps with new location when updating location. Needs coordinates
+    */
+
+    if (!newLocationObject) {
+      // set notification
+      return;
+    }
+
+    if (inputChanges.location.string === newLocationObject.string) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("authToken");
+      await API_UpdateEventLocation(event.id, newLocationObject, token);
+
+      setInputChanges((prev) => ({
+        ...prev,
+        location: newLocationObject,
+      }));
+      setLocation(newLocationObject);
+      setEventMap((prev) => {
+        const date = new Date(string);
+        const newMap = new Map(prev);
+        const mapDate = `${date.getFullYear()}-${date.getMonth()}`;
+
+        if (newMap.has(mapDate)) {
+          const entry = newMap.get(mapDate);
+          const entryEvents = entry?.events || [];
+
+          const newEvents = entryEvents.map((e) =>
+            e.id === event.id ? { ...e, location: newLocationObject } : e
+          );
+          newMap.set(mapDate, {
+            ...entry,
+            events: newEvents, // new array, not mutated
+          });
+        }
+
+        return newMap;
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const compressImage = (file) => {
+    return new Promise((resolve, reject) => {
+      new Compressor(file, {
+        quality: 0.3, // Adjust the quality value as needed (0.0 to 1.0)
+        success: (compressedFile) => {
+          resolve(compressedFile);
+        },
+        error: (error) => {
+          reject(error);
+        },
+      });
+    });
+  };
+
+  const uploadFiles = async (e) => {
+    const newFiles = [...e.target.files];
+    const uploadableAttachments = [];
+
+    for (const file of newFiles) {
+      try {
+        const compressedFile = await compressImage(file);
+        const compressedArrayBuffer = await compressedFile.arrayBuffer();
+        const compressedFileContent = new Uint8Array(compressedArrayBuffer);
+        const newFile = {
+          img: URL.createObjectURL(compressedFile),
+          mimetype: file.type,
+          filename: file.name,
+          content: compressedFileContent,
+        };
+        setNewAttachments((prevFiles) => [...prevFiles, newFile]);
+        uploadableAttachments.push(newFile);
+      } catch (err) {
+        console.log(`Error compressing image: ${err}`);
+      }
+    }
+
+    try {
+      const token = localStorage.getItem("authToken");
+      await createAttachments(uploadableAttachments, event.id, token);
+    } catch (err) {
+      console.log(`Error uploading new attachments. Error: ${err}`);
+    }
+  };
+
   return (
-    <motion.div
-      drag="y"
-      dragControls={controls}
-      dragSnapToOrigin="true"
-      dragConstraints={{ top: 0 }}
-      dragListener={false}
-      onDragEnd={checkToClose}
-      initial={{ y: "100%" }}
-      exit={{ y: "100%" }}
-      animate={{ y: 0 }}
-      className={`z-[901] will-change-transform fixed inset-0 lg:left-0 lg:bottom-0 ${
-        maximize ? "lg:right-0" : "lg:right-[66%]"
-      } scrollbar-slick top-20 rounded-md ${
-        preferences.darkMode ? "bg-[#222]" : "bg-white"
-      } overflow-y-auto`}
-    >
-      <div className={`${event.color} min-h-full bg-opacity-20`}>
+    <>
+      {/* Image Viewer */}
+      <AnimatePresence>
+        {imageViewer.image && imageViewer.show ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/80 flex justify-center items-center z-[999]"
+          >
+            <div className="relative w-full h-full flex justify-center items-center p-4">
+              {/* Close button */}
+              <button
+                onClick={() => setImageViewer({ image: null, show: false })}
+                className="absolute top-6 right-6 text-white text-3xl hover:text-red-400 transition-colors"
+              >
+                ✕
+              </button>
+
+              {/* Image */}
+              <img
+                src={imageViewer.image}
+                alt="Preview"
+                className="max-h-full max-w-full rounded-2xl shadow-lg object-contain"
+              />
+            </div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+
+      {/* Event */}
+      <motion.div
+        drag="y"
+        dragControls={controls}
+        dragSnapToOrigin
+        dragConstraints={{ top: 0 }}
+        dragListener={false}
+        onDragEnd={checkToClose}
+        initial={{ y: "100%" }}
+        exit={{ y: "100%" }}
+        animate={{ y: 0 }}
+        className={`z-[901] fixed inset-0 lg:left-0 lg:bottom-0 ${
+          maximize ? "lg:right-0" : "lg:right-[66%]"
+        } will-change-transform top-20 overflow-y-auto rounded-t-2xl shadow-2xl
+    ${
+      preferences.darkMode
+        ? "bg-[#1e1e1e] text-white border border-white/10"
+        : "bg-white text-gray-900 border border-gray-200"
+    }`}
+      >
+        {/* Header */}
         <div
           onPointerDown={startDrag}
           style={{ touchAction: "none" }}
-          className={`px-3 py-5 sticky top-0 right-0 left-0 z-20 ${
-            preferences.darkMode
-              ? "bg-[#222] text-white"
-              : "bg-white text-black"
-          } rounded-md shadow-md flex justify-between items-center`}
+          className={`sticky top-0 z-20 flex items-center justify-between p-3 border-b backdrop-blur-md rounded-t-2xl
+      ${
+        preferences.darkMode
+          ? "bg-[#222]/80 text-white border-white/10"
+          : "bg-white/80 text-gray-900 border-gray-200"
+      }`}
         >
           <button
-            onClick={() => {
-              setEvent(null);
-            }}
+            onClick={() => setEvent(null)}
+            className="text-xl text-gray-400 hover:text-red-500 transition"
           >
             <AiFillCloseCircle />
           </button>
-          <div className="flex gap-x-3 justify-center items-center">
+
+          <div className="flex gap-4 items-center">
             {!maximize ? (
               <button
-                className="hidden lg:block"
+                className="hidden lg:block text-gray-400 hover:text-cyan-500 transition"
                 onClick={() => setMaximize(true)}
               >
                 <FiMaximize />
               </button>
             ) : (
               <button
-                className="hidden lg:block"
+                className="hidden lg:block text-gray-400 hover:text-cyan-500 transition"
                 onClick={() => setMaximize(false)}
               >
                 <FiMinimize />
               </button>
             )}
-            <button>
+            <button className="text-gray-400 hover:text-cyan-500 transition">
               <MdOutlineDragIndicator />
             </button>
           </div>
         </div>
-        <div className="rounded-md p-3">
+
+        {/* Content */}
+        <div
+          className={`p-6 ${
+            maximize
+              ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 auto-rows-min"
+              : "space-y-6"
+          }`}
+        >
+          {/* Title */}
           <form
             onSubmit={updateTitle}
-            className={`${event.color} p-2 rounded-md shadow-sm font-bold`}
+            className={`p-3 rounded-xl shadow-sm border ${event.color} ${
+              maximize ? "" : ""
+            }`}
           >
             <input
               style={{ color: tailwindBgToHex(event.color) }}
-              className="text-[20px] bg-transparent focus:outline-none outline-none w-full"
+              type="text"
+              className="w-full text-2xl font-bold bg-transparent focus:outline-none"
               placeholder={title}
               value={title}
-              onFocusOut={updateTitle}
+              onBlur={updateTitle}
+              onChange={(e) => setTitle(e.target.value)}
             />
           </form>
-          <div
-            className={`p-2 mt-2 rounded-md shadow-sm font-bold ${event.color} bg-opacity-50`}
+
+          {/* Description */}
+          <form
+            onSubmit={updateDesc}
+            className={`p-3 rounded-xl shadow-sm border ${event.color}`}
           >
             <textarea
-              style={{
-                color: tailwindBgToHex(event.color),
-              }}
-              type="text"
-              className={`focus:outline-none outline-none bg-transparent w-full placeholder:text-black resize-none whitespace-pre-wrap`}
-              placeholder={event.description}
-              rows={10}
-              onChange={(e) => setNewDescription(e.target.value)}
-              value={newDescription}
+              style={{ color: tailwindBgToHex(event.color) }}
+              className="w-full text-base outline-none bg-transparent resize-none focus:outline-none whitespace-pre-wrap"
+              placeholder="Add a description..."
+              rows={6}
+              value={description}
+              onBlur={updateDesc}
+              onChange={(e) => setDescription(e.target.value)}
             />
-          </div>
+          </form>
+
+          {/* Time progress */}
           {event.start.startTime && (
-            <div>
-              <div
-                className="relative mt-2 py-2 px-3 rounded-3xl shadow-sm flex w-full
-       justify-between items-center bg-white overflow-hidden"
-              >
+            <div className="space-y-3">
+              {/* Until Start */}
+              <div className="relative rounded-xl shadow-sm p-3 flex items-center justify-between overflow-hidden border">
                 <motion.div
-                  animate={{
-                    width: `${width}%`,
-                    transition: {
-                      duration: 0.1,
-                      type: "spring",
-                      stiffness: 400,
-                    },
-                  }}
-                  className={`absolute left-1 top-1 bottom-1 bg-opacity-50 rounded-3xl`}
-                ></motion.div>
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1, transition: { delay: 1.5 } }}
-                  className="z-10 font-bold"
-                >
-                  {timeLeft}
-                </motion.p>
-                <p className="z-10">
+                  animate={{ width: `${width}%` }}
+                  className="absolute left-0 top-0 bottom-0 bg-gradient-to-r from-cyan-400 to-blue-500 opacity-30 rounded-xl"
+                />
+                <span className="z-10 font-semibold">{timeLeft}</span>
+                <span className="z-10 text-sm text-gray-500">
                   {new Date(event.start.startTime).toLocaleTimeString()}
-                </p>
+                </span>
               </div>
-              <div
-                className="relative mt-2 py-2 px-3 rounded-3xl shadow-sm flex w-full
-       justify-between items-center bg-white overflow-hidden"
-              >
+
+              {/* In Progress */}
+              <div className="relative rounded-xl shadow-sm p-3 flex items-center justify-between overflow-hidden border">
                 <motion.div
-                  animate={{
-                    width: `${timeInEvent}%`,
-                    transition: {
-                      duration: 0.1,
-                      type: "spring",
-                      stiffness: 400,
-                    },
-                  }}
-                  className={`absolute left-1 top-1 bottom-1 bg-opacity-50 rounded-3xl`}
-                ></motion.div>
-                <p className="z-10">
+                  animate={{ width: `${timeInEvent}%` }}
+                  className="absolute left-0 top-0 bottom-0 bg-gradient-to-r from-green-400 to-emerald-500 opacity-30 rounded-xl"
+                />
+                <span className="z-10 text-sm text-gray-500">
                   {new Date(event.start.startTime).toLocaleTimeString()}
-                </p>
-                <p className="z-10">
+                </span>
+                <span className="z-10 text-sm text-gray-500">
                   {new Date(event.end.endTime).toLocaleTimeString()}
-                </p>
+                </span>
               </div>
             </div>
           )}
-          <div className="my-2 bg-white rounded-md shadow-md p-2">
-            {formatTime(new Date(event.date))}
+
+          {/* Date */}
+          <div className="p-3 rounded-xl shadow-sm border">
+            <p className="font-semibold">{formatTime(new Date(event.date))}</p>
           </div>
-          <div className="my-2 bg-white rounded-md shadow-md p-2">
-            {event.location ? (
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <div>
-                    <MdLocationPin />
-                  </div>
-                  <div className="flex justify-center items-center gap-x-3">
-                    <button>
-                      <FaTrash />
-                    </button>
-                    <button>
-                      <FaEdit />
-                    </button>
-                    <button
-                      className=""
-                      onClick={() =>
-                        (window.location.href = `https://www.google.com/maps/dir/?api=1&destination=${event.location.string}`)
-                      }
-                    >
-                      <FaExternalLinkAlt />
-                    </button>
-                  </div>
-                </div>
-                <input
-                  style={{
-                    color: tailwindBgToHex(event.color),
-                  }}
-                  className={`mt-3 p-2 rounded-md w-full outline-none focus:outline-none ${event.color}`}
-                  type="text"
-                  placeholder={event.location.string}
-                  value={event.location.string}
-                />
-                <div className="mt-5">
-                  <GoogleMaps coordinates={event.location.coordinates} />
-                </div>
-              </div>
-            ) : (
-              <div>
-                <div className="flex justify-between items-center">
-                  <MdLocationPin />
+
+          {/* Location */}
+          <div className="p-3 rounded-xl shadow-sm border">
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="font-semibold flex items-center gap-2">
+                <MdLocationPin /> Location
+              </h3>
+              {location?.string && location?.coordinates ? (
+                <div className="flex gap-3 text-gray-500">
                   <button
-                    style={{ color: tailwindBgToHex(event.color) }}
-                    className={`text-xs font-semibold rounded-md ${event.color} hover:translate-x-1 duration-200 py-2 px-3`}
+                    onClick={() =>
+                      updateLocation({ string: null, coordinates: null })
+                    }
+                    className="hover:text-red-500 transition"
                   >
-                    Add Location
+                    <FaTrash />
+                  </button>
+                  <button
+                    className="hover:text-green-500 transition"
+                    onClick={() =>
+                      (window.location.href = `https://www.google.com/maps/dir/?api=1&destination=${event.location.string}`)
+                    }
+                  >
+                    <FaExternalLinkAlt />
                   </button>
                 </div>
-                <p>No Location Provided</p>
+              ) : null}
+            </div>
+            {location?.string && location?.coordinates ? (
+              <p className="text-sm text-gray-700 ml-2">{location.string}</p>
+            ) : null}
+            <SuggestCities
+              setLocationObject={updateLocation}
+              placeholder="Change event location..."
+              showGoogleMap={false}
+            />
+            {location?.string && location?.coordinates ? (
+              <div className="mt-4">
+                <GoogleMaps coordinates={location.coordinates} />
               </div>
+            ) : (
+              <p className="text-sm text-gray-500">No Location Provided</p>
             )}
           </div>
-          <div className="p-2 rounded-md shadow-md my-2 bg-white">
+
+          {/* Reminders */}
+          <div className="p-3 rounded-xl shadow-sm border">
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="font-semibold flex items-center gap-2">
+                <IoIosAlarm /> Reminder
+              </h3>
+              <button className="text-sm font-medium text-cyan-600 hover:underline">
+                + Add
+              </button>
+            </div>
             {event.reminders.reminder ? (
-              <div>
-                <div className="flex justify-between items-center">
-                  <IoIosAlarm />
-                  <div className="flex gap-3 justify-center items-center">
-                    <button>
-                      <BsFillTrashFill />
-                    </button>
-                    <button>
-                      <FaPlusCircle />
-                    </button>
-                    <button>
-                      <FaEdit />
-                    </button>
-                  </div>
-                </div>
-                <p
-                  style={{ color: tailwindBgToHex(event.color) }}
-                  className={`${event.color} mt-3 p-2 rounded-md shadow-md`}
-                >
-                  You have a reminder set for this event on <br />
-                  <span className="font-semibold">
-                    {new Date(event.reminders.when).toLocaleDateString(
-                      "en-US",
-                      {
-                        month: "short",
-                        day: "numeric",
-                      }
-                    )}
-                  </span>{" "}
-                  at <br />
-                  <span className="font-semibold">
-                    {new Date(event.reminders.when).toLocaleTimeString()}
-                  </span>
-                </p>
-              </div>
-            ) : (
-              <div>
-                <div className="flex justify-between items-center">
-                  <IoIosAlarm />
-                  <button
-                    style={{ color: tailwindBgToHex(event.color) }}
-                    className={`text-xs font-semibold rounded-md ${event.color} hover:translate-x-1 duration-200 py-2 px-3`}
-                  >
-                    Add Reminders
-                  </button>
-                </div>
-                <p>No Reminders Set</p>
-              </div>
-            )}
-          </div>
-          <div className="bg-white rounded-md shadow-md p-2 my-2">
-            {event.repeats.repeat ? (
-              <div className="">
-                <FiRepeat />
-                <p
-                  style={{ color: tailwindBgToHex(event.color) }}
-                  className={`${event.color} mt-3 p-2 rounded-md shadow-md`}
-                >
-                  {event.repeats.howOften}
-                </p>
-              </div>
-            ) : (
-              <div>
-                <div className="flex justify-between items-center">
-                  <FiRepeat />
-                  <button
-                    style={{ color: tailwindBgToHex(event.color) }}
-                    className={`text-xs font-semibold rounded-md ${event.color} hover:translate-x-1 duration-200 py-2 px-3`}
-                  >
-                    Create Repeat
-                  </button>
-                </div>
-                <p>No repeated events</p>
-              </div>
-            )}
-          </div>
-          <div>
-            {eventLists.map((list) => (
-              <div
-                key={list.id}
-                style={{ color: tailwindBgToHex(list.color) }}
-                className={`scrollbar-hide p-3 rounded-md
-            shadow-md ${list.color} my-5 mx-0 mr-7 md:mr-0 pr-10 md:pr-3
-            text-black list-none`}
+              <motion.div
+                key={event.reminders.reminderTimeString}
+                className={`${
+                  new Date(event.reminders.when) < dateObj
+                    ? "border-l-4 border-rose-400"
+                    : new Date(event.reminders.when).toLocaleDateString() ===
+                      dateObj.toLocaleDateString()
+                    ? "border-l-4 border-amber-400"
+                    : "border-l-4 border-cyan-400"
+                } min-w-[200px] max-w-[200px] shadow-lg p-4 my-3 mx-2 rounded-2xl text-gray-900`}
               >
-                <div className="mb-2 bg-white rounded-md shadow-md p-3 flex justify-between items-center">
-                  <p className="font-semibold mr-2">{list.title}</p>
-                  <div className="flex gap-x-3 text-sm">
-                    <button onClick={() => {}}></button>
+                <div className="">
+                  {/* Time + Title */}
+                  <div>
+                    <div className="flex justify-between items-center">
+                      <p className="text-sm font-semibold text-gray-700">
+                        {new Date(event.reminders.when).toLocaleTimeString(
+                          "en-US",
+                          {
+                            timeZoneName: "short",
+                            hour: "numeric",
+                            minute: "numeric",
+                          }
+                        )}
+                      </p>
+                    </div>
                   </div>
                 </div>
-                <ListItems
-                  addItems={addItems}
-                  listId={list.id}
-                  items={list?.items}
-                />
-              </div>
-            ))}
+              </motion.div>
+            ) : (
+              <p className="text-sm text-gray-500">No reminders set</p>
+            )}
           </div>
-          {imagesLoading ? (
-            <p className="text-center font-semibold text-sm mt-10">
-              Loading {event.attachmentLength} Images
-            </p>
-          ) : fetchedImages.length > 0 ? (
-            <Masonry
-              breakpointCols={breakpointColumnsObj}
-              className="my-masonry-grid-attachments"
-              columnClassName="my-masonry-grid_column-attachments"
-            >
-              {fetchedImages.map((img) => (
-                <img
-                  key={img}
-                  src={img}
-                  alt={"event attachment"}
-                  className="mt-3 rounded-sm shadow-sm"
-                />
-              ))}
-            </Masonry>
-          ) : (
-            <div className="bg-white p-2 rounded-md shadow-md">
-              <div className="flex justify-between items-center">
-                <FaImage />
-                <button
-                  style={{ color: tailwindBgToHex(event.color) }}
-                  className={`text-xs font-semibold rounded-md ${event.color} hover:translate-x-1 duration-200 py-2 px-3`}
-                >
-                  Add Attachment
-                </button>
-              </div>
-              <p>No Attachments</p>
+
+          {/* Repeat */}
+          <div className="p-3 rounded-xl shadow-sm border">
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="font-semibold flex items-center gap-2">
+                <FiRepeat /> Repeat
+              </h3>
+              <button className="text-sm font-medium text-cyan-600 hover:underline">
+                + Create
+              </button>
             </div>
-          )}
+            {event.repeats.repeat ? (
+              <p className="text-sm">{event.repeats.howOften}</p>
+            ) : (
+              <p className="text-sm text-gray-500">No repeat set</p>
+            )}
+          </div>
+
+          {/* Attachments */}
+          <div className="p-3 rounded-xl shadow-sm border col-span-full">
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="font-semibold flex items-center gap-2">
+                <FaImage /> Attachments
+              </h3>
+              <label className="text-sm font-medium text-cyan-600 hover:underline">
+                + Add
+                <input
+                  type="file"
+                  accept=".jpeg .png .svg .pdf .docx"
+                  onChange={uploadFiles}
+                  multiple
+                  placeholder="png svg jpeg pdf word"
+                  className="w-0 h-0"
+                />
+              </label>
+            </div>
+            {imagesLoading ? (
+              <p className="text-sm text-gray-500">
+                Loading {event.attachmentLength} images...
+              </p>
+            ) : fetchedImages.length > 0 ? (
+              <Masonry
+                breakpointCols={breakpointColumnsObj}
+                className="my-masonry-grid-attachments"
+                columnClassName="my-masonry-grid_column-attachments"
+              >
+                {/* Map through both newly uploaded attachments and attachments already associated with the event */}
+                {[...fetchedImages, ...newAttachments].map((img) => (
+                  <img
+                    key={img}
+                    src={img}
+                    onClick={() => setImageViewer({ image: img, show: true })}
+                    alt="attachment"
+                    className="rounded-lg m-1 shadow-sm hover:shadow-md transition"
+                  />
+                ))}
+              </Masonry>
+            ) : (
+              <p className="text-sm text-gray-500">No attachments</p>
+            )}
+          </div>
         </div>
-      </div>
-    </motion.div>
+      </motion.div>
+    </>
   );
 };
 
