@@ -351,7 +351,7 @@ const AddEvent = () => {
 
   return (
     <div
-      className={`w-full rounded-2xl border shadow-2xl backdrop-blur-md p-4 ${
+      className={`w-full rounded-2xl border shadow-2xl backdrop-blur-md lg:p-4 sm:p-1 ${
         preferences.darkMode
           ? "bg-[#161616]/90 text-white border-white/10"
           : "bg-white/90 text-gray-900 border-black/10"
@@ -362,7 +362,7 @@ const AddEvent = () => {
         placeholder="Event"
         value={summary}
         onChange={(e) => setSummary(e.target.value)}
-        className={`mt-2 mb-4 pt-20 w-full bg-transparent text-3xl sm:text-4xl font-semibold tracking-tight outline-none placeholder:opacity-60 ${
+        className={`mt-2 mb-4 pt-20 pl-3 w-full bg-transparent text-3xl sm:text-4xl font-semibold tracking-tight outline-none placeholder:opacity-60 ${
           preferences.darkMode
             ? "placeholder:text-gray-300"
             : "placeholder:text-gray-500"

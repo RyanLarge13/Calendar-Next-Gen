@@ -111,10 +111,10 @@ li {
 }
 
 /* Default button color */
-.ql-toolbar.ql-snow .ql-formats button,
+/* .ql-toolbar.ql-snow .ql-formats button,
 .ql-toolbar.ql-snow .ql-formats .ql-picker {
   color: white !important;
-}
+} */
 
 /* Hover / active state */
 .ql-toolbar.ql-snow .ql-formats button:hover,
@@ -129,13 +129,13 @@ li {
 }
 
 /* Toolbar button icons default white */
-.ql-snow .ql-stroke {
+/* .ql-snow .ql-stroke {
   stroke: white !important;
-}
+} */
 
-.ql-snow .ql-fill {
+/* .ql-snow .ql-fill {
   fill: white !important;
-}
+} */
 
 /* Active/hovered buttons = blue */
 .ql-snow .ql-toolbar button:hover .ql-stroke,

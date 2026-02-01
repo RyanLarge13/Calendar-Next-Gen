@@ -26,6 +26,7 @@ const Dashboard = ({ timeOfDay }) => {
     reminders,
     userTasks,
     stickies,
+    preferences,
   } = useContext(UserContext);
   const { setEvent } = useContext(InteractiveContext);
   const { string, theDay } = useContext(DatesContext);
@@ -35,7 +36,7 @@ const Dashboard = ({ timeOfDay }) => {
   useEffect(() => {
     const todaysReminders = reminders.filter(
       (r) =>
-        new Date(r.time).toLocaleDateString() === theDay.toLocaleDateString()
+        new Date(r.time).toLocaleDateString() === theDay.toLocaleDateString(),
     );
 
     setTodaysReminders(todaysReminders);
@@ -46,207 +47,457 @@ const Dashboard = ({ timeOfDay }) => {
       initial={{ x: "-5%", opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: "-5%", opacity: 0 }}
-      className="pt-20 px-2 lg:px-16"
+      className="pt-24 px-3 sm:px-6 lg:px-10"
     >
-      {/* Greeting */}
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold tracking-tight">{timeOfDay},</h1>
-        {user.username && (
-          <p className="text-xl text-gray-600 mt-1">{user.username}</p>
-        )}
-      </div>
-
-      {/* Tile Layout */}
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {/* Upcoming Events */}
-        <div className="p-5 bg-gradient-to-br from-cyan-100 to-blue-100 rounded-2xl shadow-md">
-          <div className="flex justify-between items-center mb-3">
-            <h2 className="text-lg font-semibold flex items-center gap-2">
-              <MdOutlineEvent className="text-xl text-cyan-600" />
-              Upcoming Events
-            </h2>
-            <span className="text-xs text-gray-500">
-              {upcoming.length} total
-            </span>
-          </div>
-          {upcoming.length > 0 ? (
-            <div className="space-y-3">
-              {upcoming.slice(0, 3).map((event) => (
-                <div
-                  key={event.id}
-                  className="bg-white rounded-lg shadow-sm p-3 relative"
-                >
-                  <button
-                    className="absolute top-2 right-2 text-gray-400 hover:text-cyan-600"
-                    onClick={() => setEvent(event)}
-                  >
-                    <MdOutlineOpenInNew />
-                  </button>
-                  {event.diff < 1 ? (
-                    <p className="text-sm font-semibold text-rose-500">Today</p>
-                  ) : event.diff < 2 ? (
-                    <p className="text-sm font-semibold text-amber-500">
-                      Tomorrow
-                    </p>
-                  ) : (
-                    <p className="text-sm text-gray-500">
-                      In <span className="font-semibold">{event.diff}</span>{" "}
-                      days
-                    </p>
-                  )}
-                  <p className="text-base font-medium mt-1">{event.summary}</p>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-sm text-gray-500">You have no upcoming events</p>
-          )}
-        </div>
-
-        {/* Reminders */}
-        <div className="p-5 bg-gradient-to-br from-rose-100 to-pink-100 rounded-2xl shadow-md">
-          <h2 className="text-lg font-semibold flex items-center gap-2 mb-3">
-            <MdOutlineAccessAlarm className="text-xl text-rose-600" />
-            Reminders
-          </h2>
-          <p className="text-sm text-gray-500 mb-3">
-            Quick glance at your reminders today
-          </p>
-          {todaysReminders.length > 0 ? (
-            <div className="space-y-3">
-              {todaysReminders.map((reminder) => (
-                <div
-                  key={reminder.id}
-                  className="bg-white rounded-lg shadow-sm p-3 relative"
-                >
-                  <p className="absolute top-2 right-2 text-gray-400 hover:text-cyan-600">
-                    <MdOutlineAccessAlarm />
-                  </p>
-                  <p className="text-sm font-semibold text-amber-500">
-                    {reminder.title}
-                  </p>
-                  <p className="text-base font-medium mt-1">{reminder.notes}</p>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-sm text-gray-500">You have no reminders today</p>
-          )}
-        </div>
-
-        {/* Tasks */}
-        <div className="p-5 bg-gradient-to-br from-emerald-100 to-green-100 rounded-2xl shadow-md">
-          <h2 className="text-lg font-semibold flex items-center gap-2 mb-3">
-            <MdOutlineCheckCircle className="text-xl text-emerald-600" />
-            Tasks
-          </h2>
-          <p className="text-sm text-gray-500">
-            Stay on top of your to-do list
-          </p>
-          {userTasks?.length > 0 ? (
-            <div className="space-y-3">
-              <div
-                key={userTasks[0].id}
-                className={`p-3 my-5 md:mx-3 lg:mx-5 rounded-md shadow-md ${userTasks[0].color} text-black`}
-              >
-                <p>{userTasks[0].title}</p>
-                <p>
-                  Completed:{" "}
-                  {userTasks[0].tasks.filter((t) => t.complete).length}
-                </p>
-                <p>
-                  Tasks to still finish today:{" "}
-                  {userTasks[0].tasks.filter((t) => !t.complete).length}
-                </p>
-                <div className="mt-3">
-                  {userTasks[0].tasks
-                    .filter((t) => !t.complete)
-                    .map((taskItem) => (
-                      <div
-                        key={taskItem.id}
-                        className="p-3 py-4 border-b border-b-slate-300 bg-white rounded-sm"
-                      >
-                        <div className=" ml-5 w-full flex justify-between items-center">
-                          <p className="mr-2">{taskItem.text}</p>
-                        </div>
-                      </div>
-                    ))}
-                </div>
-              </div>
-            </div>
-          ) : (
-            <p className="text-sm text-gray-500">You have no tasks today</p>
-          )}
-        </div>
-
-        {/* Notes */}
-        <div className="p-5 bg-gradient-to-br from-amber-100 to-yellow-100 rounded-2xl shadow-md">
-          <h2 className="text-lg font-semibold flex items-center gap-2 mb-3">
-            <MdOutlineStickyNote2 className="text-xl text-amber-600" />
-            Notes
-          </h2>
-          <p className="text-sm text-gray-500">Your latest note</p>
-          {stickies?.length > 0 ? (
-            <div className="space-y-3">
-              <div
-                key={stickies[0].id}
-                className={`p-5 my-5 md:mx-3 lg:mx-5 rounded-md shadow-md ${stickies[0].color} text-black`}
-              >
-                <p
-                  style={{ color: tailwindBgToHex(stickies[0].color) }}
-                  className="font-semibold text-lg"
-                >
-                  {stickies[0].title}
-                </p>
-                <div
-                  className="mt-5"
-                  style={{ color: tailwindBgToHex(stickies[0].color) }}
-                  dangerouslySetInnerHTML={{
-                    __html: stickies[0].body.slice(0, 200) + "...",
-                  }}
-                ></div>
-              </div>
-            </div>
-          ) : (
-            <p className="text-sm text-gray-500">You have no notes</p>
-          )}
-        </div>
-
-        {/* Weather */}
-        <div className="p-5 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-2xl shadow-md flex justify-between items-start">
-          <div>
-            <h2 className="text-lg font-semibold flex items-center gap-2 mb-3">
-              <MdOutlineWbSunny className="text-xl text-indigo-600" />
-              Weather
-            </h2>
+      {/* Centered container so desktop doesn't look stretched */}
+      <div className="mx-auto max-w-6xl">
+        {/* Greeting / Hero */}
+        <div
+          className={`
+        rounded-3xl border shadow-2xl backdrop-blur-md
+        px-5 py-5 sm:px-6 sm:py-6
+        ${preferences.darkMode ? "bg-[#161616]/90 border-white/10 text-white" : "bg-white/90 border-black/10 text-slate-900"}
+      `}
+        >
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             <div>
-              <p className="text-sm text-gray-500">
-                {weatherData?.current_weather?.temperature || 0}°F,{" "}
-                {weatherCodeMap[weatherData?.current_weather?.weathercode]
-                  ?.name || ""}
-              </p>
+              <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">
+                {timeOfDay},
+              </h1>
+              {user.username && (
+                <p
+                  className={`text-base sm:text-lg mt-1 ${preferences.darkMode ? "text-white/70" : "text-slate-600"}`}
+                >
+                  {user.username}
+                </p>
+              )}
+            </div>
+
+            {/* Quick stats */}
+            <div className="flex flex-wrap gap-2">
+              <div
+                className={`
+              rounded-2xl border px-3 py-2 text-sm font-semibold
+              ${preferences.darkMode ? "bg-white/5 border-white/10 text-white/80" : "bg-black/[0.03] border-black/10 text-slate-700"}
+            `}
+              >
+                <span className="opacity-70 mr-2">Upcoming</span>
+                {upcoming.length}
+              </div>
+              <div
+                className={`
+              rounded-2xl border px-3 py-2 text-sm font-semibold
+              ${preferences.darkMode ? "bg-white/5 border-white/10 text-white/80" : "bg-black/[0.03] border-black/10 text-slate-700"}
+            `}
+              >
+                <span className="opacity-70 mr-2">Reminders</span>
+                {todaysReminders.length}
+              </div>
+              <div
+                className={`
+              rounded-2xl border px-3 py-2 text-sm font-semibold
+              ${preferences.darkMode ? "bg-white/5 border-white/10 text-white/80" : "bg-black/[0.03] border-black/10 text-slate-700"}
+            `}
+              >
+                <span className="opacity-70 mr-2">Notes</span>
+                {stickies?.length || 0}
+              </div>
             </div>
           </div>
-          <img
-            src={
-              weatherCodeMap[weatherData?.current_weather?.weathercode]?.icon
-            }
-            alt={
-              weatherCodeMap[weatherData?.current_weather?.weathercode]?.name
-            }
-            className="object-cover aspect-square w-20 ml-2 flex-shrink-0"
-          />
         </div>
 
-        {/* Location */}
-        <div className="p-5 bg-gradient-to-br from-slate-100 to-gray-100 rounded-2xl shadow-md">
-          <h2 className="text-lg font-semibold flex items-center gap-2 mb-3">
-            <MdOutlineLocationOn className="text-xl text-slate-600" />
-            Location
-          </h2>
-          <p className="text-sm text-gray-500">
-            {location.city}, {location.state}
-          </p>
+        {/* Dashboard Grid */}
+        <div className="mt-6 grid grid-cols-12 gap-4">
+          {/* Upcoming Events (wide) */}
+          <div
+            className={`
+          col-span-12 lg:col-span-7
+          rounded-3xl border shadow-sm transition-all
+          ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/7" : "bg-white border-black/10 hover:bg-black/[0.02]"}
+        `}
+          >
+            <div
+              className={`flex justify-between items-center px-5 py-4 border-b ${preferences.darkMode ? "border-white/10" : "border-black/10"}`}
+            >
+              <h2 className="text-sm font-semibold flex items-center gap-2">
+                <span
+                  className={`
+                grid place-items-center h-9 w-9 rounded-2xl border shadow-sm
+                ${preferences.darkMode ? "bg-cyan-500/15 border-cyan-300/20 text-cyan-100" : "bg-cyan-50 border-cyan-200 text-cyan-700"}
+              `}
+                >
+                  <MdOutlineEvent className="text-lg" />
+                </span>
+                Upcoming Events
+              </h2>
+              <span
+                className={`text-xs font-semibold ${preferences.darkMode ? "text-white/60" : "text-slate-500"}`}
+              >
+                {upcoming.length} total
+              </span>
+            </div>
+
+            <div className="p-5">
+              {upcoming.length > 0 ? (
+                <div className="space-y-2">
+                  {upcoming.slice(0, 3).map((event) => (
+                    <div
+                      key={event.id}
+                      className={`
+                    relative rounded-2xl border px-4 py-3 shadow-sm transition
+                    ${preferences.darkMode ? "border-white/10 bg-white/5 hover:bg-white/7" : "border-black/10 bg-white hover:bg-black/[0.02]"}
+                  `}
+                    >
+                      <button
+                        className={`
+                      absolute top-3 right-3 grid place-items-center h-9 w-9 rounded-2xl border shadow-sm transition active:scale-95
+                      ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/60 hover:text-cyan-200" : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-500 hover:text-cyan-600"}
+                    `}
+                        onClick={() => setEvent(event)}
+                        aria-label="Open event"
+                      >
+                        <MdOutlineOpenInNew />
+                      </button>
+
+                      {event.diff < 1 ? (
+                        <p className="text-xs font-semibold text-rose-500">
+                          Today
+                        </p>
+                      ) : event.diff < 2 ? (
+                        <p className="text-xs font-semibold text-amber-500">
+                          Tomorrow
+                        </p>
+                      ) : (
+                        <p
+                          className={`text-xs ${preferences.darkMode ? "text-white/55" : "text-slate-500"}`}
+                        >
+                          In <span className="font-semibold">{event.diff}</span>{" "}
+                          days
+                        </p>
+                      )}
+
+                      <p className="text-sm font-semibold mt-1 pr-12">
+                        {event.summary}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p
+                  className={`text-sm ${preferences.darkMode ? "text-white/55" : "text-slate-500"}`}
+                >
+                  You have no upcoming events
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Weather + Location (stacked) */}
+          <div className="col-span-12 lg:col-span-5 grid gap-4">
+            {/* Weather */}
+            <div
+              className={`
+            rounded-3xl border shadow-sm transition-all
+            ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/7" : "bg-white border-black/10 hover:bg-black/[0.02]"}
+          `}
+            >
+              <div
+                className={`flex justify-between items-center px-5 py-4 border-b ${preferences.darkMode ? "border-white/10" : "border-black/10"}`}
+              >
+                <h2 className="text-sm font-semibold flex items-center gap-2">
+                  <span
+                    className={`
+                  grid place-items-center h-9 w-9 rounded-2xl border shadow-sm
+                  ${preferences.darkMode ? "bg-indigo-500/15 border-indigo-300/20 text-indigo-100" : "bg-indigo-50 border-indigo-200 text-indigo-700"}
+                `}
+                  >
+                    <MdOutlineWbSunny className="text-lg" />
+                  </span>
+                  Weather
+                </h2>
+              </div>
+
+              <div className="p-5 flex justify-between items-start gap-3">
+                <div>
+                  <p
+                    className={`text-sm font-semibold ${preferences.darkMode ? "text-white" : "text-slate-900"}`}
+                  >
+                    {weatherData?.current_weather?.temperature || 0}°F
+                  </p>
+                  <p
+                    className={`text-xs mt-1 ${preferences.darkMode ? "text-white/60" : "text-slate-500"}`}
+                  >
+                    {weatherCodeMap[weatherData?.current_weather?.weathercode]
+                      ?.name || ""}
+                  </p>
+                </div>
+
+                <img
+                  src={
+                    weatherCodeMap[weatherData?.current_weather?.weathercode]
+                      ?.icon
+                  }
+                  alt={
+                    weatherCodeMap[weatherData?.current_weather?.weathercode]
+                      ?.name
+                  }
+                  className="object-contain aspect-square w-16 sm:w-20 flex-shrink-0"
+                />
+              </div>
+            </div>
+
+            {/* Location */}
+            <div
+              className={`
+            rounded-3xl border shadow-sm transition-all
+            ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/7" : "bg-white border-black/10 hover:bg-black/[0.02]"}
+          `}
+            >
+              <div
+                className={`flex justify-between items-center px-5 py-4 border-b ${preferences.darkMode ? "border-white/10" : "border-black/10"}`}
+              >
+                <h2 className="text-sm font-semibold flex items-center gap-2">
+                  <span
+                    className={`
+                  grid place-items-center h-9 w-9 rounded-2xl border shadow-sm
+                  ${preferences.darkMode ? "bg-slate-500/15 border-white/10 text-white/80" : "bg-slate-50 border-black/10 text-slate-700"}
+                `}
+                  >
+                    <MdOutlineLocationOn className="text-lg" />
+                  </span>
+                  Location
+                </h2>
+              </div>
+
+              <div className="p-5">
+                <p
+                  className={`text-sm font-semibold ${preferences.darkMode ? "text-white" : "text-slate-900"}`}
+                >
+                  {location.city}, {location.state}
+                </p>
+                <p
+                  className={`text-xs mt-1 ${preferences.darkMode ? "text-white/60" : "text-slate-500"}`}
+                >
+                  Based on your selected location
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Reminders */}
+          <div
+            className={`
+          col-span-12 lg:col-span-6
+          rounded-3xl border shadow-sm transition-all
+          ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/7" : "bg-white border-black/10 hover:bg-black/[0.02]"}
+        `}
+          >
+            <div
+              className={`flex justify-between items-center px-5 py-4 border-b ${preferences.darkMode ? "border-white/10" : "border-black/10"}`}
+            >
+              <h2 className="text-sm font-semibold flex items-center gap-2">
+                <span
+                  className={`
+                grid place-items-center h-9 w-9 rounded-2xl border shadow-sm
+                ${preferences.darkMode ? "bg-rose-500/15 border-rose-300/20 text-rose-100" : "bg-rose-50 border-rose-200 text-rose-700"}
+              `}
+                >
+                  <MdOutlineAccessAlarm className="text-lg" />
+                </span>
+                Reminders
+              </h2>
+              <span
+                className={`text-xs font-semibold ${preferences.darkMode ? "text-white/60" : "text-slate-500"}`}
+              >
+                {todaysReminders.length} today
+              </span>
+            </div>
+
+            <div className="p-5">
+              <p
+                className={`text-xs mb-3 ${preferences.darkMode ? "text-white/60" : "text-slate-500"}`}
+              >
+                Quick glance at your reminders today
+              </p>
+
+              {todaysReminders.length > 0 ? (
+                <div className="space-y-2">
+                  {todaysReminders.map((reminder) => (
+                    <div
+                      key={reminder.id}
+                      className={`
+                    rounded-2xl border px-4 py-3 shadow-sm
+                    ${preferences.darkMode ? "border-white/10 bg-white/5" : "border-black/10 bg-white"}
+                  `}
+                    >
+                      <p className="text-sm font-semibold">{reminder.title}</p>
+                      <p
+                        className={`text-xs mt-1 ${preferences.darkMode ? "text-white/60" : "text-slate-500"}`}
+                      >
+                        {reminder.notes}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p
+                  className={`text-sm ${preferences.darkMode ? "text-white/55" : "text-slate-500"}`}
+                >
+                  You have no reminders today
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Tasks */}
+          <div
+            className={`
+          col-span-12 lg:col-span-6
+          rounded-3xl border shadow-sm transition-all
+          ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/7" : "bg-white border-black/10 hover:bg-black/[0.02]"}
+        `}
+          >
+            <div
+              className={`flex justify-between items-center px-5 py-4 border-b ${preferences.darkMode ? "border-white/10" : "border-black/10"}`}
+            >
+              <h2 className="text-sm font-semibold flex items-center gap-2">
+                <span
+                  className={`
+                grid place-items-center h-9 w-9 rounded-2xl border shadow-sm
+                ${preferences.darkMode ? "bg-emerald-500/15 border-emerald-300/20 text-emerald-100" : "bg-emerald-50 border-emerald-200 text-emerald-700"}
+              `}
+                >
+                  <MdOutlineCheckCircle className="text-lg" />
+                </span>
+                Tasks
+              </h2>
+            </div>
+
+            <div className="p-5">
+              <p
+                className={`text-xs mb-3 ${preferences.darkMode ? "text-white/60" : "text-slate-500"}`}
+              >
+                Stay on top of your to-do list
+              </p>
+
+              {userTasks?.length > 0 ? (
+                <div
+                  className={`
+                rounded-2xl border shadow-sm overflow-hidden
+                ${preferences.darkMode ? "border-white/10 bg-white/5" : "border-black/10 bg-white"}
+              `}
+                >
+                  <div className="p-4 flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold truncate">
+                        {userTasks[0].title}
+                      </p>
+                      <p
+                        className={`text-xs mt-1 ${preferences.darkMode ? "text-white/60" : "text-slate-500"}`}
+                      >
+                        Completed:{" "}
+                        {userTasks[0].tasks.filter((t) => t.completed).length} •
+                        Remaining:{" "}
+                        {userTasks[0].tasks.filter((t) => !t.completed).length}
+                      </p>
+                    </div>
+                    <span
+                      className={`${userTasks[0].color} h-3.5 w-3.5 rounded-full ring-1 ring-black/10`}
+                    />
+                  </div>
+
+                  <div
+                    className={`border-t ${preferences.darkMode ? "border-white/10" : "border-black/10"}`}
+                  />
+
+                  <div className="p-2 max-h-48 overflow-y-auto scrollbar-hide">
+                    {userTasks[0].tasks
+                      .filter((t) => !t.completed)
+                      .map((taskItem) => (
+                        <div
+                          key={taskItem.id}
+                          className={`
+                        rounded-2xl border px-4 py-3 my-2 shadow-sm
+                        ${preferences.darkMode ? "border-white/10 bg-white/5" : "border-black/10 bg-white"}
+                      `}
+                        >
+                          <p className="text-sm font-semibold">
+                            {taskItem.text}
+                          </p>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              ) : (
+                <p
+                  className={`text-sm ${preferences.darkMode ? "text-white/55" : "text-slate-500"}`}
+                >
+                  You have no tasks today
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Notes */}
+          <div
+            className={`
+          col-span-12
+          rounded-3xl border shadow-sm transition-all
+          ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/7" : "bg-white border-black/10 hover:bg-black/[0.02]"}
+        `}
+          >
+            <div
+              className={`flex justify-between items-center px-5 py-4 border-b ${preferences.darkMode ? "border-white/10" : "border-black/10"}`}
+            >
+              <h2 className="text-sm font-semibold flex items-center gap-2">
+                <span
+                  className={`
+                grid place-items-center h-9 w-9 rounded-2xl border shadow-sm
+                ${preferences.darkMode ? "bg-amber-500/15 border-amber-300/20 text-amber-100" : "bg-amber-50 border-amber-200 text-amber-700"}
+              `}
+                >
+                  <MdOutlineStickyNote2 className="text-lg" />
+                </span>
+                Notes
+              </h2>
+              <span
+                className={`text-xs font-semibold ${preferences.darkMode ? "text-white/60" : "text-slate-500"}`}
+              >
+                Latest
+              </span>
+            </div>
+
+            <div className="p-5">
+              {stickies?.length > 0 ? (
+                <div
+                  className={`
+                rounded-2xl border shadow-sm p-4
+                ${preferences.darkMode ? "border-white/10 bg-white/5" : "border-black/10 bg-white"}
+              `}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="text-sm font-semibold">{stickies[0].title}</p>
+                    <span
+                      className={`${stickies[0].color} h-3.5 w-3.5 rounded-full ring-1 ring-black/10`}
+                    />
+                  </div>
+
+                  <div
+                    className={`mt-3 text-sm leading-relaxed ${preferences.darkMode ? "text-white/70" : "text-slate-600"}`}
+                    dangerouslySetInnerHTML={{
+                      __html: stickies[0].body.slice(0, 240) + "...",
+                    }}
+                  />
+                </div>
+              ) : (
+                <p
+                  className={`text-sm ${preferences.darkMode ? "text-white/55" : "text-slate-500"}`}
+                >
+                  You have no notes
+                </p>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </motion.div>

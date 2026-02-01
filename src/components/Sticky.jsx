@@ -20,7 +20,8 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
 const Sticky = ({ sticky, index }) => {
-  const { setSystemNotif, setStickies, stickies } = useContext(UserContext);
+  const { setSystemNotif, setStickies, stickies, preferences } =
+    useContext(UserContext);
   const { event } = useContext(InteractiveContext);
 
   const [expand, setExpand] = useState(false);
@@ -190,17 +191,17 @@ const Sticky = ({ sticky, index }) => {
         height: fullScreen
           ? window.innerHeight
           : expand
-          ? 500
-          : minimize
-          ? 150
-          : 175,
+            ? 500
+            : minimize
+              ? 150
+              : 175,
         width: fullScreen
           ? window.innerWidth
           : expand
-          ? 280
-          : minimize
-          ? 8
-          : 200,
+            ? 280
+            : minimize
+              ? 8
+              : 200,
       }}
       drag={fullScreen ? false : minimize ? "y" : !pin}
       dragControls={controls}
@@ -212,39 +213,54 @@ const Sticky = ({ sticky, index }) => {
         bottom: window.innerHeight - 200,
       }}
       ref={stickyRef}
-      className={`markdown z-[999] shadow-lg rounded-2xl fixed
-    w-[10px] h-[150px] transition-all duration-300 ease-in-out
-    ${sticky.color} ${
-        minimize ? "text-transparent rounded-l-none" : "text-gray-900"
-      } overflow-hidden`}
+      className={`
+    markdown fixed z-[999] overflow-hidden
+    rounded-2xl border shadow-2xl
+    transition-all duration-300 ease-in-out
+    ${minimize ? "text-transparent rounded-l-none" : ""}
+    ${preferences.darkMode ? "border-white/10" : "border-black/10"}
+    ${preferences.darkMode ? "bg-[#161616]/90" : "bg-white/90"}
+    backdrop-blur-md
+  `}
       onClick={() => {
         if (minimize) {
-          if ("vibrate" in navigator) {
-            navigator.vibrate(75);
-          }
+          if ("vibrate" in navigator) navigator.vibrate(75);
           setMinimize(false);
           setExpand(true);
           handleViewChange("expand");
         }
       }}
     >
+      {/* Accent bar (uses your sticky color, but only as an accent) */}
+      <div
+        className={`${sticky.color} absolute left-0 top-0 bottom-0 w-2 z-20`}
+      />
+
       {/* Header */}
       <div
-        className={`${
-          minimize
-            ? "opacity-0 shadow-none"
-            : "bg-white/90 backdrop-blur-sm shadow-md"
-        } rounded-t-2xl px-3 py-2 flex justify-between items-center`}
+        className={`
+      ${minimize ? "opacity-0 pointer-events-none" : ""}
+      relative px-3 py-2 flex justify-between items-center
+      border-b
+      ${preferences.darkMode ? "border-white/10" : "border-black/10"}
+      ${preferences.darkMode ? "bg-white/5" : "bg-white/70"}
+      backdrop-blur-md
+    `}
         onPointerDown={startDrag}
         style={{ touchAction: "none" }}
       >
-        <div className="flex items-center gap-x-3 text-gray-500">
+        <div className="flex items-center gap-2">
           <button
             onClick={() => setPin((prev) => !prev)}
-            className="hover:text-cyan-600 transition"
+            className={`
+          grid place-items-center h-9 w-9 rounded-2xl border shadow-sm transition active:scale-95
+          ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70" : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600"}
+        `}
+            aria-label="Pin"
           >
             {pin ? <AiFillPushpin /> : <AiOutlinePushpin />}
           </button>
+
           <button
             onClick={() => {
               if (fullScreen && !expand) return;
@@ -262,38 +278,56 @@ const Sticky = ({ sticky, index }) => {
                 setExpand(false);
               }
             }}
-            className="hover:text-blue-600 transition"
+            className={`
+          grid place-items-center h-9 w-9 rounded-2xl border shadow-sm transition active:scale-95
+          ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70" : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600"}
+        `}
+            aria-label={expand ? "Collapse" : "Expand"}
           >
             {expand ? <BiCollapse /> : <BiExpand />}
           </button>
         </div>
+
         <button
-          type="text"
+          type="button"
           onClick={() => confirmDelete(sticky.id)}
-          className="text-gray-400 hover:text-red-500 transition"
+          className={`
+        grid place-items-center h-9 w-9 rounded-2xl border shadow-sm transition active:scale-95
+        ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/60 hover:text-rose-300" : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-500 hover:text-rose-500"}
+      `}
+          aria-label="Delete sticky"
         >
-          <AiFillCloseCircle />
+          <AiFillCloseCircle className="text-lg" />
         </button>
       </div>
 
       {/* Footer (only in expand mode) */}
       {expand && (
         <div
-          className={`${
-            minimize
-              ? "bg-transparent shadow-none"
-              : "bg-white/90 backdrop-blur-sm"
-          } rounded-b-2xl px-3 py-2 flex justify-between items-center`}
+          className={`
+        ${minimize ? "opacity-0 pointer-events-none" : ""}
+        absolute bottom-0 left-0 right-0
+        px-3 py-2 flex justify-between items-center
+        border-t
+        ${preferences.darkMode ? "border-white/10" : "border-black/10"}
+        ${preferences.darkMode ? "bg-white/5" : "bg-white/70"}
+        backdrop-blur-md z-10
+      `}
         >
           <button
             onClick={() => {
               setFullScreen((prev) => !prev);
               handleViewChange("fullscreen");
             }}
-            className="text-gray-500 hover:text-indigo-600 transition"
+            className={`
+          grid place-items-center h-9 w-9 rounded-2xl border shadow-sm transition active:scale-95
+          ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70" : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600"}
+        `}
+            aria-label="Fullscreen"
           >
             <FiMaximize />
           </button>
+
           <button
             onClick={() => {
               setMinimize(true);
@@ -301,7 +335,11 @@ const Sticky = ({ sticky, index }) => {
               setFullScreen(false);
               handleViewChange("minimized");
             }}
-            className="text-gray-500 hover:text-rose-500 transition"
+            className={`
+          grid place-items-center h-9 w-9 rounded-2xl border shadow-sm transition active:scale-95
+          ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70 hover:text-rose-300" : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600 hover:text-rose-500"}
+        `}
+            aria-label="Minimize"
           >
             <FaRegWindowMinimize />
           </button>
@@ -310,25 +348,45 @@ const Sticky = ({ sticky, index }) => {
 
       {/* Body */}
       <div
-        className={`${expand ? "mt-20" : "mt-5"} ${
-          minimize ? "opacity-0" : "opacity-100"
-        } px-4 pb-4 overflow-y-auto scrollbar-slick overflow-x-hidden scrollbar-hide absolute inset-0 z-[-1] break-words`}
+        className={`
+      ${minimize ? "opacity-0 pointer-events-none" : "opacity-100"}
+      absolute inset-0
+      px-4 pt-4 pb-16
+      overflow-y-auto overflow-x-hidden scrollbar-hide
+      ${expand ? "mt-12" : "mt-12"} 
+    `}
       >
         <div className="space-y-3">
+          {/* Title */}
           <input
-            style={{ color: tailwindBgToHex(sticky.color) }}
-            className="mb-4 pb-1 text-3xl font-semibold border-b border-gray-300 bg-transparent placeholder:text-white outline-none focus:outline-none"
-            placeholder={sticky.title}
+            defaultValue={sticky.title}
+            className={`
+          w-full bg-transparent
+          text-2xl font-semibold tracking-tight
+          outline-none
+          border-b pb-2
+          ${preferences.darkMode ? "border-white/10 text-white placeholder:text-white/50" : "border-black/10 text-slate-900 placeholder:text-slate-400"}
+        `}
+            style={{ caretColor: tailwindBgToHex(sticky.color) }}
+            placeholder="Title…"
           />
-          <ReactQuill
-            modules={modules}
-            formats={formats}
-            style={{ color: tailwindBgToHex(sticky.color) }}
-            value={editText}
-            onBlur={handleSave}
-            onChange={handleTextChange}
-            className="h-full scrollbar-slick"
-          />
+
+          {/* Editor container */}
+          <div
+            className={`
+          rounded-2xl border shadow-sm overflow-hidden
+          ${preferences.darkMode ? "border-white/10 bg-white/5" : "border-black/10 bg-white"}
+        `}
+          >
+            <ReactQuill
+              modules={modules}
+              formats={formats}
+              value={editText}
+              onBlur={handleSave}
+              onChange={handleTextChange}
+              className="h-full scrollbar-slick"
+            />
+          </div>
         </div>
       </div>
     </motion.div>

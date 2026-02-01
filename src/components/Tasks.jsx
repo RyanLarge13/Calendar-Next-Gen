@@ -8,7 +8,8 @@ import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
 
 const Tasks = ({ taskSort, taskSortOpt, taskSearch, taskSearchTxt }) => {
-  const { userTasks, setUserTasks, setSystemNotif } = useContext(UserContext);
+  const { userTasks, setUserTasks, setSystemNotif, preferences } =
+    useContext(UserContext);
   const { setType, setAddNewEvent, setMenu } = useContext(InteractiveContext);
   const { string, setString, setOpenModal } = useContext(DatesContext);
 
@@ -21,7 +22,7 @@ const Tasks = ({ taskSort, taskSortOpt, taskSearch, taskSearchTxt }) => {
           {
             const newTsks = [...userTasks];
             const sortedTsks = newTsks.sort((a, b) =>
-              a.title.localeCompare(b.title)
+              a.title.localeCompare(b.title),
             );
             setTasksToRender(sortedTsks);
           }
@@ -30,7 +31,7 @@ const Tasks = ({ taskSort, taskSortOpt, taskSearch, taskSearchTxt }) => {
           {
             const newTsks = [...userTasks];
             const sortedTsks = newTsks.sort(
-              (a, b) => a.tasks.length > b.tasks.length
+              (a, b) => a.tasks.length > b.tasks.length,
             );
             setTasksToRender(sortedTsks);
           }
@@ -47,7 +48,7 @@ const Tasks = ({ taskSort, taskSortOpt, taskSearch, taskSearchTxt }) => {
   useEffect(() => {
     if (taskSearch && taskSearchTxt) {
       const newTasks = userTasks.filter((tsk) =>
-        tsk.title.includes(taskSearchTxt)
+        tsk.title.includes(taskSearchTxt),
       );
       setTasksToRender(newTasks);
     } else {
@@ -102,67 +103,128 @@ const Tasks = ({ taskSort, taskSortOpt, taskSearch, taskSearchTxt }) => {
   };
 
   return (
-    <div
-      className={`${
-        tasksToRender.length < 1 ? "" : "grid"
-      } grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10`}
-    >
-      {tasksToRender.length < 1 ? (
-        <div className="flex h-[50vh] justify-center items-center">
-          <div className="w-80 rounded-2xl p-6 shadow-lg bg-gradient-to-r from-lime-300 via-emerald-300 to-green-400 text-white">
-            <div className="flex justify-between items-center">
-              <div className="flex flex-col items-start">
-                <h2 className="text-lg font-semibold mb-2">No Tasks Yet</h2>
-                <p className="text-sm opacity-90">
-                  Start by adding your first task.
-                </p>
+    <div className="mt-6 px-3 sm:px-6">
+      <div className="mx-auto max-w-6xl">
+        {tasksToRender.length < 1 ? (
+          <div className="min-h-[55vh] grid place-items-center">
+            <div
+              className={`
+            w-full max-w-md rounded-3xl border shadow-2xl backdrop-blur-md p-5 sm:p-6
+            ${preferences.darkMode ? "bg-[#161616]/90 border-white/10 text-white" : "bg-white/90 border-black/10 text-slate-900"}
+          `}
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-start gap-3">
+                  <div
+                    className={`
+                  grid place-items-center h-12 w-12 rounded-2xl border shadow-sm
+                  ${preferences.darkMode ? "bg-emerald-500/15 border-emerald-300/20 text-emerald-100" : "bg-emerald-50 border-emerald-200 text-emerald-700"}
+                `}
+                  >
+                    <MdOutlineCheckCircle className="text-2xl" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-semibold tracking-tight">
+                      No Tasks Yet
+                    </h2>
+                    <p
+                      className={`text-sm mt-1 ${preferences.darkMode ? "text-white/60" : "text-slate-500"}`}
+                    >
+                      Start by adding your first task list.
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => openModalAndSetType()}
+                  className={`
+                grid place-items-center h-11 w-11 rounded-2xl border shadow-md transition
+                hover:scale-[1.02] active:scale-[0.97]
+                ${preferences.darkMode ? "bg-white/10 border-white/10 hover:bg-white/15 text-white" : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-700"}
+              `}
+                  aria-label="Add task"
+                >
+                  <IoIosAddCircle className="text-2xl" />
+                </button>
               </div>
-              <button
-                onClick={() => openModalAndSetType()}
-                className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
-              >
-                <IoIosAddCircle className="text-4xl text-white drop-shadow" />
-              </button>
             </div>
           </div>
-        </div>
-      ) : (
-        tasksToRender.map((task) => (
-          <div
-            key={task.id}
-            className={`p-4 rounded-xl shadow-md ${task.color} text-black transition hover:shadow-lg`}
-          >
-            {/* Header */}
-            <div className="bg-white rounded-lg shadow-sm p-3 mb-3">
-              <div className="flex justify-between items-center">
-                <p className="text-sm font-medium text-gray-600">
-                  {new Date(task.date).toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                    year: "numeric",
-                  })}
-                </p>
-                <div className="flex items-center gap-3 text-gray-500">
-                  <button className="hover:text-emerald-500 transition-colors">
-                    <BsShareFill />
-                  </button>
-                  <button
-                    onClick={() => confirmDeleteTask(task.id)}
-                    className="hover:text-rose-500 transition-colors"
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5">
+            {tasksToRender.map((task) => (
+              <div
+                key={task.id}
+                className={`
+              relative overflow-hidden
+              rounded-3xl border shadow-sm transition-all
+              ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/7" : "bg-white border-black/10 hover:bg-black/[0.02]"}
+            `}
+              >
+                {/* Accent strip (task.color used tastefully) */}
+                <div
+                  className={`${task.color} absolute left-0 top-0 bottom-0 w-2`}
+                />
+
+                {/* Card header */}
+                <div
+                  className={`
+                px-4 py-3 pl-6 flex justify-between items-center
+                border-b
+                ${preferences.darkMode ? "border-white/10" : "border-black/10"}
+              `}
+                >
+                  <p
+                    className={`text-xs font-semibold ${preferences.darkMode ? "text-white/60" : "text-slate-500"}`}
                   >
-                    <BsTrashFill />
-                  </button>
+                    {new Date(task.date).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
+                  </p>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      className={`
+                    grid place-items-center h-9 w-9 rounded-2xl border shadow-sm transition active:scale-95
+                    ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70" : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600"}
+                  `}
+                      aria-label="Share"
+                    >
+                      <BsShareFill />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => confirmDeleteTask(task.id)}
+                      className={`
+                    grid place-items-center h-9 w-9 rounded-2xl border shadow-sm transition active:scale-95
+                    ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/60 hover:text-rose-300" : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-500 hover:text-rose-500"}
+                  `}
+                      aria-label="Delete task"
+                    >
+                      <BsTrashFill />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Body */}
+                <div className="p-4 pl-6">
+                  <div
+                    className={`
+                  rounded-2xl border shadow-sm p-3
+                  ${preferences.darkMode ? "border-white/10 bg-white/5" : "border-black/10 bg-white"}
+                `}
+                  >
+                    <TaskItems task={task} />
+                  </div>
                 </div>
               </div>
-            </div>
-
-            {/* Task Body */}
-            <div className="bg-white rounded-lg shadow-sm p-3">
-              <TaskItems task={task} />
-            </div>
+            ))}
           </div>
-        ))
-      )}
+        )}
+      </div>
     </div>
   );
 };

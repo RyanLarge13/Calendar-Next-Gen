@@ -24,7 +24,7 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
           {
             const copy = [...reminders];
             const sortedByTitle = copy.sort((a, b) =>
-              a.title.localeCompare(b.title)
+              a.title.localeCompare(b.title),
             );
             setRemindersToRender(sortedByTitle);
           }
@@ -34,7 +34,7 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
             const d = new Date();
             const hourAgo = new Date(d.getTime() - 60 * 60 * 1000);
             const importantReminders = reminders.filter(
-              (rem) => new Date(rem.time) >= hourAgo && new Date(rem.time) <= d
+              (rem) => new Date(rem.time) >= hourAgo && new Date(rem.time) <= d,
             );
             setRemindersToRender(importantReminders);
           }
@@ -43,10 +43,10 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
           {
             const copy = [...reminders];
             const eventCarryingRems = copy.filter(
-              (rem) => rem.eventRefId !== null
+              (rem) => rem.eventRefId !== null,
             );
             const sortedEventRems = eventCarryingRems.sort((a, b) =>
-              a.title.localeCompare(b.title)
+              a.title.localeCompare(b.title),
             );
             setRemindersToRender(sortedEventRems);
           }
@@ -117,7 +117,7 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
   useEffect(() => {
     if (search && searchTxt) {
       const filteredReminders = reminders.filter((rem) =>
-        rem.title.toLowerCase().includes(searchTxt.toLowerCase())
+        rem.title.toLowerCase().includes(searchTxt.toLowerCase()),
       );
       setRemindersToRender(filteredReminders);
     } else {
@@ -136,34 +136,70 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
   };
 
   return (
-    <motion.div
-      className={`${
-        remindersToRender.length < 1 ? "" : "grid"
-      } grid-cols-1 md:grid-cols-2 lg:grid-cols-3 md:gap-5 lg:gap-5 mt-5`}
-    >
-      {remindersToRender.length < 1 && (
-        <div className="flex h-[50vh] justify-center items-center">
-          <div className="w-80 rounded-2xl p-5 shadow-lg my-5 bg-gradient-to-r from-red-300 via-rose-300 to-fuchsia-300 text-white">
-            <div className="flex justify-between items-center">
-              <div className="flex flex-col items-start">
-                <h2 className="text-lg font-semibold mb-2">
-                  No upcoming reminders
-                </h2>
-                <BiAlarmSnooze className="text-3xl opacity-80" />
+    <motion.div className="mt-6 px-3 sm:px-6">
+      {/* Center container to prevent "stretching across the universe" */}
+      <div className="mx-auto max-w-6xl">
+        {remindersToRender.length < 1 ? (
+          <div className="min-h-[55vh] grid place-items-center">
+            <div
+              className={`
+            w-full max-w-md rounded-3xl border shadow-2xl backdrop-blur-md p-5 sm:p-6
+            ${preferences.darkMode ? "bg-[#161616]/90 border-white/10 text-white" : "bg-white/90 border-black/10 text-slate-900"}
+          `}
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-start gap-3">
+                  <div
+                    className={`
+                  grid place-items-center h-12 w-12 rounded-2xl border shadow-sm
+                  ${preferences.darkMode ? "bg-rose-500/15 border-rose-300/20 text-rose-100" : "bg-rose-50 border-rose-200 text-rose-700"}
+                `}
+                  >
+                    <BiAlarmSnooze className="text-2xl" />
+                  </div>
+
+                  <div>
+                    <h2 className="text-lg font-semibold tracking-tight">
+                      No upcoming reminders
+                    </h2>
+                    <p
+                      className={`text-sm mt-1 ${preferences.darkMode ? "text-white/60" : "text-slate-500"}`}
+                    >
+                      Create one and we’ll keep you on track.
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => openModalAndSetType()}
+                  className={`
+                grid place-items-center h-11 w-11 rounded-2xl border shadow-md transition
+                hover:scale-[1.02] active:scale-[0.97]
+                ${preferences.darkMode ? "bg-white/10 border-white/10 hover:bg-white/15 text-white" : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-700"}
+              `}
+                  aria-label="Add reminder"
+                >
+                  <IoIosAddCircle className="text-2xl" />
+                </button>
               </div>
-              <button
-                onClick={() => openModalAndSetType()}
-                className="text-3xl p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
-              >
-                <IoIosAddCircle className="text-white drop-shadow" />
-              </button>
             </div>
           </div>
-        </div>
-      )}
-      {remindersToRender.map((r) => (
-        <Reminder reminder={r} />
-      ))}
+        ) : (
+          <div
+            className={`
+          grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3
+          gap-4 sm:gap-5
+        `}
+          >
+            {remindersToRender.map((r) => (
+              <Reminder
+                reminder={r}
+                key={r.id || r._id || r.time || JSON.stringify(r)}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </motion.div>
   );
 };

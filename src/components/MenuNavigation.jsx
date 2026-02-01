@@ -22,150 +22,141 @@ const MenuNavigation = () => {
 
   return (
     <motion.div
-      initial={{ y: "-100%" }}
-      animate={hideMenuNav ? { y: "-110%" } : { y: 0 }}
-      className={`fixed top-0 right-0 left-0 ${
-        preferences.darkMode ? "bg-[#222]" : "bg-white"
-      } z-20 grid grid-cols-4 place-items-center mb-10 shadow-md rounded-md cursor-pointer`}
+      initial={{ y: "-110%" }}
+      animate={hideMenuNav ? { y: "-75%" } : { y: 0 }}
+      transition={{ type: "spring", stiffness: 260, damping: 28 }}
+      className={`
+    fixed top-0 left-0 right-0 z-20
+    px-3 pt-3 pb-10
+    ${preferences.darkMode ? "text-white" : "text-slate-900"}
+  `}
     >
+      {/* Glass dock */}
       <div
-        className={`p-5 w-full flex flex-col items-center justify-center rounded-md ${
-          showCategory === "reminder"
-            ? "bg-cyan-100"
-            : preferences.darkMode
-            ? "bg-[#222] text-white"
-            : "bg-white"
-        }`}
-        onClick={() =>
-          setShowCategory((prev) => (prev === "reminder" ? null : "reminder"))
-        }
+        className={`
+      relative mx-auto max-w-2xl
+      rounded-3xl border shadow-2xl backdrop-blur-md
+      ${preferences.darkMode ? "bg-[#161616]/90 border-white/10" : "bg-white/90 border-black/10"}
+    `}
       >
-        <IoIosAlarm />
-        <p className="text-xs">reminders</p>
+        {/* Tiles */}
+        <div className="grid grid-cols-4 gap-2 p-3">
+          {[
+            { key: "reminder", label: "reminders", icon: <IoIosAlarm /> },
+            { key: "todo-list", label: "lists", icon: <BsListCheck /> },
+            { key: "task", label: "tasks", icon: <BsListTask /> },
+            {
+              key: "kanban",
+              label: "kanban",
+              icon: <BsFillClipboardDataFill />,
+            },
+            {
+              key: "event",
+              label: "events",
+              icon: <BsFillCalendar2EventFill />,
+            },
+            { key: "groupevent", label: "group", icon: <HiUserGroup /> },
+            { key: "stickynote", label: "sticky", icon: <FaStickyNote /> },
+            { key: "appointment", label: "appts", icon: <AiFillSchedule /> },
+          ].map((item) => {
+            const selected = showCategory === item.key;
+
+            return (
+              <button
+                key={item.key}
+                type="button"
+                onClick={() =>
+                  setShowCategory((prev) =>
+                    prev === item.key ? null : item.key,
+                  )
+                }
+                className={`
+              group w-full
+              rounded-2xl border px-2 py-3
+              transition-all duration-200
+              active:scale-[0.98]
+              ${
+                selected
+                  ? preferences.darkMode
+                    ? "bg-cyan-500/15 border-cyan-300/25 shadow-sm"
+                    : "bg-cyan-50 border-cyan-200 shadow-sm"
+                  : preferences.darkMode
+                    ? "bg-white/5 border-white/10 hover:bg-white/7"
+                    : "bg-white border-black/10 hover:bg-black/[0.02]"
+              }
+            `}
+              >
+                <div className="flex flex-col items-center justify-center gap-1">
+                  <div
+                    className={`
+                  grid place-items-center h-9 w-9 rounded-2xl border shadow-sm transition
+                  ${
+                    selected
+                      ? preferences.darkMode
+                        ? "bg-cyan-500/15 border-cyan-300/25 text-cyan-100"
+                        : "bg-cyan-100 border-cyan-200 text-cyan-700"
+                      : preferences.darkMode
+                        ? "bg-white/5 border-white/10 text-white/75 group-hover:text-cyan-200"
+                        : "bg-black/[0.03] border-black/10 text-slate-600 group-hover:text-cyan-600"
+                  }
+                `}
+                  >
+                    <span className="text-lg">{item.icon}</span>
+                  </div>
+
+                  <p
+                    className={`
+                  text-[11px] font-semibold tracking-tight
+                  ${selected ? (preferences.darkMode ? "text-cyan-100" : "text-slate-800") : "opacity-80"}
+                `}
+                  >
+                    {item.label}
+                  </p>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Floating action pills */}
+        <div className="absolute -bottom-5 left-0 right-0 flex justify-center gap-3">
+          {/* Home / Clear */}
+          <button
+            type="button"
+            onClick={() => setShowCategory(null)}
+            className={`
+          grid place-items-center h-10 w-20 rounded-2xl border shadow-xl backdrop-blur-md transition
+          active:scale-95
+          ${
+            preferences.darkMode
+              ? "bg-white/10 border-white/10 text-white hover:bg-white/15"
+              : "bg-white/95 border-black/10 text-slate-700 hover:bg-white"
+          }
+        `}
+            aria-label="Home"
+          >
+            <AiTwotoneHome className="text-lg" />
+          </button>
+
+          {/* Hide */}
+          <button
+            type="button"
+            onClick={() => setHideMenuNav((prev) => !prev)}
+            className={`
+          grid place-items-center h-10 w-10 rounded-2xl border shadow-xl backdrop-blur-md transition
+          active:scale-95
+          ${
+            preferences.darkMode
+              ? "bg-white/10 border-white/10 text-white hover:bg-white/15"
+              : "bg-white/95 border-black/10 text-slate-700 hover:bg-white"
+          }
+        `}
+            aria-label="Hide menu"
+          >
+            {hideMenuNav ? <MdOutlineKeyboardHide /> : <TbKeyboardHide />}
+          </button>
+        </div>
       </div>
-      <div
-        className={`p-5 w-full flex flex-col items-center justify-center rounded-md ${
-          showCategory === "todo-list"
-            ? "bg-cyan-100"
-            : preferences.darkMode
-            ? "bg-[#222] text-white"
-            : "bg-white"
-        }`}
-        onClick={() =>
-          setShowCategory((prev) => (prev === "todo-list" ? null : "todo-list"))
-        }
-      >
-        <BsListCheck />
-        <p className="text-xs">lists</p>
-      </div>
-      <div
-        className={`p-5 w-full flex flex-col items-center justify-center rounded-md ${
-          showCategory === "task"
-            ? "bg-cyan-100"
-            : preferences.darkMode
-            ? "bg-[#222] text-white"
-            : "bg-white"
-        }`}
-        onClick={() =>
-          setShowCategory((prev) => (prev !== "task" ? "task" : null))
-        }
-      >
-        <BsListTask />
-        <p className="text-xs">tasks</p>
-      </div>
-      <div
-        className={`p-5 w-full flex flex-col items-center justify-center rounded-md ${
-          showCategory === "kanban"
-            ? "bg-cyan-100"
-            : preferences.darkMode
-            ? "bg-[#222] text-white"
-            : "bg-white"
-        }`}
-        onClick={() =>
-          setShowCategory((prev) => (prev !== "kanban" ? "kanban" : null))
-        }
-      >
-        <BsFillClipboardDataFill />
-        <p className="text-xs">kanban</p>
-      </div>
-      <div
-        className={`p-5 w-full flex flex-col items-center justify-center rounded-md ${
-          showCategory === "event"
-            ? "bg-cyan-100"
-            : preferences.darkMode
-            ? "bg-[#222] text-white"
-            : "bg-white"
-        }`}
-        onClick={() =>
-          setShowCategory((prev) => (prev !== "event" ? "event" : null))
-        }
-      >
-        <BsFillCalendar2EventFill />
-        <p className="text-xs">events</p>
-      </div>
-      <div
-        className={`p-5 w-full flex flex-col items-center justify-center rounded-md ${
-          showCategory === "groupevent"
-            ? "bg-cyan-100"
-            : preferences.darkMode
-            ? "bg-[#222] text-white"
-            : "bg-white"
-        }`}
-        onClick={() =>
-          setShowCategory((prev) =>
-            prev !== "groupevent" ? "groupevent" : null
-          )
-        }
-      >
-        <HiUserGroup />
-        <p className="text-xs">group</p>
-      </div>
-      <div
-        className={`p-5 w-full flex flex-col items-center justify-center rounded-md ${
-          showCategory === "stickynote"
-            ? "bg-cyan-100"
-            : preferences.darkMode
-            ? "bg-[#222] text-white"
-            : "bg-white"
-        }`}
-        onClick={() =>
-          setShowCategory((prev) =>
-            prev !== "stickynote" ? "stickynote" : null
-          )
-        }
-      >
-        <FaStickyNote />
-        <p className="text-xs">sticky</p>
-      </div>
-      <div
-        className={`p-5 w-full flex flex-col items-center justify-center rounded-md ${
-          showCategory === "appointment"
-            ? "bg-cyan-100"
-            : preferences.darkMode
-            ? "bg-[#222] text-white"
-            : "bg-white"
-        }`}
-        onClick={() =>
-          setShowCategory((prev) =>
-            prev !== "appointment" ? "appointment" : null
-          )
-        }
-      >
-        <AiFillSchedule />
-        <p className="text-xs">appointments</p>
-      </div>
-      <button
-        className="bottom-[-15px] absolute right-5 left-5 p-1 rounded-md shadow-md bg-cyan-100 flex justify-center items-center"
-        onClick={() => setShowCategory(null)}
-      >
-        <AiTwotoneHome />
-      </button>
-      <button
-        className="bottom-[-38px] absolute right-10 left-10 md:right-30 md:left-30 lg:right-80 lg:left-80 p-1 rounded-md shadow-md bg-white flex justify-center items-center"
-        onClick={() => setHideMenuNav((prev) => !prev)}
-      >
-        {hideMenuNav ? <MdOutlineKeyboardHide /> : <TbKeyboardHide />}
-      </button>
     </motion.div>
   );
 };

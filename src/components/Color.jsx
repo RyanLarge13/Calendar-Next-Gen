@@ -10,14 +10,14 @@ const Color = ({ string, color, setColor, index }) => {
       animate={{
         opacity: 1,
         scale: 1,
-        transition: { delay: index / 14, duration: 0.18 },
+        transition: { delay: index / 20, duration: 0.1 },
       }}
       whileHover={{ scale: 1.12 }}
       whileTap={{ scale: 0.96 }}
       onClick={() => setColor((prev) => (prev === string ? null : string))}
       className={[
         // base
-        "relative m-1 h-8 w-8 rounded-full cursor-pointer select-none",
+        "relative m-[1px] h-6 w-6 rounded-full cursor-pointer select-none",
         "shadow-sm transition-all duration-200",
         "outline-none focus-visible:ring-2 focus-visible:ring-red-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-white",
 
@@ -28,9 +28,7 @@ const Color = ({ string, color, setColor, index }) => {
         "ring-1 ring-black/10 hover:ring-black/20",
 
         // selected state
-        selected
-          ? "ring-2 ring-red-500 shadow-md"
-          : "hover:shadow-md",
+        selected ? "ring-2 ring-red-500 shadow-md" : "hover:shadow-md",
       ].join(" ")}
       aria-pressed={selected}
       aria-label={`Select ${string.replace(/-/g, " ")}`}
