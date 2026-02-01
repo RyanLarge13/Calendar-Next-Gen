@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useRef } from "react";
 import { createNewList } from "../utils/api.js";
 import { v4 as uuidv4 } from "uuid";
 import UserContext from "../context/UserContext.jsx";
@@ -7,6 +7,8 @@ import DatesContext from "../context/DatesContext.jsx";
 import { AiFillCloseCircle } from "react-icons/ai";
 import Color from "./Color";
 import { colors } from "../constants.js";
+import { MdClose } from "react-icons/md";
+import { BsCheck, BsList } from "react-icons/bs";
 
 const AddList = ({ eventsForDay }) => {
   const { user, setLists, setSystemNotif, preferences } =
@@ -20,6 +22,8 @@ const AddList = ({ eventsForDay }) => {
   const [title, setTitle] = useState("");
   const [color, setColor] = useState("");
   let increment = 0;
+
+  const listItemInput = useRef(null);
 
   const createList = () => {
     if (!title) {
@@ -104,6 +108,11 @@ const AddList = ({ eventsForDay }) => {
       increment++;
     }
     setItemTitle("");
+    
+    // Refocus input
+    if (listItemInput.current) {
+      listItemInput.current.focus();
+    }
   };
 
   const addListToDB = () => {
@@ -136,151 +145,213 @@ const AddList = ({ eventsForDay }) => {
   };
 
   return (
-    <div>
-      {!addItems ? (
-        <div className="md:px-10 md:pt-20">
-          <input
-            type="text"
-            value={title}
-            placeholder="List Title ..."
-            onChange={(e) => setTitle(e.target.value)}
-            className={`w-full p-2 text-4xl my-5 bg-opacity-80 focus:outline-none ${
-              preferences.darkMode
-                ? "bg-[#222] text-white"
-                : "bg-white text-black"
-            }`}
-          />
-          <div className="flex flex-wrap items-center justify-center my-5">
-            {colors.map((item, index) => (
-              <Color
-                key={index}
-                string={item.color}
-                color={color}
-                setColor={setColor}
-                index={index}
-              />
-            ))}
-          </div>
-          <div>
-            {eventsForDay.map((event) => (
-              <button
-                key={event.id}
-                onClick={() =>
-                  setEventForList((prev) =>
-                    prev?.id === event.id ? null : event
-                  )
-                }
-                className={`${
-                  eventForList?.id === event.id
-                    ? preferences.darkMode
-                      ? "bg-slate-700"
-                      : "bg-slate-200"
-                    : preferences.darkMode
-                    ? "bg-[#222] "
-                    : "bg-white"
-                } duration-300 p-3 rounded-md
-                            shadow-lg my-1 relative pl-5 w-full text-left`}
-              >
-                <div
-                  className={`${event.color} absolute left-0 top-0
-                            bottom-0 w-2 rounded-md`}
-                ></div>
-                {event.summary}
-              </button>
-            ))}
-          </div>
-          <div className="absolute bottom-4 right-4 left-4 text-black space-y-3">
-            <button
-              onClick={() => createList()}
-              className="w-full rounded-xl py-2.5 text-sm font-semibold shadow-md 
-               bg-gradient-to-tr from-lime-300 to-emerald-200 
-               hover:from-lime-400 hover:to-emerald-300 
-               active:scale-[0.97] transition-all duration-200"
-            >
-              Create
-            </button>
+<div className="h-screen border border-black">
+  {!addItems ? (
+    <div className="h-full flex flex-col justify-between">
+    <div className="relative md:px-10 md:pt-16">
+      {/* Title */}
+      <input
+        type="text"
+        value={title}
+        placeholder="List Title..."
+        onChange={(e) => setTitle(e.target.value)}
+        className={`
+          w-full mt-2 h-20 mb-6 bg-transparent text-3xl sm:text-4xl font-semibold tracking-tight
+          outline-none placeholder:opacity-60
+          ${preferences.darkMode ? "text-white placeholder:text-gray-300" : "text-slate-900 placeholder:text-slate-500"}
+        `}
+      />
 
+      {/* Color picker */}
+      <div className="flex flex-wrap items-center justify-center gap-1 py-2 mb-4">
+        {colors.map((item, index) => (
+          <Color
+            key={index}
+            string={item.color}
+            color={color}
+            setColor={setColor}
+            index={index}
+          />
+        ))}
+      </div>
+
+      {/* Pick an event */}
+      <div
+        className={`
+          rounded-2xl border shadow-sm p-3 sm:p-4 space-y-2
+          ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-white border-black/10"}
+        `}
+      >
+        {eventsForDay.length > 0 ? <p className={`text-sm font-semibold mb-2 ${preferences.darkMode ? "text-white/70" : "text-slate-600"}`}>
+          Link this list to an event (optional)
+        </p> : null}
+
+        {eventsForDay.map((event) => (
+          <button
+            key={event.id}
+            onClick={() =>
+              setEventForList((prev) => (prev?.id === event.id ? null : event))
+            }
+            className={`
+              relative w-full text-left pl-6 pr-4 py-4 rounded-2xl
+              border shadow-sm transition-all duration-200
+              hover:shadow-md hover:scale-[1.01] active:scale-[0.99]
+              ${
+                eventForList?.id === event.id
+                  ? preferences.darkMode
+                    ? "bg-white/10 border-white/20"
+                    : "bg-black/[0.03] border-black/20"
+                  : preferences.darkMode
+                  ? "bg-white/5 border-white/10 hover:bg-white/7"
+                  : "bg-white border-black/10 hover:bg-black/[0.02]"
+              }
+            `}
+          >
+            <div
+              className={`${event.color} absolute left-0 top-0 bottom-0 w-2 rounded-l-2xl`}
+            />
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-sm font-semibold">{event.summary}</span>
+
+              {eventForList?.id === event.id && (
+                <span
+                  className={`
+                    text-[11px] font-semibold px-2 py-1 rounded-xl border
+                    ${preferences.darkMode ? "bg-white/10 border-white/15 text-white/80" : "bg-white border-black/10 text-slate-600"}
+                  `}
+                >
+                  Selected
+                </span>
+              )}
+            </div>
+          </button>
+        ))}
+      </div>
+      </div>
+
+      {/* Bottom actions */}
+          <div className="flex justify-between p-5 items-center w-full">
             <button
               onClick={() => {
-                setType(null);
-                setAddNewEvent(false);
-              }}
-              className="w-full rounded-xl py-2.5 text-sm font-semibold shadow-md 
-               bg-gradient-to-tr from-red-200 to-rose-200 
-               hover:from-red-300 hover:to-rose-300 
-               active:scale-[0.97] transition-all duration-200"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div className="h-screen flex flex-col justify-between pt-20 pb-3 px-3">
-          <div>
-            <p className="text-4xl p-2">{title}</p>
-            <form onSubmit={(e) => addItemsToList(e)}>
-              <input
-                type="text"
-                value={itemTitle}
-                placeholder="Add new items!!"
-                onChange={(e) => setItemTitle(e.target.value)}
-                className={`mt-5 text-lg px-3 py-1 w-full focus:outline-none focus:shadow-sm ${
-                  preferences.darkMode
-                    ? "bg-[#222] text-white"
-                    : "bg-white text-black"
-                }`}
-              />
-              <button
-                onClick={(e) => addItemsToList(e)}
-                type="submit"
-                className="w-full rounded-xl py-2.5 text-black text-sm font-semibold shadow-md 
-            bg-gradient-to-tr from-lime-300 to-emerald-200 
-            hover:from-lime-400 hover:to-emerald-300 
-            active:scale-[0.97] transition-all duration-200 mt-3"
-              >
-                Add
-              </button>
-            </form>
-            <div className="text-left my-10">
-              {listItems.length > 0 &&
-                listItems.map((item) => (
-                  <div
-                    key={item.id}
-                    className={`group flex items-center justify-between px-4 py-3 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-all duration-200 my-1 ${color}`}
+            setType(null);
+            setAddNewEvent(false);
+          }}
+                  className="grid place-items-center rounded-2xl p-3 shadow-lg transition hover:scale-[0.98] active:scale-95 bg-gradient-to-tr from-red-500 to-rose-500 text-white"
+                  aria-label="Cancel"
                   >
-                    <p className="text-sm font-medium">{item.text}</p>
-
-                    <AiFillCloseCircle
-                      onClick={() => removeItem(item)}
-                      className="text-gray-400 hover:text-red-500 duration-200 transition-colors cursor-pointer text-lg"
-                    />
-                  </div>
-                ))}
-            </div>
-          </div>
-          <div className="flex flex-col text-black gap-y-2">
-            <button
-              onClick={() => addListToDB()}
-              className="rounded-xl py-2.5 text-black text-sm font-semibold shadow-md 
-              bg-gradient-to-tr from-lime-300 to-emerald-200 
-              hover:from-lime-400 hover:to-emerald-300 
-              active:scale-[0.97] transition-all duration-200"
-            >
-              Complete List
+              <MdClose className="text-xl" />
             </button>
+        
             <button
-              onClick={() => setAddItems(false)}
-              className="rounded-xl py-2.5 text-sm font-semibold shadow-md 
-              bg-gradient-to-tr from-red-200 to-rose-200 
-               hover:from-red-300 hover:to-rose-300 
-               active:scale-[0.97] transition-all duration-200"
+                           onClick={() => createList()}
+              className="grid place-items-center rounded-2xl p-3 shadow-lg transition hover:scale-[0.98] active:scale-95 bg-gradient-to-tr from-lime-400 to-emerald-500 text-white"
+              aria-label="Add Kanban"
             >
-              Go Back
+              <BsList className="text-xl" />
             </button>
           </div>
-        </div>
-      )}
     </div>
+  ) : (
+    <div className="h-full flex flex-col justify-between">
+    <div className="relative md:px-6 md:pt-20">
+      <div>
+        {/* Title header */}
+        <div
+          className={`
+            rounded-2xl border shadow-sm p-4
+            ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-white border-black/10"}
+          `}
+        >
+          <p className="text-3xl sm:text-4xl font-semibold tracking-tight">
+            {title}
+          </p>
+          <p className={`text-xs mt-1 ${preferences.darkMode ? "text-white/60" : "text-slate-500"}`}>
+            Add items to your list
+          </p>
+        </div>
+
+        {/* Add item form */}
+        <form onSubmit={(e) => addItemsToList(e)} className="mt-4">
+          <input
+          ref={listItemInput}
+            type="text"
+            value={itemTitle}
+            placeholder="Add a new item..."
+            onChange={(e) => setItemTitle(e.target.value)}
+            className={`
+              w-full rounded-2xl border px-4 py-3 text-sm font-medium outline-none transition-all
+              ${
+                preferences.darkMode
+                  ? "bg-white/5 border-white/10 text-white placeholder:text-gray-300 focus:border-emerald-300/30 focus:ring-2 focus:ring-emerald-500/20"
+                  : "bg-white border-black/10 text-slate-900 placeholder:text-slate-500 focus:border-emerald-400/40 focus:ring-2 focus:ring-emerald-500/10"
+              }
+            `}
+          />
+
+          <button
+            onClick={(e) => addItemsToList(e)}
+            type="submit"
+            className="
+              w-full mt-3 rounded-2xl py-3 text-sm font-semibold text-white
+              bg-gradient-to-tr from-lime-400 to-emerald-500
+              shadow-md hover:shadow-lg hover:scale-[1.015]
+              active:scale-[0.97] transition-all duration-200
+            "
+          >
+            Add
+          </button>
+        </form>
+
+        {/* Items */}
+        <div className="text-left mt-6">
+          {listItems.length > 0 &&
+            listItems.map((item) => (
+              <div
+                key={item.id}
+                className={`
+                  group flex items-center justify-between px-4 py-3 rounded-2xl
+                  border shadow-sm transition-all duration-200 my-2
+                  ${preferences.darkMode ? "border-white/10 bg-white/5 hover:bg-white/7" : "border-black/10 bg-white hover:bg-black/[0.02]"}
+                `}
+              >
+                <div className="flex items-center gap-3">
+                  <span className={`${color} h-3 w-3 rounded-full ring-1 ring-black/10`} />
+                  <p className={`text-sm font-semibold ${preferences.darkMode ? "text-white" : "text-slate-800"}`}>
+                    {item.text}
+                  </p>
+                </div>
+
+                <AiFillCloseCircle
+                  onClick={() => removeItem(item)}
+                  className="text-gray-400 hover:text-rose-500 transition-colors cursor-pointer text-xl"
+                />
+              </div>
+            ))}
+        </div>
+      </div>
+</div>
+      {/* Bottom actions */}
+        <div className="flex justify-between p-5 items-center w-full">
+            <button
+     onClick={() => setAddItems(false)}
+                  className="grid place-items-center rounded-2xl p-3 shadow-lg transition hover:scale-[0.98] active:scale-95 bg-gradient-to-tr from-red-500 to-rose-500 text-white"
+                  aria-label="Cancel"
+                  >
+              <MdClose className="text-xl" />
+            </button>
+        
+            <button
+                        onClick={() => addListToDB()}
+              className="grid place-items-center rounded-2xl p-3 shadow-lg transition hover:scale-[0.98] active:scale-95 bg-gradient-to-tr from-lime-400 to-emerald-500 text-white"
+              aria-label="Add Kanban"
+            >
+              <BsCheck className="text-xl" />
+            </button>
+          </div>
+    </div>
+  )}
+</div>
+
   );
 };
 

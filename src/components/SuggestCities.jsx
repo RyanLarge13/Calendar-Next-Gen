@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { motion } from "framer-motion";
 import debounce from "lodash.debounce";
 import GoogleMaps from "./GoogleMaps";
@@ -10,7 +10,7 @@ const SuggestCities = ({ setLocationObject, placeholder, showGoogleMap }) => {
   const { preferences } = useContext(UserContext);
 
   const [inputValue, setInputValue] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
+  const [suggestionRenders, setSuggestionRenders] = useState([]);
   const [selectedPlace, setSelectedPlace] = useState(null);
 
   useEffect(() => {
@@ -24,7 +24,7 @@ const SuggestCities = ({ setLocationObject, placeholder, showGoogleMap }) => {
       script.async = true;
       script.defer = true;
       script.onload = () => {
-        setSuggestions([]);
+        setSuggestionRenders([]);
       };
       document.head.appendChild(script);
     }
@@ -36,56 +36,84 @@ const SuggestCities = ({ setLocationObject, placeholder, showGoogleMap }) => {
     fetchSuggestions(value);
   };
 
-  const fetchSuggestions = debounce((value) => {
-    if (window.google) {
-      const autocompleteService =
-        new window.google.maps.places.AutocompleteService();
+  const fetchSuggestions = debounce(async (value) => {
+    if (!value?.trim()) {
+      return;
+    }
 
-      autocompleteService.getPlacePredictions(
-        { input: value },
-        (predictions, status) => {
-          if (status === window.google.maps.places.PlacesServiceStatus.OK) {
-            setSuggestions(
-              predictions.map((prediction) => ({
-                id: prediction.place_id,
-                name: prediction.description,
-              }))
-            );
-          } else {
-            setSuggestions([]);
-          }
-        }
-      );
+    if (window.google) {
+      const { AutocompleteSuggestion } =
+        await google.maps.importLibrary("places");
+
+      const { suggestions } =
+        await AutocompleteSuggestion.fetchAutocompleteSuggestions({
+          input: value,
+          language: "en-US",
+          region: "us",
+        });
+
+      const suggestionsToShow = [];
+
+      for (const s of suggestions) {
+        const p = s.placePrediction;
+
+        if (!p) continue;
+
+        const newSuggestedPlace = {
+          placeId: p.placeId,
+          text: p.text?.text, // full display text
+          main: p.mainText?.text,
+          secondary: p.secondaryText?.text,
+          types: p.types,
+        };
+
+        suggestionsToShow.push(newSuggestedPlace);
+      }
+
+      setSuggestionRenders(suggestionsToShow);
     }
   }, 300);
 
-  const handleSelectPlace = (placeId) => {
+  const handleSelectPlace = async (placeId) => {
     if (window.google) {
-      const placesService = new window.google.maps.places.PlacesService(
-        document.createElement("div")
-      );
+      const { Place } = await google.maps.importLibrary("places");
 
-      placesService.getDetails({ placeId }, (place, status) => {
-        if (status === window.google.maps.places.PlacesServiceStatus.OK) {
-          setSelectedPlace({
-            id: place.place_id,
-            name: place.formatted_address,
-            coordinates: {
-              lat: place.geometry.location.lat(),
-              lng: place.geometry.location.lng(),
-            },
-          });
-          setInputValue(place.formatted_address);
-          setLocationObject({
-            string: place.formatted_address,
-            coordinates: {
-              lat: place.geometry.location.lat(),
-              lng: place.geometry.location.lng(),
-            },
-          });
-          setSuggestions([]);
-        }
+      const place = await new Place({ id: placeId });
+
+      await place.fetchFields({
+        fields: [
+          "displayName",
+          "formattedAddress",
+          "location",
+          "addressComponents",
+        ],
       });
+
+      const officialSelectedPlace = {
+        address: place.formattedAddress,
+        latLng: place.location?.toJSON?.() ?? place.location,
+      };
+
+      if (place && officialSelectedPlace) {
+        setSelectedPlace({
+          id: placeId,
+          string: officialSelectedPlace.address,
+          coordinates: {
+            lat: officialSelectedPlace.latLng.lat,
+            lng: officialSelectedPlace.latLng.lng,
+          },
+        });
+        setLocationObject({
+          id: placeId,
+          string: officialSelectedPlace.address,
+          coordinates: {
+            lat: officialSelectedPlace.latLng.lat,
+            lng: officialSelectedPlace.latLng.lng,
+          },
+        });
+        setInputValue(officialSelectedPlace.address);
+        setSuggestionRenders([]);
+      }
     }
   };
 
@@ -101,16 +129,14 @@ const SuggestCities = ({ setLocationObject, placeholder, showGoogleMap }) => {
         } my-2 p-2 rounded-md shadow-sm w-full focus:outline-none outline-none focus:shadow-md duration-200`}
       />
       <div className="my-3">
-        {suggestions.map((place) => (
+        {suggestionRenders.map((place) => (
           <motion.div
             whileHover={{ backgroundColor: "#eee" }}
-            key={place.id}
-            className={`${
-              inputValue === place.name ? "bg-cyan-200" : "bg-white"
-            } my-2 rounded-md p-2 shadow-sm cursor-pointer`}
-            onClick={() => handleSelectPlace(place.id)}
+            key={place.placeId}
+            className={`my-2 rounded-md p-2 shadow-sm cursor-pointer`}
+            onClick={() => handleSelectPlace(place.placeId)}
           >
-            {place.name}
+            {place.text}
           </motion.div>
         ))}
       </div>
@@ -123,4 +149,4 @@ const SuggestCities = ({ setLocationObject, placeholder, showGoogleMap }) => {
   );
 };
 
-export default SuggestCities;
+export default React.memo(SuggestCities);

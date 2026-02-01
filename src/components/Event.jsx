@@ -85,7 +85,7 @@ const Event = ({ dayEvents }) => {
       const startOfDay = new Date(
         now.getFullYear(),
         now.getMonth(),
-        now.getDate()
+        now.getDate(),
       );
       let timeUntilStart = start - now;
       let timeUntilEnd = end - now;
@@ -93,7 +93,7 @@ const Event = ({ dayEvents }) => {
       if (now < start) {
         let startHours = Math.floor(timeUntilStart / (1000 * 60 * 60));
         let startMinutes = Math.floor(
-          (timeUntilStart % (1000 * 60 * 60)) / (1000 * 60)
+          (timeUntilStart % (1000 * 60 * 60)) / (1000 * 60),
         );
         let startSeconds = Math.floor((timeUntilStart % (1000 * 60)) / 1000);
         const startTimeString = `${startHours > 0 ? startHours + "h" : ""} ${
@@ -109,7 +109,7 @@ const Event = ({ dayEvents }) => {
         if (now > end) return;
         let endHours = Math.floor(timeUntilEnd / (1000 * 60 * 60));
         let endMinutes = Math.floor(
-          (timeUntilEnd % (1000 * 60 * 60)) / (1000 * 60)
+          (timeUntilEnd % (1000 * 60 * 60)) / (1000 * 60),
         );
         let endSeconds = Math.floor((timeUntilEnd % (1000 * 60)) / 1000);
         const endTimeString = `${endHours} hours ${endMinutes} minutes ${endSeconds} seconds`;
@@ -159,7 +159,7 @@ const Event = ({ dayEvents }) => {
           const entryEvents = entry?.events || [];
 
           const newEvents = entryEvents.map((e) =>
-            e.id === event.id ? { ...e, summary: title } : e
+            e.id === event.id ? { ...e, summary: title } : e,
           );
           newMap.set(mapDate, {
             ...entry,
@@ -201,7 +201,7 @@ const Event = ({ dayEvents }) => {
           const entryEvents = entry?.events || [];
 
           const newEvents = entryEvents.map((e) =>
-            e.id === event.id ? { ...e, description: description } : e
+            e.id === event.id ? { ...e, description: description } : e,
           );
           newMap.set(mapDate, {
             ...entry,
@@ -251,7 +251,7 @@ const Event = ({ dayEvents }) => {
           const entryEvents = entry?.events || [];
 
           const newEvents = entryEvents.map((e) =>
-            e.id === event.id ? { ...e, location: newLocationObject } : e
+            e.id === event.id ? { ...e, location: newLocationObject } : e,
           );
           newMap.set(mapDate, {
             ...entry,
@@ -489,7 +489,7 @@ const Event = ({ dayEvents }) => {
                 <div className="flex gap-3 text-gray-500">
                   <button
                     onClick={() =>
-                      updateLocation({ string: null, coordinates: null })
+                      updateLocation({ address: "", coordinates: null })
                     }
                     className="hover:text-red-500 transition"
                   >
@@ -540,9 +540,9 @@ const Event = ({ dayEvents }) => {
                   new Date(event.reminders.when) < dateObj
                     ? "border-l-4 border-rose-400"
                     : new Date(event.reminders.when).toLocaleDateString() ===
-                      dateObj.toLocaleDateString()
-                    ? "border-l-4 border-amber-400"
-                    : "border-l-4 border-cyan-400"
+                        dateObj.toLocaleDateString()
+                      ? "border-l-4 border-amber-400"
+                      : "border-l-4 border-cyan-400"
                 } min-w-[200px] max-w-[200px] shadow-lg p-4 my-3 mx-2 rounded-2xl text-gray-900`}
               >
                 <div className="">
@@ -556,7 +556,7 @@ const Event = ({ dayEvents }) => {
                             timeZoneName: "short",
                             hour: "numeric",
                             minute: "numeric",
-                          }
+                          },
                         )}
                       </p>
                     </div>

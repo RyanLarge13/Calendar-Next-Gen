@@ -148,7 +148,7 @@ const DatePicker = () => {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.85, y: -20 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
-        className={`fixed top-40 left-[5%] lg:left-1/2 -translate-x-1/2 
+        className={`fixed !-translate-x-1/2 !-translate-y-1/2 top-[50%] left-[50%]
     rounded-2xl shadow-2xl border z-[999] w-[90%] max-w-md
     ${
       preferences.darkMode

@@ -123,7 +123,8 @@ const MonthView = () => {
     targetDateObj.setHours(0, 0, 0, 0);
     const key = `${year}-${month}`;
     const eventsToSort = eventMap.get(key)?.events;
-    if (!eventsToSort) {
+
+    if (!eventsToSort || eventsToSort.length < 1) {
       return [];
     }
     return eventsToSort

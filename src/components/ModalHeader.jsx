@@ -193,7 +193,7 @@ const ModalHeader = ({ allDayEvents }) => {
       >
         <div className="flex justify-between items-center">
           <div className="flex justify-center items-center">
-            <h2 className="bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent whitespace-nowrap">
+            <h2 className="whitespace-nowrap">
               {new Date(string).toLocaleDateString("en-US", {
                 weekday: "short",
                 month: "short",

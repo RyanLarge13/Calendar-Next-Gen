@@ -140,7 +140,7 @@ const Modal = ({ allDayEvents, todaysReminders }) => {
         ref={modalRef}
       >
         {addNewEvent ? (
-          <div className="mt-10 mx-2">
+          <div>
             {type === "event" && <AddEvent />}
             {type === "reminder" && <AddReminder />}
             {type === "todo-list" && (
@@ -211,7 +211,7 @@ const Modal = ({ allDayEvents, todaysReminders }) => {
                           dateObj.toLocaleDateString()
                         ? "border-l-4 border-amber-400"
                         : "border-l-4 border-cyan-400"
-                    } min-w-[70%] absolute right-0 max-w-[70%] shadow-lg p-4 rounded-2xl text-gray-900`}
+                    } min-w-[70%] absolute right-0 max-w-[70%] shadow-lg rounded-2xl text-gray-900`}
                   >
                     <div className="space-y-3">
                       {/* Time + Title */}

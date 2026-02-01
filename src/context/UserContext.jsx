@@ -95,6 +95,7 @@ export const UserProvider = ({ children }) => {
 
   useEffect(() => {
     if (localDB && authToken) {
+      console.log("localDB exists and auth token also does, setting in db now");
       localDB.setIndexedDBAuthToken(authToken);
     }
   }, [localDB, authToken]);
@@ -217,12 +218,15 @@ export const UserProvider = ({ children }) => {
     // const newMapDays = new Map();
     const allEvents = eventsToMap.concat(holidays);
 
+    console.log("Here are all of the events the user has to store in the map");
+    console.log(allEvents);
+
     allEvents.forEach((evt) => {
       const date = new Date(evt.date);
       const key = `${date.getFullYear()}-${date.getMonth()}`;
 
       if (!newMap.has(key)) {
-        newMap.set(key, { events: [] });
+        newMap.set(key, { events: [evt] });
       } else {
         newMap.get(key).events.push(evt);
       }
@@ -363,6 +367,7 @@ export const UserProvider = ({ children }) => {
       getUserData(authToken)
         .then((res) => {
           const user = res.data.user;
+          console.log("Fetched user data from server")
           updateUI(user, true);
         })
         .catch((err) => {
@@ -371,6 +376,7 @@ export const UserProvider = ({ children }) => {
       registerServiceWorkerSync();
     }
     if (!authToken && user) {
+      console.log("No token user there")
       localStorage.removeItem("authToken");
       localStorage.removeItem("user");
       localDB.removeAuth();

@@ -2,7 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import { motion } from "framer-motion";
 import { colors } from "../constants";
 import { getTimeZone } from "../utils/helpers";
-import { MdLocationPin, MdFreeCancellation } from "react-icons/md";
+import { MdLocationPin, MdFreeCancellation, MdClose } from "react-icons/md";
 import { BsFillCalendarPlusFill } from "react-icons/bs";
 import { AiFillCloseCircle, AiFillInfoCircle } from "react-icons/ai";
 import { FiRepeat } from "react-icons/fi";
@@ -76,7 +76,7 @@ const AddEvent = () => {
   const [endWhen, setEndWhen] = useState(null);
   //time zone
   const [timeZone, setTimeZone] = useState(
-    Intl.DateTimeFormat().resolvedOptions().timeZone
+    Intl.DateTimeFormat().resolvedOptions().timeZone,
   );
   const [endTimeZone, setEndTimeZone] = useState("");
   // Friends shared with
@@ -101,15 +101,15 @@ const AddEvent = () => {
         month,
         day,
         splitStartTime[0],
-        splitStartTime[1]
+        splitStartTime[1],
       );
       const formattedDateString = () => {
         return `${
           splitStartTime[0] > 12
             ? splitStartTime[0] % 12
             : splitStartTime[0] == 0
-            ? "12"
-            : splitStartTime[0]
+              ? "12"
+              : splitStartTime[0]
         }:${splitStartTime[1]} ${splitStartTime[0] >= 12 ? "PM" : "AM"}`;
       };
       setStartTime(true);
@@ -127,15 +127,15 @@ const AddEvent = () => {
         month,
         day,
         splitEndTime[0],
-        splitEndTime[1]
+        splitEndTime[1],
       );
       const formattedDateString = () => {
         return `${
           splitEndTime[0] > 12
             ? splitEndTime[0] % 12
             : splitEndTime[0] == 0
-            ? "12"
-            : splitEndTime[0]
+              ? "12"
+              : splitEndTime[0]
         }:${splitEndTime[1]} ${splitEndTime[0] >= 12 ? "PM" : "AM"}`;
       };
       setEndTime(true);
@@ -242,7 +242,7 @@ const AddEvent = () => {
               createAttachments(
                 attachments,
                 newEventId,
-                localStorage.getItem("authToken")
+                localStorage.getItem("authToken"),
               )
                 .then((res) => console.log(res))
                 .catch((err) => console.log(err));
@@ -328,7 +328,7 @@ const AddEvent = () => {
 
   const removeFile = (file) => {
     const newFiles = attachments.filter(
-      (attach) => attach.filename !== file.filename
+      (attach) => attach.filename !== file.filename,
     );
     setAttachments(newFiles);
   };
@@ -350,17 +350,26 @@ const AddEvent = () => {
   };
 
   return (
-    <div>
+    <div
+      className={`w-full rounded-2xl border shadow-2xl backdrop-blur-md p-4 ${
+        preferences.darkMode
+          ? "bg-[#161616]/90 text-white border-white/10"
+          : "bg-white/90 text-gray-900 border-black/10"
+      }`}
+    >
       <input
         type="text"
         placeholder="Event"
         value={summary}
         onChange={(e) => setSummary(e.target.value)}
-        className={`p-2 text-4xl mt-10 mb-5 w-full outline-none duration-200 ${
-          preferences.darkMode ? "bg-[#222]" : "bg-white"
+        className={`mt-2 mb-4 pt-20 w-full bg-transparent text-3xl sm:text-4xl font-semibold tracking-tight outline-none placeholder:opacity-60 ${
+          preferences.darkMode
+            ? "placeholder:text-gray-300"
+            : "placeholder:text-gray-500"
         }`}
       />
-      <div className="flex flex-wrap justify-center items-center my-5">
+
+      <div className="flex flex-wrap justify-center items-center gap-1 py-2 mb-4">
         {colors.map((item, index) => (
           <Color
             key={index}
@@ -371,68 +380,136 @@ const AddEvent = () => {
           />
         ))}
       </div>
+
       <textarea
         name="description"
         placeholder="Description"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
         id="description"
-        cols="30"
-        rows="10"
-        className={`p-2 mt-5 w-full focus:outline-none focus:shadow-sm ${
-          preferences.darkMode ? "bg-[#222]" : "bg-white"
+        className={`mt-2 w-full min-h-[140px] resize-none rounded-2xl border px-4 py-3 outline-none transition-all placeholder:opacity-60 ${
+          preferences.darkMode
+            ? "bg-white/5 border-white/10 placeholder:text-gray-300 focus:border-red-400/40 focus:ring-2 focus:ring-red-500/20"
+            : "bg-white border-black/10 placeholder:text-gray-500 focus:border-red-400/50 focus:ring-2 focus:ring-red-500/10"
         }`}
-      ></textarea>
-      <div className="mt-10 w-full">
-        <div className="w-full p-3 ">
-          <div className="flex justify-between items-center">
-            <MdLocationPin />
+      />
+
+      <div className="mt-6 space-y-4">
+        {/* LOCATION */}
+        <div
+          className={`rounded-2xl border p-4 shadow-sm transition-all ${
+            preferences.darkMode
+              ? "bg-white/5 border-white/10 hover:bg-white/7"
+              : "bg-white border-black/10 hover:bg-black/[0.02]"
+          }`}
+        >
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div
+                className={`grid place-items-center h-9 w-9 rounded-xl border ${
+                  preferences.darkMode
+                    ? "bg-white/5 border-white/10"
+                    : "bg-black/[0.03] border-black/10"
+                }`}
+              >
+                <MdLocationPin />
+              </div>
+              <div>
+                <p className="text-sm font-semibold">Location</p>
+                <p className="text-xs opacity-70">Add a place to this event</p>
+              </div>
+            </div>
             <Toggle condition={location} setCondition={setLocation} />
           </div>
+
           {location && (
-            <div>
-              <SuggestCities
-                setLocationObject={setLocationObject}
-                placeholder="Type in your location..."
-                showGoogleMap={true}
-              />
+            <div className="mt-4">
+              <div
+                className={`rounded-2xl border overflow-hidden ${
+                  preferences.darkMode
+                    ? "bg-white/5 border-white/10"
+                    : "bg-white border-black/10"
+                }`}
+              >
+                <div className="p-3">
+                  <SuggestCities
+                    setLocationObject={setLocationObject}
+                    placeholder="Type in your location..."
+                    showGoogleMap={true}
+                  />
+                </div>
+              </div>
             </div>
           )}
         </div>
-        <div className="w-full p-3 my-5 ">
-          <div className="flex justify-between items-center">
-            <FiRepeat />
+
+        {/* REPEAT */}
+        <div
+          className={`rounded-2xl border p-4 shadow-sm transition-all ${
+            preferences.darkMode
+              ? "bg-white/5 border-white/10 hover:bg-white/7"
+              : "bg-white border-black/10 hover:bg-black/[0.02]"
+          }`}
+        >
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div
+                className={`grid place-items-center h-9 w-9 rounded-xl border ${
+                  preferences.darkMode
+                    ? "bg-white/5 border-white/10"
+                    : "bg-black/[0.03] border-black/10"
+                }`}
+              >
+                <FiRepeat />
+              </div>
+              <div>
+                <p className="text-sm font-semibold">Repeat</p>
+                <p className="text-xs opacity-70">Set a repeating schedule</p>
+              </div>
+            </div>
             <Toggle condition={repeat} setCondition={setRepeat} />
           </div>
+
           {repeat && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              {repeatOptions.map((intervalString) => (
-                <div
-                  key={intervalString}
-                  className="flex justify-between items-center pl-2 pr-5 py-3 my-3"
-                >
-                  <p>{intervalString}</p>
-                  <Toggle
-                    condition={howOften}
-                    setCondition={setHowOften}
-                    howOften={intervalString}
-                  />
-                </div>
-              ))}
+            <motion.div
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-4"
+            >
+              <div className="space-y-2">
+                {repeatOptions.map((intervalString) => (
+                  <div
+                    key={intervalString}
+                    className={`flex items-center justify-between rounded-2xl border px-4 py-3 ${
+                      preferences.darkMode
+                        ? "border-white/10 bg-white/5"
+                        : "border-black/10 bg-black/[0.02]"
+                    }`}
+                  >
+                    <p className="text-sm font-medium">{intervalString}</p>
+                    <Toggle
+                      condition={howOften}
+                      setCondition={setHowOften}
+                      howOften={intervalString}
+                    />
+                  </div>
+                ))}
+              </div>
+
               {howOften && (
                 <input
                   placeholder={`How many ${
                     howOften === "Daily"
                       ? "days"
                       : howOften === "Weekly"
-                      ? "weeks"
-                      : howOften === "Bi Weekly"
-                      ? "times"
-                      : howOften === "Monthly"
-                      ? "months"
-                      : howOften === "Yearly"
-                      ? "years"
-                      : ""
+                        ? "weeks"
+                        : howOften === "Bi Weekly"
+                          ? "times"
+                          : howOften === "Monthly"
+                            ? "months"
+                            : howOften === "Yearly"
+                              ? "years"
+                              : ""
                   }?`}
                   onChange={(e) => setInterval(Number(e.target.value) || "")}
                   onKeyUp={() => {
@@ -440,21 +517,46 @@ const AddEvent = () => {
                       ? setInvalid(false)
                       : setInvalid(true);
                   }}
-                  className={`${
-                    invalid ? "bg-red-300" : "bg-emerald-100"
-                  } my-2 outline-none py-1 px-2 rounded-md text-black placeholder:text-slate-500`}
+                  className={`mt-3 w-full rounded-2xl border px-4 py-3 text-sm font-semibold outline-none transition ${
+                    invalid
+                      ? "bg-red-200 border-red-300 text-black placeholder:text-slate-600"
+                      : "bg-emerald-100 border-emerald-200 text-black placeholder:text-slate-600"
+                  }`}
                 />
               )}
             </motion.div>
           )}
         </div>
-        <div className="w-full p-3 ">
-          <div className="flex justify-between items-center">
-            <IoIosAlarm />
+
+        {/* REMINDER */}
+        <div
+          className={`rounded-2xl border p-4 shadow-sm transition-all ${
+            preferences.darkMode
+              ? "bg-white/5 border-white/10 hover:bg-white/7"
+              : "bg-white border-black/10 hover:bg-black/[0.02]"
+          }`}
+        >
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div
+                className={`grid place-items-center h-9 w-9 rounded-xl border ${
+                  preferences.darkMode
+                    ? "bg-white/5 border-white/10"
+                    : "bg-black/[0.03] border-black/10"
+                }`}
+              >
+                <IoIosAlarm />
+              </div>
+              <div>
+                <p className="text-sm font-semibold">Reminder</p>
+                <p className="text-xs opacity-70">Get notified ahead of time</p>
+              </div>
+            </div>
             <Toggle condition={reminder} setCondition={setReminder} />
           </div>
+
           {reminder && (
-            <div>
+            <div className="mt-4">
               {!when ? (
                 <TimeSetter
                   setDateTime={setWhen}
@@ -463,34 +565,34 @@ const AddEvent = () => {
                 />
               ) : (
                 <>
-                  <div className="mt-5">
-                    <div className="flex justify-between items-center">
-                      <div className="flex justify-center items-center">
-                        <AiFillInfoCircle className="mr-2" />
-                        <p>Only notify</p>
-                      </div>
-                      <Toggle
-                        condition={onlyNotify}
-                        setCondition={setOnlyNotify}
-                      />
+                  <div className="mt-3 flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-sm font-medium">
+                      <AiFillInfoCircle />
+                      <span>Only notify</span>
                     </div>
+                    <Toggle
+                      condition={onlyNotify}
+                      setCondition={setOnlyNotify}
+                    />
                   </div>
-                  <div>
+
+                  <div className="mt-3 space-y-2">
                     <p
                       style={{ color: tailwindBgToHex(color) }}
-                      className={`${color} rounded-md shadow-sm px-2 py-1 mt-3`}
+                      className={`${color} inline-flex items-center rounded-xl border border-black/10 px-3 py-1 text-xs font-semibold shadow-sm`}
                     >
                       {reminderTimeString}
                     </p>
+
                     <button
-                      className="text-xs rounded-md bg-red-400 font-semibold px-2 py-1 mt-2"
+                      className="text-xs font-semibold text-white rounded-xl px-3 py-1.5 bg-gradient-to-tr from-red-500 to-rose-500 shadow-sm hover:brightness-110 active:scale-95 transition"
                       onClick={() => {
                         if (multiReminders.length > 0) {
                           setReminderTimeString(multiReminders[0].time);
                           setWhen(multiReminders[0].time);
-                          setMultiReminders((prev) => {
-                            return prev.filter((r, i) => i !== 0);
-                          });
+                          setMultiReminders((prev) =>
+                            prev.filter((r, i) => i !== 0),
+                          );
                         } else {
                           setWhen(null);
                           setReminder(false);
@@ -500,21 +602,21 @@ const AddEvent = () => {
                       Delete
                     </button>
                   </div>
+
                   {multiReminders.length > 0 &&
                     multiReminders.map((reminder, index) => (
-                      <div>
+                      <div key={index} className="mt-3 space-y-2">
                         <p
                           style={{ color: tailwindBgToHex(color) }}
-                          className={`${color} rounded-md shadow-sm px-2 py-1 mt-3`}
-                          key={index}
+                          className={`${color} inline-flex items-center rounded-xl border border-black/10 px-3 py-1 text-xs font-semibold shadow-sm`}
                         >
                           {reminder.time}
                         </p>
                         <button
-                          className="text-xs rounded-md bg-red-400 font-semibold px-2 py-1 mt-2"
+                          className="text-xs font-semibold text-white rounded-xl px-3 py-1.5 bg-gradient-to-tr from-red-500 to-rose-500 shadow-sm hover:brightness-110 active:scale-95 transition"
                           onClick={() => {
                             setMultiReminders((prev) =>
-                              prev.filter((a, i) => i !== index)
+                              prev.filter((a, i) => i !== index),
                             );
                           }}
                         >
@@ -522,6 +624,7 @@ const AddEvent = () => {
                         </button>
                       </div>
                     ))}
+
                   {addAnother && (
                     <TimeSetter
                       setDateTime={(newWhen) => setAnotherWhen(newWhen, 2)}
@@ -531,14 +634,15 @@ const AddEvent = () => {
                       openTimeSetter={setAddAnother}
                     />
                   )}
-                  <div className="mt-3">
+
+                  <div className="mt-4">
                     <button
                       onClick={() => setAddAnother(true)}
-                      className={` ${
+                      className={`rounded-2xl px-4 py-2 text-sm font-semibold shadow-sm transition active:scale-95 ${
                         preferences.darkMode
-                          ? "bg-black text-white"
-                          : "text-black bg-white"
-                      } py-1 px-3 rounded-md shadow-md`}
+                          ? "bg-white/10 text-white border border-white/10 hover:bg-white/15"
+                          : "bg-black/[0.03] text-black border border-black/10 hover:bg-black/[0.06]"
+                      }`}
                     >
                       Add Another
                     </button>
@@ -548,23 +652,45 @@ const AddEvent = () => {
             </div>
           )}
         </div>
-      </div>
-      <div className="w-full p-3 mt-5 ">
-        <div className="flex justify-between items-center">
-          <p>All Day Event</p>
-          <Toggle condition={allDay} setCondition={setAllDay} />
+
+        {/* ALL DAY */}
+        <div
+          className={`rounded-2xl border p-4 shadow-sm transition-all ${
+            preferences.darkMode
+              ? "bg-white/5 border-white/10 hover:bg-white/7"
+              : "bg-white border-black/10 hover:bg-black/[0.02]"
+          }`}
+        >
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-semibold">All Day Event</p>
+              <p className="text-xs opacity-70">Hide start/end time controls</p>
+            </div>
+            <Toggle condition={allDay} setCondition={setAllDay} />
+          </div>
         </div>
-      </div>
-      {!allDay && (
-        <>
-          <div className="my-3 flex justify-center items-center w-full">
-            <div className="w-full mr-1 p-3  cursor-pointer">
-              <div className="flex justify-between items-center">
-                <p>Start Time</p>
+
+        {/* START / END */}
+        {!allDay && (
+          <div className="space-y-4">
+            {/* Start */}
+            <div
+              className={`rounded-2xl border p-4 shadow-sm transition-all ${
+                preferences.darkMode
+                  ? "bg-white/5 border-white/10 hover:bg-white/7"
+                  : "bg-white border-black/10 hover:bg-black/[0.02]"
+              }`}
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold">Start Time</p>
+                  <p className="text-xs opacity-70">Choose when it begins</p>
+                </div>
                 <Toggle condition={startTime} setCondition={setStartTime} />
               </div>
+
               {startTime && (
-                <div className="mt-2">
+                <div className="mt-3">
                   {!startWhen ? (
                     <TimeSetter
                       setDateTime={setStartWhen}
@@ -572,161 +698,205 @@ const AddEvent = () => {
                       openTimeSetter={setStartTime}
                     />
                   ) : (
-                    <div>
+                    <div className="mt-2 space-y-2">
                       <p
-                        className={`${color} p-2 rounded-md`}
+                        className={`${color} inline-flex items-center rounded-xl border border-black/10 px-3 py-1 text-xs font-semibold shadow-sm`}
                         style={{ color: tailwindBgToHex(color) }}
                       >
                         {startTimeString}
                       </p>
-                      <button
-                        className="text-xs rounded-md bg-red-400 font-semibold px-2 py-1 mt-2"
-                        onClick={() => {
-                          setStartWhen(null);
-                          setStartTimeString("");
-                          setStartTime(false);
-                        }}
+
+                      <div className="flex gap-2">
+                        <button
+                          className="text-xs font-semibold text-white rounded-xl px-3 py-1.5 bg-gradient-to-tr from-red-500 to-rose-500 shadow-sm hover:brightness-110 active:scale-95 transition"
+                          onClick={() => {
+                            setStartWhen(null);
+                            setStartTimeString("");
+                            setStartTime(false);
+                          }}
+                        >
+                          Delete
+                        </button>
+                        <button
+                          className="text-xs font-semibold text-white rounded-xl px-3 py-1.5 bg-gradient-to-tr from-emerald-400 to-green-500 shadow-sm hover:brightness-110 active:scale-95 transition"
+                          onClick={() => {
+                            setStartWhen(null);
+                            setStartTimeString("");
+                          }}
+                        >
+                          Change
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* End */}
+            <div
+              className={`rounded-2xl border p-4 shadow-sm transition-all ${
+                preferences.darkMode
+                  ? "bg-white/5 border-white/10 hover:bg-white/7"
+                  : "bg-white border-black/10 hover:bg-black/[0.02]"
+              }`}
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold">End Time</p>
+                  <p className="text-xs opacity-70">Choose when it ends</p>
+                </div>
+                <Toggle condition={endTime} setCondition={setEndTime} />
+              </div>
+
+              {endTime && (
+                <div className="mt-3">
+                  {!endWhen ? (
+                    <TimeSetter
+                      setDateTime={setEndWhen}
+                      setDateTimeString={setEndTimeString}
+                      openTimeSetter={setEndTime}
+                    />
+                  ) : (
+                    <div className="mt-2 space-y-2">
+                      <p
+                        style={{ color: tailwindBgToHex(color) }}
+                        className={`${color} inline-flex items-center rounded-xl border border-black/10 px-3 py-1 text-xs font-semibold shadow-sm`}
                       >
-                        Delete
-                      </button>
-                      <button
-                        className="text-xs rounded-md bg-emerald-300 font-semibold px-2 py-1 mt-2 ml-2"
-                        onClick={() => {
-                          setStartWhen(null);
-                          setStartTimeString("");
-                        }}
-                      >
-                        Change
-                      </button>
+                        {endTimeString}
+                      </p>
+
+                      <div className="flex gap-2">
+                        <button
+                          className="text-xs font-semibold text-white rounded-xl px-3 py-1.5 bg-gradient-to-tr from-red-500 to-rose-500 shadow-sm hover:brightness-110 active:scale-95 transition"
+                          onClick={() => {
+                            setEndWhen(null);
+                            setEndTimeString("");
+                            setEndTime(false);
+                          }}
+                        >
+                          Delete
+                        </button>
+                        <button
+                          className="text-xs font-semibold text-white rounded-xl px-3 py-1.5 bg-gradient-to-tr from-emerald-400 to-green-500 shadow-sm hover:brightness-110 active:scale-95 transition"
+                          onClick={() => {
+                            setEndWhen(null);
+                            setEndTimeString("");
+                          }}
+                        >
+                          Change
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>
               )}
             </div>
           </div>
-          <div className="w-full mr-1 p-3  cursor-pointer">
-            <div className="flex justify-between items-center">
-              <p>End Time</p>
-              <Toggle condition={endTime} setCondition={setEndTime} />
-            </div>
-            {endTime && (
-              <div className="mt-2">
-                {!endWhen ? (
-                  <TimeSetter
-                    setDateTime={setEndWhen}
-                    setDateTimeString={setEndTimeString}
-                    openTimeSetter={setEndTime}
-                  />
-                ) : (
-                  <div>
-                    <p
-                      style={{ color: tailwindBgToHex(color) }}
-                      className={`${color} rounded-md p-2`}
-                    >
-                      {endTimeString}
-                    </p>
-                    <button
-                      className="text-xs rounded-md bg-red-400 font-semibold px-2 py-1 mt-2"
-                      onClick={() => {
-                        setEndWhen(null);
-                        setEndTimeString("");
-                        setEndTime(false);
-                      }}
-                    >
-                      Delete
-                    </button>
-                    <button
-                      className="text-xs rounded-md bg-emerald-300 font-semibold px-2 py-1 mt-2 ml-2"
-                      onClick={() => {
-                        setEndWhen(null);
-                        setEndTimeString("");
-                      }}
-                    >
-                      Change
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </>
-      )}
+        )}
+      </div>
+
+      {/* Preview overlay */}
       {preview ? (
-        <div className="fixed z-[999] inset-0 flex justify-center items-center">
+        <div
+          className="fixed inset-0 z-[999] grid place-items-center bg-black/60 p-4"
+          onClick={() => setPreview(null)}
+        >
           <img
             src={preview.img}
             alt="preview"
-            onClick={() => setPreview(null)}
-            className="rounded-sm shadow-sm object-cover"
+            className="max-h-[85vh] w-auto rounded-2xl shadow-2xl object-contain"
           />
         </div>
       ) : null}
-      <div className="mt-10 mb-20 flex w-full flex-col justify-center items-center">
+
+      {/* Attachments */}
+      <div
+        className="mt
+-8 mb-12"
+      >
         {attachments.length > 0 && (
-          <Masonry
-            breakpointCols={breakpointColumnsObj}
-            className="my-masonry-grid-attachments"
-            columnClassName="my-masonry-grid_column-attachments"
+          <div
+            className={`rounded-2xl border p-3 shadow-sm ${
+              preferences.darkMode ? "border-white/10" : "border-black/10"
+            }`}
           >
-            {attachments.map((attachment) => (
-              <div key={attachment.filename}>
-                {attachment.mimetype.startsWith("image/") ? (
-                  <div className="relative">
-                    <AiFillCloseCircle
-                      className="absolute top-[-5px] left-[-5px]"
-                      onClick={() => removeFile(attachment)}
-                    />
-                    <img
-                      src={attachment.img}
-                      alt="preview"
-                      onClick={() => setPreview(attachment.img)}
-                      className="rounded-sm shadow-sm m-1 transition hover:shadow-md"
-                    />
-                  </div>
-                ) : (
-                  <div className="text-xs p-3 rounded-md shadow-md bg-slate-100 mt-3">
-                    <p>{attachment.filename}</p>
-                  </div>
-                )}
-              </div>
-            ))}
-          </Masonry>
+            <Masonry
+              breakpointCols={breakpointColumnsObj}
+              className="my-masonry-grid-attachments"
+              columnClassName="my-masonry-grid_column-attachments"
+            >
+              {attachments.map((attachment) => (
+                <div key={attachment.filename} className="p-1">
+                  {attachment.mimetype.startsWith("image/") ? (
+                    <div className="relative group">
+                      <button
+                        type="button"
+                        className="absolute -top-2 -left-2 z-10 rounded-full bg-white/90 shadow-md p-1 opacity-90 hover:opacity-100 active:scale-95 transition"
+                        onClick={() => removeFile(attachment)}
+                      >
+                        <AiFillCloseCircle className="text-red-500" />
+                      </button>
+                      <img
+                        src={attachment.img}
+                        alt="preview"
+                        onClick={() => setPreview({ img: attachment.img })}
+                        className="rounded-2xl shadow-sm object-cover w-full transition hover:shadow-md cursor-pointer"
+                      />
+                    </div>
+                  ) : (
+                    <div className="text-xs p-3 rounded-2xl shadow-sm border bg-slate-50">
+                      <p className="font-semibold">{attachment.filename}</p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </Masonry>
+          </div>
         )}
+
         <label
-          className="mt-10 p-5 w-full flex flex-col justify-center
-        items-center"
+          className={`mt-6 w-full rounded-2xl border border-dashed p-6 grid place-items-center gap-1 cursor-pointer transition ${
+            preferences.darkMode
+              ? "border-white/15 hover:bg-white/5"
+              : "border-black/15 hover:bg-black/[0.02]"
+          }`}
         >
-          <RiGalleryUploadFill className="text-xl cursor-pointer" />
+          <RiGalleryUploadFill className="text-2xl" />
           {attachments.length > 0 ? (
-            <p className="text-xs">Add More</p>
+            <p className="text-xs font-semibold opacity-80">Add More</p>
           ) : (
-            <p className="text-[10px]">.jpeg .png .svg .pdf .docx</p>
+            <p className="text-[11px] opacity-70">.jpeg .png .svg .pdf .docx</p>
           )}
           <input
             type="file"
             accept=".jpeg .png .svg .pdf .docx"
             onChange={handleFileChange}
             multiple
-            placeholder="png svg jpeg pdf word"
-            className="w-0 h-0"
+            className="hidden"
           />
         </label>
       </div>
-      <div className="flex justify-between px-5 items-center w-full mb-5 font-semibold text-black">
+
+      {/* Actions */}
+      <div className="flex justify-between px-1 items-center w-full">
         <button
           onClick={() => {
             setType(null);
             setAddNewEvent(false);
           }}
-          className="p-3 rounded-full shadow-md bg-gradient-to-tr from-red-200 to-rose-200"
+          className="grid place-items-center rounded-2xl p-3 shadow-lg transition hover:scale-[0.98] active:scale-95 bg-gradient-to-tr from-red-500 to-rose-500 text-white"
+          aria-label="Cancel"
         >
-          <MdFreeCancellation />
+          <MdFreeCancellation className="text-xl" />
         </button>
+
         <button
           onClick={() => addEvent()}
-          className="p-3 rounded-full shadow-md bg-gradient-to-r from-lime-200 to-green-200"
+          className="grid place-items-center rounded-2xl p-3 shadow-lg transition hover:scale-[0.98] active:scale-95 bg-gradient-to-tr from-lime-400 to-emerald-500 text-white"
+          aria-label="Add event"
         >
-          <BsFillCalendarPlusFill />
+          <BsFillCalendarPlusFill className="text-xl" />
         </button>
       </div>
     </div>

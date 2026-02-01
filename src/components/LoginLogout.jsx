@@ -125,63 +125,134 @@ const LoginLogout = () => {
               }`}
             >
               {user ? (
-                <div className="space-y-4">
-                  {/* Top bar with logout + notifications */}
-                  <div
-                    className="flex justify-between items-center bg-gradient-to-r from-cyan-200 to-cyan-100 
-    rounded-xl shadow-md p-3 text-gray-800"
-                  >
-                    {/* Logout */}
-                    <button
-                      onClick={() => confirmLogout()}
-                      className="text-xl text-gray-600 hover:text-rose-500 transition"
-                    >
-                      <BiLogOutCircle />
-                    </button>
+  <div className="space-y-4">
+  {/* Top bar with logout + notifications */}
+  <div
+    className={`
+      flex justify-between items-center
+      rounded-2xl border shadow-sm px-4 py-3 backdrop-blur-md
+      ${
+        preferences.darkMode
+          ? "bg-white/5 border-white/10 text-white"
+          : "bg-white/90 border-black/10 text-slate-900"
+      }
+    `}
+  >
+    {/* Logout */}
+    <button
+      onClick={() => confirmLogout()}
+      className={`
+        grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition
+        active:scale-95
+        ${
+          preferences.darkMode
+            ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70 hover:text-rose-300"
+            : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600 hover:text-rose-500"
+        }
+      `}
+      aria-label="Log out"
+    >
+      <BiLogOutCircle className="text-xl" />
+    </button>
 
-                    {/* Notifications */}
-                    <div
-                      onClick={() => setShowNotifs((prev) => !prev)}
-                      className="relative cursor-pointer text-gray-600 hover:text-cyan-600 transition"
-                    >
-                      {unReadLength > 0 && (
-                        <span
-                          className="absolute -top-2 -right-2 flex justify-center items-center 
-          w-[18px] h-[18px] rounded-full bg-rose-500 text-white text-[11px] font-bold shadow-md"
-                        >
-                          {unReadLength > 9 ? "9+" : unReadLength}
-                        </span>
-                      )}
-                      <BsFillBellFill className="text-lg" />
-                    </div>
-                  </div>
+    {/* Notifications */}
+    <button
+      type="button"
+      onClick={() => setShowNotifs((prev) => !prev)}
+      className={`
+        relative grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition
+        active:scale-95
+        ${
+          preferences.darkMode
+            ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70 hover:text-cyan-200"
+            : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600 hover:text-cyan-600"
+        }
+      `}
+      aria-label="Notifications"
+    >
+      {unReadLength > 0 && (
+        <span
+          className="
+            absolute -top-2 -right-2 grid place-items-center
+            min-w-[18px] h-[18px] px-1
+            rounded-full bg-gradient-to-tr from-rose-500 to-red-500
+            text-white text-[11px] font-bold shadow-md
+          "
+        >
+          {unReadLength > 9 ? "9+" : unReadLength}
+        </span>
+      )}
+      <BsFillBellFill className="text-lg" />
+    </button>
+  </div>
 
-                  {/* User Avatar + Edit */}
-                  <div className="flex items-end gap-2">
-                    <img
-                      src={user.avatarUrl}
-                      alt="user"
-                      className="w-14 h-14 rounded-full shadow-md border-2 border-white"
-                    />
-                    <button className="px-2 py-1 rounded-md text-xs font-semibold bg-cyan-100 hover:bg-cyan-200 text-gray-700 transition">
-                      Edit
-                    </button>
-                  </div>
+  {/* User Avatar + Edit */}
+  <div
+    className={`
+      flex items-end justify-between gap-3
+      rounded-2xl border shadow-sm p-4
+      ${
+        preferences.darkMode
+          ? "bg-white/5 border-white/10"
+          : "bg-white border-black/10"
+      }
+    `}
+  >
+    <div className="flex items-center gap-3">
+      <img
+        src={user.avatarUrl}
+        alt="user"
+        className={`
+          w-14 h-14 rounded-full object-cover shadow-md border
+          ${preferences.darkMode ? "border-white/15" : "border-black/10"}
+        `}
+      />
+      <div className="min-w-0">
+        <p className={`text-base font-semibold truncate ${preferences.darkMode ? "text-white" : "text-slate-900"}`}>
+          {user.username}
+        </p>
+        <a
+          href={`mailto:${user.email}`}
+          className={`
+            text-sm font-semibold break-words transition
+            ${preferences.darkMode ? "text-cyan-200 hover:underline" : "text-cyan-600 hover:underline"}
+          `}
+        >
+          {user.email}
+        </a>
+      </div>
+    </div>
 
-                  {/* User Info */}
-                  <div className="text-sm font-semibold text-gray-800">
-                    <p className="text-base">{user.username}</p>
-                    <a
-                      href={`mailto:${user.email}`}
-                      className="text-cyan-600 hover:underline break-words"
-                    >
-                      {user.email}
-                    </a>
-                  </div>
+    <button
+      className={`
+        rounded-2xl px-4 py-2 text-sm font-semibold shadow-sm border transition
+        active:scale-95
+        ${
+          preferences.darkMode
+            ? "bg-white/10 border-white/10 text-white hover:bg-white/15"
+            : "bg-black/[0.03] border-black/10 text-slate-700 hover:bg-black/[0.06]"
+        }
+      `}
+    >
+      Edit
+    </button>
+  </div>
 
-                  {/* Options */}
-                  <Options setOption={setOption} />
-                </div>
+  {/* Options */}
+  <div
+    className={`
+      rounded-2xl border shadow-sm p-3
+      ${
+        preferences.darkMode
+          ? "bg-white/5 border-white/10"
+          : "bg-white border-black/10"
+      }
+    `}
+  >
+    <Options setOption={setOption} />
+  </div>
+</div>
+
               ) : (
                 <AnimatePresence>
                   <SocialLogin />
