@@ -65,7 +65,7 @@ const AddReminder = () => {
         eventMap
           .get(key)
           ?.events.filter(
-            (e) => new Date(e.date).toLocaleDateString() === string,
+            (e) => new Date(e.date).toLocaleDateString() === string
           ) || [];
 
       if (events.length < 1) {
@@ -158,7 +158,7 @@ const AddReminder = () => {
     const newReminder = {
       title,
       notes,
-      eventRefIf: eventForReminder,
+      eventRefId: eventForReminder.id,
       time: time ? time : getTime(),
     };
     const newNotification = {
@@ -167,6 +167,7 @@ const AddReminder = () => {
       read: false,
       readTime: "",
       notifData: {
+        eventRefIId,
         time,
         notes,
         title,
@@ -214,7 +215,7 @@ const AddReminder = () => {
         setAddNewEvent(false);
         setType(null);
         const sortedReminders = [...reminders, res.data.reminder].sort(
-          (a, b) => new Date(a.time) - new Date(b.time),
+          (a, b) => new Date(a.time) - new Date(b.time)
         );
         setReminders(sortedReminders);
         setMenu(true);
@@ -321,7 +322,9 @@ const AddReminder = () => {
                 </div>
                 <div>
                   <p
-                    className={`text-sm font-semibold ${preferences.darkMode ? "text-white" : "text-slate-800"}`}
+                    className={`text-sm font-semibold ${
+                      preferences.darkMode ? "text-white" : "text-slate-800"
+                    }`}
                   >
                     Set Time
                   </p>
@@ -402,7 +405,9 @@ const AddReminder = () => {
               </div>
               <div>
                 <p
-                  className={`text-sm font-semibold ${preferences.darkMode ? "text-white" : "text-slate-800"}`}
+                  className={`text-sm font-semibold ${
+                    preferences.darkMode ? "text-white" : "text-slate-800"
+                  }`}
                 >
                   Only notify
                 </p>
@@ -447,8 +452,8 @@ const AddReminder = () => {
                   ? "bg-cyan-500/10 border-cyan-300/20"
                   : "bg-cyan-50 border-cyan-200"
                 : preferences.darkMode
-                  ? "bg-white/5 border-white/10 hover:bg-white/7"
-                  : "bg-white border-black/10 hover:bg-black/[0.02]"
+                ? "bg-white/5 border-white/10 hover:bg-white/7"
+                : "bg-white border-black/10 hover:bg-black/[0.02]"
             }
           `}
             >
@@ -463,8 +468,8 @@ const AddReminder = () => {
                         ? "bg-cyan-500/15 border-cyan-300/20 text-cyan-100"
                         : "bg-cyan-100 border-cyan-200 text-cyan-700"
                       : preferences.darkMode
-                        ? "bg-white/5 border-white/10 text-cyan-200"
-                        : "bg-cyan-50 border-cyan-100 text-cyan-600"
+                      ? "bg-white/5 border-white/10 text-cyan-200"
+                      : "bg-cyan-50 border-cyan-100 text-cyan-600"
                   }
                 `}
                   >
@@ -487,7 +492,7 @@ const AddReminder = () => {
                   }`}
                 >
                   {new Date(
-                    new Date().setMinutes(new Date().getMinutes() + offset),
+                    new Date().setMinutes(new Date().getMinutes() + offset)
                   ).toLocaleTimeString("en-US", {
                     hour: "numeric",
                     minute: "numeric",
@@ -502,14 +507,18 @@ const AddReminder = () => {
         <div className="space-y-3">
           {todaysEvents.loading ? (
             <p
-              className={`text-sm ${preferences.darkMode ? "text-white/60" : "text-slate-500"}`}
+              className={`text-sm ${
+                preferences.darkMode ? "text-white/60" : "text-slate-500"
+              }`}
             >
               Loading…
             </p>
           ) : todaysEvents.events.length > 0 ? (
             <>
               <p
-                className={`text-sm font-semibold ${preferences.darkMode ? "text-white/70" : "text-slate-600"}`}
+                className={`text-sm font-semibold ${
+                  preferences.darkMode ? "text-white/70" : "text-slate-600"
+                }`}
               >
                 Is this reminder for an event today?
               </p>
@@ -519,7 +528,7 @@ const AddReminder = () => {
                   key={event.id}
                   onClick={() =>
                     setEventForReminder((prev) =>
-                      prev?.id === event.id ? null : event,
+                      prev?.id === event.id ? null : event
                     )
                   }
                   className={`
@@ -532,8 +541,8 @@ const AddReminder = () => {
                       ? "bg-cyan-500/10 border-cyan-300/20"
                       : "bg-cyan-50 border-cyan-200"
                     : preferences.darkMode
-                      ? "bg-white/5 border-white/10 hover:bg-white/7"
-                      : "bg-white border-black/10 hover:bg-black/[0.02]"
+                    ? "bg-white/5 border-white/10 hover:bg-white/7"
+                    : "bg-white border-black/10 hover:bg-black/[0.02]"
                 }
               `}
                 >

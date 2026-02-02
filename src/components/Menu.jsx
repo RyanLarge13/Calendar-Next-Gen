@@ -21,8 +21,6 @@ const Menu = () => {
     menu,
     listUpdate,
     setListUpdate,
-    taskUpdates,
-    setTaskUpdates,
     showCategory,
     setMenu,
   } = useContext(InteractiveContext);
@@ -58,7 +56,7 @@ const Menu = () => {
           console.log(err);
           const lastUpdatedId = listUpdate[listUpdate.length - 1].listId;
           const listIndex = lists.findIndex(
-            (list) => list.id === lastUpdatedId,
+            (list) => list.id === lastUpdatedId
           );
           if (listIndex !== -1) {
             const updatedLists = [...lists];
@@ -66,22 +64,6 @@ const Menu = () => {
             updatedLists.unshift(movedList);
             setLists(updatedLists);
           }
-        });
-    }
-  }, [menu, showCategory]);
-
-  useEffect(() => {
-    if (taskUpdates.length < 1) return;
-    if (taskUpdates.length > 0) {
-      const token = localStorage.getItem("authToken");
-      updateClientTasks();
-      updateTasks(token, taskUpdates)
-        .then((res) => {
-          console.log(res);
-          setTaskUpdates([]);
-        })
-        .catch((err) => {
-          console.log(err);
         });
     }
   }, [menu, showCategory]);
@@ -105,7 +87,7 @@ const Menu = () => {
   const updateClientLists = () => {
     const updatedLists = lists.map((list) => {
       const foundUpdate = listUpdate.find(
-        (update) => update.listId === list.id,
+        (update) => update.listId === list.id
       );
       if (foundUpdate) {
         return { ...list, items: foundUpdate.listItems };
@@ -113,19 +95,6 @@ const Menu = () => {
       return list;
     });
     setLists(updatedLists);
-  };
-
-  const updateClientTasks = () => {
-    const updatedTasks = userTasks.map((tsk) => {
-      const foundUpdate = taskUpdates.find(
-        (update) => update.taskId === tsk.id,
-      );
-      if (foundUpdate) {
-        return { ...tsk, tasks: foundUpdate.taskItems };
-      }
-      return tsk;
-    });
-    setUserTasks(updatedTasks);
   };
 
   return (
@@ -166,7 +135,11 @@ const Menu = () => {
               className={`
             mx-auto max-w-6xl h-[calc(100vh-5rem)]
             rounded-3xl border shadow-2xl overflow-hidden
-            ${preferences.darkMode ? "bg-[#161616]/90 border-white/10 text-white" : "bg-white/90 border-black/10 text-slate-900"}
+            ${
+              preferences.darkMode
+                ? "bg-[#161616]/90 border-white/10 text-white"
+                : "bg-white/90 border-black/10 text-slate-900"
+            }
             backdrop-blur-md
           `}
               onClick={(e) => e.stopPropagation()}
@@ -200,7 +173,11 @@ const Menu = () => {
                           -mx-3 sm:-mx-6
                           px-3 sm:px-6 pt-3 pb-3
                           border-b
-                          ${preferences.darkMode ? "bg-[#161616]/90 border-white/10" : "bg-white/90 border-black/10"}
+                          ${
+                            preferences.darkMode
+                              ? "bg-[#161616]/90 border-white/10"
+                              : "bg-white/90 border-black/10"
+                          }
                           backdrop-blur-md
                         `}
                           >
@@ -246,8 +223,8 @@ const Menu = () => {
                                             ? "bg-cyan-500/15 border-cyan-300/25 text-cyan-100"
                                             : "bg-cyan-50 border-cyan-200 text-slate-800"
                                           : preferences.darkMode
-                                            ? "bg-white/5 border-white/10 text-white/70 hover:bg-white/10"
-                                            : "bg-white border-black/10 text-slate-700 hover:bg-black/[0.02]"
+                                          ? "bg-white/5 border-white/10 text-white/70 hover:bg-white/10"
+                                          : "bg-white border-black/10 text-slate-700 hover:bg-black/[0.02]"
                                       }
                                     `}
                                       >
@@ -302,7 +279,11 @@ const Menu = () => {
                           -mx-3 sm:-mx-6
                           px-3 sm:px-6 pt-3 pb-3
                           border-b
-                          ${preferences.darkMode ? "bg-[#161616]/90 border-white/10" : "bg-white/90 border-black/10"}
+                          ${
+                            preferences.darkMode
+                              ? "bg-[#161616]/90 border-white/10"
+                              : "bg-white/90 border-black/10"
+                          }
                           backdrop-blur-md
                         `}
                           >
@@ -340,8 +321,8 @@ const Menu = () => {
                                           ? "bg-cyan-500/15 border-cyan-300/25 text-cyan-100"
                                           : "bg-cyan-50 border-cyan-200 text-slate-800"
                                         : preferences.darkMode
-                                          ? "bg-white/5 border-white/10 text-white/70 hover:bg-white/10"
-                                          : "bg-white border-black/10 text-slate-700 hover:bg-black/[0.02]"
+                                        ? "bg-white/5 border-white/10 text-white/70 hover:bg-white/10"
+                                        : "bg-white border-black/10 text-slate-700 hover:bg-black/[0.02]"
                                     }
                                   `}
                                     >
@@ -395,7 +376,11 @@ const Menu = () => {
                           -mx-3 sm:-mx-6
                           px-3 sm:px-6 pt-3 pb-3
                           border-b
-                          ${preferences.darkMode ? "bg-[#161616]/90 border-white/10" : "bg-white/90 border-black/10"}
+                          ${
+                            preferences.darkMode
+                              ? "bg-[#161616]/90 border-white/10"
+                              : "bg-white/90 border-black/10"
+                          }
                           backdrop-blur-md
                         `}
                           >
@@ -432,8 +417,8 @@ const Menu = () => {
                                           ? "bg-cyan-500/15 border-cyan-300/25 text-cyan-100"
                                           : "bg-cyan-50 border-cyan-200 text-slate-800"
                                         : preferences.darkMode
-                                          ? "bg-white/5 border-white/10 text-white/70 hover:bg-white/10"
-                                          : "bg-white border-black/10 text-slate-700 hover:bg-black/[0.02]"
+                                        ? "bg-white/5 border-white/10 text-white/70 hover:bg-white/10"
+                                        : "bg-white border-black/10 text-slate-700 hover:bg-black/[0.02]"
                                     }
                                   `}
                                     >
@@ -519,7 +504,7 @@ const Menu = () => {
                                   {[...events]
                                     .sort(
                                       (a, b) =>
-                                        new Date(a.date) - new Date(b.date),
+                                        new Date(a.date) - new Date(b.date)
                                     )
                                     .map((event) => (
                                       <div
@@ -530,7 +515,11 @@ const Menu = () => {
                                         <div
                                           className={`
                     hidden lg:block absolute left-[18px] top-6 h-4 w-4 rounded-full
-                    ${preferences.darkMode ? "bg-white/10 border-white/10" : "bg-white border-black/10"}
+                    ${
+                      preferences.darkMode
+                        ? "bg-white/10 border-white/10"
+                        : "bg-white border-black/10"
+                    }
                     border
                   `}
                                         />
@@ -538,7 +527,11 @@ const Menu = () => {
                                         <div
                                           className={`
                     relative rounded-3xl border shadow-sm overflow-hidden
-                    ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-white border-black/10"}
+                    ${
+                      preferences.darkMode
+                        ? "bg-white/5 border-white/10"
+                        : "bg-white border-black/10"
+                    }
                   `}
                                         >
                                           <div
@@ -548,7 +541,11 @@ const Menu = () => {
                                           <button
                                             className={`
                       absolute top-3 right-3 grid place-items-center h-9 w-9 rounded-2xl border shadow-sm transition active:scale-95
-                      ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/60 hover:text-cyan-200" : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-500 hover:text-cyan-600"}
+                      ${
+                        preferences.darkMode
+                          ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/60 hover:text-cyan-200"
+                          : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-500 hover:text-cyan-600"
+                      }
                     `}
                                             onClick={() => setEvent(event)}
                                             aria-label="Open event"
@@ -558,7 +555,11 @@ const Menu = () => {
 
                                           <div className="px-5 py-4">
                                             <p
-                                              className={`text-xs font-semibold ${preferences.darkMode ? "text-white/60" : "text-slate-500"}`}
+                                              className={`text-xs font-semibold ${
+                                                preferences.darkMode
+                                                  ? "text-white/60"
+                                                  : "text-slate-500"
+                                              }`}
                                             >
                                               {formatTime(new Date(event.date))}
                                             </p>
@@ -568,11 +569,15 @@ const Menu = () => {
 
                                             <div className="mt-3 space-y-1">
                                               {formatDbText(
-                                                event.description || "",
+                                                event.description || ""
                                               ).map((text, index) => (
                                                 <p
                                                   key={index}
-                                                  className={`text-xs font-semibold ${preferences.darkMode ? "text-white/70" : "text-slate-600"}`}
+                                                  className={`text-xs font-semibold ${
+                                                    preferences.darkMode
+                                                      ? "text-white/70"
+                                                      : "text-slate-600"
+                                                  }`}
                                                 >
                                                   {text}
                                                 </p>

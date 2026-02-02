@@ -11,7 +11,6 @@ export const InteractiveProvider = ({ children }) => {
   const [addNewEvent, setAddNewEvent] = useState(false);
   const [type, setType] = useState(null);
   const [listUpdate, setListUpdate] = useState([]);
-  const [taskUpdates, setTaskUpdates] = useState([]);
   const [event, setEvent] = useState(null);
   const [showCategory, setShowCategory] = useState(null);
   const [mainView, setMainView] = useState("calendar");
@@ -39,7 +38,6 @@ export const InteractiveProvider = ({ children }) => {
         showCategory,
         mainView,
         showFullDatePicker,
-        taskUpdates,
         hideMenuNav,
         addEventWithStartEndTime,
         setAddEventWithStartEndTime,
@@ -57,7 +55,6 @@ export const InteractiveProvider = ({ children }) => {
         setView,
         setMenu,
         setShowLogin,
-        setTaskUpdates,
       }}
     >
       {children}

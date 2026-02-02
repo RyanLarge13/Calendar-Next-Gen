@@ -1,18 +1,17 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { AiFillCloseCircle, AiFillPlusCircle } from "react-icons/ai";
+import { AiFillPlusCircle } from "react-icons/ai";
 import {
   FaSortAlphaDownAlt,
   FaSortAlphaUp,
   FaSortAmountDown,
   FaSortAmountUp,
 } from "react-icons/fa";
-import InteractiveContext from "../context/InteractiveContext";
-import { updateTaskTitle } from "../utils/api";
+import { updateTasks, updateTaskTitle } from "../utils/api";
 import UserContext from "../context/UserContext";
+import TaskItem from "./TaskItem";
 
 const TaskItems = ({ task }) => {
-  const { setTaskUpdates } = useContext(InteractiveContext);
   const { setUserTasks } = useContext(UserContext);
 
   const [itemsCopy, setItemsCopy] = useState(task.tasks);
@@ -20,61 +19,93 @@ const TaskItems = ({ task }) => {
   const [newTitle, setNewTitle] = useState(task.title);
   const [titleTracker, setTitleTracker] = useState(task.title);
 
-  useEffect(() => {
-    console.log(task);
-  }, []);
+  const taskItemInputref = useRef(null);
 
-  const update = (newItems) => {
-    const newUpdate = {
-      taskId: task.id,
-      taskItems: newItems,
-    };
-    setTaskUpdates((updates) => {
-      const includes = updates.some((u) => u.taskId === task.id);
-      let updatedUpdates;
-      if (includes) {
-        updatedUpdates = updates.map((u) => {
-          if (u.taskId === newUpdate.taskId) {
-            return newUpdate;
-          } else {
-            return u;
-          }
-        });
-      } else {
-        updatedUpdates = [...updates, newUpdate];
-      }
-      return updatedUpdates;
-    });
-  };
-
-  const addNewTaskItem = () => {
+  const addNewTaskItem = async () => {
     const newTask = {
       id: uuidv4(),
       text: newTaskText,
       complete: false,
+      completedAt: null,
     };
     const newItems = [...itemsCopy, newTask];
     setItemsCopy(newItems);
     setNewTaskText("");
-    update(newItems);
+
+    if (taskItemInputref.current) {
+      taskItemInputref.focus();
+    }
+
+    const update = {
+      taskId: task.id,
+      taskItems: newItems,
+    };
+
+    try {
+      const token = localStorage.getItem("authToken");
+      await updateTasks(token, [update]);
+
+      setUserTasks((prev) =>
+        prev.map((t) => (t.id === task.id ? { ...t, tasks: newItems } : t))
+      );
+    } catch (err) {
+      console.log("Error adding new task item to your task");
+      console.log(err);
+    }
   };
 
-  const handleChecked = (e, myTask) => {
+  const handleChecked = async (e, myTask) => {
     const newCheck = e.target.checked;
     const newItems = itemsCopy.map((itm) => {
       if (itm.id === myTask.id) {
-        return { ...itm, complete: newCheck };
+        return {
+          ...itm,
+          complete: newCheck,
+          completedAt: newCheck ? new Date().toString() : null,
+        };
       }
       return itm;
     });
     setItemsCopy(newItems);
-    update(newItems);
+
+    const update = {
+      taskId: task.id,
+      taskItems: newItems,
+    };
+
+    try {
+      const token = localStorage.getItem("authToken");
+      await updateTasks(token, [update]);
+
+      setUserTasks((prev) =>
+        prev.map((t) => (t.id === task.id ? { ...t, tasks: newItems } : t))
+      );
+    } catch (err) {
+      console.log("Error adding new task item to your task");
+      console.log(err);
+    }
   };
 
-  const removeTaskItem = (myTask) => {
+  const removeTaskItem = async (myTask) => {
     const newTasks = itemsCopy.filter((itm) => itm.id !== myTask.id);
     setItemsCopy(newTasks);
-    update(newTasks);
+
+    const newUpdate = {
+      taskId: task.id,
+      taskItems: newTasks,
+    };
+
+    try {
+      const token = localStorage.getItem("authToken");
+      await updateTasks(token, [newUpdate]);
+
+      setUserTasks((prev) =>
+        prev.map((t) => (t.id === task.id ? { ...t, tasks: newTasks } : t))
+      );
+    } catch (err) {
+      console.log("Error updating task items when removing a task");
+      console.log(err);
+    }
   };
 
   const updateTitle = async (e) => {
@@ -100,6 +131,42 @@ const TaskItems = ({ task }) => {
       console.log("Error updating task title");
     }
   };
+
+  const updateTaskItemText = async (myTask, newText) => {
+    const newItems = itemsCopy.map((itm) => {
+      if (itm.id === myTask.id) {
+        return {
+          ...itm,
+          text: newText,
+        };
+      }
+      return itm;
+    });
+    setItemsCopy(newItems);
+
+    const update = {
+      taskId: task.id,
+      taskItems: newItems,
+    };
+
+    try {
+      const token = localStorage.getItem("authToken");
+      await updateTasks(token, [update]);
+
+      setUserTasks((prev) =>
+        prev.map((t) => (t.id === task.id ? { ...t, tasks: newItems } : t))
+      );
+    } catch (err) {
+      console.log("Error adding new task item to your task");
+      console.log(err);
+    }
+  };
+
+  const updateEventReference = async () => {};
+
+  const updatecolor = async () => {};
+
+  const updateDateFor = async () => {};
 
   return (
     <div className="space-y-3">
@@ -145,6 +212,7 @@ const TaskItems = ({ task }) => {
           className="flex-1"
         >
           <input
+            ref={taskItemInputref}
             type="text"
             className="rounded-xl shadow-md px-4 py-2 outline-none w-full focus:ring-2 focus:ring-blue-400"
             placeholder="New Item"
@@ -161,35 +229,12 @@ const TaskItems = ({ task }) => {
       {/* Task Items */}
       <div className="space-y-2">
         {itemsCopy.map((taskItem) => (
-          <div
-            key={taskItem.id}
-            className="bg-white rounded-xl shadow-sm p-3 flex items-center justify-between hover:shadow-md transition-shadow"
-          >
-            <label htmlFor={taskItem.id} className="flex items-center w-full">
-              <input
-                onChange={(e) => handleChecked(e, taskItem)}
-                type="checkbox"
-                value={taskItem.text}
-                checked={taskItem.complete}
-                className="mr-3 h-4 w-4 accent-blue-500"
-              />
-              <p
-                className={`flex-1 ${
-                  taskItem.complete
-                    ? "line-through text-gray-400"
-                    : "text-gray-700"
-                }`}
-              >
-                {taskItem.text}
-              </p>
-            </label>
-            <button
-              onClick={() => removeTaskItem(taskItem)}
-              className="text-gray-400 hover:text-red-500 transition-colors"
-            >
-              <AiFillCloseCircle />
-            </button>
-          </div>
+          <TaskItem
+            taskItem={taskItem}
+            handleChecked={handleChecked}
+            removeTaskItem={removeTaskItem}
+            updateTaskItemText={updateTaskItemText}
+          />
         ))}
       </div>
     </div>
