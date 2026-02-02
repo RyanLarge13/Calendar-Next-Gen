@@ -23,9 +23,10 @@ import DatesContext from "../context/DatesContext.jsx";
 import SuggestCities from "./SuggestCities.jsx";
 
 const Event = ({ dayEvents }) => {
-  const { event, setEvent } = useContext(InteractiveContext);
+  const { event, setEvent, setAddNewEvent, setType, menu, setMenu } =
+    useContext(InteractiveContext);
   const { preferences, setEventMap } = useContext(UserContext);
-  const { dateObj, string } = useContext(DatesContext);
+  const { dateObj, string, setOpenModal, setString } = useContext(DatesContext);
 
   const [timeLeft, setTimeLeft] = useState(null);
   const [width, setWidth] = useState(0);
@@ -35,7 +36,6 @@ const Event = ({ dayEvents }) => {
   const [maximize, setMaximize] = useState(false);
   const [title, setTitle] = useState(event.summary);
   const [description, setDescription] = useState(event.description);
-  const [newAttachments, setNewAttachments] = useState([]);
   const [imageViewer, setImageViewer] = useState({ image: null, show: false });
   const [location, setLocation] = useState(event.location);
 
@@ -295,12 +295,16 @@ const Event = ({ dayEvents }) => {
           filename: file.name,
           content: compressedFileContent,
         };
-        setNewAttachments((prevFiles) => [...prevFiles, newFile]);
         uploadableAttachments.push(newFile);
       } catch (err) {
         console.log(`Error compressing image: ${err}`);
       }
     }
+
+    setFetchedImages((prev) => [
+      ...prev,
+      ...uploadableAttachments.map((img) => img.img),
+    ]);
 
     try {
       const token = localStorage.getItem("authToken");
@@ -308,6 +312,16 @@ const Event = ({ dayEvents }) => {
     } catch (err) {
       console.log(`Error uploading new attachments. Error: ${err}`);
     }
+  };
+
+  const addReminderToEvent = () => {
+    setType("reminder");
+    setString(new Date(event.date).toLocaleDateString());
+    if (menu) {
+      setMenu(false);
+    }
+    setOpenModal(true);
+    setAddNewEvent(true);
   };
 
   return (
@@ -529,7 +543,10 @@ const Event = ({ dayEvents }) => {
               <h3 className="font-semibold flex items-center gap-2">
                 <IoIosAlarm /> Reminder
               </h3>
-              <button className="text-sm font-medium text-cyan-600 hover:underline">
+              <button
+                onClick={addReminderToEvent}
+                className="text-sm font-medium text-cyan-600 hover:underline"
+              >
                 + Add
               </button>
             </div>
@@ -614,7 +631,7 @@ const Event = ({ dayEvents }) => {
                 columnClassName="my-masonry-grid_column-attachments"
               >
                 {/* Map through both newly uploaded attachments and attachments already associated with the event */}
-                {[...fetchedImages, ...newAttachments].map((img) => (
+                {[...fetchedImages].map((img) => (
                   <img
                     key={img}
                     src={img}

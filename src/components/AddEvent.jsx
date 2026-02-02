@@ -351,7 +351,7 @@ const AddEvent = () => {
 
   return (
     <div
-      className={`w-full rounded-2xl border shadow-2xl backdrop-blur-md lg:p-4 sm:p-1 ${
+      className={`w-full rounded-2xl border shadow-2xl backdrop-blur-md lg:p-4 p-1 ${
         preferences.darkMode
           ? "bg-[#161616]/90 text-white border-white/10"
           : "bg-white/90 text-gray-900 border-black/10"
