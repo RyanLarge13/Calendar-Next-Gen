@@ -192,7 +192,7 @@ date String
 color String
 tasks Json
 completed Boolean
-completedDate String
+completedDate? String
 updatedAt DateTime @updatedAt @default(now())
 event Event?   @relation(fields: [eventId], references: [id])
 eventId String?
