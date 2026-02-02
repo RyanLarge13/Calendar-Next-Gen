@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import EditColor from "./editColor";
+import EditColor from "./EditColor";
 import UserContext from "../context/UserContext";
 import { API_UpdateTaskColor, deleteTask } from "../utils/api";
 import { BsShareFill, BsTrashFill } from "react-icons/bs";
@@ -62,7 +62,7 @@ const Task = ({ task }) => {
       await API_UpdateTaskColor(token, task.id, newColor);
 
       setUserTasks((prev) =>
-        prev.map((t) => (t.id === task.id ? { ...t, color: color } : t))
+        prev.map((t) => (t.id === task.id ? { ...t, color: color } : t)),
       );
     } catch (err) {
       console.log("Error updating task color");
