@@ -103,6 +103,38 @@ export const updateTasks = async (req, res) => {
   }
 };
 
+export const updateTaskColor = async (req, res) => {
+  const { taskId, newColor } = req.body;
+
+  if (!taskId) {
+    res.status(401).json({
+      message:
+        "Failed to update task color. Please make sure you are updating a valid task",
+    });
+  }
+
+  if (!newColor) {
+    res.status(401).json({
+      message:
+        "Failed to update task color. Please make sure you are updating with a new color",
+    });
+  }
+
+  try {
+    await prisma.task.update({
+      where: { id: taskId },
+      data: { color: newColor },
+    });
+    res.status(201).json({ message: "Successfully updated task color" });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      message:
+        " There was a problem updating your task color in the database, please try again",
+    });
+  }
+};
+
 export const deleteTask = async (req, res) => {
   const taskId = req.params.taskId;
   try {

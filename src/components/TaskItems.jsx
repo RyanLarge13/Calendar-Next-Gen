@@ -164,8 +164,6 @@ const TaskItems = ({ task }) => {
 
   const updateEventReference = async () => {};
 
-  const updatecolor = async () => {};
-
   const updateDateFor = async () => {};
 
   return (

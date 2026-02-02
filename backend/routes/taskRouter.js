@@ -8,6 +8,7 @@ import {
   updateTasks,
   deleteTask,
   updateTaskTitle,
+  updateTaskColor,
 } from "../controllers/taskController.js";
 
 const taskRouter = express.Router();
@@ -16,6 +17,7 @@ taskRouter.get("/all/tasks", auth, getTasks);
 taskRouter.post("/new/tasks", auth, createTask);
 taskRouter.post("/update/tasks", auth, updateTasks);
 taskRouter.patch("/update/task/title", auth, updateTaskTitle);
+taskRouter.patch("/update/task/color", auth, updateTaskColor);
 taskRouter.delete(
   "/delete/task/:taskId",
   auth,

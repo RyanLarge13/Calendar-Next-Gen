@@ -502,6 +502,17 @@ export const updateTasks = (token, taskUpdates) => {
   return res;
 };
 
+export const API_UpdateTaskColor = (token, taskId, newColor) => {
+  const res = Axios.post(
+    `${productionUrl}/update/task/color`,
+    { taskId, newColor },
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+  return res;
+};
+
 export const deleteTask = (token, taskId) => {
   const res = Axios.delete(`${productionUrl}/delete/task/${taskId}`, {
     headers: { Authorization: `Bearer ${token}` },
