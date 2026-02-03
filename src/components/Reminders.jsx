@@ -8,7 +8,7 @@ import InteractiveContext from "../context/InteractiveContext";
 import Reminder from "./Reminder.jsx";
 
 const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
-  const { reminders } = useContext(UserContext);
+  const { reminders, preferences } = useContext(UserContext);
   const { dateObj, string, setString, setOpenModal } = useContext(DatesContext);
   const { setType, setMenu, setAddNewEvent } = useContext(InteractiveContext);
 

@@ -19,7 +19,7 @@ const Tasks = ({ taskSort, taskSortOpt, taskSearch, taskSearchTxt }) => {
           {
             const newTsks = [...userTasks];
             const sortedTsks = newTsks.sort((a, b) =>
-              a.title.localeCompare(b.title)
+              a.title.localeCompare(b.title),
             );
             setTasksToRender(sortedTsks);
           }
@@ -28,7 +28,7 @@ const Tasks = ({ taskSort, taskSortOpt, taskSearch, taskSearchTxt }) => {
           {
             const newTsks = [...userTasks];
             const sortedTsks = newTsks.sort(
-              (a, b) => a.tasks.length > b.tasks.length
+              (a, b) => a.tasks.length > b.tasks.length,
             );
             setTasksToRender(sortedTsks);
           }
@@ -45,7 +45,7 @@ const Tasks = ({ taskSort, taskSortOpt, taskSearch, taskSearchTxt }) => {
   useEffect(() => {
     if (taskSearch && taskSearchTxt) {
       const newTasks = userTasks.filter((tsk) =>
-        tsk.title.includes(taskSearchTxt)
+        tsk.title.includes(taskSearchTxt),
       );
       setTasksToRender(newTasks);
     } else {
@@ -64,7 +64,7 @@ const Tasks = ({ taskSort, taskSortOpt, taskSearch, taskSearchTxt }) => {
   };
 
   return (
-    <div className="mt-6 px-3 sm:px-6">
+    <div className="mt-6 px-3">
       <div className="mx-auto max-w-6xl">
         {tasksToRender.length < 1 ? (
           <div className="min-h-[55vh] grid place-items-center">
@@ -127,7 +127,7 @@ const Tasks = ({ taskSort, taskSortOpt, taskSearch, taskSearchTxt }) => {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
             {tasksToRender.map((task) => (
               <Task key={task.id} task={task} />
             ))}

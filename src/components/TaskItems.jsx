@@ -11,7 +11,7 @@ import { updateTasks, updateTaskTitle } from "../utils/api";
 import UserContext from "../context/UserContext";
 import TaskItem from "./TaskItem";
 
-const TaskItems = ({ task }) => {
+const TaskItems = ({ task, styles = "" }) => {
   const { setUserTasks } = useContext(UserContext);
 
   const [itemsCopy, setItemsCopy] = useState(task.tasks);
@@ -46,7 +46,7 @@ const TaskItems = ({ task }) => {
       await updateTasks(token, [update]);
 
       setUserTasks((prev) =>
-        prev.map((t) => (t.id === task.id ? { ...t, tasks: newItems } : t))
+        prev.map((t) => (t.id === task.id ? { ...t, tasks: newItems } : t)),
       );
     } catch (err) {
       console.log("Error adding new task item to your task");
@@ -78,7 +78,7 @@ const TaskItems = ({ task }) => {
       await updateTasks(token, [update]);
 
       setUserTasks((prev) =>
-        prev.map((t) => (t.id === task.id ? { ...t, tasks: newItems } : t))
+        prev.map((t) => (t.id === task.id ? { ...t, tasks: newItems } : t)),
       );
     } catch (err) {
       console.log("Error adding new task item to your task");
@@ -100,7 +100,7 @@ const TaskItems = ({ task }) => {
       await updateTasks(token, [newUpdate]);
 
       setUserTasks((prev) =>
-        prev.map((t) => (t.id === task.id ? { ...t, tasks: newTasks } : t))
+        prev.map((t) => (t.id === task.id ? { ...t, tasks: newTasks } : t)),
       );
     } catch (err) {
       console.log("Error updating task items when removing a task");
@@ -124,7 +124,7 @@ const TaskItems = ({ task }) => {
       await updateTaskTitle(task.id, newTitle, token);
       setTitleTracker(newTitle);
       setUserTasks((prev) =>
-        prev.map((t) => (t.id === task.id ? { ...t, title: newTitle } : t))
+        prev.map((t) => (t.id === task.id ? { ...t, title: newTitle } : t)),
       );
     } catch (err) {
       console.log(err);
@@ -154,7 +154,7 @@ const TaskItems = ({ task }) => {
       await updateTasks(token, [update]);
 
       setUserTasks((prev) =>
-        prev.map((t) => (t.id === task.id ? { ...t, tasks: newItems } : t))
+        prev.map((t) => (t.id === task.id ? { ...t, tasks: newItems } : t)),
       );
     } catch (err) {
       console.log("Error adding new task item to your task");
@@ -225,7 +225,7 @@ const TaskItems = ({ task }) => {
       </div>
 
       {/* Task Items */}
-      <div className="space-y-2">
+      <div className={`space-y-2 ${styles}`}>
         {itemsCopy.map((taskItem) => (
           <TaskItem
             taskItem={taskItem}

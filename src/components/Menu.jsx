@@ -5,7 +5,7 @@ import Lists from "./Lists.jsx";
 import Tasks from "./Tasks";
 import Kanbans from "./Kanbans";
 import MainMenu from "./MainMenu";
-import { updateList, updateTasks } from "../utils/api.js";
+import { updateList } from "../utils/api.js";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext.jsx";
 import DatesContext from "../context/DatesContext.jsx";
@@ -13,21 +13,12 @@ import Switch from "./Switch.jsx";
 import StaticStickies from "./StaticStickies.jsx";
 import { formatDbText, formatTime } from "../utils/helpers.js";
 import { MdOutlineOpenInNew } from "react-icons/md";
-import { BiListPlus } from "react-icons/bi";
-import { IoIosAddCircle } from "react-icons/io";
 
 const Menu = () => {
-  const {
-    menu,
-    listUpdate,
-    setListUpdate,
-    showCategory,
-    setMenu,
-  } = useContext(InteractiveContext);
-  const { lists, setLists, userTasks, preferences, setUserTasks, events } =
-    useContext(UserContext);
+  const { menu, listUpdate, setListUpdate, showCategory, setMenu } =
+    useContext(InteractiveContext);
+  const { lists, setLists, preferences, events } = useContext(UserContext);
   const { dateObj } = useContext(DatesContext);
-  const { hideMenuNav } = useContext(InteractiveContext);
 
   const [timeOfDay, setTimeOfDay] = useState(null);
   const [reminderSort, setReminderSort] = useState(false);
@@ -56,7 +47,7 @@ const Menu = () => {
           console.log(err);
           const lastUpdatedId = listUpdate[listUpdate.length - 1].listId;
           const listIndex = lists.findIndex(
-            (list) => list.id === lastUpdatedId
+            (list) => list.id === lastUpdatedId,
           );
           if (listIndex !== -1) {
             const updatedLists = [...lists];
@@ -87,7 +78,7 @@ const Menu = () => {
   const updateClientLists = () => {
     const updatedLists = lists.map((list) => {
       const foundUpdate = listUpdate.find(
-        (update) => update.listId === list.id
+        (update) => update.listId === list.id,
       );
       if (foundUpdate) {
         return { ...list, items: foundUpdate.listItems };
@@ -106,19 +97,6 @@ const Menu = () => {
           exit={{ opacity: 0 }}
           className="fixed inset-0 z-10"
         >
-          {/* Backdrop */}
-          <div
-            onClick={() => {
-              // optional: click outside to close
-              setMenu(false);
-            }}
-            className={`
-          absolute inset-0
-          ${preferences.darkMode ? "bg-black/50" : "bg-black/30"}
-          backdrop-blur-sm
-        `}
-          />
-
           {/* Panel */}
           <motion.div
             initial={{ y: 12, opacity: 0 }}
@@ -129,8 +107,20 @@ const Menu = () => {
           relative mx-auto h-full
           px-3 sm:px-6
           pt-12
-        `}
+          `}
           >
+            {/* Backdrop */}
+            <div
+              onClick={() => {
+                // optional: click outside to close
+                setMenu(false);
+              }}
+              className={`
+          absolute inset-0
+          ${preferences.darkMode ? "bg-black/50" : "bg-black/30"}
+          backdrop-blur-sm
+        `}
+            />
             <div
               className={`
             mx-auto max-w-6xl h-[calc(100vh-5rem)]
@@ -157,14 +147,13 @@ const Menu = () => {
 
                   {/* CATEGORY VIEWS */}
                   {showCategory && (
-                    <div className="pt-2 sm:pt-4">
+                    <div className="">
                       {/* REMINDERS */}
                       {showCategory === "reminder" && (
                         <motion.div
                           initial={{ x: "-6%", opacity: 0 }}
                           exit={{ x: "-6%", opacity: 0 }}
                           animate={{ x: 0, opacity: 1 }}
-                          className="pt-2"
                         >
                           {/* Controls bar */}
                           <div
@@ -223,8 +212,8 @@ const Menu = () => {
                                             ? "bg-cyan-500/15 border-cyan-300/25 text-cyan-100"
                                             : "bg-cyan-50 border-cyan-200 text-slate-800"
                                           : preferences.darkMode
-                                          ? "bg-white/5 border-white/10 text-white/70 hover:bg-white/10"
-                                          : "bg-white border-black/10 text-slate-700 hover:bg-black/[0.02]"
+                                            ? "bg-white/5 border-white/10 text-white/70 hover:bg-white/10"
+                                            : "bg-white border-black/10 text-slate-700 hover:bg-black/[0.02]"
                                       }
                                     `}
                                       >
@@ -271,7 +260,6 @@ const Menu = () => {
                           initial={{ x: "-6%", opacity: 0 }}
                           exit={{ x: "-6%", opacity: 0 }}
                           animate={{ x: 0, opacity: 1 }}
-                          className="pt-2"
                         >
                           <div
                             className={`
@@ -321,8 +309,8 @@ const Menu = () => {
                                           ? "bg-cyan-500/15 border-cyan-300/25 text-cyan-100"
                                           : "bg-cyan-50 border-cyan-200 text-slate-800"
                                         : preferences.darkMode
-                                        ? "bg-white/5 border-white/10 text-white/70 hover:bg-white/10"
-                                        : "bg-white border-black/10 text-slate-700 hover:bg-black/[0.02]"
+                                          ? "bg-white/5 border-white/10 text-white/70 hover:bg-white/10"
+                                          : "bg-white border-black/10 text-slate-700 hover:bg-black/[0.02]"
                                     }
                                   `}
                                     >
@@ -368,7 +356,6 @@ const Menu = () => {
                           initial={{ x: "-6%", opacity: 0 }}
                           exit={{ x: "-6%", opacity: 0 }}
                           animate={{ x: 0, opacity: 1 }}
-                          className="pt-2"
                         >
                           <div
                             className={`
@@ -417,8 +404,8 @@ const Menu = () => {
                                           ? "bg-cyan-500/15 border-cyan-300/25 text-cyan-100"
                                           : "bg-cyan-50 border-cyan-200 text-slate-800"
                                         : preferences.darkMode
-                                        ? "bg-white/5 border-white/10 text-white/70 hover:bg-white/10"
-                                        : "bg-white border-black/10 text-slate-700 hover:bg-black/[0.02]"
+                                          ? "bg-white/5 border-white/10 text-white/70 hover:bg-white/10"
+                                          : "bg-white border-black/10 text-slate-700 hover:bg-black/[0.02]"
                                     }
                                   `}
                                     >
@@ -464,7 +451,6 @@ const Menu = () => {
                           initial={{ x: "-6%", opacity: 0 }}
                           exit={{ x: "-6%", opacity: 0 }}
                           animate={{ x: 0, opacity: 1 }}
-                          className="pt-3"
                         >
                           <Kanbans />
                         </motion.div>
@@ -475,7 +461,7 @@ const Menu = () => {
                           initial={{ x: "-6%", opacity: 0 }}
                           exit={{ x: "-6%", opacity: 0 }}
                           animate={{ x: 0, opacity: 1 }}
-                          className="pt-3 relative"
+                          className="relative"
                         >
                           <StaticStickies />
                         </motion.div>
@@ -487,7 +473,7 @@ const Menu = () => {
                           initial={{ x: "-6%", opacity: 0 }}
                           exit={{ x: "-6%", opacity: 0 }}
                           animate={{ x: 0, opacity: 1 }}
-                          className="pt-3 px-3 sm:px-6"
+                          className="px-3 sm:px-6"
                         >
                           <div className="mx-auto max-w-6xl">
                             {events.length > 0 ? (
@@ -504,7 +490,7 @@ const Menu = () => {
                                   {[...events]
                                     .sort(
                                       (a, b) =>
-                                        new Date(a.date) - new Date(b.date)
+                                        new Date(a.date) - new Date(b.date),
                                     )
                                     .map((event) => (
                                       <div
@@ -569,7 +555,7 @@ const Menu = () => {
 
                                             <div className="mt-3 space-y-1">
                                               {formatDbText(
-                                                event.description || ""
+                                                event.description || "",
                                               ).map((text, index) => (
                                                 <p
                                                   key={index}

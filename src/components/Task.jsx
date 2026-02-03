@@ -4,9 +4,11 @@ import UserContext from "../context/UserContext";
 import { API_UpdateTaskColor, deleteTask } from "../utils/api";
 import { BsShareFill, BsTrashFill } from "react-icons/bs";
 import TaskItems from "./TaskItems";
+import { FaPaintBrush } from "react-icons/fa";
 
 const Task = ({ task }) => {
-  const { preferences, setUserTasks, setSystemNotif } = useContext(UserContext);
+  const { preferences, setUserTasks, userTasks, setSystemNotif } =
+    useContext(UserContext);
 
   const [changeColor, setChangeColor] = useState(false);
   const [color, setColor] = useState(task.color);
@@ -56,14 +58,17 @@ const Task = ({ task }) => {
       return;
     }
 
+    setUserTasks((prev) => {
+      const newTasks = prev.map((t) =>
+        t.id === task.id ? { ...t, color: color } : t,
+      );
+      return newTasks;
+    });
+
     try {
       const token = localStorage.getItem("authToken");
 
-      await API_UpdateTaskColor(token, task.id, newColor);
-
-      setUserTasks((prev) =>
-        prev.map((t) => (t.id === task.id ? { ...t, color: color } : t)),
-      );
+      await API_UpdateTaskColor(token, task.id, color);
     } catch (err) {
       console.log("Error updating task color");
       console.log(err);
@@ -89,7 +94,7 @@ const Task = ({ task }) => {
       ) : null}
 
       {/* Accent strip (task.color used tastefully) */}
-      <div className={`${task.color} absolute left-0 top-0 bottom-0 w-2`} />
+      <div className={`${color} absolute left-0 top-0 bottom-0 w-2`} />
 
       {/* Card header */}
       <div
@@ -140,7 +145,7 @@ const Task = ({ task }) => {
                   `}
             aria-label="Change color"
           >
-            <p>paint icon</p>
+            <FaPaintBrush />
           </button>
 
           <button
@@ -173,7 +178,10 @@ const Task = ({ task }) => {
                   }
                 `}
         >
-          <TaskItems task={task} />
+          <TaskItems
+            task={task}
+            styles={"max-h-80 overflow-y-auto scrollbar-hide"}
+          />
         </div>
       </div>
     </div>

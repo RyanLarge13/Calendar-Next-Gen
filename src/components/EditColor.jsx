@@ -1,11 +1,15 @@
+import { useContext } from "react";
 import { colors } from "../constants";
 import Color from "./Color";
+import UserContext from "../context/UserContext";
 
 const EditColor = ({ save, color, setColor }) => {
+  const { preferences } = useContext(UserContext);
+
   return (
     <div
       className={`
-        absolute bottom-[110%] left-0 z-50
+        absolute top-0 left-0 z-[999]
         rounded-2xl border shadow-xl p-3
         max-w-[280px]
         ${

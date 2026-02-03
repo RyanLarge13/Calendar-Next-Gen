@@ -228,7 +228,7 @@ const Event = ({ dayEvents }) => {
       return;
     }
 
-    if (inputChanges.location.string === newLocationObject.string) {
+    if (inputChanges?.location?.string === newLocationObject.string) {
       return;
     }
 
@@ -503,7 +503,7 @@ const Event = ({ dayEvents }) => {
                 <div className="flex gap-3 text-gray-500">
                   <button
                     onClick={() =>
-                      updateLocation({ address: "", coordinates: null })
+                      updateLocation({ string: "", coordinates: null })
                     }
                     className="hover:text-red-500 transition"
                   >

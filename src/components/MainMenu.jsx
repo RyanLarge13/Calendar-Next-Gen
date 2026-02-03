@@ -36,7 +36,7 @@ const Dashboard = ({ timeOfDay }) => {
   useEffect(() => {
     const todaysReminders = reminders.filter(
       (r) =>
-        new Date(r.time).toLocaleDateString() === theDay.toLocaleDateString()
+        new Date(r.time).toLocaleDateString() === theDay.toLocaleDateString(),
     );
 
     setTodaysReminders(todaysReminders);
@@ -489,55 +489,18 @@ const Dashboard = ({ timeOfDay }) => {
               </p>
 
               {userTasks?.length > 0 ? (
-                <TaskItems task={userTasks[0]} />
+                <div
+                  className={`
+                  rounded-2xl p-2 border shadow-sm overflow-hidden
+                  ${preferences.darkMode ? "border-white/10 bg-white/5" : "border-black/10 bg-white"}
+                `}
+                >
+                  <TaskItems
+                    task={userTasks[0]}
+                    styles={"p-2 max-h-64 overflow-y-auto scrollbar-hide"}
+                  />
+                </div>
               ) : (
-                //   <div
-                //     className={`
-                //   rounded-2xl border shadow-sm overflow-hidden
-                //   ${preferences.darkMode ? "border-white/10 bg-white/5" : "border-black/10 bg-white"}
-                // `}
-                //   >
-                //     <div className="p-4 flex items-start justify-between gap-3">
-                //       <div className="min-w-0">
-                //         <p className="text-sm font-semibold truncate">
-                //           {userTasks[0].title}
-                //         </p>
-                //         <p
-                //           className={`text-xs mt-1 ${preferences.darkMode ? "text-white/60" : "text-slate-500"}`}
-                //         >
-                //           Completed:{" "}
-                //           {userTasks[0].tasks.filter((t) => t.completed).length} •
-                //           Remaining:{" "}
-                //           {userTasks[0].tasks.filter((t) => !t.completed).length}
-                //         </p>
-                //       </div>
-                //       <span
-                //         className={`${userTasks[0].color} h-3.5 w-3.5 rounded-full ring-1 ring-black/10`}
-                //       />
-                //     </div>
-
-                //     <div
-                //       className={`border-t ${preferences.darkMode ? "border-white/10" : "border-black/10"}`}
-                //     />
-
-                //     <div className="p-2 max-h-48 overflow-y-auto scrollbar-hide">
-                //       {userTasks[0].tasks
-                //         .filter((t) => !t.completed)
-                //         .map((taskItem) => (
-                //           <div
-                //             key={taskItem.id}
-                //             className={`
-                //           rounded-2xl border px-4 py-3 my-2 shadow-sm
-                //           ${preferences.darkMode ? "border-white/10 bg-white/5" : "border-black/10 bg-white"}
-                //         `}
-                //           >
-                //             <p className="text-sm font-semibold">
-                //               {taskItem.text}
-                //             </p>
-                //           </div>
-                //         ))}
-                //     </div>
-                //   </div>
                 <p
                   className={`text-sm ${
                     preferences.darkMode ? "text-white/55" : "text-slate-500"

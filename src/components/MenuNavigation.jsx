@@ -23,11 +23,11 @@ const MenuNavigation = () => {
   return (
     <motion.div
       initial={{ y: "-110%" }}
-      animate={hideMenuNav ? { y: "-75%" } : { y: 0 }}
+      animate={hideMenuNav ? { y: "-70%" } : { y: 0 }}
       transition={{ type: "spring", stiffness: 260, damping: 28 }}
       className={`
     fixed top-0 left-0 right-0 z-20
-    px-3 pt-3 pb-10
+    px-3 pt-3 pb-20
     ${preferences.darkMode ? "text-white" : "text-slate-900"}
   `}
     >
@@ -35,7 +35,7 @@ const MenuNavigation = () => {
       <div
         className={`
       relative mx-auto max-w-2xl
-      rounded-3xl border shadow-2xl backdrop-blur-md
+      rounded-3xl border pb-5 shadow-2xl backdrop-blur-md
       ${preferences.darkMode ? "bg-[#161616]/90 border-white/10" : "bg-white/90 border-black/10"}
     `}
       >

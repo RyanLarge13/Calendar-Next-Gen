@@ -29,13 +29,13 @@ const UserContext = createContext({});
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(false);
   const [authToken, setAuthToken] = useState(
-    localStorage.getItem("authToken") || false
+    localStorage.getItem("authToken") || false,
   );
   const [events, setEvents] = useState([]);
   const [staticEvents, setStaticEvents] = useState([]);
   const [googleEvents, setGoogleEvents] = useState([]);
   const [preferences, setPreferences] = useState(
-    JSON.parse(localStorage.getItem("preferences")) || {}
+    JSON.parse(localStorage.getItem("preferences")) || {},
   );
   const [upcoming, setUpcoming] = useState([]);
   const [refresh, setRefresh] = useState(false);
@@ -66,14 +66,14 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     const handleSWMessage = (event) => {
       console.log(
-        `Message from service worker to client, type: ${event.data.type}`
+        `Message from service worker to client, type: ${event.data.type}`,
       );
       if (event.data && event.data.type === "user-cache-update") {
         getUserDataFresh()
           .then((res) => {
             if (res.status !== 200) {
               throw new Error(
-                `No cache in service worker. Response status: ${res.status}`
+                `No cache in service worker. Response status: ${res.status}`,
               );
             }
             return res;
@@ -106,14 +106,14 @@ export const UserProvider = ({ children }) => {
       .filter((event) => {
         const eventDate = new Date(event.startDate);
         const diff = Math.ceil(
-          (eventDate - currentDate) / (25 * 60 * 60 * 1000)
+          (eventDate - currentDate) / (25 * 60 * 60 * 1000),
         );
         return diff >= 0 && diff <= 8;
       })
       .map((event) => ({
         ...event,
         diff: Math.ceil(
-          (new Date(event.startDate) - currentDate) / (25 * 60 * 60 * 1000)
+          (new Date(event.startDate) - currentDate) / (25 * 60 * 60 * 1000),
         ),
       }))
       .sort((a, b) => a.diff - b.diff);
@@ -218,9 +218,6 @@ export const UserProvider = ({ children }) => {
     // const newMapDays = new Map();
     const allEvents = eventsToMap.concat(holidays);
 
-    console.log("Here are all of the events the user has to store in the map");
-    console.log(allEvents);
-
     allEvents.forEach((evt) => {
       const date = new Date(evt.date);
       const key = `${date.getFullYear()}-${date.getMonth()}`;
@@ -291,7 +288,7 @@ export const UserProvider = ({ children }) => {
     if (user.notifSub?.length > 0 && user.notifSub !== null) {
       checkSubscription().then((sub) => {
         const userHasSub = user.notifSub.some(
-          (item) => JSON.parse(item).endpoint === sub.endpoint
+          (item) => JSON.parse(item).endpoint === sub.endpoint,
         );
         if (userHasSub) {
           send(authToken, user.id);
@@ -303,7 +300,7 @@ export const UserProvider = ({ children }) => {
               localStorage.setItem("authToken", newUserRes.data.token);
               localStorage.setItem(
                 "user",
-                JSON.stringify(newUserRes.data.user)
+                JSON.stringify(newUserRes.data.user),
               );
               send(newUserRes.data.token, newUserRes.data.user.id);
             })
@@ -340,17 +337,17 @@ export const UserProvider = ({ children }) => {
     buildEventsMap(user.events);
     setStaticEvents(user.events);
     const sortedReminders = user.reminders.sort(
-      (a, b) => new Date(a.time) - new Date(b.time)
+      (a, b) => new Date(a.time) - new Date(b.time),
     );
     setReminders(sortedReminders);
     const sortedLists = user.lists.sort(
-      (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+      (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt),
     );
     const sortedTasks = user.tasks.sort(
-      (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+      (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt),
     );
     const sortedStickies = user.stickies.sort(
-      (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+      (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt),
     );
     setLists(sortedLists);
     setKanbans(user.kanbans);
@@ -367,7 +364,6 @@ export const UserProvider = ({ children }) => {
       getUserData(authToken)
         .then((res) => {
           const user = res.data.user;
-          console.log("Fetched user data from server")
           updateUI(user, true);
         })
         .catch((err) => {
@@ -376,7 +372,7 @@ export const UserProvider = ({ children }) => {
       registerServiceWorkerSync();
     }
     if (!authToken && user) {
-      console.log("No token user there")
+      console.log("No token user there");
       localStorage.removeItem("authToken");
       localStorage.removeItem("user");
       localDB.removeAuth();
@@ -420,7 +416,7 @@ export const UserProvider = ({ children }) => {
     } catch (err) {
       console.error(
         "Error getting service worker registration after calling request and subscribe:",
-        err
+        err,
       );
     }
   };
@@ -434,7 +430,7 @@ export const UserProvider = ({ children }) => {
       getNotificationsAtStart(user.username, token)
         .then((res) => {
           console.log(
-            "Get notifications at start returned a success. Setting notifications"
+            "Get notifications at start returned a success. Setting notifications",
           );
           const oldNotifs = res.data.notifs;
           const sortedOldNotifs = oldNotifs.sort((a, b) => b.time - a.time);
@@ -443,7 +439,7 @@ export const UserProvider = ({ children }) => {
         })
         .catch((err) => {
           console.log(
-            "Getting notifications at start failed inside send funciton"
+            "Getting notifications at start failed inside send funciton",
           );
           console.log(err);
         });
@@ -499,7 +495,7 @@ export const UserProvider = ({ children }) => {
   const markAsReadClient = (notifId) => {
     setNotifications((prevNotifs) => {
       const updated = prevNotifs.map((notif) =>
-        notif.id === notifId ? { ...notif, read: true } : notif
+        notif.id === notifId ? { ...notif, read: true } : notif,
       );
       const sorted = updated.sort((a, b) => b.time - a.time);
       return sorted;

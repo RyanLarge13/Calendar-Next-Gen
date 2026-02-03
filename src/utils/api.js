@@ -6,7 +6,7 @@ const productionUrl = "https://calendar-next-gen-production.up.railway.app";
 
 export const API_GetWeather = (long, lat, timeZone) => {
   const res = Axios.get(
-    `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${long}&hourly=temperature_2m,relativehumidity_2m,apparent_temperature,precipitation_probability,weathercode,windspeed_10m,winddirection_10m,windgusts_10m,temperature_80m&daily=windspeed_10m_max,uv_index_max,weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset,precipitation_probability_mean,precipitation_sum&current_weather=true&temperature_unit=fahrenheit&windspeed_unit=mph&precipitation_unit=inch&timezone=${timeZone}`
+    `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${long}&hourly=temperature_2m,relativehumidity_2m,apparent_temperature,precipitation_probability,weathercode,windspeed_10m,winddirection_10m,windgusts_10m,temperature_80m&daily=windspeed_10m_max,uv_index_max,weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset,precipitation_probability_mean,precipitation_sum&current_weather=true&temperature_unit=fahrenheit&windspeed_unit=mph&precipitation_unit=inch&timezone=${timeZone}`,
   );
   return res;
 };
@@ -14,7 +14,7 @@ export const API_GetWeather = (long, lat, timeZone) => {
 const APIkey = "e942f755a159eeb9a8cff56a595afac5";
 export const API_GetLocation = (lon, lat, limit) => {
   const res = Axios.get(
-    `https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=${limit}&appid=${APIkey}`
+    `https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=${limit}&appid=${APIkey}`,
   );
   return res;
 };
@@ -41,7 +41,7 @@ export const getGoogleData = async (token) => {
         Authorization: `Bearer ${token}`,
         Accept: "application/json",
       },
-    }
+    },
   );
   return res;
 };
@@ -61,7 +61,7 @@ export const loginWithGoogle = async (user) => {
       headers: {
         "Content-Type": "application/json",
       },
-    }
+    },
   );
   return res;
 };
@@ -91,7 +91,7 @@ export const getGoogleCalendarEvents = async (authToken, accessToken) => {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
-    }
+    },
   );
   return res;
 };
@@ -122,7 +122,7 @@ export const postEvent = (event, token) => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }
+    },
   );
   return res;
 };
@@ -131,7 +131,7 @@ export const updateStartAndEndTimeOnEvent = async (eventId, offset, token) => {
   const res = Axios.patch(
     `${productionUrl}/patch/event/startendtime`,
     { eventId, offset },
-    { headers: { Authorization: `Bearer ${token}` } }
+    { headers: { Authorization: `Bearer ${token}` } },
   );
   return res;
 };
@@ -143,7 +143,7 @@ export const API_UpdateEventTitle = (eventId, title, token) => {
       newTitle: title,
       eventId,
     },
-    { headers: { Authorization: `Bearer ${token}` } }
+    { headers: { Authorization: `Bearer ${token}` } },
   );
   return res;
 };
@@ -155,7 +155,7 @@ export const API_UpdateEventDesc = (eventId, newDesc, token) => {
       newDesc,
       eventId,
     },
-    { headers: { Authorization: `Bearer ${token}` } }
+    { headers: { Authorization: `Bearer ${token}` } },
   );
   return res;
 };
@@ -170,7 +170,7 @@ export const API_UpdateEventLocation = (eventId, location, token) => {
       newCoords,
       eventId,
     },
-    { headers: { Authorization: `Bearer ${token}` } }
+    { headers: { Authorization: `Bearer ${token}` } },
   );
   return res;
 };
@@ -179,7 +179,7 @@ export const updateReminderNotes = (reminderId, newDesc, token) => {
   const res = Axios.patch(
     `${productionUrl}/update/reminder/notes`,
     { reminderId: reminderId, newDesc: newDesc },
-    { headers: { Authorization: `Bearer ${token}` } }
+    { headers: { Authorization: `Bearer ${token}` } },
   );
   return res;
 };
@@ -188,7 +188,7 @@ export const updateReminderTitle = (reminderId, newTitle, token) => {
   const res = Axios.patch(
     `${productionUrl}/update/reminder/title`,
     { reminderId: reminderId, newTitle: newTitle },
-    { headers: { Authorization: `Bearer ${token}` } }
+    { headers: { Authorization: `Bearer ${token}` } },
   );
   return res;
 };
@@ -197,7 +197,7 @@ export const createAttachments = (attachments, eventId, token) => {
   const res = Axios.post(
     `${productionUrl}/new/attachments/${eventId}`,
     { attachments },
-    { headers: { Authorization: `Bearer ${token}` } }
+    { headers: { Authorization: `Bearer ${token}` } },
   );
   return res;
 };
@@ -209,7 +209,7 @@ export const deleteEvent = (username, eventId, token) => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }
+    },
   );
   return res;
 };
@@ -221,7 +221,7 @@ export const deleteRepeats = (username, eventId, eventParentId, token) => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }
+    },
   );
   return res;
 };
@@ -250,7 +250,7 @@ export const updateReminderComplete = (reminderInfo, token) => {
   const res = Axios.patch(
     `${productionUrl}/update/reminder/complete`,
     { reminder: reminderInfo },
-    { headers: { Authorization: `Bearer ${token}` } }
+    { headers: { Authorization: `Bearer ${token}` } },
   );
   return res;
 };
@@ -263,7 +263,7 @@ export const addReminder = (reminder, token) => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }
+    },
   );
   return res;
 };
@@ -273,7 +273,7 @@ export const deleteReminder = (username, reminderId, token) => {
     `${productionUrl}/${username}/delete/reminder/${reminderId}`,
     {
       headers: { Authorization: `Bearer ${token}` },
-    }
+    },
   );
   return res;
 };
@@ -317,7 +317,7 @@ export const requestAndSubscribe = async (token) => {
               body: JSON.stringify(subscription),
             });
           });
-      }
+      },
     );
     return subscribeFunction;
   } else {
@@ -341,7 +341,7 @@ export const checkSubscription = () => {
             throw new Error("Permission denied for notifications");
           }
         });
-      }
+      },
     );
     return subscriptionCheck;
   }
@@ -355,7 +355,7 @@ export const addSubscriptionToUser = (sub, token) => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }
+    },
   );
   return response;
 };
@@ -364,14 +364,14 @@ export const createNotification = (newNotif, token) => {
   const res = Axios.post(
     `${productionUrl}/new/notification`,
     { notification: newNotif },
-    { headers: { Authorization: `Bearer ${token}` } }
+    { headers: { Authorization: `Bearer ${token}` } },
   );
   return res;
 };
 
 export const getNotifications = (userId) => {
   const eventSource = new EventSource(
-    `${productionUrl}/${userId}/notifications`
+    `${productionUrl}/${userId}/notifications`,
   );
   return eventSource;
 };
@@ -384,7 +384,7 @@ export const updateNotification = (idArray, token, username) => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }
+    },
   );
   return res;
 };
@@ -426,7 +426,7 @@ export const createNewList = (token, username, newList) => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }
+    },
   );
   return res;
 };
@@ -435,7 +435,7 @@ export const updateListTitle = (listId, newTitle, token) => {
   const res = Axios.patch(
     `${productionUrl}/update/list/title`,
     { listId, newTitle },
-    { headers: { Authorization: `Bearer ${token}` } }
+    { headers: { Authorization: `Bearer ${token}` } },
   );
   return res;
 };
@@ -450,7 +450,7 @@ export const updateList = (token, listUpdate) => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }
+    },
   );
   return res;
 };
@@ -470,7 +470,7 @@ export const updateTaskTitle = (taskId, newTitle, token) => {
   const res = Axios.patch(
     `${productionUrl}/update/task/title`,
     { newTitle, taskId },
-    { headers: { Authorization: `Bearer ${token}` } }
+    { headers: { Authorization: `Bearer ${token}` } },
   );
   return res;
 };
@@ -486,7 +486,7 @@ export const createTask = (token, task) => {
   const res = Axios.post(
     `${productionUrl}/new/tasks`,
     { task },
-    { headers: { Authorization: `Bearer ${token}` } }
+    { headers: { Authorization: `Bearer ${token}` } },
   );
   return res;
 };
@@ -497,18 +497,18 @@ export const updateTasks = (token, taskUpdates) => {
     { taskUpdates },
     {
       headers: { Authorization: `Bearer ${token}` },
-    }
+    },
   );
   return res;
 };
 
 export const API_UpdateTaskColor = (token, taskId, newColor) => {
-  const res = Axios.post(
+  const res = Axios.patch(
     `${productionUrl}/update/task/color`,
     { taskId, newColor },
     {
       headers: { Authorization: `Bearer ${token}` },
-    }
+    },
   );
   return res;
 };
@@ -538,7 +538,7 @@ export const sendFriendRequestByEmail = (userEmail, token) => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }
+    },
   );
   return res;
 };
@@ -547,7 +547,7 @@ export const acceptFriendRequest = (token, requestEmail) => {
   const res = Axios.post(
     `${productionUrl}/friends/accept/request`,
     { requestEmail: requestEmail },
-    { headers: { Authorization: `Bearer ${token}` } }
+    { headers: { Authorization: `Bearer ${token}` } },
   );
   return res;
 };
@@ -555,7 +555,7 @@ export const acceptFriendRequest = (token, requestEmail) => {
 export const cancelAFriendRequest = (token, recipientsEmail) => {
   const res = Axios.delete(
     `${productionUrl}/friends/cancel/request/email/${recipientsEmail}`,
-    { headers: { Authorization: `Bearer ${token}` } }
+    { headers: { Authorization: `Bearer ${token}` } },
   );
   return res;
 };
@@ -570,7 +570,7 @@ export const createNewKanban = (token, kanban) => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }
+    },
   );
   return res;
 };
@@ -581,7 +581,7 @@ export const addNewSticky = (token, sticky) => {
   const res = Axios.post(
     `${productionUrl}/add/sticky`,
     { sticky },
-    { headers: { Authorization: `Bearer ${token}` } }
+    { headers: { Authorization: `Bearer ${token}` } },
   );
   return res;
 };
@@ -590,7 +590,7 @@ export const updateSticky = (token, stickyId, stickyHtml) => {
   const res = Axios.put(
     `${productionUrl}/update/sticky`,
     { stickyId: stickyId, stickyHtml: stickyHtml },
-    { headers: { Authorization: `Bearer ${token}` } }
+    { headers: { Authorization: `Bearer ${token}` } },
   );
   return res;
 };
@@ -608,7 +608,7 @@ export const updateStickyView = (token, stickyId, newView) => {
   const res = Axios.put(
     `${productionUrl}/update/sticky/view`,
     { stickyId: stickyId, newView: newView },
-    { headers: { Authorization: `Bearer ${token}` } }
+    { headers: { Authorization: `Bearer ${token}` } },
   );
   return res;
 };
