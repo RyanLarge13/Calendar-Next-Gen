@@ -2,9 +2,9 @@ import { useState, useEffect, useContext } from "react";
 import { motion } from "framer-motion";
 import { colors } from "../constants";
 import { getTimeZone } from "../utils/helpers";
-import { MdLocationPin, MdFreeCancellation, MdClose } from "react-icons/md";
+import { MdLocationPin, MdFreeCancellation } from "react-icons/md";
 import { BsFillCalendarPlusFill } from "react-icons/bs";
-import { AiFillCloseCircle, AiFillInfoCircle } from "react-icons/ai";
+import { AiFillCloseCircle } from "react-icons/ai";
 import { FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";
 import { RiGalleryUploadFill } from "react-icons/ri";
@@ -21,6 +21,7 @@ import Color from "./Color";
 import Toggle from "./Toggle";
 import TimeSetter from "./TimeSetter";
 import SuggestCities from "./SuggestCities";
+import NewReminder from "./AddEvent/NewReminder.jsx";
 
 const AddEvent = () => {
   const {
@@ -51,12 +52,12 @@ const AddEvent = () => {
     coordinates: null,
   });
   // reminders
-  const [reminder, setReminder] = useState(false);
+  const [reminderOn, setReminderOn] = useState(false);
+  const [newReminders, setNewReminders] = useState([]);
   const [reminderTimeString, setReminderTimeString] = useState("");
   const [when, setWhen] = useState(null);
   const [onlyNotify, setOnlyNotify] = useState(false);
-  const [multiReminders, setMultiReminders] = useState([]);
-  const [addAnother, setAddAnother] = useState(false);
+  const [showTimerPicker, setShowTimePicker] = useState(false);
   // repeats
   const [repeat, setRepeat] = useState(false);
   const [howOften, setHowOften] = useState(false);
@@ -186,11 +187,8 @@ const AddEvent = () => {
         nextDate: null,
         attachmentLength: attachments.length,
         reminders: {
-          reminder,
-          multiReminders: reminder ? multiReminders : [],
-          reminderTimeString: reminder ? reminderTimeString : null,
-          when: reminder ? when : null,
-          onlyNotify: onlyNotify,
+          reminder: reminderOn,
+          remindersToSave: newReminders,
         },
         repeats: {
           repeat,
@@ -287,11 +285,6 @@ const AddEvent = () => {
     return true;
   };
 
-  const formatDescText = (text) => {
-    const formattedText = text.replace(/\n/g, "|||");
-    return formattedText;
-  };
-
   const handleFileChange = async (event) => {
     const newFiles = [...event.target.files];
     for (const file of newFiles) {
@@ -333,20 +326,15 @@ const AddEvent = () => {
     setAttachments(newFiles);
   };
 
-  let newMultiReminder = {};
-  const setAnotherWhen = (when, iteration) => {
-    const realTime = when();
-    if (iteration === 1) {
-      newMultiReminder.time = realTime;
-    }
-    if (iteration === 2) {
-      newMultiReminder.when = realTime;
-      const newMultiReminders = [...multiReminders, newMultiReminder];
-      newMultiReminders.sort((a, b) => new Date(a.when) - new Date(b.when));
-      setMultiReminders(newMultiReminders);
-      setAddAnother(false);
-      newMultiReminder = {};
-    }
+  const addReminderToList = (newTimeString) => {
+    setShowTimePicker(false);
+    const newReminder = {
+      id: uuidv4(),
+      onlyNotify: false,
+      time: newTimeString,
+    };
+
+    setNewReminders((prev) => [...prev, newReminder]);
   };
 
   return (
@@ -552,103 +540,36 @@ const AddEvent = () => {
                 <p className="text-xs opacity-70">Get notified ahead of time</p>
               </div>
             </div>
-            <Toggle condition={reminder} setCondition={setReminder} />
+            <Toggle condition={reminderOn} setCondition={setReminderOn} />
           </div>
 
-          {reminder && (
+          {reminderOn && (
             <div className="mt-4">
-              {!when ? (
+              <button
+                onClick={() => setShowTimePicker(true)}
+                className={`rounded-2xl px-4 py-2 text-sm font-semibold shadow-sm transition active:scale-95 ${
+                  preferences.darkMode
+                    ? "bg-white/10 text-white border border-white/10 hover:bg-white/15"
+                    : "bg-black/[0.03] text-black border border-black/10 hover:bg-black/[0.06]"
+                }`}
+              >
+                Add +
+              </button>
+              {showTimerPicker ? (
                 <TimeSetter
                   setDateTime={setWhen}
                   setDateTimeString={setReminderTimeString}
-                  openTimeSetter={setReminder}
+                  openTimeSetter={addReminderToList}
                 />
-              ) : (
-                <>
-                  <div className="mt-3 flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-sm font-medium">
-                      <AiFillInfoCircle />
-                      <span>Only notify</span>
-                    </div>
-                    <Toggle
-                      condition={onlyNotify}
-                      setCondition={setOnlyNotify}
-                    />
-                  </div>
-
-                  <div className="mt-3 space-y-2">
-                    <p
-                      style={{ color: tailwindBgToHex(color) }}
-                      className={`${color} inline-flex items-center rounded-xl border border-black/10 px-3 py-1 text-xs font-semibold shadow-sm`}
-                    >
-                      {reminderTimeString}
-                    </p>
-
-                    <button
-                      className="text-xs font-semibold text-white rounded-xl px-3 py-1.5 bg-gradient-to-tr from-red-500 to-rose-500 shadow-sm hover:brightness-110 active:scale-95 transition"
-                      onClick={() => {
-                        if (multiReminders.length > 0) {
-                          setReminderTimeString(multiReminders[0].time);
-                          setWhen(multiReminders[0].time);
-                          setMultiReminders((prev) =>
-                            prev.filter((r, i) => i !== 0),
-                          );
-                        } else {
-                          setWhen(null);
-                          setReminder(false);
-                        }
-                      }}
-                    >
-                      Delete
-                    </button>
-                  </div>
-
-                  {multiReminders.length > 0 &&
-                    multiReminders.map((reminder, index) => (
-                      <div key={index} className="mt-3 space-y-2">
-                        <p
-                          style={{ color: tailwindBgToHex(color) }}
-                          className={`${color} inline-flex items-center rounded-xl border border-black/10 px-3 py-1 text-xs font-semibold shadow-sm`}
-                        >
-                          {reminder.time}
-                        </p>
-                        <button
-                          className="text-xs font-semibold text-white rounded-xl px-3 py-1.5 bg-gradient-to-tr from-red-500 to-rose-500 shadow-sm hover:brightness-110 active:scale-95 transition"
-                          onClick={() => {
-                            setMultiReminders((prev) =>
-                              prev.filter((a, i) => i !== index),
-                            );
-                          }}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    ))}
-
-                  {addAnother && (
-                    <TimeSetter
-                      setDateTime={(newWhen) => setAnotherWhen(newWhen, 2)}
-                      setDateTimeString={(newTimeString) =>
-                        setAnotherWhen(newTimeString, 1)
-                      }
-                      openTimeSetter={setAddAnother}
-                    />
-                  )}
-
-                  <div className="mt-4">
-                    <button
-                      onClick={() => setAddAnother(true)}
-                      className={`rounded-2xl px-4 py-2 text-sm font-semibold shadow-sm transition active:scale-95 ${
-                        preferences.darkMode
-                          ? "bg-white/10 text-white border border-white/10 hover:bg-white/15"
-                          : "bg-black/[0.03] text-black border border-black/10 hover:bg-black/[0.06]"
-                      }`}
-                    >
-                      Add Another
-                    </button>
-                  </div>
-                </>
-              )}
+              ) : null}
+              {newReminders.map((r) => (
+                <NewReminder
+                  key={r.id}
+                  r={r}
+                  color={color}
+                  setNewReminders={setNewReminders}
+                />
+              ))}
             </div>
           )}
         </div>

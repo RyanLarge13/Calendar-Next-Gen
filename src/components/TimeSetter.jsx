@@ -42,7 +42,7 @@ const TimeSetter = ({ setDateTime, setDateTimeString, openTimeSetter }) => {
           preferences.darkMode ? "bg-[#222] text-white" : "bg-white text-black"
         }`}
       >
-        <button onClick={() => openTimeSetter(false)}>close</button>
+        <button onClick={() => openTimeSetter()}>close</button>
         <button
           onClick={() => {
             setDateTime(null);
@@ -58,7 +58,7 @@ const TimeSetter = ({ setDateTime, setDateTimeString, openTimeSetter }) => {
         onChange={(newValue) => setValue(newValue)}
         onAccept={(ISODate) => calcValues(ISODate)}
         className=""
-        //onClose={() => openTimeSetter(false)}
+        onClose={() => openTimeSetter()}
       />
     </motion.div>
   );

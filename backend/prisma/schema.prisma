@@ -94,7 +94,7 @@ categoryId String?
 parentEvent Event?    @relation("ChildEvents", fields: [parentId], references: [id])
 childEvents Event[]   @relation("ChildEvents")
 
-@@index([id], name: "eventIdIndex")
+@@unique([id, userId])
 @@index([userId], name: "userIdRefIndex")
 }
 
@@ -142,10 +142,12 @@ groupId String?
 notification Notification[]
 eventRef Event?   @relation(fields: [eventRefId], references: [id], onDelete: Cascade)
 eventRefId String?
+eventUserId String?
 User User     @relation(fields: [userId], references: [id])
 userId String
 
 @@index([userId], name: "userReminderIndex")
+@@index([eventRefId, eventUserId])
 }
 
 
