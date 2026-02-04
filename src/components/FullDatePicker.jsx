@@ -10,21 +10,9 @@ import DatesContext from "../context/DatesContext";
 import UserContext from "../context/UserContext";
 
 const FullDatePicker = ({ stateSetter }) => {
-  const { setShowFullDatePicker, setAddNewEvent, setType } =
-    useContext(InteractiveContext);
+  const { setShowFullDatePicker } = useContext(InteractiveContext);
   const { preferences } = useContext(UserContext);
-  const {
-    setUpdatedDate,
-    setNav,
-    nav,
-    secondString,
-    setOpenModal,
-    setSecondString,
-    month,
-    year,
-    day,
-    daysInMonth,
-  } = useContext(DatesContext);
+  const { month, year, day, daysInMonth } = useContext(DatesContext);
 
   const [newYear, setNewYear] = useState(null);
   const [newMonth, setNewMonth] = useState(null);
@@ -34,7 +22,7 @@ const FullDatePicker = ({ stateSetter }) => {
   const scrollYearRef = useRef(null);
   const scrollDayRef = useRef(null);
   const [daysThisMonth, setDaysThisMonth] = useState(
-    Array.from({ length: daysInMonth }, (_, index) => index)
+    Array.from({ length: daysInMonth }, (_, index) => index),
   );
   let debounceDayTimeout;
   let debounceMonthTimeout;
@@ -79,7 +67,7 @@ const FullDatePicker = ({ stateSetter }) => {
       const closestIndex = Math.round(scrollPosition / itemHeight);
       const lastIndex = staticMonths.length - 1;
       const clampedIndex = Math.round(
-        Math.min(Math.max(closestIndex, 0), lastIndex)
+        Math.min(Math.max(closestIndex, 0), lastIndex),
       );
       const targetScrollPosition = clampedIndex * itemHeight;
       scrollMonthRef.current.scrollTo({
@@ -118,7 +106,7 @@ const FullDatePicker = ({ stateSetter }) => {
       const closestIndex = Math.round(scrollPosition / itemHeight);
       const lastIndex = staticYears.length - 1;
       const clampedIndex = Math.round(
-        Math.min(Math.max(closestIndex, 0), lastIndex)
+        Math.min(Math.max(closestIndex, 0), lastIndex),
       );
       const targetScrollPosition = clampedIndex * itemHeight;
       scrollYearRef.current.scrollTo({
@@ -162,7 +150,7 @@ const FullDatePicker = ({ stateSetter }) => {
       const closestIndex = Math.round(scrollPosition / itemHeight);
       const lastIndex = daysThisMonth.length - 1;
       const clampedIndex = Math.round(
-        Math.min(Math.max(closestIndex, 0), lastIndex)
+        Math.min(Math.max(closestIndex, 0), lastIndex),
       );
       const targetScrollPosition = clampedIndex * itemHeight;
       scrollDayRef.current.scrollTo({

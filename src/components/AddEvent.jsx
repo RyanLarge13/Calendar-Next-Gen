@@ -228,7 +228,7 @@ const AddEvent = () => {
           });
 
           if (res.data.reminders) {
-            setReminders((prev) => [...prev, res.data.reminders]);
+            setReminders((prev) => [...prev, ...res.data.reminders]);
           }
           setAddNewEvent(false);
           setType(null);
@@ -324,15 +324,66 @@ const AddEvent = () => {
     setAttachments(newFiles);
   };
 
-  const addReminderToList = (newTimeString) => {
+  const makeDateTime = (hour, minute, meridiem) => {
+    // Parse date parts
+    const [month, day, year] = string.split("/").map(Number);
+
+    // Convert 2-digit year → 4-digit year
+    const fullYear = year < 100 ? 2000 + year : year;
+
+    // Convert 12-hour → 24-hour
+    let hours24 = hour % 12;
+    if (meridiem === "PM") hours24 += 12;
+
+    return new Date(
+      fullYear,
+      month - 1, // JS months are 0-based
+      day,
+      hours24,
+      minute,
+      0,
+      0,
+    );
+  };
+
+  const addReminderToList = (values) => {
+    const { hour, minutes, meridiem } = values;
+
     setShowTimePicker(false);
+
+    const reminderTime = makeDateTime(hour, minutes, meridiem).toString();
+
     const newReminder = {
       id: uuidv4(),
       onlyNotify: false,
-      time: newTimeString,
+      time: reminderTime,
     };
 
     setNewReminders((prev) => [...prev, newReminder]);
+  };
+
+  const createStartTime = (values) => {
+    const { hour, minutes, meridiem } = values;
+
+    setStartTime(false);
+
+    const startTime = makeDateTime(hour, minutes, meridiem);
+    const startTimeString = startTime.toString();
+
+    setStartWhen(startTime);
+    setStartTimeString(startTimeString);
+  };
+
+  const createEndTime = (values) => {
+    const { hour, minutes, meridiem } = values;
+
+    setEndTime(false);
+
+    const startTime = makeDateTime(hour, minutes, meridiem);
+    const startTimeString = startTime.toString();
+
+    setEndWhen(startTime);
+    setEndTimeString(startTimeString);
   };
 
   return (
@@ -555,7 +606,10 @@ const AddEvent = () => {
               </button>
               {showTimerPicker ? (
                 <Portal>
-                  <TimeSetter openTimeSetter={addReminderToList} />
+                  <TimeSetter
+                    saveData={addReminderToList}
+                    cancelTimeSetter={() => setShowTimePicker(false)}
+                  />
                 </Portal>
               ) : null}
               {newReminders.map((r) => (
@@ -610,9 +664,11 @@ const AddEvent = () => {
                 <div className="mt-3">
                   {!startWhen ? (
                     <TimeSetter
-                      setDateTime={setStartWhen}
-                      setDateTimeString={setStartTimeString}
-                      openTimeSetter={setStartTime}
+                      saveData={createStartTime}
+                      cancelTimeSetter={() => {
+                        setStartTime(false);
+                        setStartWhen(null);
+                      }}
                     />
                   ) : (
                     <div className="mt-2 space-y-2">
@@ -670,9 +726,11 @@ const AddEvent = () => {
                 <div className="mt-3">
                   {!endWhen ? (
                     <TimeSetter
-                      setDateTime={setEndWhen}
-                      setDateTimeString={setEndTimeString}
-                      openTimeSetter={setEndTime}
+                      saveData={createEndTime}
+                      cancelTimeSetter={() => {
+                        setEndTime(false);
+                        setEndWhen(null);
+                      }}
                     />
                   ) : (
                     <div className="mt-2 space-y-2">

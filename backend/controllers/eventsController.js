@@ -1,5 +1,5 @@
 import prisma from "../utils/prismaClient.js";
-import { v4 as v4 } from "uuid";
+import { v4 as uuidv4 } from "uuid";
 import { bucket } from "../utils/googleStorage.js";
 
 const getSignedUrl = async (filename) => {
@@ -42,75 +42,68 @@ export const getEvents = async (req, res) => {
 //   });
 // };
 
-const createReminder = async (event) => {
-  const newReminder = {
-    eventRefId: event.id,
-    title: event.summary,
-    notes: event.description,
-    time: event.reminders.when.toString(),
-    userId: event.userId,
-  };
-  const newNotif = {
-    type: "event",
-    read: false,
-    readTime: null,
-    time: event.reminders.when.toString(),
-    notifData: newReminder,
-    sentNotification: false,
-    sentWebPush: false,
-    userId: event.userId,
-  };
-  if (event.reminders.onlyNotify) {
-    await prisma.notification.create({
-      data: newNotif,
-    });
-    return [];
-  }
-  const reminder = await prisma.reminder.create({
-    data: newReminder,
-  });
-  await prisma.notification.create({
-    data: { ...newNotif, reminderRefId: reminder.id },
-  });
-  return reminder;
-};
+const createReminders = async (event) => {
+  let newReminders = [];
+  let newNotifs = [];
 
-const createMultipleReminders = async (event) => {
-  const reminderData = event.reminders.multiReminders;
-  const pendingNotifications = [];
-  const newObject = reminderData.map((rem) => {
+  // Notifications that are not linked to any reminder
+  let newNotifsOnly = [];
+
+  const remindersToSave = event.reminders.remindersToSave;
+
+  if (remindersToSave.length < 1) {
+    return;
+  }
+
+  for (let i = 0; i < remindersToSave.length; i++) {
+    const reminder = remindersToSave[i];
+    const reminderId = uuidv4();
+
+    if (!reminder) {
+      continue;
+    }
+
+    const newReminder = {
+      id: reminderId,
+      eventRefId: event.id,
+      title: event.summary,
+      notes: event.description,
+      time: time,
+      userId: event.userId,
+    };
+
     const newNotif = {
       type: "event",
       read: false,
       readTime: null,
-      time: rem.when.toString(),
+      time: time,
       notifData: newReminder,
       sentNotification: false,
       sentWebPush: false,
       userId: event.userId,
     };
-    pendingNotifications.push(newNotif);
-    return {
-      eventRefId: event.id,
-      title: event.summary,
-      notes: event.description,
-      time: rem.when.toString(),
-      userId: event.userId,
-    };
-  });
-  if (event.reminders.onlyNotify) {
-    await prisma.notification.createMany({
-      data: pendingNotifications,
-    });
-    return [];
+
+    const { onlyNotify, time } = reminder;
+
+    // If this reminder is only set to notify
+    if (onlyNotify) {
+      newNotifsOnly.push(newNotif);
+      continue;
+    }
+
+    newNotifs.push({ newNotif, reminderRefId: reminderId });
+
+    newReminders.push(newReminder);
   }
-  const multiReminders = await prisma.reminder.createMany({
-    data: newObject,
-  });
+
+  const dbReminders = await prisma.reminder.createMany({ data: newReminders });
+
   await prisma.notification.createMany({
-    data: pendingNotifications,
+    data: newNotifs,
   });
-  return multiReminders;
+
+  // No need to return notificatons
+  return dbReminders;
 };
 
 export const createAttachments = async (req, res) => {
@@ -142,12 +135,10 @@ export const createAttachments = async (req, res) => {
       console.log(
         "Why is there no event here when trying to create an attachment!?",
       );
-      res
-        .status(400)
-        .json({
-          message:
-            "Yes, a 400 status. This is most likely you doing something you should not be doing on my app.",
-        });
+      res.status(400).json({
+        message:
+          "Yes, a 400 status. This is most likely you doing something you should not be doing on my app.",
+      });
       return;
     }
 
@@ -170,12 +161,10 @@ export const createAttachments = async (req, res) => {
   } catch (err) {
     console.log("Error checking for event in DB when creating attachments");
     console.log(err);
-    res
-      .status(500)
-      .json({
-        message:
-          "Failed to create attachments due to server taking dump? I mean, I guess. Sorry",
-      });
+    res.status(500).json({
+      message:
+        "Failed to create attachments due to server taking dump? I mean, I guess. Sorry",
+    });
     return;
   }
 
@@ -225,21 +214,18 @@ export const createAttachments = async (req, res) => {
 export const addEvent = async (req, res) => {
   const newEvent = req.body.event;
   const user = req.user;
-  let reminder;
-  let multiReminders;
+
   const createdEvent = await prisma.event.create({
     data: { ...newEvent, id: newEvent.id },
   });
+
   if (createdEvent) {
+    let newReminders = [];
+
     if (newEvent.reminders.reminder) {
-      reminder = await createReminder(newEvent);
+      newReminders = await createReminders(newEvent);
     }
-    if (
-      newEvent.reminders.reminder &&
-      newEvent.reminders.multiReminders.length > 0
-    ) {
-      multiReminders = await createMultipleReminders(newEvent);
-    }
+
     return res.json({
       message: "Successfully added new event",
       user: {
@@ -251,7 +237,7 @@ export const addEvent = async (req, res) => {
         createdAt: user.createAt,
       },
       event: [createdEvent],
-      reminders: reminder,
+      reminders: newReminders,
     });
   }
 };

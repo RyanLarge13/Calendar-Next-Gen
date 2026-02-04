@@ -1,51 +1,18 @@
 import { useState, useContext } from "react";
 import { motion } from "framer-motion";
-import { WheelPicker, WheelPickerWrapper } from "@ncdai/react-wheel-picker";
-import DatesContext from "../context/DatesContext";
 import UserContext from "../context/UserContext";
+import WheelPicker from "./WheelPicker";
 
-const TimeSetter = ({ openTimeSetter }) => {
-  const { string } = useContext(DatesContext);
+const TimeSetter = ({ saveData, cancelTimeSetter }) => {
   const { preferences } = useContext(UserContext);
 
-  const [value, setValue] = useState({ hour: 12, minute: 0o0, meridiem: "AM" });
+  const [value, setValue] = useState({
+    hour: 12,
+    minutes: 0o0,
+    meridiem: "AM",
+  });
 
-  // const calcValues = (ISODate) => {
-  //   const formattedDate = new Date(ISODate);
-  //   const hours = formattedDate.getHours();
-  //   const minutes = formattedDate.getMinutes();
-  //   const formattedDateString = () => {
-  //     return `${hours > 12 ? hours % 12 : hours === 0 ? "12" : hours}:${
-  //       minutes <= 9 ? "0" + minutes : minutes
-  //     } ${hours >= 12 ? "PM" : "AM"}`;
-  //   };
-  //   const dateTime = () => {
-  //     const currentDate = new Date(string);
-  //     const month = currentDate.getMonth();
-  //     const day = currentDate.getDate();
-  //     const year = currentDate.getFullYear();
-  //     // console.log(new Date(year, month, day, hours, minutes).toString());
-  //     return new Date(year, month, day, hours, minutes).toString();
-  //   };
-  //   // setDateTimeString(formattedDateString);
-  //   // setDateTime(dateTime);
-  // };
-
-  const createArray = (length, add = 0) =>
-    Array.from({ length }, (_, i) => {
-      const value = i + add;
-      return {
-        label: value.toString().padStart(2, "0"),
-        value: value,
-      };
-    });
-
-  const hours = createArray(12, 1);
-  const minutes = createArray(60);
-  const meridiem = [
-    { label: "AM", value: "AM" },
-    { label: "PM", value: "PM" },
-  ];
+  const resetValues = () => {};
 
   return (
     <motion.div
@@ -72,7 +39,7 @@ const TimeSetter = ({ openTimeSetter }) => {
     `}
       >
         <button
-          onClick={() => openTimeSetter()}
+          onClick={cancelTimeSetter}
           className={`
         px-3 py-2 rounded-2xl border shadow-sm text-xs font-semibold transition
         active:scale-[0.97]
@@ -83,7 +50,7 @@ const TimeSetter = ({ openTimeSetter }) => {
         }
       `}
         >
-          Close
+          Cancel
         </button>
 
         <p
@@ -93,11 +60,7 @@ const TimeSetter = ({ openTimeSetter }) => {
         </p>
 
         <button
-          onClick={() => {
-            setDateTime(null);
-            setDateTimeString("");
-            setValue(null);
-          }}
+          onClick={resetValues}
           className={`
         px-3 py-2 rounded-2xl border shadow-sm text-xs font-semibold transition
         active:scale-[0.97]
@@ -122,39 +85,7 @@ const TimeSetter = ({ openTimeSetter }) => {
     `}
           style={{ height: 210 }} // important: consistent wheel height
         >
-          <WheelPickerWrapper>
-            <div className="w-1/3 min-w-0">
-              <WheelPicker
-                options={hours}
-                defaultValue={12}
-                infinite
-                onValueChange={(h) =>
-                  setValue((prev) => ({ ...prev, hour: h }))
-                }
-              />
-            </div>
-
-            <div className="w-1/3 min-w-0">
-              <WheelPicker
-                options={minutes}
-                defaultValue={10}
-                infinite
-                onValueChange={(m) =>
-                  setValue((prev) => ({ ...prev, minute: m }))
-                }
-              />
-            </div>
-
-            <div className="w-1/3 min-w-0">
-              <WheelPicker
-                options={meridiem}
-                defaultValue="AM"
-                onValueChange={(mer) =>
-                  setValue((prev) => ({ ...prev, meridiem: mer }))
-                }
-              />
-            </div>
-          </WheelPickerWrapper>
+          <WheelPicker value={value} setValue={setValue} />
         </div>
 
         <div className="mt-3 flex justify-between items-center">
@@ -169,10 +100,26 @@ const TimeSetter = ({ openTimeSetter }) => {
         ${preferences.darkMode ? "bg-white/5 border-white/10 text-white/70" : "bg-black/[0.03] border-black/10 text-slate-600"}
       `}
           >
-            {value?.hour - 1 ?? "--"}:
-            {String(value?.minute - 1 ?? "--").padStart(2, "0")}{" "}
+            {value?.hour ?? "--"}:
+            {String(value?.minutes ?? "--").padStart(2, "0")}{" "}
             {value?.meridiem ?? ""}
           </div>
+
+          {/* Save button. Probably should be moved */}
+          <button
+            onClick={() => saveData(value)}
+            className={`
+        px-3 py-2 rounded-2xl border shadow-sm text-xs font-semibold transition
+        active:scale-[0.97]
+        ${
+          preferences.darkMode
+            ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70 hover:text-rose-200"
+            : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600 hover:text-rose-600"
+        }
+      `}
+          >
+            Save
+          </button>
         </div>
       </div>
     </motion.div>
