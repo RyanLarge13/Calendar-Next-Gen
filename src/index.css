@@ -161,3 +161,162 @@ li {
 .normal .ql-toolbar.ql-snow .ql-formats .ql-picker {
   color: #000 !important;
 }
+
+/* Wheel Picker */
+/* React Wheel Picker — Light dashboard/glass theme only
+   No dark mode, no prefers-color-scheme.
+   Uses the library's documented data attributes. */
+
+:root {
+  /* Surfaces */
+  --rwp-surface: rgba(255, 255, 255, 0.9); /* matches bg-white/90 */
+  --rwp-panel: rgba(0, 0, 0, 0.03); /* matches bg-black/[0.03] */
+  --rwp-border: rgba(0, 0, 0, 0.1); /* matches border-black/10 */
+
+  /* Text */
+  --rwp-text: rgb(15 23 42); /* slate-900 */
+  --rwp-muted: rgba(15, 23, 42, 0.55); /* slate-900 @ 55% */
+
+  /* Focus */
+  --rwp-ring: rgba(34, 211, 238, 0.45); /* cyan-ish */
+  --rwp-ring-soft: rgba(34, 211, 238, 0.18);
+
+  /* Shadows */
+  --rwp-shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.12);
+  --rwp-shadow-inset: 0 8px 22px rgba(0, 0, 0, 0.1);
+
+  /* Sizing (keep in sync with optionItemHeight) */
+  --rwp-row: 30px;
+}
+
+/* Wrapper */
+[data-rwp-wrapper] {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  position: relative;
+
+  border-radius: 1rem; /* rounded-2xl vibe */
+  border: 1px solid var(--rwp-border);
+  background: var(--rwp-surface);
+  color: var(--rwp-text);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  box-shadow: var(--rwp-shadow-soft);
+}
+
+/* Each wheel column */
+[data-rwp] {
+  position: relative;
+  width: 5.25rem; /* slightly wider than w-20 so text never clips */
+  height: 12.5rem; /* visible area */
+  overflow: hidden;
+
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+
+  perspective: 1000px;
+  border-radius: 0.95rem;
+}
+
+/* The spinning list container */
+[data-rwp-options] {
+  height: 100%;
+  margin: 0 !important;
+  padding: 0 !important;
+  list-style: none !important; /* kills discs/bullets */
+}
+
+/* Each option item */
+[data-rwp-option] {
+  height: var(--rwp-row);
+  line-height: var(--rwp-row);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+
+  opacity: 0.4;
+  color: var(--rwp-muted);
+
+  transform: translateZ(0);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Highlight area */
+[data-rwp-highlight-wrapper] {
+  position: absolute;
+  left: 0.35rem;
+  right: 0.35rem;
+  top: 50%;
+  transform: translateY(-50%);
+  height: var(--rwp-row);
+  pointer-events: none;
+
+  border-radius: 0.85rem;
+  border: 1px solid var(--rwp-border);
+  background: var(--rwp-panel);
+
+  box-shadow: var(--rwp-shadow-inset);
+}
+
+/* Highlighted item (selected row) */
+[data-rwp-highlight-item] {
+  height: var(--rwp-row);
+  line-height: var(--rwp-row);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: 700;
+  opacity: 1;
+  color: var(--rwp-text);
+}
+
+/* Fade mask top/bottom (iOS wheel feel) */
+[data-rwp]::before,
+[data-rwp]::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 42%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+[data-rwp]::before {
+  top: 0;
+  background: linear-gradient(
+    to bottom,
+    var(--rwp-surface),
+    rgba(255, 255, 255, 0)
+  );
+}
+
+[data-rwp]::after {
+  bottom: 0;
+  background: linear-gradient(
+    to top,
+    var(--rwp-surface),
+    rgba(255, 255, 255, 0)
+  );
+}
+
+/* Focus ring (when picker is focused) */
+[data-rwp-highlight-wrapper][data-rwp-focused] {
+  outline: 2px solid var(--rwp-ring);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px var(--rwp-ring-soft);
+}

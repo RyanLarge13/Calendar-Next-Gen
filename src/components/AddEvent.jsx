@@ -22,6 +22,7 @@ import Toggle from "./Toggle";
 import TimeSetter from "./TimeSetter";
 import SuggestCities from "./SuggestCities";
 import NewReminder from "./AddEvent/NewReminder.jsx";
+import Portal from "./Portal.jsx";
 
 const AddEvent = () => {
   const {
@@ -54,9 +55,6 @@ const AddEvent = () => {
   // reminders
   const [reminderOn, setReminderOn] = useState(false);
   const [newReminders, setNewReminders] = useState([]);
-  const [reminderTimeString, setReminderTimeString] = useState("");
-  const [when, setWhen] = useState(null);
-  const [onlyNotify, setOnlyNotify] = useState(false);
   const [showTimerPicker, setShowTimePicker] = useState(false);
   // repeats
   const [repeat, setRepeat] = useState(false);
@@ -556,11 +554,9 @@ const AddEvent = () => {
                 Add +
               </button>
               {showTimerPicker ? (
-                <TimeSetter
-                  setDateTime={setWhen}
-                  setDateTimeString={setReminderTimeString}
-                  openTimeSetter={addReminderToList}
-                />
+                <Portal>
+                  <TimeSetter openTimeSetter={addReminderToList} />
+                </Portal>
               ) : null}
               {newReminders.map((r) => (
                 <NewReminder

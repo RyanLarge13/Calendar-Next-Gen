@@ -94,7 +94,6 @@ categoryId String?
 parentEvent Event?    @relation("ChildEvents", fields: [parentId], references: [id])
 childEvents Event[]   @relation("ChildEvents")
 
-@@unique([id, userId])
 @@index([userId], name: "userIdRefIndex")
 }
 
