@@ -10,85 +10,189 @@ import {
 import UserContext from "../context/UserContext";
 
 const Kanban = ({ kanban, setKanbanView }) => {
-  const { user } = useContext(UserContext);
-
-  const endColor = `to-${kanban.color.replace("bg-", "")}`;
-  const startColor = `from-${kanban.color
-    .replace("300", "100")
-    .replace("bg-", "")}`;
+  const { user, preferences } = useContext(UserContext);
 
   return (
     <div
       onContextMenu={() => {}}
-      className={`${
-        startColor && endColor
-          ? `bg-gradient-to-tr ${startColor} ${endColor}`
-          : "bg-white"
-      } p-4 rounded-2xl shadow-lg w-full cursor-pointer transition-all duration-300 hover:shadow-xl`}
+      className={`
+        group relative w-full cursor-pointer
+        rounded-3xl border shadow-sm overflow-hidden
+        transition-all duration-200
+        hover:shadow-md hover:scale-[1.01]
+        ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-white/85 border-black/10"}
+        backdrop-blur-md
+      `}
     >
-      {/* Header */}
-      <div className="flex justify-between items-center bg-white/90 backdrop-blur-sm rounded-xl shadow-sm px-4 py-3">
-        <h2 className="text-lg font-semibold truncate">{kanban.title}</h2>
-        <div className="flex items-center gap-x-3 text-slate-600">
-          <button className="hover:text-indigo-500 transition-colors">
-            <FaShareAlt />
-          </button>
-          <button className="hover:text-green-500 transition-colors">
-            <FaEdit />
-          </button>
-          <button className="hover:text-amber-500 transition-colors">
-            <FaBell />
-          </button>
-          <button className="hover:text-red-500 transition-colors">
-            <FaTrashAlt />
-          </button>
-        </div>
-      </div>
+      {/* Left color rail */}
+      <div
+        className={`${kanban.color} absolute left-0 top-0 bottom-0 w-[10px]`}
+      />
 
-      {/* Meta info */}
-      <div className="flex gap-2 mt-3">
-        <p className="text-xs bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm">
-          Created On,{" "}
-          {new Date(kanban.createdAt).toLocaleDateString("en-US", {
-            month: "short",
-            year: "numeric",
-          })}
-        </p>
-        <div className="flex items-center gap-1 bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm">
-          <p className="font-semibold text-xs">{kanban.folders.length}</p>
-          <FaFolder className="text-slate-500" />
+      {/* Header */}
+      <div className="px-5 pt-5 pb-4">
+        <div className="flex justify-between items-start gap-3">
+          <div className="min-w-0">
+            <p
+              className={`text-[11px] font-semibold tracking-wide ${
+                preferences.darkMode ? "text-white/60" : "text-slate-500"
+              }`}
+            >
+              Kanban board
+            </p>
+
+            <h2 className="mt-1 text-lg font-semibold tracking-tight truncate pr-2">
+              {kanban.title}
+            </h2>
+          </div>
+
+          {/* Icon actions */}
+          <div
+            className={`
+              flex items-center gap-2
+              ${preferences.darkMode ? "text-white/55" : "text-slate-500"}
+            `}
+          >
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+              className={`
+                grid place-items-center h-9 w-9 rounded-2xl border shadow-sm transition active:scale-95
+                ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/10" : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06]"}
+                hover:text-cyan-600
+              `}
+              aria-label="Share"
+            >
+              <FaShareAlt className="text-sm" />
+            </button>
+
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+              className={`
+                grid place-items-center h-9 w-9 rounded-2xl border shadow-sm transition active:scale-95
+                ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/10" : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06]"}
+                hover:text-emerald-600
+              `}
+              aria-label="Edit"
+            >
+              <FaEdit className="text-sm" />
+            </button>
+
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+              className={`
+                grid place-items-center h-9 w-9 rounded-2xl border shadow-sm transition active:scale-95
+                ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/10" : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06]"}
+                hover:text-amber-600
+              `}
+              aria-label="Notifications"
+            >
+              <FaBell className="text-sm" />
+            </button>
+
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+              className={`
+                grid place-items-center h-9 w-9 rounded-2xl border shadow-sm transition active:scale-95
+                ${preferences.darkMode ? "bg-rose-500/15 border-rose-300/20 hover:bg-rose-500/20 text-rose-100" : "bg-rose-50 border-rose-200 hover:bg-rose-100 text-rose-700"}
+              `}
+              aria-label="Delete"
+            >
+              <FaTrashAlt className="text-sm" />
+            </button>
+          </div>
+        </div>
+
+        {/* Meta chips */}
+        <div className="mt-4 flex flex-wrap gap-2">
+          <div
+            className={`
+              inline-flex items-center gap-2
+              px-3 py-1.5 rounded-2xl border text-[11px] font-semibold shadow-sm
+              ${preferences.darkMode ? "bg-white/5 border-white/10 text-white/70" : "bg-black/[0.03] border-black/10 text-slate-700"}
+            `}
+          >
+            <span className={`${kanban.color} h-2 w-2 rounded-full`} />
+            Created{" "}
+            {new Date(kanban.createdAt).toLocaleDateString("en-US", {
+              month: "short",
+              year: "numeric",
+            })}
+          </div>
+
+          <div
+            className={`
+              inline-flex items-center gap-2
+              px-3 py-1.5 rounded-2xl border text-[11px] font-semibold shadow-sm
+              ${preferences.darkMode ? "bg-white/5 border-white/10 text-white/70" : "bg-black/[0.03] border-black/10 text-slate-700"}
+            `}
+          >
+            <span className="font-bold">{kanban.folders.length}</span>
+            <FaFolder
+              className={
+                preferences.darkMode ? "text-white/50" : "text-slate-500"
+              }
+            />
+            folders
+          </div>
         </div>
       </div>
 
       {/* Footer */}
-      <div className="mt-5 flex justify-between items-center">
+      <div
+        className={`
+          px-5 py-4 flex justify-between items-center
+          border-t
+          ${preferences.darkMode ? "border-white/10" : "border-black/10"}
+        `}
+      >
         {/* Avatars */}
         <div className="flex items-center">
           <img
             src={user.avatarUrl}
-            alt="associate"
-            className="w-7 h-7 rounded-full shadow-sm border-2 border-white"
+            alt="you"
+            className={`
+              w-8 h-8 rounded-full border-2 shadow-sm
+              ${preferences.darkMode ? "border-white/10" : "border-white"}
+            `}
           />
           {kanban?.users?.map((usr, index) => (
-            <div
+            <img
               key={index}
-              style={{ transform: `translateX(-${6 * (index + 1)}px)` }}
-            >
-              <img
-                src={usr.avatarUrl}
-                alt="associate"
-                className="w-7 h-7 rounded-full shadow-sm border-2 border-white"
-              />
-            </div>
+              src={usr.avatarUrl}
+              alt="associate"
+              className={`
+                w-8 h-8 rounded-full border-2 shadow-sm
+                -ml-2
+                ${preferences.darkMode ? "border-white/10" : "border-white"}
+              `}
+            />
           ))}
         </div>
 
-        {/* Open button */}
+        {/* Open */}
         <button
+          type="button"
           onClick={() => setKanbanView(kanban)}
-          className="p-2 rounded-full bg-white/90 shadow-md hover:bg-indigo-100 transition-colors"
+          className={`
+            grid place-items-center h-10 w-10 rounded-2xl shadow-md transition active:scale-95
+            bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-500
+            text-white
+          `}
+          aria-label="Open board"
         >
-          <FaFolderOpen className="text-indigo-600" />
+          <FaFolderOpen className="text-base" />
         </button>
       </div>
     </div>

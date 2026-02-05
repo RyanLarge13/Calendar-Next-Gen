@@ -16,6 +16,8 @@ import DatesContext from "../context/DatesContext";
 import TaskItems from "./TaskItems";
 import { tailwindBgToHex } from "../utils/helpers";
 import { AiFillCloseCircle } from "react-icons/ai";
+import StickyBody from "./Stickies/StickyBody";
+import { weekDays } from "../constants";
 
 const Dashboard = ({ timeOfDay }) => {
   const {
@@ -302,6 +304,12 @@ const Dashboard = ({ timeOfDay }) => {
                   className="object-contain aspect-square w-16 sm:w-20 flex-shrink-0"
                 />
               </div>
+
+              <div className="flex justify-start items-center overflow-auto">
+                {weekDays.map((d, i) => (
+                  <div></div>
+                ))}
+              </div>
             </div>
 
             {/* Location */}
@@ -572,14 +580,7 @@ const Dashboard = ({ timeOfDay }) => {
                     />
                   </div>
 
-                  <div
-                    className={`mt-3 text-sm leading-relaxed ${
-                      preferences.darkMode ? "text-white/70" : "text-slate-600"
-                    }`}
-                    dangerouslySetInnerHTML={{
-                      __html: stickies[0].body.slice(0, 240) + "...",
-                    }}
-                  />
+                  <StickyBody sticky={stickies[0]} />
                 </div>
               ) : (
                 <p

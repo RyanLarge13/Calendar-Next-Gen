@@ -108,7 +108,7 @@ export const addNewReminder = async (req, res) => {
   const newReminder = {
     title,
     notes,
-    stringTime,
+    time: stringTime,
     eventRefId,
     userId: id,
   };
@@ -138,7 +138,7 @@ export const addNewReminder = async (req, res) => {
         where: { id: eventRefId },
         data: {
           reminders: {
-            ...existingEvent.reminders,
+            reminder: true,
             eventReminders: [
               ...existingEvent.reminders.eventReminders,
               returnedReminder,
@@ -174,6 +174,29 @@ export const deleteReminder = async (req, res) => {
     },
   });
   if (deletedReminder) {
+    const event = await prisma.event.findUnique({
+      where: { id: deletedReminder.eventRefId },
+    });
+
+    if (event) {
+      const eventReminderInfo = event.reminders;
+      const newEventReminders = eventReminderInfo.eventReminders.filter(
+        (r) => r.id !== id,
+      );
+
+      const len = newEventReminders.length;
+
+      await prisma.event.update({
+        where: { id: deletedReminder.eventRefId },
+        data: {
+          reminders: {
+            reminder: len === 0 ? false : len,
+            eventReminders: newEventReminders,
+          },
+        },
+      });
+    }
+
     return res.json({
       message: "Successfully deleted reminder",
       reminderId: deletedReminder.id,

@@ -4,6 +4,7 @@ import Masonry from "react-masonry-css";
 import { tailwindBgToHex } from "../utils/helpers.js";
 import { BiListPlus } from "react-icons/bi";
 import { IoIosAddCircle } from "react-icons/io";
+import StickyBody from "./Stickies/StickyBody.jsx";
 
 const StaticStickies = () => {
   const { stickies, preferences } = useContext(UserContext);
@@ -57,23 +58,7 @@ const StaticStickies = () => {
               </div>
 
               {/* Body */}
-              <div className="pr-2 pb-5 pt-4 pl-7">
-                <div
-                  className={`
-                rounded-2xl border shadow-sm p-4
-                ${preferences.darkMode ? "border-white/10 bg-white/5" : "border-black/10 bg-white"}
-              `}
-                >
-                  <div
-                    dangerouslySetInnerHTML={{ __html: sticky.body }}
-                    className={`
-                  markdown text-sm sm:text-[15px] leading-relaxed
-                  max-h-[60vh] overflow-auto pr-3 scrollbar-slick
-                  ${preferences.darkMode ? "selection:bg-white/20" : "selection:bg-black/10"}
-                `}
-                  />
-                </div>
-              </div>
+              <StickyBody sticky={sticky} />
             </div>
           ))}
         </Masonry>

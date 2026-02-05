@@ -1,11 +1,6 @@
 import { useState, useRef, useContext, useEffect } from "react";
 import { motion, useDragControls } from "framer-motion";
-import {
-  deleteStickyNote,
-  updateSticky,
-  updateStickyView,
-} from "../utils/api.js";
-import { tailwindBgToHex } from "../utils/helpers.js";
+import { deleteStickyNote, updateStickyView } from "../utils/api.js";
 import {
   AiFillPushpin,
   AiFillCloseCircle,
@@ -16,8 +11,8 @@ import { FaRegWindowMinimize } from "react-icons/fa";
 import { FiMaximize } from "react-icons/fi";
 import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
-import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import StickyBody from "./Stickies/StickyBody.jsx";
 
 const Sticky = ({ sticky, index }) => {
   const { setSystemNotif, setStickies, stickies, preferences } =
@@ -28,49 +23,10 @@ const Sticky = ({ sticky, index }) => {
   const [pin, setPin] = useState(sticky.pin);
   const [fullScreen, setFullScreen] = useState(false);
   const [minimize, setMinimize] = useState(true);
-  const [editText, setEditText] = useState(sticky.body);
-  const [initialText, setInitialText] = useState(sticky.body);
 
   const stickyRef = useRef(null);
 
   const controls = useDragControls();
-
-  const modules = {
-    toolbar: [
-      [{ header: "1" }, { header: "2" }, { font: [] }],
-      [{ size: [] }],
-      ["bold", "italic", "underline", "strike", "blockquote"],
-      [
-        { list: "ordered" },
-        { list: "bullet" },
-        { indent: "-1" },
-        { indent: "+1" },
-      ],
-      [{ color: [] }, { background: [] }], // Color and Background buttons
-      ["link", "image", "video"],
-      ["clean"],
-    ],
-  };
-
-  const formats = [
-    "header",
-    "font",
-    "size",
-    "bold",
-    "italic",
-    "underline",
-    "strike",
-    "blockquote",
-    "list",
-    "bullet",
-    "indent",
-    "link",
-    "image",
-    "video",
-    "color",
-    "background",
-    "clean",
-  ];
 
   useEffect(() => {
     const viewState = sticky.viewState;
@@ -90,15 +46,6 @@ const Sticky = ({ sticky, index }) => {
     }
   }, []);
 
-  useEffect(() => {
-    let timeout;
-    timeout = setTimeout(() => {
-      handleSave();
-    }, 2000);
-
-    return () => clearTimeout(timeout);
-  }, [editText]);
-
   const handleViewChange = (newView) => {
     const token = localStorage.getItem("authToken");
     updateStickyView(token, sticky.id, newView)
@@ -108,25 +55,6 @@ const Sticky = ({ sticky, index }) => {
       .catch((err) => {
         console.log(`Error updating sticky view: ${err}`);
       });
-  };
-
-  const handleTextChange = (value) => {
-    setEditText(value);
-  };
-
-  const handleSave = async () => {
-    if (initialText === editText) {
-      return;
-    }
-
-    try {
-      const token = localStorage.getItem("authToken");
-      await updateSticky(token, sticky.id, editText);
-
-      setInitialText(editText);
-    } catch (err) {
-      console.log(`Error from server saving sticky note. Error: ${err}`);
-    }
   };
 
   const startDrag = (e) => {
@@ -345,50 +273,7 @@ const Sticky = ({ sticky, index }) => {
           </button>
         </div>
       )}
-
-      {/* Body */}
-      <div
-        className={`
-      ${minimize ? "opacity-0 pointer-events-none" : "opacity-100"}
-      absolute inset-0
-      px-4 pt-4 pb-16
-      overflow-y-auto overflow-x-hidden scrollbar-hide
-      ${expand ? "mt-12" : "mt-12"} 
-    `}
-      >
-        <div className="space-y-3">
-          {/* Title */}
-          <input
-            defaultValue={sticky.title}
-            className={`
-          w-full bg-transparent
-          text-2xl font-semibold tracking-tight
-          outline-none
-          border-b pb-2
-          ${preferences.darkMode ? "border-white/10 text-white placeholder:text-white/50" : "border-black/10 text-slate-900 placeholder:text-slate-400"}
-        `}
-            style={{ caretColor: tailwindBgToHex(sticky.color) }}
-            placeholder="Title…"
-          />
-
-          {/* Editor container */}
-          <div
-            className={`
-          rounded-2xl border shadow-sm overflow-hidden
-          ${preferences.darkMode ? "border-white/10 bg-white/5" : "border-black/10 bg-white"}
-        `}
-          >
-            <ReactQuill
-              modules={modules}
-              formats={formats}
-              value={editText}
-              onBlur={handleSave}
-              onChange={handleTextChange}
-              className="h-full scrollbar-slick"
-            />
-          </div>
-        </div>
-      </div>
+      <StickyBody sticky={sticky} minimize={minimize} />
     </motion.div>
   );
 };
