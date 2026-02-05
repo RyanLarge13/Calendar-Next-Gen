@@ -39,17 +39,17 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
       setIdsToUpdate((prev) => [...prev, id]);
     }
     const updatedNotifications = notifications.map((notif) =>
-      notif.id === id ? { ...notif, read: true } : notif
+      notif.id === id ? { ...notif, read: true } : notif,
     );
     const sortedNotifications = updatedNotifications.sort(
-      (a, b) => b.time - a.time
+      (a, b) => b.time - a.time,
     );
     setNotifications(sortedNotifications);
   };
 
   const unReadNotif = (id) => {
     const updatedNotifications = notifications.map((notif) =>
-      notif.id === id ? { ...notif, read: false } : notif
+      notif.id === id ? { ...notif, read: false } : notif,
     );
     setNotifications(updatedNotifications);
     markAsUnread(id)
@@ -126,153 +126,476 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
     <AnimatePresence>
       {showNotifs && (
         <motion.div
-          initial={{ y: -50, opacity: 0 }}
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -20, opacity: 0 }}
+          transition={{ type: "spring", stiffness: 260, damping: 22 }}
           drag="y"
           dragSnapToOrigin={true}
           dragControls={controls}
           dragListener={false}
           dragConstraints={{ bottom: 0 }}
           onDragEnd={checkToClose}
-          exit={{ y: -50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className={`pt-3 pb-10 px-5 rounded-b-md shadow-md fixed
-                    inset-0 z-20 lg:left-[60%] max-h-screen will-change-transform overflow-y-auto ${
-                      preferences.darkMode
-                        ? "bg-[#222] text-white"
-                        : "bg-white text-black"
-                    }`}
+          className={`
+        fixed inset-0 z-20
+        overflow-y-auto will-change-transform
+        ${
+          preferences.darkMode
+            ? "bg-[#0f0f10]/70 text-white"
+            : "bg-black/20 text-slate-900"
+        }
+      `}
         >
+          {/* Backdrop */}
           <div
-            className={`fixed bottom-0 right-0 left-0 p-5 rounded-md flex
-            justify-between items-center z-[999] pointer-events-auto ${
-              preferences.darkMode
-                ? "bg-[#222] text-white"
-                : "bg-white text-black"
-            }`}
-            style={{ touchAction: "none" }}
-            onPointerDown={startDrag}
+            className="absolute inset-0"
+            onClick={() => setShowNotifs(false)}
+          />
+
+          {/* Panel */}
+          <div
+            className={`
+          relative ml-auto h-full w-full
+          lg:w-[520px] lg:max-w-[520px]
+          ${preferences.darkMode ? "bg-[#161616]/90" : "bg-white/90"}
+          backdrop-blur-md
+          border-l
+          ${preferences.darkMode ? "border-white/10" : "border-black/10"}
+          shadow-2xl
+        `}
           >
-            <AiFillCloseCircle onClick={() => setShowNotifs(false)} />
-            <RxDragHandleHorizontal />
-          </div>
-          {notifications.length < 1 ? (
-            <div className="flex flex-col items-center justify-center w-full">
-              <motion.p
-                initial={{ y: "-200%", opacity: 0 }}
-                animate={{
-                  y: 0,
-                  opacity: 1,
-                  transition: { delay: 0.5 },
-                }}
-              >
-                All Caught Up!
-              </motion.p>
-              <MdSystemSecurityUpdateGood className="text-3xl mt-5" />
-            </div>
-          ) : (
-            notifications.map((notif) => (
-              <motion.div
-                animate={
-                  notifOpen === notif.id
-                    ? {
-                        height: 220,
-                      }
-                    : { height: 120 }
-                }
-                onClick={() => openNotif(notif.id, notif.read)}
-                key={notif.id}
-                className={`rounded-md p-2 my-5 shadow-md ${
-                  preferences.darkMode
-                    ? "bg-[#222] text-white"
-                    : "bg-white text-black"
-                } relative flex flex-col justify-between h-max`}
-              >
-                {notif.read === false && (
-                  <div className="absolute top-[-5px] left-[-5px] rounded-full w-[10px] h-[10px] bg-gradient-to-tr from-red-300 to-red-400"></div>
-                )}
+            {/* Sticky Header */}
+            <div
+              className={`
+            sticky top-0 z-[30]
+            px-5 pt-5 pb-4
+            border-b
+            ${preferences.darkMode ? "border-white/10" : "border-black/10"}
+            ${preferences.darkMode ? "bg-[#161616]/85" : "bg-white/70"}
+            backdrop-blur-md
+          `}
+            >
+              <div className="flex items-start justify-between gap-4">
                 <div>
-                  <div className="flex justify-between items-start">
-                    <div className="text-xs mb-1">
-                      <p className="border-b">
-                        {new Date(notif.time).toLocaleDateString("en-US", {
-                          weekday: "short",
-                          month: "long",
-                          year: "numeric",
-                        })}
-                      </p>
-                      <p>{formatTime(new Date(notif.time))}</p>
-                    </div>
-                    {getIcon(notif.type)}
+                  <p
+                    className={`text-xs font-semibold tracking-wide ${
+                      preferences.darkMode ? "text-white/60" : "text-slate-500"
+                    }`}
+                  >
+                    Notifications
+                  </p>
+                  <h2 className="text-lg font-semibold tracking-tight">
+                    Inbox
+                  </h2>
+
+                  {/* Optional count chip (no logic required; wire later) */}
+                  <div className="mt-2">
+                    <span
+                      className={`
+                    inline-flex items-center gap-2
+                    text-[11px] font-semibold px-3 py-1.5 rounded-2xl border
+                    ${
+                      preferences.darkMode
+                        ? "bg-white/5 border-white/10 text-white/70"
+                        : "bg-black/[0.03] border-black/10 text-slate-600"
+                    }
+                  `}
+                    >
+                      <span className="inline-block h-2 w-2 rounded-full bg-cyan-400" />
+                      {/* Replace later with unread count */}
+                      Manage your updates
+                    </span>
                   </div>
-                  <p className="text-sm">{notif.notifData.title}</p>
-                  {notifOpen === notif.id && (
-                    <div
-                      className={`p-3 mt-2 rounded-md shadow-sm max-h-[100px] overflow-y-auto ${
-                        preferences.darkMode ? "text-white" : "text-black"
+                </div>
+
+                {/* Close */}
+                <button
+                  onClick={() => setShowNotifs(false)}
+                  className={`
+                grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition active:scale-95
+                ${
+                  preferences.darkMode
+                    ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70"
+                    : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600"
+                }
+              `}
+                  aria-label="Close notifications"
+                  type="button"
+                >
+                  <AiFillCloseCircle className="text-lg" />
+                </button>
+              </div>
+
+              {/* Global Actions (no logic, just buttons) */}
+              <div className="mt-4 grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => {}}
+                  className={`
+                px-3 py-2 rounded-2xl border shadow-sm text-xs font-semibold transition active:scale-[0.97]
+                flex items-center justify-center gap-2
+                ${
+                  preferences.darkMode
+                    ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/75"
+                    : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-700"
+                }
+              `}
+                >
+                  <span className="text-sm">✓</span> Mark all read
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {}}
+                  className={`
+                px-3 py-2 rounded-2xl border shadow-sm text-xs font-semibold transition active:scale-[0.97]
+                flex items-center justify-center gap-2
+                ${
+                  preferences.darkMode
+                    ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/75"
+                    : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-700"
+                }
+              `}
+                >
+                  <span className="text-sm">↺</span> Mark all unread
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {}}
+                  className={`
+                px-3 py-2 rounded-2xl border shadow-sm text-xs font-semibold transition active:scale-[0.97]
+                flex items-center justify-center gap-2
+                ${
+                  preferences.darkMode
+                    ? "bg-rose-500/15 border-rose-300/20 hover:bg-rose-500/20 text-rose-100"
+                    : "bg-rose-50 border-rose-200 hover:bg-rose-100 text-rose-700"
+                }
+              `}
+                >
+                  <span className="text-sm">🗑</span> Delete all
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {}}
+                  className={`
+                px-3 py-2 rounded-2xl border shadow-sm text-xs font-semibold transition active:scale-[0.97]
+                flex items-center justify-center gap-2
+                bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-500
+                text-white
+              `}
+                >
+                  <span className="text-sm">⤴</span> Share
+                </button>
+
+                {/* Optional extra */}
+                <button
+                  type="button"
+                  onClick={() => {}}
+                  className={`
+                col-span-2 px-3 py-2 rounded-2xl border shadow-sm text-xs font-semibold transition active:scale-[0.97]
+                flex items-center justify-center gap-2
+                ${
+                  preferences.darkMode
+                    ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70"
+                    : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-700"
+                }
+              `}
+                >
+                  <span className="text-sm">⚙</span> Notification settings
+                </button>
+              </div>
+            </div>
+
+            {/* Filters */}
+            <div
+              className={`
+    mt-4 -mx-1 px-1
+    flex gap-2 overflow-x-auto scrollbar-hide
+  `}
+            >
+              {[
+                { label: "All", accent: "cyan" },
+                { label: "Unread", accent: "rose" },
+                { label: "Events", accent: "indigo" },
+                { label: "Reminders", accent: "amber" },
+                { label: "System", accent: "emerald" },
+              ].map((filter) => (
+                <button
+                  key={filter.label}
+                  type="button"
+                  onClick={() => {}}
+                  className={`
+        flex-shrink-0 px-4 py-2 rounded-2xl text-xs font-semibold
+        border shadow-sm transition active:scale-[0.97]
+        ${
+          preferences.darkMode
+            ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/75"
+            : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-700"
+        }
+      `}
+                >
+                  <span
+                    className={`
+          inline-flex items-center gap-2
+        `}
+                  >
+                    <span
+                      className={`
+            h-2 w-2 rounded-full
+            ${
+              filter.accent === "cyan"
+                ? "bg-cyan-400"
+                : filter.accent === "rose"
+                  ? "bg-rose-400"
+                  : filter.accent === "indigo"
+                    ? "bg-indigo-400"
+                    : filter.accent === "amber"
+                      ? "bg-amber-400"
+                      : "bg-emerald-400"
+            }
+          `}
+                    />
+                    {filter.label}
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            {/* Body */}
+            <div className="px-5 pt-4 pb-28">
+              {notifications.length < 1 ? (
+                <div className="min-h-[50vh] grid place-items-center">
+                  <div
+                    className={`
+                  w-full max-w-sm rounded-3xl border shadow-2xl backdrop-blur-md p-6 text-center
+                  ${
+                    preferences.darkMode
+                      ? "bg-white/5 border-white/10"
+                      : "bg-white/80 border-black/10"
+                  }
+                `}
+                  >
+                    <motion.p
+                      initial={{ y: 10, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.15 }}
+                      className="text-lg font-semibold"
+                    >
+                      All Caught Up!
+                    </motion.p>
+                    <p
+                      className={`text-sm mt-2 ${
+                        preferences.darkMode
+                          ? "text-white/60"
+                          : "text-slate-500"
                       }`}
                     >
-                      <motion.p
-                        initial={{ opacity: 0 }}
-                        animate={{
-                          opacity: 1,
-                          transition: {
-                            delay: 0.25,
-                            duration: 0.5,
-                          },
-                        }}
-                        className="text-sm"
-                      >
-                        <p className="text-xs">
-                          {notif.notifData.notes
-                            .split(/\|\|\||\n/)
-                            .map((line, index) => (
-                              <React.Fragment key={index}>
-                                {line}
-                                <br />
-                              </React.Fragment>
-                            ))}
-                        </p>
-                      </motion.p>
-                    </div>
-                  )}
-                </div>
-                <div>
-                  <div className="text-xs flex justify-between items-center p-1 px-2 mt-4 rounded-b-md bg-cyan-100 cursor-pointer text-black">
-                    {notif.read ? (
-                      <p
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          unReadNotif(notif.id);
-                        }}
-                        className="border-b border-b-cyan-300 cursor-pointer"
-                      >
-                        Mark As UnOpen
-                      </p>
-                    ) : (
-                      <p
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          readNotif(notif.id);
-                        }}
-                        className="border-b border-b-cyan-300 cursor-pointer"
-                      >
-                        Mark As Read
-                      </p>
-                    )}
-                    <p
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        initiateDeletion(notif.id);
-                      }}
-                      className="border-b border-b-rose-300 cursor-pointer"
-                    >
-                      Delete
+                      Nothing new right now.
                     </p>
+                    <MdSystemSecurityUpdateGood className="text-3xl mt-5 opacity-80 mx-auto" />
                   </div>
                 </div>
-              </motion.div>
-            ))
-          )}
+              ) : (
+                <div className="space-y-4">
+                  {notifications.map((notif) => (
+                    <motion.div
+                      key={notif.id}
+                      animate={
+                        notifOpen === notif.id
+                          ? { height: 240 }
+                          : { height: 132 }
+                      }
+                      transition={{
+                        type: "spring",
+                        stiffness: 220,
+                        damping: 20,
+                      }}
+                      onClick={() => openNotif(notif.id, notif.read)}
+                      className={`
+                    relative rounded-3xl border shadow-sm overflow-hidden cursor-pointer
+                    transition hover:shadow-md
+                    ${
+                      preferences.darkMode
+                        ? "bg-white/5 border-white/10"
+                        : "bg-white border-black/10"
+                    }
+                  `}
+                    >
+                      {/* Unread dot */}
+                      {!notif.read && (
+                        <div className="absolute top-4 left-4 h-2.5 w-2.5 rounded-full bg-gradient-to-tr from-rose-400 to-red-400 shadow-sm" />
+                      )}
+
+                      <div className="px-5 py-4 h-full flex flex-col justify-between">
+                        <div>
+                          <div className="flex justify-between items-start gap-3">
+                            <div className="min-w-0">
+                              <p
+                                className={`text-[11px] font-semibold ${
+                                  preferences.darkMode
+                                    ? "text-white/60"
+                                    : "text-slate-500"
+                                }`}
+                              >
+                                {new Date(notif.time).toLocaleDateString(
+                                  "en-US",
+                                  {
+                                    weekday: "short",
+                                    month: "long",
+                                    year: "numeric",
+                                  },
+                                )}{" "}
+                                • {formatTime(new Date(notif.time))}
+                              </p>
+
+                              <p className="text-sm font-semibold mt-2 truncate">
+                                {notif.notifData.title}
+                              </p>
+                            </div>
+
+                            <div
+                              className={`
+                            grid place-items-center h-10 w-10 rounded-2xl border shadow-sm flex-shrink-0
+                            ${
+                              preferences.darkMode
+                                ? "bg-white/5 border-white/10 text-white/70"
+                                : "bg-black/[0.03] border-black/10 text-slate-600"
+                            }
+                          `}
+                            >
+                              {getIcon(notif.type)}
+                            </div>
+                          </div>
+
+                          {notifOpen === notif.id && (
+                            <div
+                              className={`
+                            mt-3 p-4 rounded-2xl border shadow-inner max-h-[120px] overflow-y-auto scrollbar-slick
+                            ${
+                              preferences.darkMode
+                                ? "bg-white/5 border-white/10 text-white/75"
+                                : "bg-black/[0.03] border-black/10 text-slate-700"
+                            }
+                          `}
+                            >
+                              <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{
+                                  opacity: 1,
+                                  transition: { delay: 0.12 },
+                                }}
+                                className="text-xs leading-relaxed"
+                              >
+                                {notif.notifData.notes
+                                  .split(/\|\|\||\n/)
+                                  .map((line, index) => (
+                                    <React.Fragment key={index}>
+                                      {line}
+                                      <br />
+                                    </React.Fragment>
+                                  ))}
+                              </motion.div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Per-notif actions */}
+                        <div className="mt-4 flex justify-between items-center gap-3">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              notif.read
+                                ? unReadNotif(notif.id)
+                                : readNotif(notif.id);
+                            }}
+                            className={`
+                          px-3 py-2 rounded-2xl text-[11px] font-semibold border shadow-sm transition active:scale-[0.97]
+                          ${
+                            preferences.darkMode
+                              ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/75"
+                              : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-700"
+                          }
+                        `}
+                          >
+                            {notif.read ? "Mark unread" : "Mark read"}
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              initiateDeletion(notif.id);
+                            }}
+                            className={`
+                          px-3 py-2 rounded-2xl text-[11px] font-semibold border shadow-sm transition active:scale-[0.97]
+                          ${
+                            preferences.darkMode
+                              ? "bg-rose-500/15 border-rose-300/20 hover:bg-rose-500/20 text-rose-100"
+                              : "bg-rose-50 border-rose-200 hover:bg-rose-100 text-rose-700"
+                          }
+                        `}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Bottom handle bar */}
+            <div
+              className={`
+            sticky bottom-0 z-[40]
+            px-5 py-4
+            border-t
+            ${preferences.darkMode ? "border-white/10" : "border-black/10"}
+            ${
+              preferences.darkMode
+                ? "bg-[#161616]/85 text-white"
+                : "bg-white/70 text-slate-900"
+            }
+            backdrop-blur-md
+            flex justify-between items-center
+            pointer-events-auto
+          `}
+              style={{ touchAction: "none" }}
+              onPointerDown={startDrag}
+            >
+              <button
+                onClick={() => setShowNotifs(false)}
+                className={`
+              px-4 py-2 rounded-2xl text-sm font-semibold border shadow-sm transition active:scale-[0.97]
+              ${
+                preferences.darkMode
+                  ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/80"
+                  : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-700"
+              }
+            `}
+                type="button"
+              >
+                Close
+              </button>
+
+              <div
+                className={`
+              grid place-items-center h-10 w-16 rounded-2xl border shadow-sm
+              ${
+                preferences.darkMode
+                  ? "bg-white/5 border-white/10 text-white/60"
+                  : "bg-black/[0.03] border-black/10 text-slate-500"
+              }
+            `}
+              >
+                <RxDragHandleHorizontal className="text-xl" />
+              </div>
+            </div>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>

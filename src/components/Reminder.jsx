@@ -20,6 +20,7 @@ const Reminder = ({ reminder, showOpenEvent = true }) => {
     events = [],
     setReminders,
     user,
+    preferences,
   } = useContext(UserContext);
   const { setEvent } = useContext(InteractiveContext);
   const { dateObj } = useContext(DatesContext);
