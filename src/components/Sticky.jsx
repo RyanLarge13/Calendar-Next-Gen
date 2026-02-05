@@ -13,6 +13,7 @@ import UserContext from "../context/UserContext";
 import InteractiveContext from "../context/InteractiveContext";
 import "react-quill/dist/quill.snow.css";
 import StickyBody from "./Stickies/StickyBody.jsx";
+import { tailwindBgToHex } from "../utils/helpers.js";
 
 const Sticky = ({ sticky, index }) => {
   const { setSystemNotif, setStickies, stickies, preferences } =
@@ -167,7 +168,7 @@ const Sticky = ({ sticky, index }) => {
       {/* Header */}
       <div
         className={`
-      ${minimize ? "opacity-0 pointer-events-none" : ""}
+      ${minimize ? "opacity-0 z-[999] pointer-events-none" : ""}
       relative px-3 py-2 flex justify-between items-center
       border-b
       ${preferences.darkMode ? "border-white/10" : "border-black/10"}
@@ -273,7 +274,22 @@ const Sticky = ({ sticky, index }) => {
           </button>
         </div>
       )}
-      <StickyBody sticky={sticky} minimize={minimize} />
+      {/* Title */}
+      <input
+        defaultValue={sticky.title}
+        className={`
+                  w-full bg-transparent
+                  text-lg font-semibold tracking-tight
+                  outline-none
+                  border-b pb-2 mt-2 pl-5
+                  ${preferences.darkMode ? "border-white/10 text-white placeholder:text-white/50" : "border-black/10 text-slate-900 placeholder:text-slate-400"}
+                `}
+        style={{ caretColor: tailwindBgToHex(sticky.color) }}
+        placeholder="Title…"
+      />
+      <div className="overflow-y-auto absolute inset-0 top-[98px] pb-10 scrollbar-slick">
+        <StickyBody sticky={sticky} minimize={minimize} />
+      </div>
     </motion.div>
   );
 };

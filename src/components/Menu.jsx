@@ -15,7 +15,7 @@ import { formatDbText, formatTime } from "../utils/helpers.js";
 import { MdOutlineOpenInNew } from "react-icons/md";
 
 const Menu = () => {
-  const { menu, listUpdate, setListUpdate, showCategory, setMenu } =
+  const { menu, listUpdate, setListUpdate, showCategory, setMenu, setEvent } =
     useContext(InteractiveContext);
   const { lists, setLists, preferences, events } = useContext(UserContext);
   const { dateObj } = useContext(DatesContext);

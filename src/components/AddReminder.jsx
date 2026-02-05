@@ -548,7 +548,7 @@ const AddReminder = () => {
                   preferences.darkMode ? "text-white/70" : "text-slate-600"
                 }`}
               >
-                Is this reminder for an event today?
+                Is this reminder for an event soon?
               </p>
 
               {todaysEvents.events.map((event) => (

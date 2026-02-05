@@ -1,6 +1,6 @@
-import { useContext } from "react";
+import { useContext, useState, useEffect } from "react";
 import ReactQuill from "react-quill";
-import { tailwindBgToHex } from "../utils/helpers.js";
+import { tailwindBgToHex } from "../../utils/helpers.js";
 import UserContext from "../../context/UserContext";
 import { updateSticky } from "../../utils/api.js";
 
@@ -76,45 +76,22 @@ const StickyBody = ({ sticky, minimize = false }) => {
   };
 
   return (
-    <div
-      className={`
-        ${minimize ? "opacity-0 pointer-events-none" : "opacity-100"}
-        absolute inset-0
-        px-4 pt-4 pb-16
-        overflow-y-auto overflow-x-hidden scrollbar-hide
-      `}
-    >
-      <div className="space-y-3">
-        {/* Title */}
-        <input
-          defaultValue={sticky.title}
-          className={`
-            w-full bg-transparent
-            text-2xl font-semibold tracking-tight
-            outline-none
-            border-b pb-2
-            ${preferences.darkMode ? "border-white/10 text-white placeholder:text-white/50" : "border-black/10 text-slate-900 placeholder:text-slate-400"}
-          `}
-          style={{ caretColor: tailwindBgToHex(sticky.color) }}
-          placeholder="Title…"
-        />
-
-        {/* Editor container */}
-        <div
-          className={`
+    <div className="space-y-3">
+      {/* Editor container */}
+      <div
+        className={`
             rounded-2xl border shadow-sm overflow-hidden
             ${preferences.darkMode ? "border-white/10 bg-white/5" : "border-black/10 bg-white"}
           `}
-        >
-          <ReactQuill
-            modules={modules}
-            formats={formats}
-            value={editText}
-            onBlur={handleSave}
-            onChange={handleTextChange}
-            className="h-full scrollbar-slick"
-          />
-        </div>
+      >
+        <ReactQuill
+          modules={modules}
+          formats={formats}
+          value={editText}
+          onBlur={handleSave}
+          onChange={handleTextChange}
+          className="h-full scrollbar-slick p-5"
+        />
       </div>
     </div>
   );

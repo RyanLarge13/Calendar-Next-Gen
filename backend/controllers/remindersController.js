@@ -140,7 +140,7 @@ export const addNewReminder = async (req, res) => {
           reminders: {
             reminder: true,
             eventReminders: [
-              ...existingEvent.reminders.eventReminders,
+              ...(existingEvent?.reminders?.eventReminders || []),
               returnedReminder,
             ],
           },

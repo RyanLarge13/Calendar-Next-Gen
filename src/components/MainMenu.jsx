@@ -14,10 +14,9 @@ import InteractiveContext from "../context/InteractiveContext";
 import weatherCodeMap from "../utils/weatherCodes";
 import DatesContext from "../context/DatesContext";
 import TaskItems from "./TaskItems";
-import { tailwindBgToHex } from "../utils/helpers";
-import { AiFillCloseCircle } from "react-icons/ai";
 import StickyBody from "./Stickies/StickyBody";
 import { weekDays } from "../constants";
+import { tailwindBgToHex } from "../utils/helpers";
 
 const Dashboard = ({ timeOfDay }) => {
   const {
@@ -561,11 +560,11 @@ const Dashboard = ({ timeOfDay }) => {
               </span>
             </div>
 
-            <div className="p-5">
+            <div className="">
               {stickies?.length > 0 ? (
                 <div
                   className={`
-                rounded-2xl border shadow-sm p-4
+                rounded-2xl border shadow-sm
                 ${
                   preferences.darkMode
                     ? "border-white/10 bg-white/5"
@@ -573,14 +572,29 @@ const Dashboard = ({ timeOfDay }) => {
                 }
               `}
                 >
-                  <div className="flex items-start justify-between gap-3">
-                    <p className="text-sm font-semibold">{stickies[0].title}</p>
+                  <div className="flex items-start justify-between gap-3 py-2 px-3">
+                    {/* Title */}
+                    <input
+                      defaultValue={stickies[0].title}
+                      className={`
+                                                w-full mt-1 bg-transparent
+                                                text-lg font-semibold tracking-tight
+                                                outline-none
+                                                border-b pb-2
+                                                ${preferences.darkMode ? "border-white/10 text-white placeholder:text-white/50" : "border-black/10 text-slate-900 placeholder:text-slate-400"}
+                                              `}
+                      style={{ caretColor: tailwindBgToHex(stickies[0].color) }}
+                      placeholder="Title…"
+                    />
+                    {/* <p className="text-sm font-semibold">{stickies[0].title}</p> */}
                     <span
-                      className={`${stickies[0].color} h-3.5 w-3.5 rounded-full ring-1 ring-black/10`}
+                      className={`${stickies[0].color} h-3.5 mt-3 w-3.5 rounded-full ring-1 ring-black/10`}
                     />
                   </div>
 
-                  <StickyBody sticky={stickies[0]} />
+                  <div className="max-h-[700px] overflow-y-auto scrollbar-slick">
+                    <StickyBody sticky={stickies[0]} />
+                  </div>
                 </div>
               ) : (
                 <p
