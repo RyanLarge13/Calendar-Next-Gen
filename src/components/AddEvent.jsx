@@ -190,7 +190,7 @@ const AddEvent = () => {
         attachmentLength: attachments.length,
         reminders: {
           reminder: reminderOn,
-          remindersToSave: newReminders,
+          eventReminders: newReminders,
         },
         repeats: {
           repeat,

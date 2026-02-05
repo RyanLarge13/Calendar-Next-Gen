@@ -48,12 +48,14 @@ const AddReminder = () => {
       const year = currentDate.getFullYear();
       const hours = new Date(time).getHours();
       const minutes = new Date(time).getMinutes();
-      // console.log(new Date(year, month, day, hours, minutes).toString());
-      return new Date(year, month, day, hours, minutes).toString();
+      return new Date(year, month, day, hours, minutes);
     };
 
     if (time) {
-      setTime(dateTime());
+      const newTime = dateTime();
+
+      setTime(newTime);
+      setTimeString(newTime.toString());
     }
   }, [string]);
 
@@ -62,12 +64,14 @@ const AddReminder = () => {
     const key = `${date.getFullYear()}-${date.getMonth()}`;
 
     if (eventMap.has(key)) {
+      // Test this out, see about rendering the entire months events. Or maybe
+      // We should create a new event selection UI
       const events =
-        eventMap
-          .get(key)
-          ?.events.filter(
-            (e) => new Date(e.date).toLocaleDateString() === string,
-          ) || [];
+        eventMap.get(key)?.events ||
+        // .filter(
+        // (e) => new Date(e.date).toLocaleDateString() === string,
+        // )
+        [];
 
       if (events.length < 1) {
         setTodaysEvent({ loading: false, events: [] });
@@ -77,7 +81,7 @@ const AddReminder = () => {
     } else {
       setTodaysEvent({ loading: false, events: [] });
     }
-  }, [eventMap]);
+  }, [eventMap, string]);
 
   const getTime = () => {
     if (quickTimeSelect.fifteen) {

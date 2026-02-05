@@ -21,6 +21,7 @@ import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext";
 import DatesContext from "../context/DatesContext.jsx";
 import SuggestCities from "./SuggestCities.jsx";
+import Reminder from "./Reminder.jsx";
 
 const Event = ({ dayEvents }) => {
   const { event, setEvent, setAddNewEvent, setType, menu, setMenu } =
@@ -551,36 +552,39 @@ const Event = ({ dayEvents }) => {
               </button>
             </div>
             {event.reminders.reminder ? (
-              <motion.div
-                key={event.reminders.reminderTimeString}
-                className={`${
-                  new Date(event.reminders.when) < dateObj
-                    ? "border-l-4 border-rose-400"
-                    : new Date(event.reminders.when).toLocaleDateString() ===
-                        dateObj.toLocaleDateString()
-                      ? "border-l-4 border-amber-400"
-                      : "border-l-4 border-cyan-400"
-                } min-w-[200px] max-w-[200px] shadow-lg p-4 my-3 mx-2 rounded-2xl text-gray-900`}
-              >
-                <div className="">
-                  {/* Time + Title */}
-                  <div>
-                    <div className="flex justify-between items-center">
-                      <p className="text-sm font-semibold text-gray-700">
-                        {new Date(event.reminders.when).toLocaleTimeString(
-                          "en-US",
-                          {
-                            timeZoneName: "short",
-                            hour: "numeric",
-                            minute: "numeric",
-                          },
-                        )}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
+              event.reminders?.eventReminders?.map((r) => {
+                <Reminder key={r.id} reminder={r} showOpenEvent={false} />;
+              })
             ) : (
+              // <motion.div
+              //   key={event.reminders.reminderTimeString}
+              //   className={`${
+              //     new Date(event.reminders.when) < dateObj
+              //       ? "border-l-4 border-rose-400"
+              //       : new Date(event.reminders.when).toLocaleDateString() ===
+              //           dateObj.toLocaleDateString()
+              //         ? "border-l-4 border-amber-400"
+              //         : "border-l-4 border-cyan-400"
+              //   } min-w-[200px] max-w-[200px] shadow-lg p-4 my-3 mx-2 rounded-2xl text-gray-900`}
+              // >
+              //   <div className="">
+              //     {/* Time + Title */}
+              //     <div>
+              //       <div className="flex justify-between items-center">
+              //         <p className="text-sm font-semibold text-gray-700">
+              //           {new Date(event.reminders.when).toLocaleTimeString(
+              //             "en-US",
+              //             {
+              //               timeZoneName: "short",
+              //               hour: "numeric",
+              //               minute: "numeric",
+              //             },
+              //           )}
+              //         </p>
+              //       </div>
+              //     </div>
+              //   </div>
+              // </motion.div>
               <p className="text-sm text-gray-500">No reminders set</p>
             )}
           </div>

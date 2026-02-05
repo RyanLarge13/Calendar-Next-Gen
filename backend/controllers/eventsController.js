@@ -49,7 +49,7 @@ const createReminders = async (event) => {
   // Notifications that are not linked to any reminder
   let newNotifsOnly = [];
 
-  const remindersToSave = event.reminders.remindersToSave;
+  const remindersToSave = event.reminders.eventReminders;
 
   if (remindersToSave.length < 1) {
     return;

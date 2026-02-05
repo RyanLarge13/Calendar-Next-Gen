@@ -92,7 +92,7 @@ export const updateReminderComplete = async (req, res) => {
     res.status(200).json({ message: "reminder update" });
   } catch (err) {
     console.log(
-      "Error updating reminder in database for completing a reminder"
+      "Error updating reminder in database for completing a reminder",
     );
     console.log(err);
     res
@@ -104,10 +104,11 @@ export const updateReminderComplete = async (req, res) => {
 export const addNewReminder = async (req, res) => {
   const { title, notes, time, eventRefId } = req.body.reminder;
   const { id } = req.user;
+  const stringTime = new Date(time).toString();
   const newReminder = {
     title,
     notes,
-    time,
+    stringTime,
     eventRefId,
     userId: id,
   };
@@ -115,7 +116,7 @@ export const addNewReminder = async (req, res) => {
     type: "reminder",
     read: false,
     readTime: null,
-    time,
+    stringTime,
     notifData: newReminder,
     sentNotification: false,
     sentWebPush: false,
@@ -135,7 +136,15 @@ export const addNewReminder = async (req, res) => {
     if (existingEvent) {
       await prisma.event.update({
         where: { id: eventRefId },
-        data: { reminders: returnedReminder },
+        data: {
+          reminders: {
+            ...existingEvent.reminders,
+            eventReminders: [
+              ...existingEvent.reminders.eventReminders,
+              returnedReminder,
+            ],
+          },
+        },
       });
     }
   }
