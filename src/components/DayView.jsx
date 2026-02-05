@@ -18,6 +18,7 @@ import { createPortal } from "react-dom";
 import { BiAlarmSnooze, BiCalendarEvent } from "react-icons/bi";
 import { BsFillPenFill, BsAlarmFill } from "react-icons/bs";
 import { formatTime } from "../utils/helpers";
+import Reminder from "./Reminder.jsx";
 
 const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
   const { setEvent, setAddEventWithStartEndTime, setType, setAddNewEvent } =
@@ -146,10 +147,10 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
       }
       if (times.length > 0) {
         const currentSelection = new Date(
-          `${theDay.toDateString()} ${findTime(times[0])}`
+          `${theDay.toDateString()} ${findTime(times[0])}`,
         );
         const newSelection = new Date(
-          `${theDay.toDateString()} ${findTime(staticString)}`
+          `${theDay.toDateString()} ${findTime(staticString)}`,
         );
         if (
           isNaN(currentSelection.getTime()) ||
@@ -159,7 +160,7 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
           return;
         }
         const [earlierTime, laterTime] = [currentSelection, newSelection].sort(
-          (a, b) => a - b
+          (a, b) => a - b,
         );
         let timesArray = [];
         let startTime = new Date(earlierTime);
@@ -168,7 +169,7 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
             startTime.toLocaleTimeString([], {
               hour: "numeric",
               minute: "2-digit",
-            })
+            }),
           );
           startTime.setMinutes(startTime.getMinutes() + 30);
         }
@@ -224,7 +225,7 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
                 <p className="text-base font-semibold">
                   <span className="text-cyan-600 dark:text-cyan-400">
                     {new Date(
-                      `${theDay.toDateString()} ${findTime(times[0])}`
+                      `${theDay.toDateString()} ${findTime(times[0])}`,
                     ).toLocaleTimeString("en-US", {
                       hour: "numeric",
                       minute: "2-digit",
@@ -234,8 +235,8 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
                   <span className="text-cyan-600 dark:text-cyan-400">
                     {new Date(
                       `${theDay.toDateString()} ${findTime(
-                        times[times.length - 1]
-                      )}`
+                        times[times.length - 1],
+                      )}`,
                     ).toLocaleTimeString("en-US", {
                       hour: "numeric",
                       minute: "2-digit",
@@ -271,7 +272,7 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
                 </div>
               </motion.div>
             </AnimatePresence>,
-            document.body
+            document.body,
           )
         : null}
 
@@ -307,16 +308,16 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
                     times.includes(staticTime.string.trim())
                       ? "#67e8f9"
                       : preferences.darkMode
-                      ? "#222"
-                      : "#fff"
+                        ? "#222"
+                        : "#fff"
                   }`,
                 }}
                 className={`${index === 0 ? "border-b border-t" : "border-b"} ${
                   times.includes(staticTime.string.trim())
                     ? "text-black"
                     : preferences.darkMode
-                    ? "text-white"
-                    : "text-black"
+                      ? "text-white"
+                      : "text-black"
                 }`}
               >
                 <p className="text-[11px]">{staticTime.string}</p>
@@ -331,7 +332,7 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
               style={{
                 height: `${calcDayEventHeight(
                   new Date(event.start.startTime),
-                  new Date(event.end.endTime)
+                  new Date(event.end.endTime),
                 )}px`,
                 top: fromTop(new Date(event.start.startTime)),
               }}
@@ -385,68 +386,12 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
                 new Date(reminder.time) < dateObj
                   ? "border-l-4 border-rose-400"
                   : new Date(reminder.time).toLocaleDateString() ===
-                    dateObj.toLocaleDateString()
-                  ? "border-l-4 border-amber-400"
-                  : "border-l-4 border-cyan-400"
+                      dateObj.toLocaleDateString()
+                    ? "border-l-4 border-amber-400"
+                    : "border-l-4 border-cyan-400"
               } absolute left-20 p-4 my-3 rounded-2xl text-gray-900`}
             >
-              <div className="space-y-3">
-                {/* Date Row */}
-                <div className="flex justify-between items-center text-sm font-medium text-gray-600">
-                  <p>
-                    {new Date(reminder.time).toLocaleDateString("en-US", {
-                      weekday: "short",
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </p>
-                  {reminder.eventRefId ? (
-                    <BiCalendarEvent className="text-xl text-gray-500" />
-                  ) : (
-                    <BiAlarmSnooze className="text-xl text-gray-500" />
-                  )}
-                </div>
-
-                {/* Time + Title */}
-                <div className="flex items-center gap-3">
-                  <div className="flex flex-col">
-                    <p className="text-sm font-semibold text-gray-700">
-                      @{" "}
-                      {new Date(reminder.time).toLocaleTimeString("en-US", {
-                        timeZoneName: "short",
-                      })}
-                    </p>
-                    <div className="flex items-center gap-1 text-xs text-gray-500">
-                      <BsAlarmFill className="text-gray-400" />
-                      <p>{formatTime(new Date(reminder.time))}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex-1 p-3 bg-gray-50 rounded-xl shadow-inner cursor-pointer">
-                    <p className="text-base font-semibold">{reminder.title}</p>
-                  </div>
-                </div>
-
-                {/* Notes */}
-                {reminder.notes && (
-                  <div className="p-3 bg-gray-50 rounded-xl shadow-inner flex justify-between items-start text-xs text-gray-600">
-                    <p className="whitespace-pre-wrap">{reminder.notes}</p>
-                    <BsFillPenFill className="text-gray-400 ml-2 shrink-0" />
-                  </div>
-                )}
-
-                {/* Open Event Button */}
-                {reminder.eventRefId && (
-                  <button
-                    onClick={() => openRelatedEvent(reminder.eventRefId)}
-                    className="w-full px-4 py-2 flex justify-center items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 text-white text-sm font-medium hover:from-cyan-600 hover:to-blue-600 transition-colors duration-200"
-                  >
-                    Open Event
-                    <MdOpenInNew />
-                  </button>
-                )}
-              </div>
+              <Reminder reminder={reminder} />
             </motion.div>
           ))}
         </div>
