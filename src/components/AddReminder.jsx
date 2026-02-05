@@ -8,6 +8,7 @@ import UserContext from "../context/UserContext";
 import DatesContext from "../context/DatesContext";
 import { BsAlarmFill, BsClock } from "react-icons/bs";
 import { MdClose } from "react-icons/md";
+import { makeDateTime } from "../utils/helpers";
 
 const AddReminder = () => {
   const { setMenu, setAddNewEvent, setType, setShowCategory } =
@@ -248,6 +249,24 @@ const AddReminder = () => {
     });
   };
 
+  const saveReminderTimes = (values) => {
+    //     setDateTime={setTime}
+    // setDateTimeString={setTimeString}
+    const { hour, minutes, meridiem } = values;
+
+    const time = makeDateTime(string, hour, minutes, meridiem);
+
+    setTime(time);
+    setTimeString(
+      time.toLocaleTimeString("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      }),
+    );
+  };
+
   return (
     <div
       className={`flex flex-col h-screen pt-20 p-2 justify-between ${
@@ -338,9 +357,11 @@ const AddReminder = () => {
               <div className="mt-4">
                 {!time ? (
                   <TimeSetter
-                    setDateTime={setTime}
-                    setDateTimeString={setTimeString}
-                    openTimeSetter={setAddTime}
+                    saveData={saveReminderTimes}
+                    cancelTimeSetter={() => {
+                      setTime(null);
+                      setAddTime(false);
+                    }}
                   />
                 ) : (
                   <div

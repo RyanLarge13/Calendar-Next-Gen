@@ -12,7 +12,13 @@ const TimeSetter = ({ saveData, cancelTimeSetter }) => {
     meridiem: "AM",
   });
 
-  const resetValues = () => {};
+  const resetValues = () => {
+    setValue({
+      hour: 12,
+      minutes: 0o0,
+      meridiem: "AM",
+    });
+  };
 
   return (
     <motion.div
@@ -22,7 +28,7 @@ const TimeSetter = ({ saveData, cancelTimeSetter }) => {
       transition={{ type: "spring", stiffness: 260, damping: 22 }}
       className={`
     fixed z-[999]
-    top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+    top-1/2 left-1/2 !-translate-x-1/2 !-translate-y-1/2
     w-[92vw] max-w-sm
     rounded-3xl border shadow-2xl overflow-hidden
     backdrop-blur-md
@@ -76,19 +82,18 @@ const TimeSetter = ({ saveData, cancelTimeSetter }) => {
       </div>
 
       {/* Body */}
-      <div className="px-4 py-4">
+      <div className="">
         <div
           className={`
       rounded-2xl border shadow-sm
       ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-white border-black/10"}
       overflow-hidden
-    `}
-          style={{ height: 210 }} // important: consistent wheel height
+    `} // important: consistent wheel height
         >
           <WheelPicker value={value} setValue={setValue} />
         </div>
 
-        <div className="mt-3 flex justify-between items-center">
+        <div className="p-3 flex justify-between items-center">
           <p
             className={`text-[11px] ${preferences.darkMode ? "text-white/55" : "text-slate-500"}`}
           >
@@ -113,8 +118,8 @@ const TimeSetter = ({ saveData, cancelTimeSetter }) => {
         active:scale-[0.97]
         ${
           preferences.darkMode
-            ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70 hover:text-rose-200"
-            : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600 hover:text-rose-600"
+            ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70 hover:text-emerald-200"
+            : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600 hover:text-emerald-300"
         }
       `}
           >

@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { motion } from "framer-motion";
 import { colors } from "../constants";
-import { getTimeZone } from "../utils/helpers";
+import { getTimeZone, makeDateTime } from "../utils/helpers";
 import { MdLocationPin, MdFreeCancellation } from "react-icons/md";
 import { BsFillCalendarPlusFill } from "react-icons/bs";
 import { AiFillCloseCircle } from "react-icons/ai";
@@ -324,34 +324,17 @@ const AddEvent = () => {
     setAttachments(newFiles);
   };
 
-  const makeDateTime = (hour, minute, meridiem) => {
-    // Parse date parts
-    const [month, day, year] = string.split("/").map(Number);
-
-    // Convert 2-digit year → 4-digit year
-    const fullYear = year < 100 ? 2000 + year : year;
-
-    // Convert 12-hour → 24-hour
-    let hours24 = hour % 12;
-    if (meridiem === "PM") hours24 += 12;
-
-    return new Date(
-      fullYear,
-      month - 1, // JS months are 0-based
-      day,
-      hours24,
-      minute,
-      0,
-      0,
-    );
-  };
-
   const addReminderToList = (values) => {
     const { hour, minutes, meridiem } = values;
 
     setShowTimePicker(false);
 
-    const reminderTime = makeDateTime(hour, minutes, meridiem).toString();
+    const reminderTime = makeDateTime(
+      string,
+      hour,
+      minutes,
+      meridiem,
+    ).toString();
 
     const newReminder = {
       id: uuidv4(),
@@ -367,7 +350,7 @@ const AddEvent = () => {
 
     setStartTime(false);
 
-    const startTime = makeDateTime(hour, minutes, meridiem);
+    const startTime = makeDateTime(string, hour, minutes, meridiem);
     const startTimeString = startTime.toString();
 
     setStartWhen(startTime);
@@ -379,7 +362,7 @@ const AddEvent = () => {
 
     setEndTime(false);
 
-    const startTime = makeDateTime(hour, minutes, meridiem);
+    const startTime = makeDateTime(string, hour, minutes, meridiem);
     const startTimeString = startTime.toString();
 
     setEndWhen(startTime);

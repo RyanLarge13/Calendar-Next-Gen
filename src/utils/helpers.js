@@ -48,8 +48,8 @@ export const getTimeZone = async (lng, lat) => {
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const response = await fetch(
     `https://maps.googleapis.com/maps/api/timezone/json?location=${lat},${lng}&timestamp=${Math.floor(
-      Date.now() / 1000
-    )}&key=${apiKey}`
+      Date.now() / 1000,
+    )}&key=${apiKey}`,
   );
   const data = await response.json();
   return data.timeZoneId;
@@ -172,6 +172,28 @@ export const hasRepeatWeekly = (repeaters, date) => {
 export const hasRepeatDaily = (repeaters, date) => {
   const target = normalizeDate(date);
   return repeaters.some(
-    (r) => normalizeDate(new Date(r)).getTime() === target.getTime()
+    (r) => normalizeDate(new Date(r)).getTime() === target.getTime(),
+  );
+};
+
+export const makeDateTime = (string, hour, minute, meridiem) => {
+  // Parse date parts
+  const [month, day, year] = string.split("/").map(Number);
+
+  // Convert 2-digit year → 4-digit year
+  const fullYear = year < 100 ? 2000 + year : year;
+
+  // Convert 12-hour → 24-hour
+  let hours24 = hour % 12;
+  if (meridiem === "PM") hours24 += 12;
+
+  return new Date(
+    fullYear,
+    month - 1, // JS months are 0-based
+    day,
+    hours24,
+    minute,
+    0,
+    0,
   );
 };
