@@ -19,7 +19,7 @@ const TaskItems = ({ task, styles = "" }) => {
   const [newTitle, setNewTitle] = useState(task.title);
   const [titleTracker, setTitleTracker] = useState(task.title);
 
-  const taskItemInputref = useRef(null);
+  const taskItemInputRef = useRef(null);
 
   const addNewTaskItem = async () => {
     const newTask = {
@@ -32,8 +32,8 @@ const TaskItems = ({ task, styles = "" }) => {
     setItemsCopy(newItems);
     setNewTaskText("");
 
-    if (taskItemInputref.current) {
-      taskItemInputref.focus();
+    if (taskItemInputRef.current) {
+      taskItemInputRef.current.focus();
     }
 
     const update = {
@@ -210,7 +210,7 @@ const TaskItems = ({ task, styles = "" }) => {
           className="flex-1"
         >
           <input
-            ref={taskItemInputref}
+            ref={taskItemInputRef}
             type="text"
             className="rounded-xl shadow-md px-4 py-2 outline-none w-full focus:ring-2 focus:ring-blue-400"
             placeholder="New Item"

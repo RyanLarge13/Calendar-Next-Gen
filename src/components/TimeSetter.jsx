@@ -2,15 +2,25 @@ import { useState, useContext } from "react";
 import { motion } from "framer-motion";
 import UserContext from "../context/UserContext";
 import WheelPicker from "./WheelPicker";
+import DatesContext from "../context/DatesContext";
+import Portal from "./Portal";
+import FullDatePicker from "./FullDatePicker";
 
-const TimeSetter = ({ saveData, cancelTimeSetter }) => {
+const TimeSetter = ({
+  saveData,
+  cancelTimeSetter,
+  dateChangerCallback = () => {},
+}) => {
   const { preferences } = useContext(UserContext);
+  const { string } = useContext(DatesContext);
 
   const [value, setValue] = useState({
     hour: 12,
     minutes: 0o0,
     meridiem: "AM",
   });
+  const [changeDateState, setChangeDateState] = useState(false);
+  const [tempDateState, setTempDateState] = useState(string);
 
   const resetValues = () => {
     setValue({
@@ -18,6 +28,16 @@ const TimeSetter = ({ saveData, cancelTimeSetter }) => {
       minutes: 0o0,
       meridiem: "AM",
     });
+  };
+
+  const changeDate = () => {
+    setChangeDateState(true);
+  };
+
+  const setANewDate = (newDateString) => {
+    setChangeDateState(false);
+    dateChangerCallback(newDateString);
+    setTempDateState(newDateString);
   };
 
   return (
@@ -35,6 +55,13 @@ const TimeSetter = ({ saveData, cancelTimeSetter }) => {
     ${preferences.darkMode ? "bg-[#161616]/90 border-white/10 text-white" : "bg-white/90 border-black/10 text-slate-900"}
   `}
     >
+      {/* Date Changer */}
+      {changeDateState ? (
+        <Portal>
+          <FullDatePicker stateSetter={setANewDate} />
+        </Portal>
+      ) : null}
+
       {/* Header */}
       <div
         className={`
@@ -59,11 +86,32 @@ const TimeSetter = ({ saveData, cancelTimeSetter }) => {
           Cancel
         </button>
 
-        <p
-          className={`text-xs font-semibold ${preferences.darkMode ? "text-white/60" : "text-slate-500"}`}
-        >
-          Select time
-        </p>
+        <div>
+          <p
+            className={`text-xs text-center font-semibold ${preferences.darkMode ? "text-white/60" : "text-slate-500"}`}
+          >
+            Select time for
+          </p>
+          <button
+            onClick={changeDate}
+            className={`
+        px-2 py-1 mt-1 rounded-2xl border shadow-sm text-xs font-semibold transition
+        active:scale-[0.97]
+        ${
+          preferences.darkMode
+            ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/80"
+            : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-700"
+        }
+      `}
+          >
+            {new Date(tempDateState).toLocaleDateString("en-US", {
+              weekday: "short",
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })}
+          </button>
+        </div>
 
         <button
           onClick={resetValues}
@@ -83,13 +131,7 @@ const TimeSetter = ({ saveData, cancelTimeSetter }) => {
 
       {/* Body */}
       <div className="">
-        <div
-          className={`
-      rounded-2xl border shadow-sm
-      ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-white border-black/10"}
-      overflow-hidden
-    `} // important: consistent wheel height
-        >
+        <div className="rounded-2xl shadow-sm overflow-hidden">
           <WheelPicker value={value} setValue={setValue} />
         </div>
 

@@ -21,7 +21,7 @@ const AddReminder = () => {
     preferences,
     eventMap,
   } = useContext(UserContext);
-  const { setOpenModal, string } = useContext(DatesContext);
+  const { setOpenModal, string, setString } = useContext(DatesContext);
 
   const [time, setTime] = useState(null);
   const [title, setTitle] = useState("");
@@ -257,14 +257,16 @@ const AddReminder = () => {
     const time = makeDateTime(string, hour, minutes, meridiem);
 
     setTime(time);
-    setTimeString(
-      time.toLocaleTimeString("en-US", {
-        weekday: "short",
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      }),
-    );
+
+    const newTimeString = time.toLocaleTimeString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+    });
+    setTimeString(newTimeString);
   };
 
   return (
@@ -362,6 +364,7 @@ const AddReminder = () => {
                       setTime(null);
                       setAddTime(false);
                     }}
+                    dateChangerCallback={(newDtStr) => setString(newDtStr)}
                   />
                 ) : (
                   <div

@@ -8,6 +8,7 @@ import {
 import InteractiveContext from "../context/InteractiveContext";
 import DatesContext from "../context/DatesContext";
 import UserContext from "../context/UserContext.jsx";
+import Portal from "./Portal.jsx";
 
 const DatePicker = () => {
   const { setShowDatePicker } = useContext(InteractiveContext);
@@ -49,7 +50,7 @@ const DatePicker = () => {
       const closestIndex = Math.round(scrollPosition / itemHeight);
       const lastIndex = staticMonths.length - 1;
       const clampedIndex = Math.round(
-        Math.min(Math.max(closestIndex, 0), lastIndex)
+        Math.min(Math.max(closestIndex, 0), lastIndex),
       );
       const targetScrollPosition = clampedIndex * itemHeight;
       scrollMonthRef.current.scrollTo({
@@ -88,7 +89,7 @@ const DatePicker = () => {
       const closestIndex = Math.round(scrollPosition / itemHeight);
       const lastIndex = staticYears.length - 1;
       const clampedIndex = Math.round(
-        Math.min(Math.max(closestIndex, 0), lastIndex)
+        Math.min(Math.max(closestIndex, 0), lastIndex),
       );
       const targetScrollPosition = clampedIndex * itemHeight;
       scrollYearRef.current.scrollTo({
@@ -136,148 +137,323 @@ const DatePicker = () => {
   };
 
   return (
-    <>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm z-[900]"
-        onClick={() => setShowDatePicker(false)}
-      ></motion.div>
-      <motion.div
-        initial={{ opacity: 0, scale: 0.85, y: -20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.85, y: -20 }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
-        className={`fixed !-translate-x-1/2 !-translate-y-1/2 top-[50%] left-[50%]
-    rounded-2xl shadow-2xl border z-[999] w-[90%] max-w-md
+    <motion.div
+      initial={{ opacity: 0, y: 18, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 18, scale: 0.98 }}
+      transition={{ type: "spring", stiffness: 260, damping: 22 }}
+      className={`
+    fixed z-[999]
+    top-1/2 left-1/2 !-translate-x-1/2 !-translate-y-1/2
+    w-[92vw] max-w-md
+    rounded-3xl border shadow-2xl overflow-hidden
+    backdrop-blur-md
     ${
       preferences.darkMode
-        ? "bg-[#1e1e1e]/95 text-white border-gray-700"
-        : "bg-white/95 text-gray-900 border-gray-200"
-    } backdrop-blur-md`}
+        ? "bg-[#161616]/90 border-white/10 text-white"
+        : "bg-white/90 border-black/10 text-slate-900"
+    }
+  `}
+    >
+      {/* Backdrop */}
+      <Portal>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[998] bg-black/35 backdrop-blur-sm"
+          onClick={() => setShowDatePicker(false)}
+        />
+      </Portal>
+
+      {/* Header */}
+      <div
+        className={`
+      px-5 py-4 flex items-start justify-between gap-4 border-b
+      ${preferences.darkMode ? "border-white/10" : "border-black/10"}
+    `}
       >
-        {/* Header */}
-        <h2
-          className="text-lg font-semibold text-center py-2 border-b 
-    border-gray-200 dark:border-gray-700"
+        <div>
+          <h2 className="text-lg font-semibold tracking-tight">Pick a Date</h2>
+          <p
+            className={`text-xs mt-1 ${
+              preferences.darkMode ? "text-white/60" : "text-slate-500"
+            }`}
+          >
+            Choose month and year
+          </p>
+        </div>
+
+        <button
+          onClick={() => setShowDatePicker(false)}
+          className={`
+        grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition active:scale-95
+        ${
+          preferences.darkMode
+            ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70"
+            : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600"
+        }
+      `}
+          aria-label="Close"
+          type="button"
         >
-          Pick a Date
-        </h2>
+          ✕
+        </button>
+      </div>
 
-        <div className="flex gap-x-6 p-5 justify-center">
+      {/* Body */}
+      <div className="px-5 py-5">
+        <div className="grid grid-cols-2 gap-4">
           {/* Month selector */}
-          <div className="flex flex-col items-center">
-            <h3 className="text-base font-medium mb-2">Month</h3>
-            <motion.button
-              whileTap={{ scale: 0.9 }}
-              onClick={decreaseMonth}
-              className="p-3 rounded-full shadow-md 
-          bg-gradient-to-tr from-cyan-400 to-sky-500 
-          text-white hover:scale-105 transition"
-            >
-              <BsFillArrowUpCircleFill size={20} />
-            </motion.button>
-
-            <div
-              ref={scrollMonthRef}
-              onScroll={handleMonthScroll}
-              className="overflow-y-scroll max-h-[60px] text-2xl 
-          font-semibold my-2 px-2 text-center 
-          scrollbar-hide snap-y snap-mandatory"
-            >
-              {staticMonths.map((mon, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ scale: 0.8, opacity: 0 }}
-                  whileInView={{ scale: 1, opacity: 1 }}
-                  className="h-[60px] flex items-center justify-center snap-center"
-                >
-                  {mon.name}
-                </motion.div>
-              ))}
+          <div
+            className={`
+          relative rounded-3xl border shadow-sm overflow-hidden
+          ${
+            preferences.darkMode
+              ? "bg-white/5 border-white/10"
+              : "bg-white border-black/10"
+          }
+        `}
+          >
+            <div className="px-4 pt-4 pb-3">
+              <p
+                className={`text-xs font-semibold ${
+                  preferences.darkMode ? "text-white/60" : "text-slate-500"
+                }`}
+              >
+                Month
+              </p>
             </div>
 
-            <motion.button
-              whileTap={{ scale: 0.9 }}
-              onClick={increaseMonth}
-              className="p-3 rounded-full shadow-md 
-          bg-gradient-to-tr from-cyan-400 to-sky-500 
-          text-white hover:scale-105 transition"
-            >
-              <BsFillArrowDownCircleFill size={20} />
-            </motion.button>
+            {/* Center highlight lane */}
+            <div
+              className={`
+            pointer-events-none absolute left-3 right-3 top-[125px] -translate-y-1/2 h-[56px]
+            rounded-2xl border
+            ${
+              preferences.darkMode
+                ? "border-white/10 bg-white/5"
+                : "border-black/10 bg-black/[0.03]"
+            }
+          `}
+            />
+
+            <div className="px-3 pb-4 flex flex-col items-center">
+              <motion.button
+                whileTap={{ scale: 0.92 }}
+                onClick={decreaseMonth}
+                type="button"
+                aria-label="Previous month"
+                className={`
+              grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition
+              ${
+                preferences.darkMode
+                  ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70"
+                  : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600"
+              }
+            `}
+              >
+                <BsFillArrowUpCircleFill className="text-lg" />
+              </motion.button>
+
+              <div
+                ref={scrollMonthRef}
+                onScroll={handleMonthScroll}
+                className="mt-3 mb-3 w-full text-center max-h-[60px] overflow-y-scroll scrollbar-hide snap-y snap-mandatory"
+              >
+                {staticMonths.map((mon, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, scale: 0.98 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ amount: 0.6 }}
+                    className={`
+                  h-[60px] flex items-center justify-center snap-center
+                  text-xl font-semibold tracking-tight
+                  ${preferences.darkMode ? "text-white/85" : "text-slate-900"}
+                `}
+                  >
+                    {mon.name}
+                  </motion.div>
+                ))}
+              </div>
+
+              <motion.button
+                whileTap={{ scale: 0.92 }}
+                onClick={increaseMonth}
+                type="button"
+                aria-label="Next month"
+                className={`
+              grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition
+              ${
+                preferences.darkMode
+                  ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70"
+                  : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600"
+              }
+            `}
+              >
+                <BsFillArrowDownCircleFill className="text-lg" />
+              </motion.button>
+            </div>
           </div>
 
           {/* Year selector */}
-          <div className="flex flex-col items-center">
-            <h3 className="text-base font-medium mb-2">Year</h3>
-            <motion.button
-              whileTap={{ scale: 0.9 }}
-              onClick={decreaseYear}
-              className="p-3 rounded-full shadow-md 
-          bg-gradient-to-tr from-cyan-400 to-sky-500 
-          text-white hover:scale-105 transition"
-            >
-              <BsFillArrowUpCircleFill size={20} />
-            </motion.button>
-
-            <div
-              ref={scrollYearRef}
-              onScroll={handleYearScroll}
-              className="overflow-y-scroll max-h-[60px] text-2xl 
-          font-semibold my-2 px-2 text-center 
-          scrollbar-hide snap-y snap-mandatory"
-            >
-              {staticYears.map((stYr, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ scale: 0.8, opacity: 0 }}
-                  whileInView={{ scale: 1, opacity: 1 }}
-                  className="h-[60px] flex items-center justify-center snap-center"
-                >
-                  {stYr}
-                </motion.div>
-              ))}
+          <div
+            className={`
+          relative rounded-3xl border shadow-sm overflow-hidden
+          ${
+            preferences.darkMode
+              ? "bg-white/5 border-white/10"
+              : "bg-white border-black/10"
+          }
+        `}
+          >
+            <div className="px-4 pt-4 pb-3">
+              <p
+                className={`text-xs font-semibold ${
+                  preferences.darkMode ? "text-white/60" : "text-slate-500"
+                }`}
+              >
+                Year
+              </p>
             </div>
 
-            <motion.button
-              whileTap={{ scale: 0.9 }}
-              onClick={increaseYear}
-              className="p-3 rounded-full shadow-md 
-          bg-gradient-to-tr from-cyan-400 to-sky-500 
-          text-white hover:scale-105 transition"
-            >
-              <BsFillArrowDownCircleFill size={20} />
-            </motion.button>
+            {/* Center highlight lane */}
+            <div
+              className={`
+            pointer-events-none absolute left-3 right-3 top-[125px] -translate-y-1/2 h-[56px]
+            rounded-2xl border
+            ${
+              preferences.darkMode
+                ? "border-white/10 bg-white/5"
+                : "border-black/10 bg-black/[0.03]"
+            }
+          `}
+            />
+
+            <div className="px-3 pb-4 flex flex-col items-center">
+              <motion.button
+                whileTap={{ scale: 0.92 }}
+                onClick={decreaseYear}
+                type="button"
+                aria-label="Previous year"
+                className={`
+              grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition
+              ${
+                preferences.darkMode
+                  ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70"
+                  : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600"
+              }
+            `}
+              >
+                <BsFillArrowUpCircleFill className="text-lg" />
+              </motion.button>
+
+              <div
+                ref={scrollYearRef}
+                onScroll={handleYearScroll}
+                className="mt-3 mb-3 w-full text-center max-h-[60px] overflow-y-scroll scrollbar-hide snap-y snap-mandatory"
+              >
+                {staticYears.map((stYr, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, scale: 0.98 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ amount: 0.6 }}
+                    className={`
+                  h-[60px] flex items-center justify-center snap-center
+                  text-xl font-semibold tracking-tight
+                  ${preferences.darkMode ? "text-white/85" : "text-slate-900"}
+                `}
+                  >
+                    {stYr}
+                  </motion.div>
+                ))}
+              </div>
+
+              <motion.button
+                whileTap={{ scale: 0.92 }}
+                onClick={increaseYear}
+                type="button"
+                aria-label="Next year"
+                className={`
+              grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition
+              ${
+                preferences.darkMode
+                  ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70"
+                  : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600"
+              }
+            `}
+              >
+                <BsFillArrowDownCircleFill className="text-lg" />
+              </motion.button>
+            </div>
           </div>
         </div>
 
-        {/* Footer buttons */}
-        <div
-          className="flex justify-between items-center border-t 
-    border-gray-200 dark:border-gray-700 p-4"
-        >
-          <button
-            type="button"
-            onClick={() => setShowDatePicker(false)}
-            className="px-4 py-2 rounded-xl font-medium 
-        bg-gradient-to-tr from-rose-400 to-pink-500 text-white
-        shadow-sm hover:scale-105 transition"
+        {/* Preview pill */}
+        <div className="mt-4 flex justify-between items-center">
+          <p
+            className={`text-[11px] ${
+              preferences.darkMode ? "text-white/55" : "text-slate-500"
+            }`}
           >
-            Cancel
-          </button>
-          <button
-            type="button"
-            onClick={submitMonthAndTime}
-            className="px-4 py-2 rounded-xl font-medium 
-        bg-gradient-to-tr from-cyan-400 to-sky-500 text-white
-        shadow-sm hover:scale-105 transition"
+            Preview
+          </p>
+
+          <div
+            className={`
+          text-[11px] font-semibold px-3 py-1.5 rounded-2xl border
+          ${
+            preferences.darkMode
+              ? "bg-white/5 border-white/10 text-white/75"
+              : "bg-black/[0.03] border-black/10 text-slate-700"
+          }
+        `}
           >
-            Okay
-          </button>
+            {new Date(newYear, newMonth).toLocaleDateString("en-US", {
+              month: "long",
+              year: "numeric",
+            })}
+          </div>
         </div>
-      </motion.div>
-    </>
+      </div>
+
+      {/* Footer actions */}
+      <div
+        className={`
+      px-5 py-4 flex justify-between items-center border-t
+      ${preferences.darkMode ? "border-white/10" : "border-black/10"}
+    `}
+      >
+        <button
+          type="button"
+          onClick={() => setShowDatePicker(false)}
+          className={`
+        px-4 py-2 rounded-2xl text-sm font-semibold border shadow-sm transition active:scale-[0.97]
+        ${
+          preferences.darkMode
+            ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/80"
+            : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-700"
+        }
+      `}
+        >
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          onClick={submitMonthAndTime}
+          className={`
+        px-5 py-2 rounded-2xl text-sm font-semibold text-white shadow-md transition
+        active:scale-[0.97]
+        bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-500
+      `}
+        >
+          Okay
+        </button>
+      </div>
+    </motion.div>
   );
 };
 

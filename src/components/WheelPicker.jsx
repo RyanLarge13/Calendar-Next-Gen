@@ -209,7 +209,7 @@ const WheelPicker = ({ value, setValue }) => {
       {/* Header */}
       <div
         className={`
-      px-5 py-4 flex items-start justify-between gap-4 border-b
+      px-5 py-4 mb-2 flex items-start justify-between gap-4 border-b
       ${preferences.darkMode ? "border-white/10" : "border-black/10"}
     `}
       >

@@ -63,6 +63,8 @@ const createReminders = async (event) => {
       continue;
     }
 
+    const { onlyNotify, time } = reminder;
+
     const newReminder = {
       id: reminderId,
       eventRefId: event.id,
@@ -82,8 +84,6 @@ const createReminders = async (event) => {
       sentWebPush: false,
       userId: event.userId,
     };
-
-    const { onlyNotify, time } = reminder;
 
     // If this reminder is only set to notify
     if (onlyNotify) {

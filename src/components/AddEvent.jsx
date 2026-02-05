@@ -40,7 +40,8 @@ const AddEvent = () => {
     addEventWithStartEndTime,
     setAddEventWithStartEndTime,
   } = useContext(InteractiveContext);
-  const { string, setOpenModal, secondString } = useContext(DatesContext);
+  const { setString, string, setOpenModal, secondString } =
+    useContext(DatesContext);
 
   // Basic event data
   const [summary, setSummary] = useState("");
@@ -56,6 +57,7 @@ const AddEvent = () => {
   const [reminderOn, setReminderOn] = useState(false);
   const [newReminders, setNewReminders] = useState([]);
   const [showTimerPicker, setShowTimePicker] = useState(false);
+  const [tempReminderDtStr, setTempReminderDtStr] = useState(string);
   // repeats
   const [repeat, setRepeat] = useState(false);
   const [howOften, setHowOften] = useState(false);
@@ -69,10 +71,12 @@ const AddEvent = () => {
   const [startTime, setStartTime] = useState(false);
   const [startWhen, setStartWhen] = useState(null);
   const [startTimeString, setStartTimeString] = useState("");
+  const [tempStartTimeDtStr, setTempStartTimeDtStr] = useState(string);
   // end times
   const [endTime, setEndTime] = useState(false);
   const [endTimeString, setEndTimeString] = useState("");
   const [endWhen, setEndWhen] = useState(null);
+  const [tempEndTimeDtStr, setTempEndTimeDtStr] = useState(string);
   //time zone
   const [timeZone, setTimeZone] = useState(
     Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -330,16 +334,16 @@ const AddEvent = () => {
     setShowTimePicker(false);
 
     const reminderTime = makeDateTime(
-      string,
+      tempReminderDtStr,
       hour,
       minutes,
       meridiem,
-    ).toString();
+    );
 
     const newReminder = {
       id: uuidv4(),
       onlyNotify: false,
-      time: reminderTime,
+      time: reminderTime.toString(),
     };
 
     setNewReminders((prev) => [...prev, newReminder]);
@@ -348,9 +352,7 @@ const AddEvent = () => {
   const createStartTime = (values) => {
     const { hour, minutes, meridiem } = values;
 
-    setStartTime(false);
-
-    const startTime = makeDateTime(string, hour, minutes, meridiem);
+    const startTime = makeDateTime(tempStartTimeDtStr, hour, minutes, meridiem);
     const startTimeString = startTime.toString();
 
     setStartWhen(startTime);
@@ -360,13 +362,11 @@ const AddEvent = () => {
   const createEndTime = (values) => {
     const { hour, minutes, meridiem } = values;
 
-    setEndTime(false);
+    const endTime = makeDateTime(tempEndTimeDtStr, hour, minutes, meridiem);
+    const endTimeString = startTime.toString();
 
-    const startTime = makeDateTime(string, hour, minutes, meridiem);
-    const startTimeString = startTime.toString();
-
-    setEndWhen(startTime);
-    setEndTimeString(startTimeString);
+    setEndWhen(endTime);
+    setEndTimeString(endTimeString);
   };
 
   return (
@@ -592,6 +592,7 @@ const AddEvent = () => {
                   <TimeSetter
                     saveData={addReminderToList}
                     cancelTimeSetter={() => setShowTimePicker(false)}
+                    dateChangerCallback={(newDt) => setTempReminderDtStr(newDt)}
                   />
                 </Portal>
               ) : null}
@@ -646,20 +647,33 @@ const AddEvent = () => {
               {startTime && (
                 <div className="mt-3">
                   {!startWhen ? (
-                    <TimeSetter
-                      saveData={createStartTime}
-                      cancelTimeSetter={() => {
-                        setStartTime(false);
-                        setStartWhen(null);
-                      }}
-                    />
+                    <Portal>
+                      <TimeSetter
+                        saveData={createStartTime}
+                        cancelTimeSetter={() => {
+                          setStartTime(false);
+                          setStartWhen(null);
+                        }}
+                        dateChangerCallback={(newDt) => {
+                          setTempStartTimeDtStr(newDt);
+                          setString(newDt);
+                        }}
+                      />
+                    </Portal>
                   ) : (
                     <div className="mt-2 space-y-2">
                       <p
                         className={`${color} inline-flex items-center rounded-xl border border-black/10 px-3 py-1 text-xs font-semibold shadow-sm`}
                         style={{ color: tailwindBgToHex(color) }}
                       >
-                        {startTimeString}
+                        {new Date(startTimeString).toLocaleTimeString("en-US", {
+                          weekday: "short",
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                          hour: "numeric",
+                          minute: "numeric",
+                        })}
                       </p>
 
                       <div className="flex gap-2">
@@ -708,20 +722,33 @@ const AddEvent = () => {
               {endTime && (
                 <div className="mt-3">
                   {!endWhen ? (
-                    <TimeSetter
-                      saveData={createEndTime}
-                      cancelTimeSetter={() => {
-                        setEndTime(false);
-                        setEndWhen(null);
-                      }}
-                    />
+                    <Portal>
+                      <TimeSetter
+                        saveData={createEndTime}
+                        cancelTimeSetter={() => {
+                          setEndTime(false);
+                          setEndWhen(null);
+                        }}
+                        dateChangerCallback={(newDt) => {
+                          setEndTimeString(newDt);
+                          setTempEndTimeDtStr(newDt);
+                        }}
+                      />
+                    </Portal>
                   ) : (
                     <div className="mt-2 space-y-2">
                       <p
                         style={{ color: tailwindBgToHex(color) }}
                         className={`${color} inline-flex items-center rounded-xl border border-black/10 px-3 py-1 text-xs font-semibold shadow-sm`}
                       >
-                        {endTimeString}
+                        {new Date(endTimeString).toLocaleTimeString("en-US", {
+                          weekday: "short",
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                          hour: "numeric",
+                          minute: "numeric",
+                        })}
                       </p>
 
                       <div className="flex gap-2">
