@@ -20,9 +20,9 @@ export const fetchUserData = async (req, res) => {
       },
       include: {
         events: {
-         orderBy: {
-          startDate: "asc"
-         }
+          orderBy: {
+            startDate: "asc",
+          },
         },
         reminders: true,
         lists: true,
@@ -134,7 +134,7 @@ export const loginWithFacebook = async (req, res) => {
   const { accessToken } = req.body;
   try {
     const fbResponse = await Axios.get(
-      `https://graph.facebook.com/v12.0/me?fields=id,name,email,picture&access_token=${accessToken}`
+      `https://graph.facebook.com/v12.0/me?fields=id,name,email,picture&access_token=${accessToken}`,
     );
     const userData = fbResponse.data;
     const existingUser = await prisma.user.findUnique({

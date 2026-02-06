@@ -244,6 +244,7 @@ id String @id @unique @default(uuid())
 order Int
 categories Json?
 title String
+tags Json
 description String
 deadline DateTime
 checkLists Json?
@@ -270,4 +271,23 @@ User User   @relation(fields: [userId], references: [id])
 userId String
 updatedAt DateTime @updatedAt @default(now())
 @@index([userId], name: "userStickyindex")
+}
+
+model Appointment {
+id String @id @default(uuid())
+title String
+requested Boolean
+availableSlots Json
+duration Json
+reminders String[]
+confirmed Boolean
+rescheduled Boolean
+checkedIn Boolean
+noShow Boolean
+completed Boolean
+cancelled Boolean
+finalNotes String
+customerNotes String
+burnoutDays String[]
+overbooking String[]
 }
