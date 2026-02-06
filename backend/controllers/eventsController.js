@@ -68,6 +68,7 @@ const createReminders = async (event) => {
       title: event.summary,
       notes: event.description,
       time: time,
+      completed: false,
       userId: event.userId,
     };
 
@@ -93,14 +94,14 @@ const createReminders = async (event) => {
     newReminders.push(newReminder);
   }
 
-  const dbReminders = await prisma.reminder.createMany({ data: newReminders });
+  await prisma.reminder.createMany({ data: newReminders });
 
   await prisma.notification.createMany({
     data: newNotifs,
   });
 
   // No need to return notificatons
-  return dbReminders;
+  return newReminders;
 };
 
 export const createAttachments = async (req, res) => {

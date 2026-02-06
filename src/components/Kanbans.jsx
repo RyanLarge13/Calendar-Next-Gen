@@ -4,7 +4,7 @@ import Kanban from "./Kanban";
 import UserContext from "../context/UserContext";
 
 const Kanbans = () => {
-  const { kanbans } = useContext(UserContext);
+  const { kanbans, preferences } = useContext(UserContext);
 
   const [kanbanView, setKanbanView] = useState(null);
 

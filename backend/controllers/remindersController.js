@@ -108,6 +108,7 @@ export const addNewReminder = async (req, res) => {
   const newReminder = {
     title,
     notes,
+    completed: false,
     time: stringTime,
     eventRefId,
     userId: id,
@@ -116,7 +117,7 @@ export const addNewReminder = async (req, res) => {
     type: "reminder",
     read: false,
     readTime: null,
-    stringTime,
+    time: stringTime,
     notifData: newReminder,
     sentNotification: false,
     sentWebPush: false,
