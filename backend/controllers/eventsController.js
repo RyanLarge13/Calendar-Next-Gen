@@ -46,9 +46,6 @@ const createReminders = async (event) => {
   let newReminders = [];
   let newNotifs = [];
 
-  // Notifications that are not linked to any reminder
-  let newNotifsOnly = [];
-
   const remindersToSave = event.reminders.eventReminders;
 
   if (remindersToSave.length < 1) {
@@ -87,11 +84,11 @@ const createReminders = async (event) => {
 
     // If this reminder is only set to notify
     if (onlyNotify) {
-      newNotifsOnly.push(newNotif);
+      newNotifs.push(newNotif);
       continue;
     }
 
-    newNotifs.push({ newNotif, reminderRefId: reminderId });
+    newNotifs.push({ ...newNotif, reminderRefId: reminderId });
 
     newReminders.push(newReminder);
   }
