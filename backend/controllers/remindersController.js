@@ -180,7 +180,8 @@ export const deleteReminder = async (req, res) => {
 
     if (event) {
       const eventReminderInfo = event.reminders;
-      const newEventReminders = eventReminderInfo.eventReminders.filter(
+      const eventRemindersExisting = eventReminderInfo?.eventReminders || [];
+      const newEventReminders = eventRemindersExisting.filter(
         (r) => r.id !== id,
       );
 

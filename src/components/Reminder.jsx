@@ -7,7 +7,7 @@ import {
   deleteReminder,
 } from "../utils/api";
 import { motion } from "framer-motion";
-import { BsAlarmFill } from "react-icons/bs";
+import { BsAlarmFill, BsTrashFill } from "react-icons/bs";
 import { MdOpenInNew } from "react-icons/md";
 import { formatTime } from "../utils/helpers.js";
 import { BiAlarmSnooze, BiCalendarEvent } from "react-icons/bi";
@@ -262,14 +262,15 @@ const Reminder = ({ reminder, showOpenEvent = true }) => {
             </div>
           </div>
 
-          <button
-            onClick={() =>
-              toggleComplete({
-                completed: !reminder.completed,
-                reminderId: reminder.id,
-              })
-            }
-            className={`
+          {selected.includes(reminder.id) ? null : (
+            <button
+              onClick={() =>
+                toggleComplete({
+                  completed: !reminder.completed,
+                  reminderId: reminder.id,
+                })
+              }
+              className={`
           grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition active:scale-95
           ${
             reminder.completed
@@ -281,17 +282,18 @@ const Reminder = ({ reminder, showOpenEvent = true }) => {
                 : "bg-black/[0.03] border-black/10 text-slate-600 hover:bg-black/[0.06]"
           }
         `}
-            aria-label={
-              reminder.completed ? "Mark incomplete" : "Mark complete"
-            }
-            type="button"
-          >
-            {reminder.eventRefId ? (
-              <BiCalendarEvent className="text-lg" />
-            ) : (
-              <BiAlarmSnooze className="text-lg" />
-            )}
-          </button>
+              aria-label={
+                reminder.completed ? "Mark incomplete" : "Mark complete"
+              }
+              type="button"
+            >
+              {reminder.eventRefId ? (
+                <BiCalendarEvent className="text-lg" />
+              ) : (
+                <BiAlarmSnooze className="text-lg" />
+              )}
+            </button>
+          )}
         </div>
 
         {/* Title field */}
