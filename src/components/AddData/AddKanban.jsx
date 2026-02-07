@@ -1,13 +1,13 @@
-import { useState, useContext, useRef } from "react";
+import { useContext, useRef, useState } from "react";
+import { BsFillCalendarPlusFill } from "react-icons/bs";
+import { MdFreeCancellation } from "react-icons/md";
 import { colors } from "../../constants.js";
-import { createNewKanban } from "../../utils/api.js";
-import Color from "./Color";
-import AddKanbanFolder from "./AddKanbanFolder.jsx";
+import DatesContext from "../../context/DatesContext.jsx";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
 import UserContext from "../../context/UserContext.jsx";
-import DatesContext from "../../context/DatesContext.jsx";
-import { MdFreeCancellation } from "react-icons/md";
-import { BsFillCalendarPlusFill } from "react-icons/bs";
+import { createNewKanban } from "../../utils/api.js";
+import Color from "../Misc/Color";
+import AddKanbanFolder from "./AddKanbanFolder.jsx";
 
 const AddKanban = () => {
   const { setType, setShowCategory, setAddNewEvent, setMenu } =

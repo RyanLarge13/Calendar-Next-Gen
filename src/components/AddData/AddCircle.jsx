@@ -1,25 +1,25 @@
-import { useState, useEffect, useContext } from "react";
 import { motion } from "framer-motion";
+import { useContext, useEffect, useState } from "react";
 import { AiFillSchedule } from "react-icons/ai";
-import { FaStickyNote } from "react-icons/fa";
-import { HiUserGroup } from "react-icons/hi";
+import { BiCategoryAlt } from "react-icons/bi";
 import {
-  BsFillCalendarPlusFill,
-  BsFillCalendar2EventFill,
   BsAlarmFill,
-  BsListCheck,
-  BsXCircleFill,
+  BsFillCalendar2EventFill,
+  BsFillCalendarPlusFill,
   BsFillClipboardDataFill,
-  BsListTask,
   BsFillShareFill,
   BsFillTrashFill,
+  BsListCheck,
+  BsListTask,
   BsSearch,
+  BsXCircleFill,
 } from "react-icons/bs";
-import { BiCategoryAlt } from "react-icons/bi";
+import { FaStickyNote } from "react-icons/fa";
+import { HiUserGroup } from "react-icons/hi";
 import { IoIosAddCircle } from "react-icons/io";
+import DatesContext from "../../context/DatesContext";
 import InteractiveContext from "../../context/InteractiveContext";
 import UserContext from "../../context/UserContext";
-import DatesContext from "../../context/DatesContext";
 
 export const AddCircle = () => {
   const {

@@ -1,18 +1,18 @@
-import { useState, useContext, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import Reminders from "./Reminders.jsx";
-import Lists from "./Lists.jsx";
-import Tasks from "./Tasks";
-import Kanbans from "./Kanbans";
-import MainMenu from "../MainMenu.jsx";
-import { updateList } from "../../utils/api.js";
+import { AnimatePresence, motion } from "framer-motion";
+import { useContext, useEffect, useState } from "react";
+import { MdOutlineOpenInNew } from "react-icons/md";
+import DatesContext from "../../context/DatesContext.jsx";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
 import UserContext from "../../context/UserContext.jsx";
-import DatesContext from "../../context/DatesContext.jsx";
-import Switch from "./Switch.jsx";
-import StaticStickies from "./StaticStickies.jsx";
+import { updateList } from "../../utils/api.js";
 import { formatDbText, formatTime } from "../../utils/helpers.js";
-import { MdOutlineOpenInNew } from "react-icons/md";
+import Lists from "../Lists/Lists.jsx";
+import MainMenu from "./MainMenu.jsx";
+import Reminders from "../Reminders/Reminders.jsx";
+import Kanbans from "../Kanban/Kanbans.jsx";
+import StaticStickies from "../Stickies/StaticStickies.jsx";
+import Switch from "../Misc/Switch.jsx";
+import Tasks from "../Tasks/Tasks";
 
 const Menu = () => {
   const { menu, listUpdate, setListUpdate, showCategory, setMenu, setEvent } =

@@ -1,20 +1,20 @@
-import { useState, useContext, useRef, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import Modal from "./Modal";
-import ModalHeader from "./ModalHeader";
-import Menu from "./Menu";
-import LoginLogout from "../LoginLogout";
-import Event from "../Event";
-import MonthView from "./MonthView";
-import DayView from "./DayView";
-import WeekView from "./WeekView";
-import MasonryView from "./MasonryView";
-import AgendaView from "./AgendaView";
-import DatePicker from "./DatePicker";
+import { useContext, useEffect, useRef, useState } from "react";
 import DatesContext from "../../context/DatesContext";
 import InteractiveContext from "../../context/InteractiveContext";
 import UserContext from "../../context/UserContext";
-import FullDatePicker from "./FullDatePicker";
+import AgendaView from "../CalendarViews/AgendaView";
+import DayView from "../CalendarViews/DayView";
+import MasonryView from "../CalendarViews/MasonryView";
+import MonthView from "../CalendarViews/MonthView";
+import WeekView from "../CalendarViews/WeekView";
+import DatePicker from "../DatePickers/DatePicker";
+import FullDatePicker from "../DatePickers/FullDatePicker";
+import Event from "../Events/Event";
+import LoginLogout from "../LoginLogout/LoginLogout";
+import Menu from "../Menu/Menu";
+import Modal from "../Modal/Modal";
+import ModalHeader from "../Modal/ModalHeader";
 
 const Calendar = () => {
   const { events, holidays, reminders, weekDays, preferences } =
@@ -51,7 +51,7 @@ const Calendar = () => {
       const eventsToday = [...events, ...holidays].filter(
         (item) =>
           new Date(item.date).toLocaleDateString() ===
-          theDay.toLocaleDateString()
+          theDay.toLocaleDateString(),
       );
       setTodaysEvents(eventsToday);
     }
@@ -95,10 +95,10 @@ const Calendar = () => {
     const remindersToday = reminders.filter(
       (reminder) =>
         new Date(reminder.time).toLocaleDateString() ===
-        theDay.toLocaleDateString()
+        theDay.toLocaleDateString(),
     );
     const remindersOfTheDay = reminders.filter(
-      (r) => new Date(r.time).toLocaleDateString() === string
+      (r) => new Date(r.time).toLocaleDateString() === string,
     );
     setTodaysReminder(remindersToday);
     setRemindersOfDay(remindersOfTheDay);

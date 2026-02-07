@@ -1,6 +1,5 @@
-import { useContext, useState, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import ReactQuill from "react-quill";
-import { tailwindBgToHex } from "../../utils/helpers.js";
 import UserContext from "../../context/UserContext";
 import { updateSticky } from "../../utils/api.js";
 

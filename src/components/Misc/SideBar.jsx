@@ -1,14 +1,12 @@
-import { useContext, useState, useEffect } from "react";
-import { weekDays } from "../../constants";
-import DatesContext from "../../context/DatesContext";
-import { MdOutlineOpenInNew } from "react-icons/md";
+import { useContext, useEffect, useState } from "react";
 import {
   BsFillArrowLeftCircleFill,
   BsFillArrowRightCircleFill,
 } from "react-icons/bs";
-import { formatDbText } from "../../utils/helpers";
-import UserContext from "../../context/UserContext";
+import { weekDays } from "../../constants";
+import DatesContext from "../../context/DatesContext";
 import InteractiveContext from "../../context/InteractiveContext";
+import UserContext from "../../context/UserContext";
 
 const SideBar = () => {
   const { events, upcoming, preferences } = useContext(UserContext);
@@ -18,14 +16,14 @@ const SideBar = () => {
 
   const [temporaryNav, setTemporaryNav] = useState(0);
   const [temporaryString, setTemporaryString] = useState(
-    new Date().toLocaleDateString()
+    new Date().toLocaleDateString(),
   );
   const [temporaryDate, setTemporaryDate] = useState(new Date());
   const [temporaryYear, setTemporaryYear] = useState(
-    temporaryDate.getFullYear()
+    temporaryDate.getFullYear(),
   );
   const [temporaryMonth, setTemporaryMonth] = useState(
-    temporaryDate.getMonth()
+    temporaryDate.getMonth(),
   );
   const [temporaryPaddingDays, setTemporaryPaddingDays] = useState(0);
   const [temporaryDaysInMonth, setTemporaryDaysInMonth] = useState(0);
@@ -159,15 +157,15 @@ const SideBar = () => {
                         event
                           ? `${event.color} w-[20px] h-[20px] rounded-full shadow-md text-black`
                           : preferences.darkMode
-                          ? "text-white"
-                          : "text-black"
+                            ? "text-white"
+                            : "text-black"
                       }`}
                     >
                       <p>{dayNumber > 0 ? dayNumber : ""}</p>
                     </div>
                   </div>
                 );
-              }
+              },
             )}
           </div>
         </div>
@@ -206,7 +204,7 @@ const SideBar = () => {
                       {
                         hour: "numeric",
                         minute: "2-digit",
-                      }
+                      },
                     ) + "-"
                   : "All Day Event"}{" "}
                 {event.end?.endTime

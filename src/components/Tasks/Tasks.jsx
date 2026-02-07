@@ -1,8 +1,8 @@
-import { useContext, useState, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { IoIosAddCircle } from "react-icons/io";
-import UserContext from "../../context/UserContext";
 import DatesContext from "../../context/DatesContext";
 import InteractiveContext from "../../context/InteractiveContext";
+import UserContext from "../../context/UserContext";
 import Task from "./Task";
 
 const Tasks = ({ taskSort, taskSortOpt, taskSearch, taskSearchTxt }) => {

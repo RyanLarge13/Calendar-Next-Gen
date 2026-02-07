@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
 import { motion } from "framer-motion";
+import { useContext, useEffect, useRef, useState } from "react";
 import Masonry from "react-masonry-css";
-import UserContext from "../../context/UserContext";
-import InteractiveContext from "../../context/InteractiveContext";
 import DatesContext from "../../context/DatesContext";
+import InteractiveContext from "../../context/InteractiveContext";
+import UserContext from "../../context/UserContext";
 
 const MasonryView = ({ containerRef }) => {
-  const { holidays, reminders, eventMap } = useContext(UserContext);
+  const { eventMap } = useContext(UserContext);
   const { setEvent } = useContext(InteractiveContext);
   const { dateObj } = useContext(DatesContext);
 
@@ -183,12 +183,12 @@ const MasonryView = ({ containerRef }) => {
         const dateA = new Date(
           parseInt(a.split("-")[0], 10),
           parseInt(a.split("-")[1], 10),
-          1
+          1,
         );
         const dateB = new Date(
           parseInt(b.split("-")[0], 10),
           parseInt(b.split("-")[1], 10),
-          1
+          1,
         );
         return Math.abs(dateA - dateObj) < Math.abs(dateB - dateObj) ? a : b;
       });
@@ -268,7 +268,7 @@ const MasonryView = ({ containerRef }) => {
                 {new Date(
                   parseInt(d.split("-")[0], 10),
                   parseInt(d.split("-")[1], 10),
-                  1
+                  1,
                 ).toLocaleDateString("en-US", {
                   month: "short",
                   year: "numeric",
@@ -290,7 +290,7 @@ const MasonryView = ({ containerRef }) => {
                     {new Date(
                       parseInt(dateString.split("-")[0], 10),
                       parseInt(dateString.split("-")[1], 10),
-                      1
+                      1,
                     ).toLocaleDateString("en-US", {
                       month: "short",
                       year: "numeric",
@@ -311,7 +311,7 @@ const MasonryView = ({ containerRef }) => {
                     style={{
                       minHeight: `${getHeight(
                         event.start.startTime,
-                        event.end.endTime
+                        event.end.endTime,
                       )}px`,
                     }}
                     className="my-3 relative p-2 pl-4 whitespace-pre-wrap overflow-hidden rounded-xl border shadow-lg"
@@ -333,7 +333,7 @@ const MasonryView = ({ containerRef }) => {
                       <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
                         {event.start?.startTime
                           ? `${new Date(
-                              event.start.startTime
+                              event.start.startTime,
                             ).toLocaleTimeString([], {
                               hour: "2-digit",
                               minute: "2-digit",

@@ -29,8 +29,8 @@ const WeekView = () => {
   useEffect(() => {
     const matchingEvents = currentWeek.map((weekDay) =>
       [...events, ...holidays].filter(
-        (e) => e.date === weekDay.toLocaleDateString()
-      )
+        (e) => e.date === weekDay.toLocaleDateString(),
+      ),
     );
     setWeeklyEvents(matchingEvents);
   }, [currentWeek, events, holidays]);
@@ -117,8 +117,8 @@ const WeekView = () => {
               date.getDay() === currentWeekday
                 ? "bg-purple-100 text-black"
                 : preferences.darkMode
-                ? "bg-[#222] text-white"
-                : "bg-white text-black"
+                  ? "bg-[#222] text-white"
+                  : "bg-white text-black"
             }`}
           >
             <div className={`w-full flex justify-between items-center}`}>

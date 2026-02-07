@@ -1,14 +1,14 @@
-import { useState, useContext, useEffect } from "react";
-import { addReminder, createNotification } from "../../utils/api";
+import { useContext, useEffect, useState } from "react";
 import { AiFillInfoCircle } from "react-icons/ai";
-import Toggle from "./Toggle";
-import TimeSetter from "./TimeSetter";
-import InteractiveContext from "../../context/InteractiveContext";
-import UserContext from "../../context/UserContext";
-import DatesContext from "../../context/DatesContext";
 import { BsAlarmFill, BsClock } from "react-icons/bs";
 import { MdClose } from "react-icons/md";
+import DatesContext from "../../context/DatesContext";
+import InteractiveContext from "../../context/InteractiveContext";
+import UserContext from "../../context/UserContext";
+import { addReminder, createNotification } from "../../utils/api";
 import { makeDateTime } from "../../utils/helpers";
+import TimeSetter from "../DatePickers/TimeSetter";
+import Toggle from "../Misc/Toggle";
 
 const AddReminder = () => {
   const { setMenu, setAddNewEvent, setType, setShowCategory } =

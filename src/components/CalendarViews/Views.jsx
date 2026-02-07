@@ -1,13 +1,13 @@
-import { useState, useContext, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useContext, useEffect, useState } from "react";
 import {
-  BsFillCalendarWeekFill,
+  BsColumnsGap,
+  BsFillCalendar2EventFill,
   BsFillCalendarDayFill,
   BsFillCalendarMonthFill,
-  BsXCircleFill,
-  BsColumnsGap,
+  BsFillCalendarWeekFill,
   BsSearch,
-  BsFillCalendar2EventFill,
+  BsXCircleFill,
 } from "react-icons/bs";
 import { CgOptions } from "react-icons/cg";
 import { MdViewAgenda } from "react-icons/md";

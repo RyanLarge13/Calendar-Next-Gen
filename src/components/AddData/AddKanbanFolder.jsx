@@ -1,12 +1,12 @@
-import { useContext, useState } from "react";
 import { motion } from "framer-motion";
+import { useContext, useState } from "react";
 import {
-  AiFillFolder,
   AiFillCheckCircle,
   AiFillCloseCircle,
+  AiFillFolder,
 } from "react-icons/ai";
 import UserContext from "../../context/UserContext.jsx";
-import EditColor from "./EditColor.jsx";
+import EditColor from "../Misc/EditColor.jsx";
 
 const AddKanbanFolder = ({ folder, id, setFolders, folders }) => {
   const { preferences } = useContext(UserContext);

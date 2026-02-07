@@ -1,19 +1,19 @@
-import { useState, useRef, useContext, useEffect } from "react";
 import { motion, useDragControls } from "framer-motion";
-import { deleteStickyNote, updateStickyView } from "../../utils/api.js";
+import { useContext, useEffect, useRef, useState } from "react";
 import {
-  AiFillPushpin,
   AiFillCloseCircle,
+  AiFillPushpin,
   AiOutlinePushpin,
 } from "react-icons/ai";
-import { BiExpand, BiCollapse } from "react-icons/bi";
+import { BiCollapse, BiExpand } from "react-icons/bi";
 import { FaRegWindowMinimize } from "react-icons/fa";
 import { FiMaximize } from "react-icons/fi";
-import UserContext from "../../context/UserContext.jsx";
-import InteractiveContext from "../../context/InteractiveContext.jsx";
 import "react-quill/dist/quill.snow.css";
-import StickyBody from "./StickyBody.jsx";
+import InteractiveContext from "../../context/InteractiveContext.jsx";
+import UserContext from "../../context/UserContext.jsx";
+import { deleteStickyNote, updateStickyView } from "../../utils/api.js";
 import { tailwindBgToHex } from "../../utils/helpers.js";
+import StickyBody from "./StickyBody.jsx";
 
 const Sticky = ({ sticky, index }) => {
   const { setSystemNotif, setStickies, stickies, preferences } =

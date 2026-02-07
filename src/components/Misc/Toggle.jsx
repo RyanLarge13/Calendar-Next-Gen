@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import UserContext from "../context/UserContext";
+import UserContext from "../../context/UserContext";
 
 const Toggle = ({ condition, setCondition, howOften }) => {
   const { preferences } = useContext(UserContext);
@@ -9,7 +9,7 @@ const Toggle = ({ condition, setCondition, howOften }) => {
       onClick={() => {
         if (howOften) {
           return setCondition((prev) =>
-            howOften === condition ? null : howOften
+            howOften === condition ? null : howOften,
           );
         }
         setCondition && setCondition((prev) => !prev);
@@ -27,8 +27,8 @@ const Toggle = ({ condition, setCondition, howOften }) => {
               ? "right-[1px] left-[50%] bg-gradient-to-tr from-green-200 to-emerald-400 scale-[1.05]"
               : "left-[1px] right-[50%] bg-gradient-to-tr from-red-200 to-rose-400"
             : howOften && howOften === condition
-            ? "right-[1px] left-[50%] bg-gradient-to-tr from-green-200 to-emerald-400 scale-[1.05]"
-            : "left-[1px] right-[50%] bg-gradient-to-tr from-red-200 to-rose-400"
+              ? "right-[1px] left-[50%] bg-gradient-to-tr from-green-200 to-emerald-400 scale-[1.05]"
+              : "left-[1px] right-[50%] bg-gradient-to-tr from-red-200 to-rose-400"
         } rounded-full`}
       ></div>
     </div>

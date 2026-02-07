@@ -1,11 +1,11 @@
-import { useContext } from "react";
-import { useGoogleLogin } from "@react-oauth/google";
-import { loginWithFb } from "../../utils/api.js";
-import { motion } from "framer-motion";
 import FacebookLogin from "@greatsumini/react-facebook-login";
-import UserContext from "../../context/UserContext.jsx";
-import UsernamePassLogin from "../UsernamePassLogin.jsx";
+import { useGoogleLogin } from "@react-oauth/google";
+import { motion } from "framer-motion";
+import { useContext } from "react";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
+import UserContext from "../../context/UserContext.jsx";
+import { loginWithFb } from "../../utils/api.js";
+import UsernamePassLogin from "./UsernamePassLogin.jsx";
 
 const SocialLogin = () => {
   const { setUser, setGoogleToken, setAuthToken } = useContext(UserContext);

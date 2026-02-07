@@ -1,10 +1,10 @@
-import { useState, useContext, useEffect } from "react";
-import { IoIosAddCircle } from "react-icons/io";
-import { BiAlarmSnooze } from "react-icons/bi";
 import { motion } from "framer-motion";
-import UserContext from "../../context/UserContext.jsx";
+import { useContext, useEffect, useState } from "react";
+import { BiAlarmSnooze } from "react-icons/bi";
+import { IoIosAddCircle } from "react-icons/io";
 import DatesContext from "../../context/DatesContext.jsx";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
+import UserContext from "../../context/UserContext.jsx";
 import Reminder from "./Reminder.jsx";
 
 const Reminders = ({ sort, sortOpt, search, searchTxt }) => {

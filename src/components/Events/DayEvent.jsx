@@ -1,20 +1,23 @@
-import { useState, useContext } from "react";
 import { motion, useDragControls } from "framer-motion";
-import InteractiveContext from "../../context/InteractiveContext.jsx";
-import { MdEventAvailable, MdEventNote, MdEventRepeat } from "react-icons/md";
-import { MdLocationPin } from "react-icons/md";
-import {tailwindBgToHex} from "../../utils/helpers.js"
+import { useContext, useState } from "react";
 import { FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";
-import { formatDbText } from "../../utils/helpers.js";
+import {
+  MdEventAvailable,
+  MdEventNote,
+  MdEventRepeat,
+  MdLocationPin,
+} from "react-icons/md";
+import InteractiveContext from "../../context/InteractiveContext.jsx";
 import { updateStartAndEndTimeOnEvent } from "../../utils/api.js";
+import { formatDbText, tailwindBgToHex } from "../../utils/helpers.js";
 
 const DayEvent = ({
   dayEvent,
   setDayEvents,
   height,
   top,
-  thirtyMinuteHeight
+  thirtyMinuteHeight,
 }) => {
   const { setEvent } = useContext(InteractiveContext);
 
@@ -23,27 +26,27 @@ const DayEvent = ({
 
   const dragControls = useDragControls();
 
-  const startDrag = e => {
+  const startDrag = (e) => {
     setStart(e.clientY);
     dragControls.start(e);
   };
 
-  const updateTimeOnEvent = amount => {
+  const updateTimeOnEvent = (amount) => {
     const token = localStorage.getItem("authToken");
     updateStartAndEndTimeOnEvent(dayEvent.id, amount, token)
-      .then(res => {
+      .then((res) => {
         const start = new Date(dayEvent.start.startTime);
         const end = new Date(dayEvent.end.endTime);
         const newStart = start.setMinutes(start.getMinutes() + amount * 30);
         const newEnd = end.setMinutes(start.getMinutes() + amount * 30);
-        setDayEvents(prev => {
-          return prev.map(item => {
+        setDayEvents((prev) => {
+          return prev.map((item) => {
             if (item.id === dayEvent.id) {
               return {
                 ...item,
                 startDate: newStart,
                 start: { ...item.start, startTime: newStart },
-                end: { ...item.end, endTime: newEnd }
+                end: { ...item.end, endTime: newEnd },
               };
             } else {
               return item;
@@ -51,12 +54,12 @@ const DayEvent = ({
           });
         });
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   };
 
-  const checkTime = e => {
+  const checkTime = (e) => {
     if (thirtyMinuteHeight !== 0) {
       const end = e.clientY;
       const diff = end - start;
@@ -80,7 +83,7 @@ const DayEvent = ({
       dragMomentum={false}
       dragControls={dragControls}
       dragListener={false}
-      onDragEnd={e => checkTime(e)}
+      onDragEnd={(e) => checkTime(e)}
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       style={{ height: height, top: fromTop }}
@@ -88,10 +91,10 @@ const DayEvent = ({
       className={`p-3 rounded-md shadow-md w-[70%] duration-200 absolute ${dayEvent.color} bg-opacity-10 hover:z-[998] overflow-hidden hover:bg-opacity-50 right-0`}
     >
       <div
-        onPointerDown={e => startDrag(e)}
+        onPointerDown={(e) => startDrag(e)}
         style={{
           touchAction: "none",
-          color: tailwindBgToHex(dayEvent.color)
+          color: tailwindBgToHex(dayEvent.color),
         }}
         className={`${dayEvent.color} px-3 py-1 rounded-md font-extrabold mb-5 shadow-sm justify-between flex items-start`}
       >

@@ -1,8 +1,8 @@
 import { useContext, useState } from "react";
-import { IoIosAddCircle } from "react-icons/io";
 import { AiOutlineMail, AiOutlineQrcode } from "react-icons/ai";
-import QRCodeScanner from "./Misc/QRCodeScanner";
-import UserContext from "../context/UserContext";
+import { IoIosAddCircle } from "react-icons/io";
+import UserContext from "../../context/UserContext";
+import QRCodeScanner from "../Misc/QRCodeScanner";
 
 const Friends = () => {
   const { friends, qrCodeUrl } = useContext(UserContext);

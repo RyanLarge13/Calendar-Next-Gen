@@ -1,18 +1,18 @@
-import { useState, useEffect, useRef, useContext } from "react";
 import { motion } from "framer-motion";
+import { useContext, useEffect, useRef, useState } from "react";
 import { staticTimes } from "../../constants";
 import DatesContext from "../../context/DatesContext";
-import UserContext from "../../context/UserContext";
 import InteractiveContext from "../../context/InteractiveContext";
-import DayEvent from "../DayEvent";
-import AddEvent from "../AddEvent";
-import AddReminder from "../AddReminder";
-import AddList from "../AddList";
-import AddKanban from "../AddKanban";
-import AddTask from "./AddTask";
-import AddSticky from "../AddSticky";
-import Reminder from "./Reminder";
-import Portal from "../Portal";
+import UserContext from "../../context/UserContext";
+import AddEvent from "../AddData/AddEvent";
+import AddKanban from "../AddData/AddKanban";
+import AddList from "../AddData/AddList";
+import AddReminder from "../AddData/AddReminder";
+import AddSticky from "../AddData/AddSticky";
+import DayEvent from "../Events/DayEvent";
+import Portal from "../Misc/Portal";
+import AddTask from "../AddData/AddTask";
+import Reminder from "../Reminders/Reminder";
 
 const Modal = ({ allDayEvents, todaysReminders }) => {
   const { events, holidays, preferences } = useContext(UserContext);

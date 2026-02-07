@@ -1,24 +1,15 @@
 import { useEffect, useRef, useState, useContext } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { staticTimes } from "../../constants.js";
-import {
-  MdEventAvailable,
-  MdEventNote,
-  MdEventRepeat,
-  MdOpenInNew,
-} from "react-icons/md";
+import { MdEventNote } from "react-icons/md";
 import { MdLocationPin } from "react-icons/md";
 import { FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";
 import DatesContext from "../../context/DatesContext.jsx";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
 import UserContext from "../../context/UserContext.jsx";
-// import Reminder from "./Reminder.jsx";
 import { createPortal } from "react-dom";
-import { BiAlarmSnooze, BiCalendarEvent } from "react-icons/bi";
-import { BsFillPenFill, BsAlarmFill } from "react-icons/bs";
-import { formatTime } from "../../utils/helpers.js";
-import Reminder from "./Reminder.jsx";
+import Reminder from "../Reminders/Reminder.jsx";
 
 const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
   const { setEvent, setAddEventWithStartEndTime, setType, setAddNewEvent } =

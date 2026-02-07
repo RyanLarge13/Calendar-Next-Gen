@@ -1,10 +1,10 @@
 import { useContext, useState } from "react";
-import EditColor from "../EditColor";
+import { BsShareFill, BsTrashFill } from "react-icons/bs";
+import { FaPaintBrush } from "react-icons/fa";
 import UserContext from "../../context/UserContext";
 import { API_UpdateTaskColor, deleteTask } from "../../utils/api";
-import { BsShareFill, BsTrashFill } from "react-icons/bs";
-import TaskItems from "../TaskItems";
-import { FaPaintBrush } from "react-icons/fa";
+import EditColor from "../Misc/EditColor";
+import TaskItems from "../Tasks/TaskItems";
 
 const Task = ({ task }) => {
   const { preferences, setUserTasks, userTasks, setSystemNotif } =

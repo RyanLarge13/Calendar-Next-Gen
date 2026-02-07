@@ -1,17 +1,17 @@
 import { motion } from "framer-motion";
-import { FaStickyNote } from "react-icons/fa";
-import { AiTwotoneHome, AiFillSchedule } from "react-icons/ai";
-import { HiUserGroup } from "react-icons/hi";
-import {
-  BsListCheck,
-  BsFillClipboardDataFill,
-  BsListTask,
-  BsFillCalendar2EventFill,
-} from "react-icons/bs";
-import { IoIosAlarm } from "react-icons/io";
-import { TbKeyboardHide } from "react-icons/tb";
-import { MdOutlineKeyboardHide } from "react-icons/md";
 import { useContext } from "react";
+import { AiFillSchedule, AiTwotoneHome } from "react-icons/ai";
+import {
+  BsFillCalendar2EventFill,
+  BsFillClipboardDataFill,
+  BsListCheck,
+  BsListTask,
+} from "react-icons/bs";
+import { FaStickyNote } from "react-icons/fa";
+import { HiUserGroup } from "react-icons/hi";
+import { IoIosAlarm } from "react-icons/io";
+import { MdOutlineKeyboardHide } from "react-icons/md";
+import { TbKeyboardHide } from "react-icons/tb";
 import InteractiveContext from "../../context/InteractiveContext";
 import UserContext from "../../context/UserContext";
 

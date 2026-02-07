@@ -1,16 +1,13 @@
-import { useContext, useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { calendarBlocks } from "../../motion.js";
-import { holidays } from "../../constants.js";
-import { tailwindBgToHex } from "../../utils/helpers.js";
+import { useContext, useEffect, useState } from "react";
 import { AiFillCheckCircle, AiFillCloseCircle } from "react-icons/ai";
 import { IoIosAlarm } from "react-icons/io";
-import { calendar } from "../../motion.js";
 import DatesContext from "../../context/DatesContext.jsx";
-import UserContext from "../../context/UserContext.jsx";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
-import PopUpMonthViewWindow from "../PopUpMonthViewWindow.jsx";
-import { BiCalendarEvent } from "react-icons/bi";
+import UserContext from "../../context/UserContext.jsx";
+import { calendar, calendarBlocks } from "../../motion.js";
+import { tailwindBgToHex } from "../../utils/helpers.js";
+import PopUpMonthViewWindow from "../Misc/PopUpMonthViewWindow.jsx";
 
 const MonthView = () => {
   const { events, eventMap, holidays, preferences, reminders } =
@@ -87,7 +84,7 @@ const MonthView = () => {
       setTimeout(() => {
         setSelected((prevSelected) => [...prevSelected, index]);
         clearTimeout(longPressTimeout);
-      }, 1)
+      }, 1),
     );
   };
 
@@ -98,7 +95,7 @@ const MonthView = () => {
     }
     if (longPressActive && selected.includes(index)) {
       setSelected((prevSelected) =>
-        prevSelected.filter((dayIndex) => dayIndex !== index)
+        prevSelected.filter((dayIndex) => dayIndex !== index),
       );
       if (selected.length === 1) setLongPressActive(false);
     }
@@ -142,7 +139,7 @@ const MonthView = () => {
       })
       .filter(
         (event) =>
-          event.startDate <= targetDateObj && event.endDate >= targetDateObj
+          event.startDate <= targetDateObj && event.endDate >= targetDateObj,
       )
       .sort((a, b) => b.duration - a.duration);
   };
@@ -222,12 +219,13 @@ const MonthView = () => {
         const dateStr = `${month + 1}/${index - paddingDays + 1}/${year}`;
         const eventsToRender = getIndicesForEvents(dateStr);
         const remindersToRender = reminders.filter(
-          (reminder) => new Date(reminder.time).toLocaleDateString() === dateStr
+          (reminder) =>
+            new Date(reminder.time).toLocaleDateString() === dateStr,
         );
 
         const hasReminders =
           reminders.filter(
-            (r) => new Date(r.time).toLocaleDateString() === dateStr
+            (r) => new Date(r.time).toLocaleDateString() === dateStr,
           )?.length || 0;
 
         return (
@@ -261,8 +259,8 @@ const MonthView = () => {
                 isCurrentDate
                   ? "w-[25px] h-[25px] rounded-full bg-white shadow-md text-black"
                   : preferences.darkMode
-                  ? "text-white"
-                  : "text-black"
+                    ? "text-white"
+                    : "text-black"
               }`}
             >
               <p>{index >= paddingDays && index - paddingDays + 1}</p>

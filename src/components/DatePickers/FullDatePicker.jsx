@@ -1,12 +1,12 @@
-import { useContext, useRef, useState, useEffect } from "react";
-import { staticMonths, staticYears } from "../../constants.js";
 import { motion } from "framer-motion";
+import { useContext, useEffect, useRef, useState } from "react";
 import {
   BsFillArrowDownCircleFill,
   BsFillArrowUpCircleFill,
 } from "react-icons/bs";
-import InteractiveContext from "../../context/InteractiveContext.jsx";
+import { staticMonths, staticYears } from "../../constants.js";
 import DatesContext from "../../context/DatesContext.jsx";
+import InteractiveContext from "../../context/InteractiveContext.jsx";
 import UserContext from "../../context/UserContext.jsx";
 import Portal from "../Misc/Portal.jsx";
 

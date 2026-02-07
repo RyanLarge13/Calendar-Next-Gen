@@ -1,14 +1,14 @@
-import { useState, useContext, useRef } from "react";
-import { createNewList } from "../../utils/api.js";
-import { v4 as uuidv4 } from "uuid";
-import UserContext from "../../context/UserContext.jsx";
-import InteractiveContext from "../../context/InteractiveContext.jsx";
-import DatesContext from "../../context/DatesContext.jsx";
+import { useContext, useRef, useState } from "react";
 import { AiFillCloseCircle } from "react-icons/ai";
-import Color from "./Color";
-import { colors } from "../../constants.js";
-import { MdClose } from "react-icons/md";
 import { BsCheck, BsList } from "react-icons/bs";
+import { MdClose } from "react-icons/md";
+import { v4 as uuidv4 } from "uuid";
+import { colors } from "../../constants.js";
+import DatesContext from "../../context/DatesContext.jsx";
+import InteractiveContext from "../../context/InteractiveContext.jsx";
+import UserContext from "../../context/UserContext.jsx";
+import { createNewList } from "../../utils/api.js";
+import Color from "../Misc/Color";
 
 const AddList = ({ eventsForDay }) => {
   const { user, setLists, setSystemNotif, preferences } =

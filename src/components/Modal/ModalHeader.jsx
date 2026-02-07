@@ -1,19 +1,19 @@
-import { useState, useContext, useEffect } from "react";
 import { motion } from "framer-motion";
-import { deleteEvent, deleteRepeats } from "../../utils/api.js";
+import { useContext, useEffect, useState } from "react";
 import { AiFillPlusCircle } from "react-icons/ai";
-import { MdLocationPin } from "react-icons/md";
 import {
   BsFillArrowDownCircleFill,
   BsFillArrowUpCircleFill,
-  BsFillTrashFill,
   BsFillPenFill,
   BsFillShareFill,
+  BsFillTrashFill,
 } from "react-icons/bs";
+import { MdLocationPin } from "react-icons/md";
 import DatesContext from "../../context/DatesContext.jsx";
-import { tailwindBgToHex } from "../../utils/helpers.js";
-import UserContext from "../../context/UserContext.jsx";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
+import UserContext from "../../context/UserContext.jsx";
+import { deleteEvent } from "../../utils/api.js";
+import { tailwindBgToHex } from "../../utils/helpers.js";
 import weatherCodes from "../../utils/weatherCodes.js";
 
 const ModalHeader = ({ allDayEvents }) => {
@@ -50,7 +50,7 @@ const ModalHeader = ({ allDayEvents }) => {
 
     // Calculate difference in days
     const diffDays = Math.floor(
-      (baseTime - currentTime) / (1000 * 60 * 60 * 24)
+      (baseTime - currentTime) / (1000 * 60 * 60 * 24),
     );
 
     // Check range

@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import { useContext, useEffect, useRef } from "react";
-import UserContext from "../../context/UserContext";
 import {
   BsFillArrowDownCircleFill,
   BsFillArrowUpCircleFill,
@@ -10,6 +9,7 @@ import {
   staticMeridiem,
   staticMinutes,
 } from "../../constants/WheelPickerConstants";
+import UserContext from "../../context/UserContext";
 
 const clamp = (n, min, max) => Math.min(Math.max(n, min), max);
 

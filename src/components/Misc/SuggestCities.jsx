@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useContext } from "react";
 import { motion } from "framer-motion";
 import debounce from "lodash.debounce";
-import GoogleMaps from "./GoogleMaps";
+import React, { useContext, useEffect, useState } from "react";
 import UserContext from "../../context/UserContext";
+import GoogleMaps from "../Misc/GoogleMaps";
 
 const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 

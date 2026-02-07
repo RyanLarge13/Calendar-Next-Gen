@@ -1,8 +1,8 @@
-import { useContext } from "react";
 import { motion } from "framer-motion";
+import { useContext } from "react";
+import { AiFillCalendar, AiFillMessage } from "react-icons/ai";
 import { FaCogs, FaUserFriends } from "react-icons/fa";
-import { AiFillMessage, AiFillCalendar } from "react-icons/ai";
-import UserContext from "../context/UserContext";
+import UserContext from "../../context/UserContext";
 
 const Options = ({ setOption }) => {
   const { friendRequests } = useContext(UserContext);

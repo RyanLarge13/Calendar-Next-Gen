@@ -1,15 +1,14 @@
 import { useContext } from "react";
-import { motion } from "framer-motion";
-import { RiMenuUnfoldFill } from "react-icons/ri";
 import {
-  BsFillArrowRightCircleFill,
   BsFillArrowLeftCircleFill,
+  BsFillArrowRightCircleFill,
   BsThreeDotsVertical,
 } from "react-icons/bs";
-import UserContext from "../../context/UserContext";
-import InteractiveContext from "../../context/InteractiveContext";
+import { RiMenuUnfoldFill } from "react-icons/ri";
 import DatesContext from "../../context/DatesContext";
-import MenuNavigation from "./MenuNavigation";
+import InteractiveContext from "../../context/InteractiveContext";
+import UserContext from "../../context/UserContext";
+import MenuNavigation from "../Menu/MenuNavigation";
 
 const Header = () => {
   const { dt, setNav, theDay, setTheDay, currentWeek, setWeekOffset } =
@@ -132,7 +131,7 @@ const Header = () => {
                   -{" "}
                   {currentWeek[currentWeek.length - 1].toLocaleDateString(
                     "en-US",
-                    { month: "short", day: "numeric" }
+                    { month: "short", day: "numeric" },
                   )}
                 </h1>
                 <BsFillArrowRightCircleFill

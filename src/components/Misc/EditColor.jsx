@@ -1,7 +1,7 @@
 import { useContext } from "react";
-import { colors } from "../constants";
+import { colors } from "../../constants";
+import UserContext from "../../context/UserContext";
 import Color from "./Color";
-import UserContext from "../context/UserContext";
 
 const EditColor = ({ save, color, setColor }) => {
   const { preferences } = useContext(UserContext);

@@ -1,6 +1,6 @@
 import { useContext } from "react";
-import UserContext from "../context/UserContext";
-import { cancelAFriendRequest } from "../utils/api";
+import UserContext from "../../context/UserContext";
+import { cancelAFriendRequest } from "../../utils/api";
 
 const ConnectionRequests = () => {
   const { connectionRequests, setConnectionRequests, setSystemNotif } =
@@ -47,7 +47,7 @@ const ConnectionRequests = () => {
           };
           setSystemNotif(newSuccess);
           const filteredRequests = connectionRequests.filter(
-            (req) => req.email !== recipientsEmail
+            (req) => req.email !== recipientsEmail,
           );
           setConnectionRequests(filteredRequests);
         })

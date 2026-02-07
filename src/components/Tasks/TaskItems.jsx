@@ -1,5 +1,4 @@
-import { useState, useContext, useRef } from "react";
-import { v4 as uuidv4 } from "uuid";
+import { useContext, useRef, useState } from "react";
 import { AiFillPlusCircle } from "react-icons/ai";
 import {
   FaSortAlphaDownAlt,
@@ -7,8 +6,9 @@ import {
   FaSortAmountDown,
   FaSortAmountUp,
 } from "react-icons/fa";
-import { updateTasks, updateTaskTitle } from "../utils/api";
-import UserContext from "../context/UserContext";
+import { v4 as uuidv4 } from "uuid";
+import UserContext from "../../context/UserContext";
+import { updateTasks, updateTaskTitle } from "../../utils/api";
 import TaskItem from "./TaskItem";
 
 const TaskItems = ({ task, styles = "" }) => {

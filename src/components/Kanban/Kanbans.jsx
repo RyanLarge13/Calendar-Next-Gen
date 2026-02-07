@@ -1,7 +1,6 @@
 import { useContext, useState } from "react";
-import { AiFillFolder } from "react-icons/ai";
-import Kanban from "./Kanban";
 import UserContext from "../../context/UserContext";
+import Kanban from "./Kanban";
 import KanbanFolder from "./KanbanFolder";
 
 const Kanbans = () => {

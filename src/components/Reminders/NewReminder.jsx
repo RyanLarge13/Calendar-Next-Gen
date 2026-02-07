@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { tailwindBgToHex } from "../../utils/helpers";
-import Toggle from "../Toggle";
+import Toggle from "../Misc/Toggle";
 import { AiFillInfoCircle } from "react-icons/ai";
 
 const NewReminder = ({ r, color, setNewReminders }) => {

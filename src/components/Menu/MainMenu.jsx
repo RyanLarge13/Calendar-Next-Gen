@@ -1,22 +1,22 @@
-import { useContext, useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useContext, useEffect, useState } from "react";
 import {
-  MdOutlineEvent,
-  MdOutlineCheckCircle,
-  MdOutlineStickyNote2,
   MdOutlineAccessAlarm,
-  MdOutlineOpenInNew,
+  MdOutlineCheckCircle,
+  MdOutlineEvent,
   MdOutlineLocationOn,
+  MdOutlineOpenInNew,
+  MdOutlineStickyNote2,
   MdOutlineWbSunny,
 } from "react-icons/md";
-import UserContext from "../context/UserContext";
-import InteractiveContext from "../context/InteractiveContext";
-import weatherCodeMap from "../utils/weatherCodes";
-import DatesContext from "../context/DatesContext";
-import TaskItems from "./TaskItems";
-import StickyBody from "./Stickies/StickyBody";
-import { weekDays } from "../constants";
-import { tailwindBgToHex } from "../utils/helpers";
+import { weekDays } from "../../constants";
+import DatesContext from "../../context/DatesContext";
+import InteractiveContext from "../../context/InteractiveContext";
+import UserContext from "../../context/UserContext";
+import { tailwindBgToHex } from "../../utils/helpers";
+import weatherCodeMap from "../../utils/weatherCodes";
+import StickyBody from "../Stickies/StickyBody";
+import TaskItems from "../Tasks/TaskItems";
 
 const Dashboard = ({ timeOfDay }) => {
   const {

@@ -5,10 +5,10 @@ import { BsFillBellFill } from "react-icons/bs";
 import { updateNotification } from "../../utils/api";
 import UserContext from "../../context/UserContext";
 import InteractiveContext from "../../context/InteractiveContext";
-import Notification from "../Notification";
-import Options from "../Options";
-import Settings from "../Settings";
-import Connections from "../Connections";
+import Notification from "../UserModal/Notification";
+import Options from "../UserModal/Options";
+import Settings from "../UserModal/Settings";
+import Connections from "../UserModal/Connections";
 import SocialLogin from "./SocialLogin";
 
 const LoginLogout = () => {

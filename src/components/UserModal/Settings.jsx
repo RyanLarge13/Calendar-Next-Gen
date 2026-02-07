@@ -1,10 +1,10 @@
-import { useContext } from "react";
 import { motion } from "framer-motion";
-import { RiSunFill } from "react-icons/ri";
+import { useContext } from "react";
 import { BiSolidMoon } from "react-icons/bi";
-import UserContext from "../context/UserContext";
-import Switch from "./Switch";
 import { FaMinusCircle } from "react-icons/fa";
+import { RiSunFill } from "react-icons/ri";
+import UserContext from "../../context/UserContext";
+import Switch from "../Misc/Switch";
 
 const Settings = ({ setOption }) => {
   const { preferences, setPreferences } = useContext(UserContext);
@@ -26,7 +26,7 @@ const Settings = ({ setOption }) => {
     if (meta) {
       meta.setAttribute(
         "content",
-        preferences.darkMode ? "#FFFFFF" : "#222222"
+        preferences.darkMode ? "#FFFFFF" : "#222222",
       );
     }
     const newPreferences = {

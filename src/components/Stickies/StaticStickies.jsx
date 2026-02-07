@@ -1,9 +1,9 @@
 import { useContext } from "react";
-import UserContext from "../../context/UserContext.jsx";
-import Masonry from "react-masonry-css";
-import { tailwindBgToHex } from "../../utils/helpers.js";
 import { BiListPlus } from "react-icons/bi";
 import { IoIosAddCircle } from "react-icons/io";
+import Masonry from "react-masonry-css";
+import UserContext from "../../context/UserContext.jsx";
+import { tailwindBgToHex } from "../../utils/helpers.js";
 import StickyBody from "./StickyBody.jsx";
 
 const StaticStickies = () => {

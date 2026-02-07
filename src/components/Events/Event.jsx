@@ -1,11 +1,15 @@
-import { useState, useEffect, useContext } from "react";
+import Compressor from "compressorjs";
+import { AnimatePresence, motion, useDragControls } from "framer-motion";
+import { useContext, useEffect, useState } from "react";
 import { AiFillCloseCircle } from "react-icons/ai";
+import { FaExternalLinkAlt, FaImage, FaTrash } from "react-icons/fa";
 import { FiMaximize, FiMinimize, FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";
 import { MdLocationPin, MdOutlineDragIndicator } from "react-icons/md";
-import { tailwindBgToHex } from "../../utils/helpers.js";
-import { FaExternalLinkAlt, FaImage, FaTrash } from "react-icons/fa";
-import { motion, useDragControls, AnimatePresence } from "framer-motion";
+import Masonry from "react-masonry-css";
+import DatesContext from "../../context/DatesContext.jsx";
+import InteractiveContext from "../../context/InteractiveContext.jsx";
+import UserContext from "../../context/UserContext.jsx";
 import {
   API_UpdateEventDesc,
   API_UpdateEventLocation,
@@ -13,21 +17,16 @@ import {
   createAttachments,
   fetchAttachments,
 } from "../../utils/api.js";
-import Compressor from "compressorjs";
-import { formatTime } from "../../utils/helpers.js";
-import GoogleMaps from "./GoogleMaps";
-import Masonry from "react-masonry-css";
-import InteractiveContext from "../../context/InteractiveContext.jsx";
-import UserContext from "../../context/UserContext.jsx";
-import DatesContext from "../../context/DatesContext.jsx";
-import SuggestCities from "./SuggestCities.jsx";
-import Reminder from "./Reminder.jsx";
+import { formatTime, tailwindBgToHex } from "../../utils/helpers.js";
+import GoogleMaps from "../Misc/GoogleMaps";
+import SuggestCities from "../Misc/SuggestCities.jsx";
+import Reminder from "../Reminders/Reminder.jsx";
 
-const Event = ({ dayEvents }) => {
+const Event = ({ dayEvents = [] }) => {
   const { event, setEvent, setAddNewEvent, setType, menu, setMenu } =
     useContext(InteractiveContext);
   const { preferences, setEventMap } = useContext(UserContext);
-  const { dateObj, string, setOpenModal, setString } = useContext(DatesContext);
+  const { string, setOpenModal, setString } = useContext(DatesContext);
 
   const [timeLeft, setTimeLeft] = useState(null);
   const [width, setWidth] = useState(0);

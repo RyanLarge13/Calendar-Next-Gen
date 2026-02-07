@@ -1,10 +1,9 @@
-import { useContext, useEffect } from "react";
-import { acceptFriendRequest } from "../utils/api";
-import UserContext from "../context/UserContext";
+import { useContext } from "react";
+import { acceptFriendRequest } from "../../utils/api";
+import UserContext from "../../context/UserContext";
 
 const FriendRequest = () => {
-  const { friendRequests, setFriendRequests, setSystemNotif } =
-    useContext(UserContext);
+  const { friendRequests, setSystemNotif } = useContext(UserContext);
 
   const confirmAccept = (reqEmail) => {
     const newConfirmation = {

@@ -1,28 +1,30 @@
-import { useState, useEffect, useContext } from "react";
+import Compressor from "compressorjs";
 import { motion } from "framer-motion";
-import { colors } from "../../constants.js";
-import { getTimeZone, makeDateTime } from "../../utils/helpers.js";
-import { MdLocationPin, MdFreeCancellation } from "react-icons/md";
-import { BsFillCalendarPlusFill } from "react-icons/bs";
+import { useContext, useEffect, useState } from "react";
 import { AiFillCloseCircle } from "react-icons/ai";
+import { BsFillCalendarPlusFill } from "react-icons/bs";
 import { FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";
+import { MdFreeCancellation, MdLocationPin } from "react-icons/md";
 import { RiGalleryUploadFill } from "react-icons/ri";
-import { createAttachments, postEvent } from "../../utils/api.js";
-import { tailwindBgToHex } from "../../utils/helpers.js";
-import { repeatOptions } from "../../constants.js";
-import { v4 as uuidv4 } from "uuid";
-import Compressor from "compressorjs";
 import Masonry from "react-masonry-css";
+import { v4 as uuidv4 } from "uuid";
+import { colors, repeatOptions } from "../../constants.js";
 import DatesContext from "../../context/DatesContext.jsx";
-import UserContext from "../../context/UserContext.jsx";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
+import UserContext from "../../context/UserContext.jsx";
+import { createAttachments, postEvent } from "../../utils/api.js";
+import {
+  getTimeZone,
+  makeDateTime,
+  tailwindBgToHex,
+} from "../../utils/helpers.js";
 import Color from "../Misc/Color.jsx";
-import Toggle from "./Toggle";
-import TimeSetter from "./TimeSetter";
-import SuggestCities from "../SuggestCities.jsx";
-import NewReminder from "./AddEvent/NewReminder.jsx";
 import Portal from "../Misc/Portal.jsx";
+import SuggestCities from "../Misc/SuggestCities.jsx";
+import NewReminder from "../Reminders/NewReminder.jsx";
+import TimeSetter from "../DatePickers/TimeSetter";
+import Toggle from "../Misc/Toggle";
 
 const AddEvent = () => {
   const {

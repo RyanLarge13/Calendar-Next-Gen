@@ -1,19 +1,15 @@
+import { Reorder, motion } from "framer-motion";
 import { useContext, useEffect, useState } from "react";
-import ListItems from "./ListItems";
-import { deleteList, updateListTitle } from "../../utils/api";
-import { Reorder, motion, useDragControls } from "framer-motion";
-import {
-  BsFillTrashFill,
-  BsFillPenFill,
-  BsFillShareFill,
-} from "react-icons/bs";
 import { BiListMinus, BiListPlus } from "react-icons/bi";
+import { BsFillShareFill, BsFillTrashFill } from "react-icons/bs";
 import { IoIosAddCircle } from "react-icons/io";
 import { RiFileCopy2Line } from "react-icons/ri";
 import Masonry from "react-masonry-css";
-import UserContext from "../../context/UserContext";
-import InteractiveContext from "../../context/InteractiveContext";
 import DatesContext from "../../context/DatesContext";
+import InteractiveContext from "../../context/InteractiveContext";
+import UserContext from "../../context/UserContext";
+import { deleteList, updateListTitle } from "../../utils/api";
+import ListItems from "./ListItems";
 
 const Lists = ({ listSort, listSortOpt, listSearch, listSearchTxt }) => {
   const { string, setString, setOpenModal } = useContext(DatesContext);

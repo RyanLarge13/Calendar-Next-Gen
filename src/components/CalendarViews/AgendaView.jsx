@@ -1,16 +1,15 @@
 import { useContext, useEffect, useState } from "react";
-import { weekDays } from "../../constants.js";
 import { AiFillCalendar } from "react-icons/ai";
-import { formatDbText, formatTime } from "../../utils/helpers.js";
-import DatesContext from "../../context/DatesContext.jsx";
-import InteractiveContext from "../../context/InteractiveContext.jsx";
-import UserContext from "../../context/UserContext.jsx";
 import {
   BsAlarmFill,
   BsFillCalendarPlusFill,
-  BsStickies,
   BsStickiesFill,
 } from "react-icons/bs";
+import { weekDays } from "../../constants.js";
+import DatesContext from "../../context/DatesContext.jsx";
+import InteractiveContext from "../../context/InteractiveContext.jsx";
+import UserContext from "../../context/UserContext.jsx";
+import { formatDbText, formatTime } from "../../utils/helpers.js";
 
 const AgendaView = () => {
   const { view, setEvent } = useContext(InteractiveContext);
@@ -42,13 +41,13 @@ const AgendaView = () => {
     const dayEvents = events.filter(
       (evnt) =>
         new Date(evnt.date).toLocaleDateString() ===
-        new Date(string).toLocaleDateString()
+        new Date(string).toLocaleDateString(),
     );
     const times = dayEvents.map((event) =>
       new Date(event.start.startTime).toLocaleTimeString("en-US", {
         hour: "numeric",
         minute: "2-digit",
-      })
+      }),
     );
     const timesSet = Array.from(new Set(times));
     setTimesForEvents(timesSet);
@@ -107,8 +106,8 @@ const AgendaView = () => {
                   year === dateObj.getFullYear()
                     ? "bg-cyan-100 text-black"
                     : preferences.darkMode
-                    ? "text-white"
-                    : "text-black"
+                      ? "text-white"
+                      : "text-black"
                 } h-20 duration-200 relative w-full rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start gap-y-1 cursor-pointer`}
               >
                 <div
@@ -163,7 +162,7 @@ const AgendaView = () => {
                             >
                               {text}
                             </p>
-                          )
+                          ),
                         )}
                       </div>
                     </div>

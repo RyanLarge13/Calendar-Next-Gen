@@ -1,13 +1,13 @@
-import React, { useContext, useState, useEffect } from "react";
-import { deleteNotification, markAsRead, markAsUnread } from "../utils/api";
-import { formatTime, formatDbText } from "../utils/helpers";
-import { motion, AnimatePresence, useDragControls } from "framer-motion";
+import { AnimatePresence, motion, useDragControls } from "framer-motion";
+import React, { useContext, useEffect, useState } from "react";
 import { AiFillCloseCircle } from "react-icons/ai";
 import { IoIosAlarm } from "react-icons/io";
 import { MdEventAvailable, MdSystemSecurityUpdateGood } from "react-icons/md";
 import { RxDragHandleHorizontal } from "react-icons/rx";
-import InteractiveContext from "../context/InteractiveContext";
-import UserContext from "../context/UserContext";
+import InteractiveContext from "../../context/InteractiveContext";
+import UserContext from "../../context/UserContext";
+import { deleteNotification, markAsUnread } from "../../utils/api";
+import { formatTime } from "../../utils/helpers";
 
 const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
   const { notifications, setNotifications, setSystemNotif, preferences } =

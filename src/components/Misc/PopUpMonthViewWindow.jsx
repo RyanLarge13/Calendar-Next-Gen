@@ -1,17 +1,15 @@
 import { motion } from "framer-motion";
 import { useContext, useEffect } from "react";
-import { formatDbText, formatTime } from "../../utils/helpers";
-import {
-  BsFillCalendar2EventFill,
-  BsAlarmFill,
-  BsListTask,
-  BsFillPenFill,
-} from "react-icons/bs";
 import { BiAlarmSnooze, BiCalendarEvent } from "react-icons/bi";
-import UserContext from "../../context/UserContext";
+import {
+  BsAlarmFill,
+  BsFillCalendar2EventFill,
+  BsListTask,
+} from "react-icons/bs";
 import DatesContext from "../../context/DatesContext";
 import InteractiveContext from "../../context/InteractiveContext";
-import { MdOpenInNew } from "react-icons/md";
+import UserContext from "../../context/UserContext";
+import { formatTime } from "../../utils/helpers";
 
 const PopUpMonthViewWindow = ({
   positions,
@@ -83,9 +81,9 @@ const PopUpMonthViewWindow = ({
                 new Date(reminder.time) < dateObj
                   ? "border-l-4 border-rose-400"
                   : new Date(reminder.time).toLocaleDateString() ===
-                    dateObj.toLocaleDateString()
-                  ? "border-l-4 border-amber-400"
-                  : "border-l-4 border-cyan-400"
+                      dateObj.toLocaleDateString()
+                    ? "border-l-4 border-amber-400"
+                    : "border-l-4 border-cyan-400"
               } min-w-[200px] max-w-[200px] shadow-lg p-4 rounded-2xl text-gray-900`}
             >
               <div className="space-y-3">

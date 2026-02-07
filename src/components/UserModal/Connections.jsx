@@ -1,9 +1,9 @@
-import { useState, useContext } from "react";
 import { motion } from "framer-motion";
+import { useContext, useState } from "react";
 import { AiOutlineArrowDown } from "react-icons/ai";
-import UserContext from "../context/UserContext";
-import FriendRequest from "./FriendRequest";
+import UserContext from "../../context/UserContext";
 import ConnectionRequests from "./ConnectionRequests";
+import FriendRequest from "./FriendRequest";
 import Friends from "./Friends";
 
 const Connections = ({ setOption }) => {
