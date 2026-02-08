@@ -20,31 +20,35 @@ const Sticky = ({ sticky, index }) => {
     useContext(UserContext);
   const { event } = useContext(InteractiveContext);
 
-  const [expand, setExpand] = useState(false);
+  const initialView = sticky.viewState ?? "minimized";
+
   const [pin, setPin] = useState(sticky.pin);
-  const [fullScreen, setFullScreen] = useState(false);
-  const [minimize, setMinimize] = useState(true);
+  const [fullScreen, setFullScreen] = useState(initialView === "fullscreen");
+  const [expand, setExpand] = useState(initialView === "expand");
+  const [minimize, setMinimize] = useState(initialView === "minimized");
 
   const stickyRef = useRef(null);
 
   const controls = useDragControls();
 
   useEffect(() => {
-    const viewState = sticky.viewState;
-    switch (viewState) {
-      case "minimized":
-        break;
-      case "fullscreen":
-        setFullScreen(true);
-        break;
-      case "expand":
-        setFullScreen(false);
-        setMinimize(false);
-        setExpand(true);
-        break;
-      default:
-        null;
-    }
+    setTimeout(() => {
+      const viewState = sticky.viewState;
+      switch (viewState) {
+        case "minimized":
+          break;
+        case "fullscreen":
+          setFullScreen(true);
+          break;
+        case "expand":
+          setFullScreen(false);
+          setMinimize(false);
+          setExpand(true);
+          break;
+        default:
+          null;
+      }
+    }, 1000);
   }, []);
 
   const handleViewChange = (newView) => {
@@ -111,11 +115,11 @@ const Sticky = ({ sticky, index }) => {
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
+      initial={{ opacity: 0, width: 8, height: 150, x: 0, y: index * 50 }}
       exit={{ scale: 0 }}
       animate={{
-        x: fullScreen || minimize ? 0 : null,
-        y: fullScreen ? 0 : minimize ? 0 + index * 50 : null,
+        x: fullScreen ? 0 : 0,
+        y: fullScreen ? 0 : minimize ? index * 50 : 0,
         opacity: event ? 0 : 1,
         height: fullScreen
           ? window.innerHeight
@@ -145,7 +149,6 @@ const Sticky = ({ sticky, index }) => {
       className={`
     markdown fixed z-[999] overflow-hidden
     rounded-2xl border shadow-2xl
-    transition-all duration-300 ease-in-out
     ${minimize ? "text-transparent rounded-l-none" : ""}
     ${preferences.darkMode ? "border-white/10" : "border-black/10"}
     ${preferences.darkMode ? "bg-[#161616]/90" : "bg-white/90"}

@@ -30,7 +30,7 @@ const Dashboard = ({ timeOfDay }) => {
     preferences,
   } = useContext(UserContext);
   const { setEvent } = useContext(InteractiveContext);
-  const { string, theDay } = useContext(DatesContext);
+  const { theDay } = useContext(DatesContext);
 
   const [todaysReminders, setTodaysReminders] = useState([]);
 
@@ -135,7 +135,7 @@ const Dashboard = ({ timeOfDay }) => {
           {/* Upcoming Events (wide) */}
           <div
             className={`
-          col-span-12 lg:col-span-7
+          col-span-12 lg:col-span-6
           rounded-3xl border shadow-sm transition-all
           ${
             preferences.darkMode
@@ -243,7 +243,7 @@ const Dashboard = ({ timeOfDay }) => {
           </div>
 
           {/* Weather + Location (stacked) */}
-          <div className="col-span-12 lg:col-span-5 grid gap-4">
+          <div className="col-span-12 lg:col-span-6 grid gap-4">
             {/* Weather */}
             <div
               className={`
