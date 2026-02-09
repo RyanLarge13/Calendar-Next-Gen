@@ -25,7 +25,7 @@ import Reminder from "../Reminders/Reminder.jsx";
 const Event = ({ dayEvents = [] }) => {
   const { event, setEvent, setAddNewEvent, setType, menu, setMenu } =
     useContext(InteractiveContext);
-  const { preferences, setEventMap } = useContext(UserContext);
+  const { preferences, setEventMap, reminders } = useContext(UserContext);
   const { string, setOpenModal, setString } = useContext(DatesContext);
 
   const [timeLeft, setTimeLeft] = useState(null);
@@ -55,7 +55,6 @@ const Event = ({ dayEvents = [] }) => {
   };
 
   useEffect(() => {
-    console.log(event);
     if (event.attachmentLength > 0) {
       setImagesLoading(true);
       const token = localStorage.getItem("authToken");
@@ -553,7 +552,15 @@ const Event = ({ dayEvents = [] }) => {
             </div>
             {event.reminders.reminder ? (
               event.reminders?.eventReminders?.map((r) => {
-                <Reminder key={r.id} reminder={r} showOpenEvent={false} />;
+                const eventReminder = reminders.find((rem) => rem.id === r.id);
+
+                return eventReminder ? (
+                  <Reminder
+                    key={eventReminder.id}
+                    reminder={eventReminder}
+                    showOpenEvent={false}
+                  />
+                ) : null;
               })
             ) : (
               <p className="text-sm text-gray-500">No reminders set</p>

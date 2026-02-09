@@ -138,7 +138,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
           onDragEnd={checkToClose}
           className={`
         fixed inset-0 z-20
-        overflow-y-auto will-change-transform
+       will-change-transform
         ${
           preferences.darkMode
             ? "bg-[#0f0f10]/70 text-white"
@@ -311,7 +311,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
             {/* Filters */}
             <div
               className={`
-    mt-4 -mx-1 px-1
+    mt-4 -mx-1 px-5
     flex gap-2 overflow-x-auto scrollbar-hide
   `}
             >
@@ -364,7 +364,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
             </div>
 
             {/* Body */}
-            <div className="px-5 pt-4 pb-28">
+            <div className="px-5 pt-4 pb-28 overflow-y-auto">
               {notifications.length < 1 ? (
                 <div className="min-h-[50vh] grid place-items-center">
                   <div
