@@ -364,7 +364,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
             </div>
 
             {/* Body */}
-            <div className="px-5 pt-4 pb-28 overflow-y-auto">
+            <div className="px-5 pt-4 pb-28 overflow-y-auto min-h-full">
               {notifications.length < 1 ? (
                 <div className="min-h-[50vh] grid place-items-center">
                   <div
