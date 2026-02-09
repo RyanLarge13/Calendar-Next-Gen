@@ -14,7 +14,7 @@ import InteractiveContext from "../../context/InteractiveContext.jsx";
 import UserContext from "../../context/UserContext.jsx";
 import { deleteEvent } from "../../utils/api.js";
 import { tailwindBgToHex } from "../../utils/helpers.js";
-import weatherCodes from "../../utils/weatherCodes.js";
+import weatherCodes from "../../constants/weatherContants.js";
 
 const ModalHeader = ({ allDayEvents }) => {
   const { string, setString, secondString } = useContext(DatesContext);

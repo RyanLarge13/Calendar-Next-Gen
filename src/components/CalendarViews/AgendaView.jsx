@@ -5,7 +5,7 @@ import {
   BsFillCalendarPlusFill,
   BsStickiesFill,
 } from "react-icons/bs";
-import { weekDays } from "../../constants.js";
+import { weekDays } from "../../constants/dateAndTimeConstants.js";
 import DatesContext from "../../context/DatesContext.jsx";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
 import UserContext from "../../context/UserContext.jsx";

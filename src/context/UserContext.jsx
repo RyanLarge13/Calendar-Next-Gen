@@ -1,14 +1,10 @@
 import { createContext, useState, useEffect } from "react";
-import { holidays, weekDays } from "../constants";
+import { weekDays } from "../constants/dateAndTimeConstants";
+import {holidays} from "../constants/holidays"
 import {
   getUserData,
   getGoogleData,
-  loginWithGoogle,
-  getEvents,
-  getReminders,
   requestAndSubscribe,
-  getAllLists,
-  getAllTasks,
   getNotifications,
   getNotificationsAtStart,
   checkSubscription,
@@ -22,7 +18,6 @@ import {
 } from "../utils/api";
 import QRCode from "qrcode-generator";
 import IndexedDBManager from "../utils/indexDBApi";
-import { eventIsAllDay } from "../utils/helpers.js";
 
 const UserContext = createContext({});
 

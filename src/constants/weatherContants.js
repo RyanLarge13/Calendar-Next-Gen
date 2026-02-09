@@ -1,4 +1,4 @@
-export const weatherCodes = [
+const weatherCodes = [
   {
     name: "Clear Sky",
     codes: [0],
@@ -35,3 +35,5 @@ export const weatherCodes = [
     icon: 6,
   },
 ];
+
+export default weatherCodes;

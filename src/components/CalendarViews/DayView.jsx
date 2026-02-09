@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useContext } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { staticTimes } from "../../constants.js";
+import { staticTimes } from "../../constants/dateAndTimeConstants.js";
 import { MdEventNote } from "react-icons/md";
 import { MdLocationPin } from "react-icons/md";
 import { FiRepeat } from "react-icons/fi";

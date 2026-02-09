@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { staticTimes } from "../../constants.js";
+import { staticTimes } from "../../constants/dateAndTimeConstants.js";
 import UserContext from "../../context/UserContext.jsx";
 import DatesContext from "../../context/DatesContext.jsx";
 import InteractiveContext from "../../context/InteractiveContext.jsx";

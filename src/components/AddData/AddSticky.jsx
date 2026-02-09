@@ -4,7 +4,7 @@ import { BsSticky } from "react-icons/bs";
 import { MdFreeCancellation } from "react-icons/md";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { colors } from "../../constants.js";
+import { colors } from "../../constants/miscConstants.js";
 import DatesContext from "../../context/DatesContext.jsx";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
 import UserContext from "../../context/UserContext.jsx";

@@ -3,7 +3,7 @@ import { AiFillCloseCircle } from "react-icons/ai";
 import { BsFillCalendarPlusFill } from "react-icons/bs";
 import { MdFreeCancellation } from "react-icons/md";
 import { v4 as uuidv4 } from "uuid";
-import { colors } from "../../constants.js";
+import { colors } from "../../constants/miscConstants.js";
 import DatesContext from "../../context/DatesContext.jsx";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
 import UserContext from "../../context/UserContext.jsx";

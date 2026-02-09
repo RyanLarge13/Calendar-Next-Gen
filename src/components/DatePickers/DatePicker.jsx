@@ -4,7 +4,10 @@ import {
   BsFillArrowDownCircleFill,
   BsFillArrowUpCircleFill,
 } from "react-icons/bs";
-import { staticMonths, staticYears } from "../../constants.js";
+import {
+  staticMonths,
+  staticYears,
+} from "../../constants/dateAndTimeConstants.js";
 import DatesContext from "../../context/DatesContext.jsx";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
 import UserContext from "../../context/UserContext.jsx";

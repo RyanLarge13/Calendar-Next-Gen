@@ -9,12 +9,12 @@ import {
   MdOutlineStickyNote2,
   MdOutlineWbSunny,
 } from "react-icons/md";
-import { weekDays } from "../../constants";
+import { weekDays } from "../../constants/dateAndTimeConstants";
 import DatesContext from "../../context/DatesContext";
 import InteractiveContext from "../../context/InteractiveContext";
 import UserContext from "../../context/UserContext";
 import { tailwindBgToHex } from "../../utils/helpers";
-import weatherCodeMap from "../../utils/weatherCodes";
+import weatherCodeMap from "../../constants/weatherContants";
 import StickyBody from "../Stickies/StickyBody";
 import TaskItems from "../Tasks/TaskItems";
 

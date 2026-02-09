@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { colors } from "../../constants";
+import { colors } from "../../constants/miscConstants";
 import UserContext from "../../context/UserContext";
 import Color from "./Color";
 

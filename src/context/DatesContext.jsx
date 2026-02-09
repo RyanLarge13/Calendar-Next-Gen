@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect } from "react";
-import { weekDays } from "../constants";
+import { weekDays } from "../constants/dateAndTimeConstants";
 
 const DatesContext = createContext({});
 
