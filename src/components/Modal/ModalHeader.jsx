@@ -221,8 +221,8 @@ const ModalHeader = ({ allDayEvents }) => {
             </p>
             {weatherCode ? (
               <img
-                src={weatherCodes[weatherCode].icon}
-                alt=""
+                src={weatherCodes[weatherCode]?.icon}
+                alt={`${weatherCodes[weatherCode]?.name}`}
                 className="object-cover aspect-square w-8 ml-2 flex-shrink-0"
               />
             ) : null}

@@ -17,6 +17,8 @@ import { tailwindBgToHex } from "../../utils/helpers";
 import weatherCodeMap from "../../constants/weatherContants";
 import StickyBody from "../Stickies/StickyBody";
 import TaskItems from "../Tasks/TaskItems";
+import { AiFillInfoCircle } from "react-icons/ai";
+import SearchLocation from "./SearchLocation";
 
 const Dashboard = ({ timeOfDay }) => {
   const {
@@ -277,43 +279,43 @@ const Dashboard = ({ timeOfDay }) => {
                 </h2>
               </div>
 
-              <div className="p-5 flex justify-between items-start gap-3">
-                <div>
-                  <p
-                    className={`text-sm font-semibold ${
-                      preferences.darkMode ? "text-white" : "text-slate-900"
-                    }`}
-                  >
-                    {weatherData?.current_weather?.temperature || 0}°F
-                  </p>
-                  <p
-                    className={`text-xs mt-1 ${
-                      preferences.darkMode ? "text-white/60" : "text-slate-500"
-                    }`}
-                  >
-                    {weatherCodeMap[weatherData?.current_weather?.weathercode]
-                      ?.name || ""}
-                  </p>
+              {weatherData ? (
+                <div className="p-5 flex justify-between items-start gap-3">
+                  <div>
+                    <p
+                      className={`text-sm font-semibold ${
+                        preferences.darkMode ? "text-white" : "text-slate-900"
+                      }`}
+                    >
+                      {weatherData?.current_weather?.temperature || 0}°F
+                    </p>
+                    <p
+                      className={`text-xs mt-1 ${
+                        preferences.darkMode
+                          ? "text-white/60"
+                          : "text-slate-500"
+                      }`}
+                    >
+                      {weatherCodeMap[weatherData?.current_weather?.weathercode]
+                        ?.name || ""}
+                    </p>
+                  </div>
+
+                  <img
+                    src={
+                      weatherCodeMap[weatherData?.current_weather?.weathercode]
+                        ?.icon
+                    }
+                    alt={
+                      weatherCodeMap[weatherData?.current_weather?.weathercode]
+                        ?.name
+                    }
+                    className="object-contain aspect-square w-16 sm:w-20 flex-shrink-0 mt-[-20px]"
+                  />
                 </div>
-
-                <img
-                  src={
-                    weatherCodeMap[weatherData?.current_weather?.weathercode]
-                      ?.icon
-                  }
-                  alt={
-                    weatherCodeMap[weatherData?.current_weather?.weathercode]
-                      ?.name
-                  }
-                  className="object-contain aspect-square w-16 sm:w-20 flex-shrink-0 mt-[-20px]"
-                />
-              </div>
-
-              {/* 7-day outlook */}
-              <div className="min-w-0 w-full">
-                {/* Header row */}
-                <div className="flex items-end justify-between gap-3 mb-3 px-5">
-                  <div className="min-w-0">
+              ) : (
+                <div className="p-5 flex justify-between">
+                  <div>
                     <p
                       className={`text-[11px] font-semibold tracking-wide ${
                         preferences.darkMode
@@ -321,301 +323,338 @@ const Dashboard = ({ timeOfDay }) => {
                           : "text-slate-500"
                       }`}
                     >
-                      Weather
+                      No location was provided by the app
                     </p>
-                    <h3 className="text-lg font-semibold tracking-tight truncate">
-                      7-day outlook
-                    </h3>
-                  </div>
-
-                  <div
-                    className={`
-        flex-shrink-0 text-[11px] font-semibold px-3 py-1.5 rounded-2xl border shadow-sm
-        ${preferences.darkMode ? "bg-white/5 border-white/10 text-white/70" : "bg-black/[0.03] border-black/10 text-slate-600"}
-      `}
-                  >
-                    {location?.city}, {location?.state}
-                  </div>
-                </div>
-
-                {/* Outer shell (NO horizontal scroll here) */}
-                <div
-                  className={`
-      mx-5 mb-5
-      rounded-3xl border shadow-2xl overflow-hidden
-      ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-white/85 border-black/10"}
-      backdrop-blur-md
-      min-w-0
-    `}
-                >
-                  <div className="px-4 py-4 min-w-0">
-                    {/* ✅ The ONLY horizontal scroller */}
-                    <div className="min-w-0 overflow-x-auto scrollbar-slick pt-2 pb-3 px-2">
-                      <div className="flex gap-3 w-max pr-2">
-                        {weatherData?.daily &&
-                          newWeekdays.map((d, i) => {
-                            const {
-                              precipitation_probability_mean,
-                              sunrise,
-                              sunset,
-                              temperature_2m_max,
-                              temperature_2m_min,
-                              time,
-                              weathercode,
-                              uv_index_max,
-                              windspeed_10m_max,
-                            } = weatherData.daily;
-
-                            const code = weathercode?.[i];
-                            const icon = weatherCodeMap?.[code]?.icon;
-                            const name = weatherCodeMap?.[code]?.name;
-
-                            const dateStr = time?.[i]
-                              ? new Date(time[i + 1]).toLocaleDateString(
-                                  "en-US",
-                                  {
-                                    month: "short",
-                                    day: "numeric",
-                                  },
-                                )
-                              : "";
-
-                            const sunRiseStr = sunrise?.[i]
-                              ? new Date(sunrise[i]).toLocaleTimeString(
-                                  "en-US",
-                                  {
-                                    hour: "numeric",
-                                    minute: "2-digit",
-                                  },
-                                )
-                              : "--";
-
-                            const sunSetStr = sunset?.[i]
-                              ? new Date(sunset[i]).toLocaleTimeString(
-                                  "en-US",
-                                  {
-                                    hour: "numeric",
-                                    minute: "2-digit",
-                                  },
-                                )
-                              : "--";
-
-                            return (
-                              <button
-                                key={`${d}-${i}`}
-                                type="button"
-                                className={`
-                  group flex-shrink-0
-                  w-[220px] sm:w-[230px]
-                  rounded-3xl border shadow-sm overflow-hidden
-                  transition-all duration-200
-                  hover:shadow-md hover:scale-[1.01] active:scale-[0.99]
-                  ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-white border-black/10"}
-                `}
-                              >
-                                {/* Top strip */}
-                                <div
-                                  className={`
-                    px-4 pt-4 pb-3
-                    border-b
-                    ${preferences.darkMode ? "border-white/10" : "border-black/10"}
-                    flex items-start justify-between gap-3
-                  `}
-                                >
-                                  <div className="min-w-0 text-left">
-                                    <p className="text-sm font-semibold truncate">
-                                      {d}
-                                    </p>
-                                    <p
-                                      className={`text-[11px] font-semibold ${
-                                        preferences.darkMode
-                                          ? "text-white/55"
-                                          : "text-slate-500"
-                                      }`}
-                                    >
-                                      {dateStr}
-                                    </p>
-
-                                    <p
-                                      className={`mt-2 text-[11px] font-semibold line-clamp-2 ${
-                                        preferences.darkMode
-                                          ? "text-white/60"
-                                          : "text-slate-500"
-                                      }`}
-                                      title={name || ""}
-                                    >
-                                      {name || "—"}
-                                    </p>
-                                  </div>
-
-                                  <div
-                                    className={`
-                      grid place-items-center h-12 w-12 rounded-2xl border shadow-sm flex-shrink-0
-                      ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-black/[0.03] border-black/10"}
-                    `}
-                                  >
-                                    {icon ? (
-                                      <img
-                                        src={icon}
-                                        alt={name || "weather"}
-                                        className="h-8 w-8 object-contain"
-                                      />
-                                    ) : (
-                                      <span
-                                        className={`text-xs font-semibold ${
-                                          preferences.darkMode
-                                            ? "text-white/60"
-                                            : "text-slate-500"
-                                        }`}
-                                      >
-                                        --
-                                      </span>
-                                    )}
-                                  </div>
-                                </div>
-
-                                {/* Body */}
-                                <div className="px-4 py-4 text-left space-y-3">
-                                  {/* High / Low */}
-                                  <div className="flex items-center justify-between gap-2">
-                                    <div
-                                      className={`
-                        inline-flex items-center gap-2 px-3 py-1.5 rounded-2xl border text-[11px] font-semibold shadow-sm
-                        ${preferences.darkMode ? "bg-white/5 border-white/10 text-white/70" : "bg-black/[0.03] border-black/10 text-slate-700"}
-                      `}
-                                    >
-                                      <span className="h-2 w-2 rounded-full bg-rose-400" />
-                                      High{" "}
-                                      <span className="font-bold">
-                                        {Math.round(
-                                          temperature_2m_max?.[i] ?? 0,
-                                        )}
-                                        °
-                                      </span>
-                                    </div>
-
-                                    <div
-                                      className={`
-                        inline-flex items-center gap-2 px-3 py-1.5 rounded-2xl border text-[11px] font-semibold shadow-sm
-                        ${preferences.darkMode ? "bg-white/5 border-white/10 text-white/70" : "bg-black/[0.03] border-black/10 text-slate-700"}
-                      `}
-                                    >
-                                      <span className="h-2 w-2 rounded-full bg-cyan-400" />
-                                      Low{" "}
-                                      <span className="font-bold">
-                                        {Math.round(
-                                          temperature_2m_min?.[i] ?? 0,
-                                        )}
-                                        °
-                                      </span>
-                                    </div>
-                                  </div>
-
-                                  {/* Chips */}
-                                  <div className="flex flex-wrap gap-2">
-                                    <div
-                                      className={`
-                        px-3 py-1.5 rounded-2xl border text-[11px] font-semibold shadow-sm
-                        ${preferences.darkMode ? "bg-white/5 border-white/10 text-white/70" : "bg-black/[0.03] border-black/10 text-slate-700"}
-                      `}
-                                    >
-                                      💧{" "}
-                                      {Math.round(
-                                        precipitation_probability_mean?.[i] ??
-                                          0,
-                                      )}
-                                      %
-                                    </div>
-
-                                    <div
-                                      className={`
-                        px-3 py-1.5 rounded-2xl border text-[11px] font-semibold shadow-sm
-                        ${preferences.darkMode ? "bg-white/5 border-white/10 text-white/70" : "bg-black/[0.03] border-black/10 text-slate-700"}
-                      `}
-                                    >
-                                      UV {Math.round(uv_index_max?.[i] ?? 0)}
-                                    </div>
-
-                                    <div
-                                      className={`
-                        px-3 py-1.5 rounded-2xl border text-[11px] font-semibold shadow-sm
-                        ${preferences.darkMode ? "bg-white/5 border-white/10 text-white/70" : "bg-black/[0.03] border-black/10 text-slate-700"}
-                      `}
-                                    >
-                                      🌬{" "}
-                                      {Math.round(windspeed_10m_max?.[i] ?? 0)}{" "}
-                                      mph
-                                    </div>
-                                  </div>
-
-                                  {/* Sunrise / Sunset */}
-                                  <div
-                                    className={`
-                      rounded-2xl border shadow-inner px-3 py-2
-                      ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-black/[0.03] border-black/10"}
-                      flex items-center justify-between
-                    `}
-                                  >
-                                    <div>
-                                      <p
-                                        className={`text-[10px] font-semibold ${
-                                          preferences.darkMode
-                                            ? "text-white/55"
-                                            : "text-slate-500"
-                                        }`}
-                                      >
-                                        Sunrise
-                                      </p>
-                                      <p className="text-xs font-semibold">
-                                        {sunRiseStr}
-                                      </p>
-                                    </div>
-                                    <div className="h-6 w-px bg-black/10 dark:bg-white/10" />
-                                    <div className="text-right">
-                                      <p
-                                        className={`text-[10px] font-semibold ${
-                                          preferences.darkMode
-                                            ? "text-white/55"
-                                            : "text-slate-500"
-                                        }`}
-                                      >
-                                        Sunset
-                                      </p>
-                                      <p className="text-xs font-semibold">
-                                        {sunSetStr}
-                                      </p>
-                                    </div>
-                                  </div>
-                                </div>
-                              </button>
-                            );
-                          })}
-                      </div>
-                    </div>
-
                     <p
-                      className={`mt-3 text-[11px] ${
+                      className={`text-[11px] font-semibold tracking-wide ${
                         preferences.darkMode
-                          ? "text-white/55"
+                          ? "text-white/60"
                           : "text-slate-500"
                       }`}
                     >
-                      Tip: swipe sideways to scroll the week.
+                      You can manually select a location instead
                     </p>
                   </div>
+                  <div>
+                    <AiFillInfoCircle className="text-red-300" />
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {weatherData?.daily ? (
+                <div className="min-w-0 w-full">
+                  {/* 7-day outlook */}
+                  {/* Header row */}
+                  <div className="flex items-end justify-between gap-3 mb-3 px-5">
+                    <div className="min-w-0">
+                      <p
+                        className={`text-[11px] font-semibold tracking-wide ${
+                          preferences.darkMode
+                            ? "text-white/60"
+                            : "text-slate-500"
+                        }`}
+                      >
+                        Weather
+                      </p>
+                      <h3 className="text-lg font-semibold tracking-tight truncate">
+                        7-day outlook
+                      </h3>
+                    </div>
+
+                    <div
+                      className={`
+                      flex-shrink-0 text-[11px] font-semibold px-3 py-1.5 rounded-2xl border shadow-sm
+                      ${preferences.darkMode ? "bg-white/5 border-white/10 text-white/70" : "bg-black/[0.03] border-black/10 text-slate-600"}
+                    `}
+                    >
+                      {location?.city}, {location?.state}
+                    </div>
+                  </div>
+
+                  {/* Outer shell (NO horizontal scroll here) */}
+                  <div
+                    className={`
+                    mx-5 mb-5
+                    rounded-3xl border shadow-2xl overflow-hidden
+                    ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-white/85 border-black/10"}
+                    backdrop-blur-md
+                    min-w-0
+                  `}
+                  >
+                    <div className="px-4 py-4 min-w-0">
+                      {/* ✅ The ONLY horizontal scroller */}
+                      <div className="min-w-0 overflow-x-auto scrollbar-slick pt-2 pb-3 px-2">
+                        <div className="flex gap-3 w-max pr-2">
+                          {weatherData?.daily
+                            ? newWeekdays.map((d, i) => {
+                                const {
+                                  precipitation_probability_mean,
+                                  sunrise,
+                                  sunset,
+                                  temperature_2m_max,
+                                  temperature_2m_min,
+                                  time,
+                                  weathercode,
+                                  uv_index_max,
+                                  windspeed_10m_max,
+                                } = weatherData?.daily;
+
+                                const code = weathercode?.[i];
+                                const icon = weatherCodeMap?.[code]?.icon;
+                                const name = weatherCodeMap?.[code]?.name;
+
+                                const dateStr = time?.[i]
+                                  ? new Date(time[i + 1]).toLocaleDateString(
+                                      "en-US",
+                                      {
+                                        month: "short",
+                                        day: "numeric",
+                                      },
+                                    )
+                                  : "";
+
+                                const sunRiseStr = sunrise?.[i]
+                                  ? new Date(sunrise[i]).toLocaleTimeString(
+                                      "en-US",
+                                      {
+                                        hour: "numeric",
+                                        minute: "2-digit",
+                                      },
+                                    )
+                                  : "--";
+
+                                const sunSetStr = sunset?.[i]
+                                  ? new Date(sunset[i]).toLocaleTimeString(
+                                      "en-US",
+                                      {
+                                        hour: "numeric",
+                                        minute: "2-digit",
+                                      },
+                                    )
+                                  : "--";
+
+                                return (
+                                  <button
+                                    key={`${d}-${i}`}
+                                    type="button"
+                                    className={`
+                                    group flex-shrink-0
+                                    w-[220px] sm:w-[230px]
+                                    rounded-3xl border shadow-sm overflow-hidden
+                                    transition-all duration-200
+                                    hover:shadow-md hover:scale-[1.01] active:scale-[0.99]
+                                    ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-white border-black/10"}
+                                  `}
+                                  >
+                                    {/* Top strip */}
+                                    <div
+                                      className={`
+                                      px-4 pt-4 pb-3
+                                      border-b
+                                      ${preferences.darkMode ? "border-white/10" : "border-black/10"}
+                                      flex items-start justify-between gap-3
+                                    `}
+                                    >
+                                      <div className="min-w-0 text-left">
+                                        <p className="text-sm font-semibold truncate">
+                                          {d}
+                                        </p>
+                                        <p
+                                          className={`text-[11px] font-semibold ${
+                                            preferences.darkMode
+                                              ? "text-white/55"
+                                              : "text-slate-500"
+                                          }`}
+                                        >
+                                          {dateStr}
+                                        </p>
+
+                                        <p
+                                          className={`mt-2 text-[11px] font-semibold line-clamp-2 ${
+                                            preferences.darkMode
+                                              ? "text-white/60"
+                                              : "text-slate-500"
+                                          }`}
+                                          title={name || ""}
+                                        >
+                                          {name || "—"}
+                                        </p>
+                                      </div>
+
+                                      <div
+                                        className={`
+                                        grid place-items-center h-12 w-12 rounded-2xl border shadow-sm flex-shrink-0
+                                        ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-black/[0.03] border-black/10"}
+                                      `}
+                                      >
+                                        {icon ? (
+                                          <img
+                                            src={icon}
+                                            alt={name || "weather"}
+                                            className="h-8 w-8 object-contain"
+                                          />
+                                        ) : (
+                                          <span
+                                            className={`text-xs font-semibold ${
+                                              preferences.darkMode
+                                                ? "text-white/60"
+                                                : "text-slate-500"
+                                            }`}
+                                          >
+                                            --
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
+
+                                    {/* Body */}
+                                    <div className="px-4 py-4 text-left space-y-3">
+                                      {/* High / Low */}
+                                      <div className="flex items-center justify-between gap-2">
+                                        <div
+                                          className={`
+                                          inline-flex items-center gap-2 px-3 py-1.5 rounded-2xl border text-[11px] font-semibold shadow-sm
+                                          ${preferences.darkMode ? "bg-white/5 border-white/10 text-white/70" : "bg-black/[0.03] border-black/10 text-slate-700"}
+                                        `}
+                                        >
+                                          <span className="h-2 w-2 rounded-full bg-rose-400" />
+                                          High{" "}
+                                          <span className="font-bold">
+                                            {Math.round(
+                                              temperature_2m_max?.[i] ?? 0,
+                                            )}
+                                            °
+                                          </span>
+                                        </div>
+
+                                        <div
+                                          className={`
+                                            inline-flex items-center gap-2 px-3 py-1.5 rounded-2xl border text-[11px] font-semibold shadow-sm
+                                            ${preferences.darkMode ? "bg-white/5 border-white/10 text-white/70" : "bg-black/[0.03] border-black/10 text-slate-700"}
+                                          `}
+                                        >
+                                          <span className="h-2 w-2 rounded-full bg-cyan-400" />
+                                          Low{" "}
+                                          <span className="font-bold">
+                                            {Math.round(
+                                              temperature_2m_min?.[i] ?? 0,
+                                            )}
+                                            °
+                                          </span>
+                                        </div>
+                                      </div>
+
+                                      {/* Chips */}
+                                      <div className="flex flex-wrap gap-2">
+                                        <div
+                                          className={`
+                                            px-3 py-1.5 rounded-2xl border text-[11px] font-semibold shadow-sm
+                                            ${preferences.darkMode ? "bg-white/5 border-white/10 text-white/70" : "bg-black/[0.03] border-black/10 text-slate-700"}
+                                          `}
+                                        >
+                                          💧{" "}
+                                          {Math.round(
+                                            precipitation_probability_mean?.[
+                                              i
+                                            ] ?? 0,
+                                          )}
+                                          %
+                                        </div>
+
+                                        <div
+                                          className={`
+                                          px-3 py-1.5 rounded-2xl border text-[11px] font-semibold shadow-sm
+                                          ${preferences.darkMode ? "bg-white/5 border-white/10 text-white/70" : "bg-black/[0.03] border-black/10 text-slate-700"}
+                                        `}
+                                        >
+                                          UV{" "}
+                                          {Math.round(uv_index_max?.[i] ?? 0)}
+                                        </div>
+
+                                        <div
+                                          className={`
+                                          px-3 py-1.5 rounded-2xl border text-[11px] font-semibold shadow-sm
+                                          ${preferences.darkMode ? "bg-white/5 border-white/10 text-white/70" : "bg-black/[0.03] border-black/10 text-slate-700"}
+                                        `}
+                                        >
+                                          🌬{" "}
+                                          {Math.round(
+                                            windspeed_10m_max?.[i] ?? 0,
+                                          )}{" "}
+                                          mph
+                                        </div>
+                                      </div>
+
+                                      {/* Sunrise / Sunset */}
+                                      <div
+                                        className={`
+                                        rounded-2xl border shadow-inner px-3 py-2
+                                        ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-black/[0.03] border-black/10"}
+                                        flex items-center justify-between
+                                      `}
+                                      >
+                                        <div>
+                                          <p
+                                            className={`text-[10px] font-semibold ${
+                                              preferences.darkMode
+                                                ? "text-white/55"
+                                                : "text-slate-500"
+                                            }`}
+                                          >
+                                            Sunrise
+                                          </p>
+                                          <p className="text-xs font-semibold">
+                                            {sunRiseStr}
+                                          </p>
+                                        </div>
+                                        <div className="h-6 w-px bg-black/10 dark:bg-white/10" />
+                                        <div className="text-right">
+                                          <p
+                                            className={`text-[10px] font-semibold ${
+                                              preferences.darkMode
+                                                ? "text-white/55"
+                                                : "text-slate-500"
+                                            }`}
+                                          >
+                                            Sunset
+                                          </p>
+                                          <p className="text-xs font-semibold">
+                                            {sunSetStr}
+                                          </p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </button>
+                                );
+                              })
+                            : null}
+                        </div>
+                      </div>
+
+                      <p
+                        className={`mt-3 text-[11px] ${
+                          preferences.darkMode
+                            ? "text-white/55"
+                            : "text-slate-500"
+                        }`}
+                      >
+                        Tip: swipe sideways to scroll the week.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
             </div>
 
             {/* Location */}
             <div
               className={`
-            rounded-3xl border shadow-sm transition-all
-            ${
-              preferences.darkMode
-                ? "bg-white/5 border-white/10 hover:bg-white/7"
-                : "bg-white border-black/10 hover:bg-black/[0.02]"
-            }
+                rounded-3xl border shadow-sm transition-all
+                ${
+                  preferences.darkMode
+                    ? "bg-white/5 border-white/10 hover:bg-white/7"
+                    : "bg-white border-black/10 hover:bg-black/[0.02]"
+                }
           `}
             >
               <div
@@ -640,22 +679,35 @@ const Dashboard = ({ timeOfDay }) => {
                 </h2>
               </div>
 
-              <div className="p-5">
-                <p
-                  className={`text-sm font-semibold ${
-                    preferences.darkMode ? "text-white" : "text-slate-900"
-                  }`}
-                >
-                  {location.city}, {location.state}
-                </p>
-                <p
-                  className={`text-xs mt-1 ${
-                    preferences.darkMode ? "text-white/60" : "text-slate-500"
-                  }`}
-                >
-                  Based on your selected location
-                </p>
-              </div>
+              {location.city && location.state ? (
+                <div className="p-5">
+                  <p
+                    className={`text-sm font-semibold ${
+                      preferences.darkMode ? "text-white" : "text-slate-900"
+                    }`}
+                  >
+                    {location.city}, {location.state}
+                  </p>
+                  <p
+                    className={`text-sm font-semibold ${
+                      preferences.darkMode ? "text-white" : "text-slate-900"
+                    }`}
+                  >
+                    Based on your computed location
+                  </p>
+                </div>
+              ) : (
+                <div>
+                  <p
+                    className={`text-[11px] p-5 font-semibold tracking-wide ${
+                      preferences.darkMode ? "text-white/60" : "text-slate-500"
+                    }`}
+                  >
+                    No location was provided
+                  </p>
+                  <SearchLocation />
+                </div>
+              )}
             </div>
           </div>
 
@@ -894,7 +946,7 @@ const Dashboard = ({ timeOfDay }) => {
                 </div>
               ) : (
                 <p
-                  className={`text-sm ${
+                  className={`text-sm mx-3 my-2 ${
                     preferences.darkMode ? "text-white/55" : "text-slate-500"
                   }`}
                 >

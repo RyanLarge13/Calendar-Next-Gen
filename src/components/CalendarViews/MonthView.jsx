@@ -265,17 +265,6 @@ const MonthView = () => {
             >
               <p>{index >= paddingDays && index - paddingDays + 1}</p>
             </div>
-            {hasReminders ? (
-              <div className="flex justify-start gap-x-2 items-center">
-                <p>
-                  <IoIosAlarm
-                    className={`${
-                      preferences.darkMode ? "text-white" : "text-black"
-                    } text-sm`}
-                  />
-                </p>
-              </div>
-            ) : null}
             <div
               className={`w-full absolute inset-0 pt-11 overflow-y-clip ${
                 selected.includes(index)
