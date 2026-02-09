@@ -71,7 +71,7 @@ const interceptUserData = (event) => {
             } catch (err) {
               console.log(`Error updating cache from network: ${err}`);
             }
-          })()
+          })(),
         );
         return cachedResponse;
       }
@@ -83,11 +83,11 @@ const interceptUserData = (event) => {
         }
       } catch (err) {
         console.log(
-          `Error fetching user data from initial load in service worker: ${err}`
+          `Error fetching user data from initial load in service worker: ${err}`,
         );
       }
       return cachedResponse;
-    })()
+    })(),
   );
 };
 
@@ -101,7 +101,7 @@ const grabFreshCache = (event) => {
       } else {
         return new Response("No cache", { status: 404 });
       }
-    })()
+    })(),
   );
 };
 
@@ -133,11 +133,12 @@ self.addEventListener("push", (event) => {
   }
   const { title, body, data } = payload;
   const { notifType, time } = data;
+
   if (notifType === "event") {
     return event.waitUntil(
       self.registration.showNotification(title, {
         body: `${formatDbText(body || "")} \n ${new Date(
-          time
+          time,
         ).toLocaleTimeString("en-US")}`,
         data,
         icon: "./event-icon.svg",
@@ -148,14 +149,14 @@ self.addEventListener("push", (event) => {
           { action: "mark-as-read", title: "Mark as Read", type: "button" },
           { action: "open-app", title: "Open App", type: "button" },
         ],
-      })
+      }),
     );
   }
   if (notifType === "reminder") {
     return event.waitUntil(
       self.registration.showNotification(title, {
         body: `${formatDbText(body || "")} \n @${new Date(
-          time
+          time,
         ).toLocaleTimeString("en-US")}`,
         data,
         icon: "./rem-icon.svg",
@@ -166,14 +167,14 @@ self.addEventListener("push", (event) => {
           { action: "mark-as-read", title: "Mark as Read", type: "button" },
           { action: "open-app", title: "Open App", type: "button" },
         ],
-      })
+      }),
     );
   }
   if (notifType === "system") {
     return event.waitUntil(
       self.registration.showNotification(title, {
         body: `${formatDbText(body || "")} \n @${new Date(
-          time
+          time,
         ).toLocaleTimeString("en-US")}`,
         data,
         icon: "./sys-icon.svg",
@@ -183,12 +184,12 @@ self.addEventListener("push", (event) => {
           { action: "close-notif", title: "Close", type: "button" },
           { action: "open-app", title: "Open App", type: "button" },
         ],
-      })
+      }),
     );
   }
 });
 
-const openApp = (event) => {
+const openApp = (event, urlAddition = "") => {
   event.notification.close();
   event.waitUntil(
     clients
@@ -196,24 +197,7 @@ const openApp = (event) => {
         type: "window",
         includeUncontrolled: true,
       })
-      .then((clientList) => {
-        let matchingWindow = null;
-        for (const client of clientList) {
-          if (
-            client.url === "https://www.calng.app/" ||
-            client.url === "https://www.calng.app"
-          ) {
-            matchingWindow = client;
-            if (client.focused) {
-              return client.focus();
-            }
-          }
-        }
-        if (matchingWindow) {
-          return matchingWindow.focus();
-        }
-        return clients.openWindow("https://www.calng.app/");
-      })
+      .then(() => clients.openWindow(`https://www.calng.app/${urlAddition}`)),
   );
 };
 
@@ -224,7 +208,29 @@ self.addEventListener("notificationclick", (event) => {
     event.notification.close();
   }
   if (event.action === "open-app") {
-    openApp(event);
+    let urlAddition = "";
+
+    const type = notification.data?.notifType;
+
+    switch (type) {
+      case null || undefined || "":
+        urlAddition = "notifications";
+        break;
+      case "event":
+        // Update to carry real ID
+        urlAddition = "event/eventId";
+        break;
+      case "reminder":
+        urlAddition = "notifications";
+        break;
+      case "system":
+        urlAddition = "notifications";
+        break;
+      default:
+        urlAddition = "";
+        break;
+    }
+    openApp(event, urlAddition);
   }
   if (event.action === "mark-as-read") {
     event.notification.close();
@@ -270,7 +276,7 @@ self.addEventListener("notificationclick", (event) => {
 
 self.addEventListener("message", async (event) => {
   console.log(
-    `Service worker accepting a message event from the client: ${event}`
+    `Service worker accepting a message event from the client: ${event}`,
   );
   if (event.data && event.data.type === "SKIP_WAITING") {
     self.skipWaiting();

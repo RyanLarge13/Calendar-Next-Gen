@@ -12,8 +12,14 @@ import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
 
 const MainPage = () => {
-  const { setAddNewEvent, setType, setMenu, menu } =
-    useContext(InteractiveContext);
+  const {
+    setAddNewEvent,
+    setType,
+    setMenu,
+    menu,
+    setShowLogin,
+    setShowNotifs,
+  } = useContext(InteractiveContext);
   const { setOpenModal, setString, string, dateObj } = useContext(DatesContext);
 
   const location = useLocation();
@@ -24,21 +30,31 @@ const MainPage = () => {
     }
     if (location.pathname === "/event") {
       setType("event");
-      if (menu) {
-        setMenu(false);
-      }
+      closeMenu();
       setOpenModal(true);
       setAddNewEvent(true);
     }
     if (location.pathname === "/reminder") {
       setType("reminder");
-      if (menu) {
-        setMenu(false);
-      }
+      closeMenu();
       setOpenModal(true);
       setAddNewEvent(true);
     }
+    if (location.pathname === "/notifications") {
+      closeMenu();
+      setShowLogin(true);
+      setShowNotifs(true);
+    }
+    if (location.pathname === "/event") {
+      console.log("Event");
+    }
   }, [location]);
+
+  const closeMenu = () => {
+    if (menu) {
+      setMenu(false);
+    }
+  };
 
   return (
     <main>
