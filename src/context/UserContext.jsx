@@ -14,7 +14,6 @@ import {
   getFriendInfo,
   getUserDataFresh,
   API_GetLocation,
-  API_GetWeather,
 } from "../utils/api";
 import QRCode from "qrcode-generator";
 import IndexedDBManager from "../utils/indexDBApi";
@@ -29,7 +28,7 @@ export const UserProvider = ({ children }) => {
   );
   const [events, setEvents] = useState([]);
   const [staticEvents, setStaticEvents] = useState([]);
-  const [googleEvents, setGoogleEvents] = useState([]);
+  // const [googleEvents, setGoogleEvents] = useState([]);
   const [preferences, setPreferences] = useState(
     JSON.parse(localStorage.getItem("preferences")) || {},
   );

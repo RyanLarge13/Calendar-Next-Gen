@@ -4,8 +4,13 @@ import UserContext from "../../../context/UserContext";
 import { H_FetchWeather } from "../../../utils/helpers";
 
 const SearchLocation = () => {
-  const { location, usersLocations, setLocation, setUsersLocations } =
-    useContext(UserContext);
+  const {
+    location,
+    usersLocations,
+    setLocation,
+    setUsersLocations,
+    setWeatherData,
+  } = useContext(UserContext);
 
   const addLocation = async () => {
     console.log(suggestedCitiesObject);
