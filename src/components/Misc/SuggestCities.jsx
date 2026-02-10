@@ -3,6 +3,7 @@ import debounce from "lodash.debounce";
 import React, { useContext, useEffect, useState } from "react";
 import UserContext from "../../context/UserContext";
 import GoogleMaps from "../Misc/GoogleMaps";
+import { getComponent } from "../../utils/helpers";
 
 const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
@@ -59,12 +60,22 @@ const SuggestCities = ({ setLocationObject, placeholder, showGoogleMap }) => {
 
         if (!p) continue;
 
+        const cityComponent = getComponent(p.addressComponents, "locality");
+
+        const stateComponent = getComponent(
+          p.addressComponents,
+          "administrative_area_level_1",
+        );
+
         const newSuggestedPlace = {
+          // Update all p. --- to use getComponent() instead
           placeId: p.placeId,
           text: p.text?.text, // full display text
           main: p.mainText?.text,
           secondary: p.secondaryText?.text,
           types: p.types,
+          city: cityComponent.longText ?? null,
+          state: stateComponent.shortText ?? null,
         };
 
         suggestionsToShow.push(newSuggestedPlace);

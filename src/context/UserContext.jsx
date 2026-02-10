@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect } from "react";
 import { weekDays } from "../constants/dateAndTimeConstants";
-import {holidays} from "../constants/holidays"
+import { holidays } from "../constants/holidays";
 import {
   getUserData,
   getGoogleData,
@@ -18,6 +18,7 @@ import {
 } from "../utils/api";
 import QRCode from "qrcode-generator";
 import IndexedDBManager from "../utils/indexDBApi";
+import { H_FetchWeather } from "../utils/helpers";
 
 const UserContext = createContext({});
 
@@ -51,7 +52,13 @@ export const UserProvider = ({ children }) => {
   const [qrCodeUrl, setQrCodeUrl] = useState(null);
   const [eventMap, setEventMap] = useState(new Map());
   const [eventMapDays, setEventMapDays] = useState(new Map());
-  const [location, setLocation] = useState({ city: "", state: "" });
+  const [location, setLocation] = useState({
+    city: "",
+    state: "",
+    lng: "",
+    lat: "",
+  });
+  const [usersLocations, setUsersLocations] = useState([]); // {city: "", state: "", lng: "", lat: ""}
   const [weatherData, setWeatherData] = useState(null);
 
   const updateStatus = () => {
@@ -115,27 +122,42 @@ export const UserProvider = ({ children }) => {
     setUpcoming(filteredEvents);
   }, [events]);
 
-  const M_FetchLocation = async (lon, lat) => {
+  const M_FetchLocation = async (lng, lat) => {
     try {
-      const response = await API_GetLocation(lon, lat, 1);
+      const response = await API_GetLocation(lng, lat, 1);
 
-      setLocation({
-        city: response.data[0].name,
-        state: response.data[0].state,
-      });
+      const data = response?.data;
 
-      M_FetchWeather(lon, lat);
+      if (!data) {
+        return;
+      }
+
+      const city = data[0]?.name;
+      const state = data[0]?.state;
+
+      if (!city || !state) {
+        return;
+      }
+
+      const locationObj = {
+        city: city,
+        state: state,
+        lng: lng,
+        lat: lat,
+      };
+
+      setLocation(locationObj);
+      setUsersLocations((prev) => [...prev, locationObj]);
+
+      M_FetchWeather(lng, lat);
     } catch (err) {
       console.log(err);
     }
   };
 
-  const M_FetchWeather = async (lon, lat) => {
-    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const response = await API_GetWeather(lon, lat, timeZone);
-    const data = response.data;
-
-    setWeatherData(data);
+  const M_FetchWeather = async (lng, lat) => {
+    const weather = await H_FetchWeather(lng, lat);
+    setWeatherData(weather);
   };
 
   useEffect(() => {
@@ -546,6 +568,12 @@ export const UserProvider = ({ children }) => {
         upcoming,
         staticEvents,
         preferences,
+        eventMap,
+        eventMapDays,
+        weatherData,
+        location,
+        usersLocations,
+        setUsersLocations,
         setPreferences,
         setKanbans,
         setConnectionRequests,
@@ -561,12 +589,8 @@ export const UserProvider = ({ children }) => {
         setGoogleToken,
         setAuthToken,
         setReminders,
-        eventMap,
         setEventMap,
-        eventMapDays,
         setEventMapDays,
-        weatherData,
-        location,
       }}
     >
       {children}

@@ -1,3 +1,5 @@
+import { API_GetWeather } from "./api";
+
 const formatter = new Intl.RelativeTimeFormat(undefined, {
   numeric: "auto",
 });
@@ -196,4 +198,37 @@ export const makeDateTime = (string, hour, minute, meridiem) => {
     0,
     0,
   );
+};
+
+// This is for pulling values from googles location suggestion api
+export const getComponent = (components, type) =>
+  components?.find((c) => c.types.includes(type));
+
+export const overDue = (dateString) => {
+  const now = new Date();
+  const date = new Date(dateString);
+
+  if (!date) {
+    return false;
+  }
+
+  return now > date;
+};
+
+export const H_FetchWeather = async (lng, lat) => {
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  try {
+    const response = await API_GetWeather(lng, lat, timeZone);
+
+    if (response.data) {
+      return data;
+    }
+
+    return null;
+  } catch (err) {
+    console.log("Weather data fetch error");
+    console.log(err);
+    return null;
+  }
 };

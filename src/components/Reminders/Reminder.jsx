@@ -212,12 +212,14 @@ const Reminder = ({ reminder, showOpenEvent = true }) => {
         className={`
       absolute left-0 top-0 bottom-0 w-[10px]
       ${
-        new Date(reminder.time) < dateObj
-          ? "bg-gradient-to-b from-rose-400 to-pink-400"
-          : new Date(reminder.time).toLocaleDateString() ===
-              dateObj.toLocaleDateString()
-            ? "bg-gradient-to-b from-amber-400 to-orange-300"
-            : "bg-gradient-to-b from-cyan-400 to-sky-400"
+        reminder.completed
+          ? "bg-gradient-to-b from-lime-400 to-emerald-400"
+          : new Date(reminder.time) < dateObj
+            ? "bg-gradient-to-b from-rose-400 to-pink-400"
+            : new Date(reminder.time).toLocaleDateString() ===
+                dateObj.toLocaleDateString()
+              ? "bg-gradient-to-b from-amber-400 to-orange-300"
+              : "bg-gradient-to-b from-cyan-400 to-sky-400"
       }
     `}
       />
@@ -250,14 +252,29 @@ const Reminder = ({ reminder, showOpenEvent = true }) => {
                   })}
                 </p>
 
-                <div
-                  className={`mt-1 flex items-center gap-1 text-xs ${preferences.darkMode ? "text-white/55" : "text-slate-500"}`}
-                >
-                  <BsAlarmFill
-                    className={`${preferences.darkMode ? "text-white/40" : "text-slate-400"}`}
-                  />
-                  <p>{formatTime(new Date(reminder.time))}</p>
-                </div>
+                {reminder.completed ? (
+                  <p
+                    className={`text-sm font-semibold ${preferences.darkMode ? "text-lime-300/80" : "text-lime-700"}`}
+                  >
+                    Completed
+                  </p>
+                ) : (
+                  <div
+                    className={`mt-1 flex items-center gap-1 text-xs ${preferences.darkMode ? "text-white/55" : "text-slate-500"}`}
+                  >
+                    {new Date(reminder.time) < dateObj ? (
+                      <p
+                        className={`text-sm font-semibold ${preferences.darkMode ? "text-white/80" : "text-slate-700"}`}
+                      >
+                        Over Due
+                      </p>
+                    ) : null}
+                    <BsAlarmFill
+                      className={`${preferences.darkMode ? "text-white/40" : "text-slate-400"}`}
+                    />
+                    <p>{formatTime(new Date(reminder.time))}</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>

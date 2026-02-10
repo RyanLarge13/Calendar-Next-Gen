@@ -163,7 +163,7 @@ const AddReminder = () => {
     const newReminder = {
       title,
       notes,
-      eventRefId: eventForReminder.id,
+      eventRefId: eventForReminder?.id || null,
       time: time ? time : getTime(),
     };
     const newNotification = {
@@ -172,7 +172,7 @@ const AddReminder = () => {
       read: false,
       readTime: "",
       notifData: {
-        eventRefIId: eventForReminder.id,
+        eventRefIId: eventForReminder?.id || null,
         time,
         notes,
         title,

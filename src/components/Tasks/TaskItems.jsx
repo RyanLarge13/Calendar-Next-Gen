@@ -48,6 +48,8 @@ const TaskItems = ({ task, styles = "" }) => {
       setUserTasks((prev) =>
         prev.map((t) => (t.id === task.id ? { ...t, tasks: newItems } : t)),
       );
+
+      setItemsCopy(newItems);
     } catch (err) {
       console.log("Error adding new task item to your task");
       console.log(err);
@@ -80,6 +82,8 @@ const TaskItems = ({ task, styles = "" }) => {
       setUserTasks((prev) =>
         prev.map((t) => (t.id === task.id ? { ...t, tasks: newItems } : t)),
       );
+
+      setItemsCopy(newItems);
     } catch (err) {
       console.log("Error adding new task item to your task");
       console.log(err);
@@ -102,6 +106,8 @@ const TaskItems = ({ task, styles = "" }) => {
       setUserTasks((prev) =>
         prev.map((t) => (t.id === task.id ? { ...t, tasks: newTasks } : t)),
       );
+
+      setItemsCopy(newItems);
     } catch (err) {
       console.log("Error updating task items when removing a task");
       console.log(err);

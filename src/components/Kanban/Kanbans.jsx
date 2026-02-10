@@ -2,6 +2,7 @@ import { useContext, useState } from "react";
 import UserContext from "../../context/UserContext";
 import Kanban from "./Kanban";
 import KanbanFolder from "./KanbanFolder";
+import { IoIosAddCircle } from "react-icons/io";
 
 const Kanbans = () => {
   const { kanbans, preferences } = useContext(UserContext);
