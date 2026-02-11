@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import UserContext from "../../../context/UserContext";
 import { MdAddLocation, MdOutlineLocationOn } from "react-icons/md";
 import SearchLocation from "./SearchLocation";
@@ -8,7 +8,15 @@ const Location = () => {
   const { preferences, location, usersLocations, setLocation, setWeatherData } =
     useContext(UserContext);
 
+  const checkMatchingLocation = (l) => {
+    return location.city === l.city && location.state === l.state;
+  };
+
   const changeWeather = async (l) => {
+    if (checkMatchingLocation(l)) {
+      return;
+    }
+
     setLocation(l);
 
     const newWeatherData = await H_FetchWeather(l.lng, l.lat);
@@ -107,7 +115,7 @@ const Location = () => {
                     preferences.darkMode
                       ? "bg-white/5 border-white/10 hover:bg-white/7"
                       : "bg-white border-black/10 hover:bg-black/[0.02]"
-                  } ${location.city === l.city && location.state === l.state ? "border-cyan-300" : ""}
+                  } ${checkMatchingLocation(l) ? "border-cyan-300" : ""}
             `}
               onClick={() => changeWeather(l)}
             >

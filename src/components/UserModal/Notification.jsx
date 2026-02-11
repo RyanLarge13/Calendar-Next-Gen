@@ -398,7 +398,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                   </div>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-4 h-full max-h-full overflow-y-auto">
                   {notifications.map((notif) => (
                     <motion.div
                       key={notif.id}
@@ -428,7 +428,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                         <div className="absolute top-4 left-4 h-2.5 w-2.5 rounded-full bg-gradient-to-tr from-rose-400 to-red-400 shadow-sm" />
                       )}
 
-                      <div className="px-5 py-4 pt-6 h-full flex flex-col justify-between">
+                      <div className="px-5 py-4 pt-8 h-full flex flex-col justify-between">
                         <div>
                           <div className="flex justify-between items-start gap-3">
                             <div className="min-w-0">

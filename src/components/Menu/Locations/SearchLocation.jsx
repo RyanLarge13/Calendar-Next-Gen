@@ -10,7 +10,12 @@ const SearchLocation = () => {
     setLocation,
     setUsersLocations,
     setWeatherData,
+    localDB,
   } = useContext(UserContext);
+
+  const checkMatchingLocation = (l) => {
+    return location.city === l.city && location.state === l.state;
+  };
 
   const addLocation = async (suggestedCitiesObject) => {
     console.log(suggestedCitiesObject);
@@ -58,13 +63,22 @@ const SearchLocation = () => {
       (l) => l.city === newLocationObj.city && l.state === newLocationObj.state,
     );
 
+    const newLocationsToAdd = [...usersLocations, newLocationObj];
+
     if (includes) {
+      if (checkMatchingLocation(location)) {
+        return;
+      }
+
+      if (localDB) {
+        localDB.setUserLocations(newLocationsToAdd);
+      }
       setLocation(newLocationObj);
       return;
     }
 
     setLocation(newLocationObj);
-    setUsersLocations((prev) => [...prev, newLocationObj]);
+    setUsersLocations(newLocationsToAdd);
 
     const newWeather = await H_FetchWeather(lng, lat);
 

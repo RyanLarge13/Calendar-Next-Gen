@@ -31,6 +31,17 @@ const Sticky = ({ sticky, index }) => {
 
   const controls = useDragControls();
 
+  const constraints = fullScreen
+    ? { top: 0, left: 0, right: 0, bottom: 0 }
+    : minimize
+      ? { top: 0, bottom: window.innerHeight - 150 } // y-only stack
+      : {
+          top: 0,
+          left: 0,
+          right: window.innerWidth - 200,
+          bottom: window.innerHeight - 200,
+        };
+
   useEffect(() => {
     setTimeout(() => {
       const viewState = sticky.viewState;
@@ -50,6 +61,16 @@ const Sticky = ({ sticky, index }) => {
       }
     }, 1000);
   }, []);
+
+  useEffect(() => {
+    if (fullScreen) {
+      controls.start({ x: 0, y: 0 });
+    } else if (minimize) {
+      controls.start({ x: 0, y: index * 50 });
+    } else {
+      controls.start({ x: 0, y: 0 });
+    }
+  }, [fullScreen, minimize, index, controls]);
 
   const handleViewChange = (newView) => {
     const token = localStorage.getItem("authToken");
@@ -118,8 +139,6 @@ const Sticky = ({ sticky, index }) => {
       initial={{ opacity: 0, width: 8, height: 150, x: 0, y: index * 50 }}
       exit={{ scale: 0 }}
       animate={{
-        x: fullScreen ? 0 : 0,
-        y: fullScreen ? 0 : minimize ? index * 50 : 0,
         opacity: event ? 0 : 1,
         height: fullScreen
           ? window.innerHeight
@@ -139,12 +158,7 @@ const Sticky = ({ sticky, index }) => {
       drag={fullScreen ? false : minimize ? "y" : !pin}
       dragControls={controls}
       dragListener={false}
-      dragConstraints={{
-        top: 0,
-        right: window.innerWidth - 200,
-        left: 0,
-        bottom: window.innerHeight - 200,
-      }}
+      dragConstraints={constraints}
       ref={stickyRef}
       className={`
     markdown fixed z-[999] overflow-hidden

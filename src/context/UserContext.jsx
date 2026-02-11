@@ -59,6 +59,7 @@ export const UserProvider = ({ children }) => {
   });
   const [usersLocations, setUsersLocations] = useState([]); // {city: "", state: "", lng: "", lat: ""}
   const [weatherData, setWeatherData] = useState(null);
+  const [notifSubs, setNotifSubs] = useState([]);
 
   const updateStatus = () => {
     setIsOnline(navigator.onLine);
@@ -95,9 +96,18 @@ export const UserProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    if (localDB && authToken) {
-      console.log("localDB exists and auth token also does, setting in db now");
-      localDB.setIndexedDBAuthToken(authToken);
+    if (localDB) {
+      if (authToken) {
+        localDB.setIndexedDBAuthToken(authToken);
+      }
+
+      const dbLocations = localDB.getUserLocations() || [];
+
+      console.log(
+        "User pulled locations from indexedDB and is setting them in state",
+      );
+      console.log(dbLocations);
+      setUsersLocations(dbLocations);
     }
   }, [localDB, authToken]);
 
@@ -372,6 +382,7 @@ export const UserProvider = ({ children }) => {
     const sortedStickies = user.stickies.sort(
       (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt),
     );
+    setNotifSubs(user.notifSub || []);
     setLists(sortedLists);
     setKanbans(user.kanbans);
     setStickies(sortedStickies);
@@ -579,6 +590,9 @@ export const UserProvider = ({ children }) => {
         weatherData,
         location,
         usersLocations,
+        notifSubs,
+        localDB,
+        setNotifSubs,
         setWeatherData,
         setLocation,
         setUsersLocations,

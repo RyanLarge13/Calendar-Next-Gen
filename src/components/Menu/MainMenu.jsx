@@ -403,13 +403,16 @@ const Dashboard = ({ timeOfDay }) => {
                                 const name = weatherCodeMap?.[code]?.name;
 
                                 const dateStr = time?.[i]
-                                  ? new Date(time[i]).toLocaleDateString(
-                                      "en-US",
-                                      {
-                                        month: "short",
-                                        day: "numeric",
-                                      },
-                                    )
+                                  ? (() => {
+                                      const [y, m, d] = time[i]
+                                        .split("-")
+                                        .map(Number);
+                                      const localDate = new Date(y, m - 1, d); // local midnight
+                                      return localDate.toLocaleDateString(
+                                        "en-US",
+                                        { month: "short", day: "numeric" },
+                                      );
+                                    })()
                                   : "";
 
                                 const sunRiseStr = sunrise?.[i]
