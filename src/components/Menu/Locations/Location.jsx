@@ -1,10 +1,20 @@
 import { useContext } from "react";
 import UserContext from "../../../context/UserContext";
-import { MdOutlineLocationOn } from "react-icons/md";
-import SearchLocation from "../SearchLocation";
+import { MdAddLocation, MdOutlineLocationOn } from "react-icons/md";
+import SearchLocation from "./SearchLocation";
+import { H_FetchWeather } from "../../../utils/helpers";
 
 const Location = () => {
-  const { preferences, location } = useContext(UserContext);
+  const { preferences, location, usersLocations, setLocation, setWeatherData } =
+    useContext(UserContext);
+
+  const changeWeather = async (l) => {
+    setLocation(l);
+
+    const newWeatherData = await H_FetchWeather(l.lng, l.lat);
+
+    setWeatherData(newWeatherData);
+  };
 
   return (
     <div
@@ -66,9 +76,52 @@ const Location = () => {
           >
             No location was provided
           </p>
-          <SearchLocation />
         </div>
       )}
+      <p
+        className={`text-xs ml-5 flex items-center ${
+          preferences.darkMode ? "text-white/60" : "text-slate-500"
+        }`}
+      >
+        Add Another Location{" "}
+        <MdAddLocation className="text-lime-300 ml-3 text-xl" />
+      </p>
+      <SearchLocation />
+
+      {/* List of cities user is querying weather from */}
+      <div className="mt-10">
+        <p
+          className={`text-xs ml-5 mb-2 flex items-center ${
+            preferences.darkMode ? "text-white/60" : "text-slate-500"
+          }`}
+        >
+          Your Places...
+        </p>
+        <div className="flex flex-col">
+          {usersLocations.map((l, index) => (
+            <button
+              key={index}
+              className={`
+                  rounded-xl m-2 p-5 border text-start shadow-sm transition-all
+                  ${
+                    preferences.darkMode
+                      ? "bg-white/5 border-white/10 hover:bg-white/7"
+                      : "bg-white border-black/10 hover:bg-black/[0.02]"
+                  } ${location.city === l.city && location.state === l.state ? "border-cyan-300" : ""}
+            `}
+              onClick={() => changeWeather(l)}
+            >
+              <p
+                className={`text-sm font-semibold ${
+                  preferences.darkMode ? "text-white" : "text-slate-900"
+                }`}
+              >
+                {l.city}, {l.state}
+              </p>
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };

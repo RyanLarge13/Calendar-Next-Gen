@@ -3,11 +3,15 @@ import debounce from "lodash.debounce";
 import React, { useContext, useEffect, useState } from "react";
 import UserContext from "../../context/UserContext";
 import GoogleMaps from "../Misc/GoogleMaps";
-import { getComponent } from "../../utils/helpers";
 
 const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
-const SuggestCities = ({ setLocationObject, placeholder, showGoogleMap }) => {
+const SuggestCities = ({
+  setLocationObject,
+  placeholder,
+  showGoogleMap,
+  resetInputValue = false,
+}) => {
   const { preferences } = useContext(UserContext);
 
   const [inputValue, setInputValue] = useState("");
@@ -60,22 +64,12 @@ const SuggestCities = ({ setLocationObject, placeholder, showGoogleMap }) => {
 
         if (!p) continue;
 
-        const cityComponent = getComponent(p.addressComponents, "locality");
-
-        const stateComponent = getComponent(
-          p.addressComponents,
-          "administrative_area_level_1",
-        );
-
         const newSuggestedPlace = {
-          // Update all p. --- to use getComponent() instead
           placeId: p.placeId,
           text: p.text?.text, // full display text
           main: p.mainText?.text,
           secondary: p.secondaryText?.text,
           types: p.types,
-          city: cityComponent.longText ?? null,
-          state: stateComponent.shortText ?? null,
         };
 
         suggestionsToShow.push(newSuggestedPlace);
@@ -100,6 +94,8 @@ const SuggestCities = ({ setLocationObject, placeholder, showGoogleMap }) => {
         ],
       });
 
+      console.log(place);
+
       const officialSelectedPlace = {
         address: place.formattedAddress,
         latLng: place.location?.toJSON?.() ?? place.location,
@@ -109,6 +105,8 @@ const SuggestCities = ({ setLocationObject, placeholder, showGoogleMap }) => {
         setSelectedPlace({
           id: placeId,
           string: officialSelectedPlace.address,
+          city: place.addressComponents[0].longText,
+          state: place.addressComponents[2].shortText,
           coordinates: {
             lat: officialSelectedPlace.latLng.lat,
             lng: officialSelectedPlace.latLng.lng,
@@ -117,12 +115,14 @@ const SuggestCities = ({ setLocationObject, placeholder, showGoogleMap }) => {
         setLocationObject({
           id: placeId,
           string: officialSelectedPlace.address,
+          city: place.addressComponents[0].longText,
+          state: place.addressComponents[2].shortText,
           coordinates: {
             lat: officialSelectedPlace.latLng.lat,
             lng: officialSelectedPlace.latLng.lng,
           },
         });
-        setInputValue(officialSelectedPlace.address);
+        setInputValue(resetInputValue ? "" : officialSelectedPlace.address);
         setSuggestionRenders([]);
       }
     }

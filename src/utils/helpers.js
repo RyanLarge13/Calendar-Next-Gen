@@ -200,29 +200,14 @@ export const makeDateTime = (string, hour, minute, meridiem) => {
   );
 };
 
-// This is for pulling values from googles location suggestion api
-export const getComponent = (components, type) =>
-  components?.find((c) => c.types.includes(type));
-
-export const overDue = (dateString) => {
-  const now = new Date();
-  const date = new Date(dateString);
-
-  if (!date) {
-    return false;
-  }
-
-  return now > date;
-};
-
 export const H_FetchWeather = async (lng, lat) => {
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   try {
     const response = await API_GetWeather(lng, lat, timeZone);
 
-    if (response.data) {
-      return data;
+    if (response?.data) {
+      return response.data;
     }
 
     return null;

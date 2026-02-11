@@ -146,7 +146,14 @@ export const UserProvider = ({ children }) => {
       };
 
       setLocation(locationObj);
-      setUsersLocations((prev) => [...prev, locationObj]);
+
+      const includes = usersLocations.some(
+        (l) => l.city === city && l.state === state,
+      );
+
+      if (!includes) {
+        setUsersLocations((prev) => [...prev, locationObj]);
+      }
 
       M_FetchWeather(lng, lat);
     } catch (err) {
@@ -572,6 +579,8 @@ export const UserProvider = ({ children }) => {
         weatherData,
         location,
         usersLocations,
+        setWeatherData,
+        setLocation,
         setUsersLocations,
         setPreferences,
         setKanbans,

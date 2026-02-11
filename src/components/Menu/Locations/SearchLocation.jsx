@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import SuggestCities from "../Misc/SuggestCities";
+import SuggestCities from "../../Misc/SuggestCities";
 import UserContext from "../../../context/UserContext";
 import { H_FetchWeather } from "../../../utils/helpers";
 
@@ -12,7 +12,7 @@ const SearchLocation = () => {
     setWeatherData,
   } = useContext(UserContext);
 
-  const addLocation = async () => {
+  const addLocation = async (suggestedCitiesObject) => {
     console.log(suggestedCitiesObject);
     // Check if location is already in the locations array,
     // or if the current selected location is the same as the
@@ -36,7 +36,7 @@ const SearchLocation = () => {
     const coordinates = suggestedCitiesObject.coordinates;
 
     const lng = coordinates.lng;
-    const lat = suggestedCitiesObject.lat;
+    const lat = coordinates.lat;
 
     const newLocationObj = {
       city: city,
@@ -74,7 +74,7 @@ const SearchLocation = () => {
   return (
     <div className="px-5 text-sm">
       <SuggestCities
-        setLocationObj={addLocation}
+        setLocationObject={addLocation}
         placeholder={"Search An Address"}
         showGoogleMap={false}
       />

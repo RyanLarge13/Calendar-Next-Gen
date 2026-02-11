@@ -4,7 +4,6 @@ import {
   MdOutlineAccessAlarm,
   MdOutlineCheckCircle,
   MdOutlineEvent,
-  MdOutlineLocationOn,
   MdOutlineOpenInNew,
   MdOutlineStickyNote2,
   MdOutlineWbSunny,
@@ -18,7 +17,6 @@ import weatherCodeMap from "../../constants/weatherContants";
 import StickyBody from "../Stickies/StickyBody";
 import TaskItems from "../Tasks/TaskItems";
 import { AiFillInfoCircle } from "react-icons/ai";
-import SearchLocation from "./SearchLocation";
 import Location from "./Locations/Location";
 
 const Dashboard = ({ timeOfDay }) => {

@@ -263,9 +263,7 @@ const Reminder = ({ reminder, showOpenEvent = true }) => {
                     className={`mt-1 flex items-center gap-1 text-xs ${preferences.darkMode ? "text-white/55" : "text-slate-500"}`}
                   >
                     {new Date(reminder.time) < dateObj ? (
-                      <p
-                        className={`text-sm font-semibold ${preferences.darkMode ? "text-white/80" : "text-slate-700"}`}
-                      >
+                      <p className="text-sm font-semibold text-rose-500">
                         Over Due
                       </p>
                     ) : null}

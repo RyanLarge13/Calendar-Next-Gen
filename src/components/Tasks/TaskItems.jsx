@@ -234,6 +234,7 @@ const TaskItems = ({ task, styles = "" }) => {
       <div className={`space-y-2 ${styles}`}>
         {itemsCopy.map((taskItem) => (
           <TaskItem
+            key={taskItem.id}
             taskItem={taskItem}
             handleChecked={handleChecked}
             removeTaskItem={removeTaskItem}
