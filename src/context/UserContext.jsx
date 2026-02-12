@@ -61,6 +61,9 @@ export const UserProvider = ({ children }) => {
   const [weatherData, setWeatherData] = useState(null);
   const [notifSubs, setNotifSubs] = useState([]);
 
+  // Update when necessary for indexedDB changes
+  const myLocalDBVersion = 3;
+
   const updateStatus = () => {
     setIsOnline(navigator.onLine);
   };
@@ -539,7 +542,7 @@ export const UserProvider = ({ children }) => {
   };
 
   const createIndexedDb = () => {
-    const request = indexedDB.open("myCalngDB", 2);
+    const request = indexedDB.open("myCalngDB", myLocalDBVersion);
     const calngIndexDBManager = new IndexedDBManager(request);
     setLocalDB(calngIndexDBManager);
   };

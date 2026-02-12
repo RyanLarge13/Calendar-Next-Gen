@@ -327,9 +327,8 @@ const Lists = ({ listSort, listSortOpt, listSearch, listSearchTxt }) => {
                   </div>
 
                   {/* Body */}
-                  <div className="p-4 pl-6">
+                  <div className="p-4 pl-1">
                     <ListItems
-                      listColor={list.color}
                       addItems={addItems}
                       listId={list.id}
                       items={list?.items}

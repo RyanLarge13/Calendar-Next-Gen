@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useContext } from "react";
 import { BiSolidMoon } from "react-icons/bi";
 import { FaMinusCircle } from "react-icons/fa";

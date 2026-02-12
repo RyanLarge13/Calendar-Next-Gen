@@ -104,7 +104,7 @@ const TaskItems = ({ task, styles = "" }) => {
       await updateTasks(token, [newUpdate]);
 
       setUserTasks((prev) =>
-        prev.map((t) => (t.id === task.id ? { ...t, tasks: newTasks } : t)),
+        prev.map((t) => (t.id !== myTask.id ? { ...t, tasks: newTasks } : t)),
       );
 
       setItemsCopy(newItems);
