@@ -3,9 +3,9 @@ import { useContext } from "react";
 import { BiSolidMoon } from "react-icons/bi";
 import { FaMinusCircle } from "react-icons/fa";
 import { RiSunFill } from "react-icons/ri";
-import UserContext from "../../context/UserContext";
-import Switch from "../Misc/Switch";
-import NotificationSubscriptions from "./Settings/NotificationSubscriptions";
+import UserContext from "../../../context/UserContext";
+import Switch from "../../Misc/Switch";
+import NotificationSubscriptions from "./NotificationSubscriptions";
 
 const Settings = ({ setOption }) => {
   const { preferences, setPreferences } = useContext(UserContext);

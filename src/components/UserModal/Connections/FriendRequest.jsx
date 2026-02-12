@@ -1,6 +1,6 @@
 import { useContext } from "react";
-import { acceptFriendRequest } from "../../utils/api";
-import UserContext from "../../context/UserContext";
+import { acceptFriendRequest } from "../../../utils/api";
+import UserContext from "../../../context/UserContext";
 
 const FriendRequest = () => {
   const { friendRequests, setSystemNotif } = useContext(UserContext);

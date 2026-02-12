@@ -1,8 +1,8 @@
 import { useContext, useState } from "react";
 import { AiOutlineMail, AiOutlineQrcode } from "react-icons/ai";
 import { IoIosAddCircle } from "react-icons/io";
-import UserContext from "../../context/UserContext";
-import QRCodeScanner from "../Misc/QRCodeScanner";
+import UserContext from "../../../context/UserContext";
+// import QRCodeScanner from "../Misc/QRCodeScanner";
 
 const Friends = () => {
   const { friends, qrCodeUrl } = useContext(UserContext);
@@ -101,7 +101,7 @@ const Friends = () => {
               >
                 {openCamera ? "cancel" : "Or Scan Your Friends!"}
               </button>
-              {openCamera && <QRCodeScanner />}
+              {/* {openCamera && <QRCodeScanner />} */}
             </div>
           )}
           {emailAdd && (

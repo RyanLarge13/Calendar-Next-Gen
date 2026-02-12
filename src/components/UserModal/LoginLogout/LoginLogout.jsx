@@ -1,14 +1,14 @@
 import { useContext, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { BiLogInCircle, BiLogOutCircle } from "react-icons/bi";
+import { BiLogOutCircle } from "react-icons/bi";
 import { BsFillBellFill } from "react-icons/bs";
-import { updateNotification } from "../../utils/api";
-import UserContext from "../../context/UserContext";
-import InteractiveContext from "../../context/InteractiveContext";
-import Notification from "../UserModal/Notification";
-import Options from "../UserModal/Options";
-import Settings from "../UserModal/Settings";
-import Connections from "../UserModal/Connections";
+import { updateNotification } from "../../../utils/api";
+import UserContext from "../../../context/UserContext";
+import InteractiveContext from "../../../context/InteractiveContext";
+import Notification from "../Notification";
+import Options from "../Options";
+import Settings from "../Settings/Settings";
+import Connections from "../Connections/Connections";
 import SocialLogin from "./SocialLogin";
 
 const LoginLogout = () => {

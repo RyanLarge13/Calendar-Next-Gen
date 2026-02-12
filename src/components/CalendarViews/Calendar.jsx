@@ -11,7 +11,7 @@ import WeekView from "../CalendarViews/WeekView";
 import DatePicker from "../DatePickers/DatePicker";
 import FullDatePicker from "../DatePickers/FullDatePicker";
 import Event from "../Events/Event";
-import LoginLogout from "../LoginLogout/LoginLogout";
+import LoginLogout from "../UserModal/LoginLogout/LoginLogout";
 import Menu from "../Menu/Menu";
 import Modal from "../Modal/Modal";
 import ModalHeader from "../Modal/ModalHeader";

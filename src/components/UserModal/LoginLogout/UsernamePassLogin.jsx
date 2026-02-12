@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useContext, useEffect, useState } from "react";
-import UserContext from "../../context/UserContext";
-import { loginWithPasswordAndUsername } from "../../utils/api";
+import UserContext from "../../../context/UserContext";
+import { loginWithPasswordAndUsername } from "../../../utils/api";
 
 const UsernamePassLogin = () => {
   const { setUser, setAuthToken, setSystemNotif, preferences } =

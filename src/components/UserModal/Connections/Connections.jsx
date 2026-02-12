@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useContext, useState } from "react";
 import { AiOutlineArrowDown } from "react-icons/ai";
-import UserContext from "../../context/UserContext";
+import UserContext from "../../../context/UserContext";
 import ConnectionRequests from "./ConnectionRequests";
 import FriendRequest from "./FriendRequest";
 import Friends from "./Friends";
