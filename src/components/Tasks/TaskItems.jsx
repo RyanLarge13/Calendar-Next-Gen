@@ -56,10 +56,10 @@ const TaskItems = ({ task, styles = "" }) => {
     }
   };
 
-  const handleChecked = async (e, myTask) => {
+  const handleChecked = async (e, taskItem) => {
     const newCheck = e.target.checked;
     const newItems = itemsCopy.map((itm) => {
-      if (itm.id === myTask.id) {
+      if (itm.id === taskItem.id) {
         return {
           ...itm,
           complete: newCheck,
@@ -90,8 +90,8 @@ const TaskItems = ({ task, styles = "" }) => {
     }
   };
 
-  const removeTaskItem = async (myTask) => {
-    const newTasks = itemsCopy.filter((itm) => itm.id !== myTask.id);
+  const removeTaskItem = async (taskItem) => {
+    const newTasks = itemsCopy.filter((itm) => itm.id !== taskItem.id);
     setItemsCopy(newTasks);
 
     const newUpdate = {
@@ -104,7 +104,7 @@ const TaskItems = ({ task, styles = "" }) => {
       await updateTasks(token, [newUpdate]);
 
       setUserTasks((prev) =>
-        prev.map((t) => (t.id !== myTask.id ? { ...t, tasks: newTasks } : t)),
+        prev.map((t) => (t.id === task.id ? { ...t, tasks: newTasks } : t)),
       );
 
       setItemsCopy(newItems);

@@ -12,6 +12,10 @@ import UserContext from "../../context/UserContext";
 const Kanban = ({ kanban, setKanbanView }) => {
   const { user, preferences } = useContext(UserContext);
 
+  const confirmDeleteKanban = () => {};
+
+  const deleteKanban = async () => {};
+
   return (
     <div
       onContextMenu={() => {}}
@@ -102,6 +106,7 @@ const Kanban = ({ kanban, setKanbanView }) => {
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
+                confirmDeleteKanban();
               }}
               className={`
                 grid place-items-center h-9 w-9 rounded-2xl border shadow-sm transition active:scale-95

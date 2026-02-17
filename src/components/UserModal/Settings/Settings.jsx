@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useDragControls } from "framer-motion";
 import { useContext } from "react";
 import { BiSolidMoon } from "react-icons/bi";
 import { FaMinusCircle } from "react-icons/fa";
@@ -9,6 +9,8 @@ import NotificationSubscriptions from "./NotificationSubscriptions";
 
 const Settings = ({ setOption }) => {
   const { preferences, setPreferences } = useContext(UserContext);
+
+  const controls = useDragControls();
 
   const finish = (e, info) => {
     const dragDistance = info.offset.y;
