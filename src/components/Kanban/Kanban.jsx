@@ -8,13 +8,47 @@ import {
   FaTrashAlt,
 } from "react-icons/fa";
 import UserContext from "../../context/UserContext";
+import { deleteKanbanBoard } from "../../utils/api";
 
 const Kanban = ({ kanban, setKanbanView }) => {
-  const { user, preferences } = useContext(UserContext);
+  const { user, preferences, setSystemNotif, setKanbans } =
+    useContext(UserContext);
 
-  const confirmDeleteKanban = () => {};
+  const confirmDeleteKanban = () => {
+    const confirmation = {
+      show: true,
+      title: "Delete Kanban Project?",
+      text: "Are you sure you want to do this? All of your project data will be un-recoverable and lost forever",
+      color: "bg-red-200",
+      hasCancel: false,
+      actions: [
+        {
+          text: "close",
+          func: () => setSystemNotif({ show: false }),
+        },
+        {
+          text: "delete",
+          func: () => deleteKanban(),
+        },
+      ],
+    };
 
-  const deleteKanban = async () => {};
+    setSystemNotif(confirmation);
+  };
+
+  const deleteKanban = async () => {
+    setSystemNotif({ show: false });
+
+    try {
+      const token = localStorage.getItem("authToken");
+      await deleteKanbanBoard(kanban.id, token);
+
+      setKanbans((prev) => prev.filter((k) => k.id !== kanban.id));
+    } catch (err) {
+      console.log("Error deleting Kanaban board project from server");
+      console.log(err);
+    }
+  };
 
   return (
     <div

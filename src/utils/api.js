@@ -575,6 +575,13 @@ export const createNewKanban = (token, kanban) => {
   return res;
 };
 
+export const deleteKanbanBoard = (kanabanId, token) => {
+  const res = Axios.delete(`${productionUrl}/kanban/delete/${kanabanId}`, {
+    headers: { Authorization: `Bearer: ${token}` },
+  });
+  return res;
+};
+
 // Stickies
 
 export const addNewSticky = (token, sticky) => {
