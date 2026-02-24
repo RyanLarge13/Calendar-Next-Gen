@@ -4,6 +4,7 @@ import { BiSolidMoon } from "react-icons/bi";
 import { FaMinusCircle } from "react-icons/fa";
 import { RiSunFill } from "react-icons/ri";
 import UserContext from "../../../context/UserContext";
+import Portal from "../../Misc/Portal";
 import Switch from "../../Misc/Switch";
 import NotificationSubscriptions from "./NotificationSubscriptions";
 
