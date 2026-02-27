@@ -13,6 +13,11 @@ const Settings = ({ setOption }) => {
 
   const controls = useDragControls();
 
+  const startDrag = (e) => {
+    setStart(e.clientY);
+    controls.start(e);
+  };
+
   const finish = (e, info) => {
     const dragDistance = info.offset.y;
     const cancelThreshold = 175;
