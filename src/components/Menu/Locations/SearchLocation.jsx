@@ -10,11 +10,17 @@ const SearchLocation = () => {
     setLocation,
     setUsersLocations,
     setWeatherData,
-    localDB,
   } = useContext(UserContext);
 
   const checkMatchingLocation = (l) => {
     return location.city === l.city && location.state === l.state;
+  };
+
+  const M_GetDB = () => {
+    const myLocalDBVersion = Number(import.meta.VITE_INDEXED_DB_VERSION) || 3;
+    const request = indexedDB.open("myCalngDB", myLocalDBVersion);
+    const calngIndexDBManager = new IndexedDBManager(request);
+    return calngIndexDBManager;
   };
 
   const addLocation = async (suggestedCitiesObject) => {
@@ -70,8 +76,13 @@ const SearchLocation = () => {
         return;
       }
 
-      if (localDB) {
-        localDB.setUserLocations(newLocationsToAdd);
+      const localDB = M_GetDB();
+
+      try {
+        await localDB.setUserLocations(newLocationsToAdd);
+      } catch (err) {
+        console.log("Error setting new location in indexedDB");
+        console.log(err);
       }
       setLocation(newLocationObj);
       return;

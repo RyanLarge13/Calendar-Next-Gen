@@ -62,7 +62,7 @@ export const UserProvider = ({ children }) => {
   const [notifSubs, setNotifSubs] = useState([]);
 
   // Update when necessary for indexedDB changes
-  const myLocalDBVersion = 3;
+  const myLocalDBVersion = Number(import.meta.env.VITE_INDEXED_DB_VERSION) || 3;
 
   const updateStatus = () => {
     setIsOnline(navigator.onLine);
@@ -104,13 +104,7 @@ export const UserProvider = ({ children }) => {
         localDB.setIndexedDBAuthToken(authToken);
       }
 
-      const dbLocations = localDB.getUserLocations() || [];
-
-      console.log(
-        "User pulled locations from indexedDB and is setting them in state",
-      );
-      console.log(dbLocations);
-      setUsersLocations(dbLocations);
+      M_GrabLocations();
     }
   }, [localDB, authToken]);
 
@@ -133,6 +127,16 @@ export const UserProvider = ({ children }) => {
       .sort((a, b) => a.diff - b.diff);
     setUpcoming(filteredEvents);
   }, [events]);
+
+  const M_GrabLocations = async () => {
+    const dbLocations = (await localDB.getUserLocations()) || [];
+
+    console.log(
+      "User pulled locations from indexedDB and is setting them in state",
+    );
+    console.dbLocations;
+    setUsersLocations(dbLocations);
+  };
 
   const M_FetchLocation = async (lng, lat) => {
     try {
@@ -165,6 +169,7 @@ export const UserProvider = ({ children }) => {
       );
 
       if (!includes) {
+        console.log(usersLocations);
         setUsersLocations((prev) => [...prev, locationObj]);
       }
 

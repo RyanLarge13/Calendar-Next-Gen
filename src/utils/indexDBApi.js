@@ -77,37 +77,42 @@ class IndexedDBManager {
   }
 
   getUserLocations() {
-    if (this.db) {
-      const tx = this.db.transaction(["locations"], "read");
-      const objectStore = tx.objectStore("locations");
+    return new Promise((resolve, reject) => {
+      if (!this.db) return resolve([]);
 
-      const locations = objectStore.get(0);
+      const tx = this.db.transaction(["locations"], "readonly");
+      const store = tx.objectStore("locations");
 
-      locations.onsuccess = () =>
-        locations.result ? location.result.locations : [];
-    }
+      const req = store.get(0);
+
+      req.onsuccess = () => {
+        const record = req.result;
+        resolve(record?.locations ?? []);
+      };
+
+      req.onerror = () => reject(req.error);
+    });
   }
 
   setUserLocations(newLocations) {
-    if (this.db) {
+    return new Promise((resolve, reject) => {
+      if (!this.db) return resolve(false);
+
       const tx = this.db.transaction(["locations"], "readwrite");
-      const objStore = tx.objectStore("locations");
+      const store = tx.objectStore("locations");
 
-      objStore.clear().onsuccess = () => {
-        const addTx = this.db.transaction(["locations"], "readwrite");
-        const addObjStore = addTx.objectStore("locations");
-        addObjStore.add({ id: 0, locations: newLocations }).onsuccess = () => {
-          console.log("Auth token set successfully in IndexedDB");
-        };
+      const clearReq = store.clear();
+
+      clearReq.onsuccess = () => {
+        const addReq = store.put({ id: 0, locations: newLocations });
+        addReq.onsuccess = () => resolve(true);
+        addReq.onerror = () => reject(addReq.error);
       };
 
-      objStore.clear().onerror = (event) => {
-        console.error(
-          "Error clearing and setting locations in the database",
-          event.target.error,
-        );
-      };
-    }
+      clearReq.onerror = () => reject(clearReq.error);
+
+      tx.onabort = () => reject(tx.error);
+    });
   }
 }
 
