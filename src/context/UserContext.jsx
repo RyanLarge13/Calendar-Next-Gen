@@ -302,7 +302,7 @@ export const UserProvider = ({ children }) => {
     }
   }, [isOnline, googleToken]);
 
-  const continueRequests = (user) => {
+  const continueRequests = async (user) => {
     if (user.importedGoogleEvents) {
       const newNotif = {
         show: true,
@@ -323,34 +323,60 @@ export const UserProvider = ({ children }) => {
       };
       setSystemNotif(newNotif);
     }
+
+    // The user clearly has no notification subscription and potentially never accepted permissions
     if (user.notifSub?.length < 1 || user.notifSub === null) {
       requestPermissionsAndSubscribe(authToken);
     }
+
+    // User has at least one subscription that is valid
     if (user.notifSub?.length > 0 && user.notifSub !== null) {
-      checkSubscription().then((sub) => {
-        const userHasSub = user.notifSub.some(
-          (item) => JSON.parse(item).endpoint === sub.endpoint,
-        );
-        if (userHasSub) {
-          send(authToken, user.id);
-        }
-        if (!userHasSub) {
-          addSubscriptionToUser(sub, authToken)
-            .then((newUserRes) => {
-              setUser(newUserRes.data.user);
-              localStorage.setItem("authToken", newUserRes.data.token);
-              localStorage.setItem(
-                "user",
-                JSON.stringify(newUserRes.data.user),
-              );
-              send(newUserRes.data.token, newUserRes.data.user.id);
-            })
-            .catch((err) => {
-              console.log(`Error with adding new subscription: ${err}`);
-            });
+      const sub = await checkSubscription();
+
+      const isAtLeastOneSubValid = user.notifSub.some((s) => {
+        try {
+          const subEndpoint = JSON.parse(s)?.endpoint;
+          subEndpoint ? true : false;
+        } catch (err) {
+          return false;
         }
       });
+
+      // If not a single subscription is valid. Then we need to make sure we request new
+      if (!isAtLeastOneSubValid) {
+        requestPermissionsAndSubscribe(authToken);
+        return;
+      }
+
+      const userHasSub = user.notifSub.some((storedSub) => {
+        try {
+          const subEndpoint = JSON.parse(storedSub)?.endpoint;
+          subEndpoint ? true : false;
+        } catch (err) {
+          return false;
+        }
+      });
+
+      if (userHasSub) {
+        send(authToken, user.id);
+      }
+
+      if (!userHasSub) {
+        try {
+          const newUserRes = await addSubscriptionToUser(sub, authToken);
+
+          localStorage.setItem("authToken", newUserRes.data.token);
+          localStorage.setItem("user", JSON.stringify(newUserRes.data.user));
+
+          setUser(newUserRes.data.user);
+          send(newUserRes.data.token, newUserRes.data.user.id);
+        } catch (err) {
+          console.log("Error adding new subscription to user");
+          console.log(err);
+        }
+      }
     }
+
     getFriendInfo(authToken)
       .then((response) => {
         const data = response.data;
@@ -436,6 +462,7 @@ export const UserProvider = ({ children }) => {
     getGoogleCalendarEvents(authToken, googleToken)
       .then((res) => {
         const events = res.data.events;
+        console.log("Here are your google events pulled in from google");
         console.log(events);
       })
       .catch((err) => console.log(err));

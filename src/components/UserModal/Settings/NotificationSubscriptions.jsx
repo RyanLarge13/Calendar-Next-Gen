@@ -26,11 +26,21 @@ const NotificationSubscriptions = () => {
         Your Devices
       </p>
       <div className="mt-2">
-        {notifSubs.map((ns) => (
-          <div key={ns}>
-            <p>{ns}</p>
-          </div>
-        ))}
+        {notifSubs.length < 1 ? (
+          <p
+            className={`text-[11px] font-semibold ${
+              preferences.darkMode ? "text-white/45" : "text-slate-500"
+            }`}
+          >
+            No devices are subscribed to get push notifications
+          </p>
+        ) : (
+          notifSubs.map((ns) => (
+            <div key={ns.id}>
+              <p>{ns}</p>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

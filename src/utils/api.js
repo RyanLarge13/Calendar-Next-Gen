@@ -307,7 +307,7 @@ export const requestAndSubscribe = async (token) => {
               throw new Error("Permission denied for notifications");
             }
           })
-          .then((subscription) => {
+          .then(async (subscription) => {
             const completeSubscriptionObject =
               completeSubscription(subscription);
 

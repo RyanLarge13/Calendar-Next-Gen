@@ -1,4 +1,5 @@
 import { API_GetWeather } from "./api";
+import { v4 as uuidv4 } from "uuid";
 
 const formatter = new Intl.RelativeTimeFormat(undefined, {
   numeric: "auto",
@@ -236,6 +237,7 @@ export const completeSubscription = (sub) => {
 
   const fullSub = {
     ...sub,
+    id: uuidv4(),
     platform,
     browser,
     isStandalone,

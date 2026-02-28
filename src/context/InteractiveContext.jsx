@@ -16,7 +16,7 @@ export const InteractiveProvider = ({ children }) => {
   const [mainView, setMainView] = useState("calendar");
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showFullDatePicker, setShowFullDatePicker] = useState(false);
-  const [hideMenuNav, setHideMenuNav] = useState(false);
+  const [hideMenuNav, setHideMenuNav] = useState(true);
   const [addEventWithStartEndTime, setAddEventWithStartEndTime] = useState({
     start: null,
     end: null,
