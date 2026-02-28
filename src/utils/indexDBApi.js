@@ -88,9 +88,16 @@ class IndexedDBManager {
       req.onsuccess = () => {
         const record = req.result;
         resolve(record?.locations ?? []);
+        console.log("Successfully got locations from inside indexedDB.");
+        console.log(record);
+        console.log(record?.locations);
       };
 
-      req.onerror = () => reject(req.error);
+      req.onerror = (err) => {
+        console.log("Error grabbing locations from indexedDB");
+        console.log(err);
+        return reject(req.error);
+      };
     });
   }
 
