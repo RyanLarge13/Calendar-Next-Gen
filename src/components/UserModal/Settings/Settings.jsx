@@ -1,7 +1,7 @@
 import { motion, AnimatePresence, useDragControls } from "framer-motion";
 import { useContext } from "react";
 import { BiSolidMoon } from "react-icons/bi";
-import { FaMinusCircle } from "react-icons/fa";
+import { FaGripHorizontal, FaMinusCircle } from "react-icons/fa";
 import { RiSunFill } from "react-icons/ri";
 import UserContext from "../../../context/UserContext";
 import Portal from "../../Misc/Portal";
@@ -48,6 +48,15 @@ const Settings = ({ setOption }) => {
 
   return (
     <AnimatePresence>
+      <Portal>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm"
+          onClick={() => setOption(null)}
+        />
+      </Portal>
       <motion.div
         initial={{ y: 40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -60,7 +69,7 @@ const Settings = ({ setOption }) => {
         dragConstraints={{ top: 0, bottom: 0 }}
         onDragEnd={finish}
         className={`
-              fixed inset-x-0 bottom-0 z-50
+              fixed inset-x-0 bottom-0 z-[999]
               max-h-[92vh] overflow-hidden
               rounded-t-[32px] border shadow-2xl
               will-change-transform
@@ -70,15 +79,6 @@ const Settings = ({ setOption }) => {
               lg:rounded-none lg:rounded-l-[32px] lg:max-h-screen
               `}
       >
-        <Portal>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm"
-            onClick={() => setOption(null)}
-          />
-        </Portal>
         {/* Drag / action bar (the thing you grab) */}
         <div
           className={`
@@ -242,7 +242,7 @@ const Settings = ({ setOption }) => {
         {/* Bottom bar (matches your notifications style) */}
         <div
           className={`
-            fixed bottom-0 left-0 right-0 z-[999]
+            fixed bottom-0 !left-0 right-0 z-[999]
             px-5 py-4
             border-t
             ${preferences.darkMode ? "border-white/10 bg-[#161616]/80" : "border-black/10 bg-white/80"}
@@ -275,7 +275,7 @@ const Settings = ({ setOption }) => {
               ${preferences.darkMode ? "bg-white/5 border-white/10 text-white/60" : "bg-black/[0.03] border-black/10 text-slate-500"}
             `}
           >
-            <RxDragHandleHorizontal className="text-lg" />
+            <FaGripHorizontal className="text-lg" />
           </div>
 
           <div

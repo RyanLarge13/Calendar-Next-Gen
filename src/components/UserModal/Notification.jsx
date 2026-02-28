@@ -8,8 +8,11 @@ import InteractiveContext from "../../context/InteractiveContext";
 import UserContext from "../../context/UserContext";
 import { deleteNotification, markAsUnread } from "../../utils/api";
 import { formatTime } from "../../utils/helpers";
+// import mockNotifications from "../../constants/mockNotifications";
 
 const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
+  // const { setNotifications, setSystemNotif, preferences } =
+  //   useContext(UserContext);
   const { notifications, setNotifications, setSystemNotif, preferences } =
     useContext(UserContext);
   const { showNotifs, setShowNotifs } = useContext(InteractiveContext);
@@ -17,6 +20,8 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
   const [notifOpen, setNotifOpen] = useState("");
 
   const controls = useDragControls();
+
+  // const notifications = mockNotifications;
 
   useEffect(() => {
     const hasUnread = notifications.some((notif) => !notif.read);
@@ -311,7 +316,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
             {/* Filters */}
             <div
               className={`
-    mt-4 -mx-1 px-5
+    py-4 -mx-1 px-5
     flex gap-2 overflow-x-auto scrollbar-hide
   `}
             >
@@ -364,7 +369,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
             </div>
 
             {/* Body */}
-            <div className="px-5 pt-4 pb-28 overflow-y-auto min-h-full">
+            <div className="px-5 pt-4 pb-[425px] overflow-y-auto min-h-full max-h-full">
               {notifications.length < 1 ? (
                 <div className="min-h-[50vh] grid place-items-center">
                   <div
@@ -398,14 +403,14 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                   </div>
                 </div>
               ) : (
-                <div className="space-y-4 h-full max-h-full overflow-y-auto">
+                <div className="space-y-4">
                   {notifications.map((notif) => (
                     <motion.div
                       key={notif.id}
                       animate={
                         notifOpen === notif.id
-                          ? { height: 240 }
-                          : { height: 132 }
+                          ? { height: "auto" }
+                          : { maxHeight: 300 }
                       }
                       transition={{
                         type: "spring",

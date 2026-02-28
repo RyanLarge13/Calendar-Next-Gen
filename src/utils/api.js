@@ -1,4 +1,5 @@
 import Axios from "axios";
+import { completeSubscription } from "./helpers";
 
 const devUrl = "http://localhost:8080";
 const productionUrl = "https://calendar-next-gen-production.up.railway.app";
@@ -292,7 +293,7 @@ export const getNotificationsAtStart = (username, token) => {
 export const requestAndSubscribe = async (token) => {
   if ("serviceWorker" in navigator && "PushManager" in window) {
     const subscribeFunction = navigator.serviceWorker.ready.then(
-      (registration) => {
+      async (registration) => {
         return Notification.requestPermission()
           .then((permission) => {
             // If permission is granted, subscribe the user
@@ -307,6 +308,9 @@ export const requestAndSubscribe = async (token) => {
             }
           })
           .then((subscription) => {
+            const completeSubscriptionObject =
+              completeSubscription(subscription);
+
             // Send the subscription details to the server
             return fetch(`${productionUrl}/subscribe/notifs`, {
               method: "POST",
@@ -314,7 +318,7 @@ export const requestAndSubscribe = async (token) => {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
               },
-              body: JSON.stringify(subscription),
+              body: JSON.stringify(completeSubscriptionObject),
             });
           });
       },
@@ -328,15 +332,19 @@ export const requestAndSubscribe = async (token) => {
 export const checkSubscription = () => {
   if ("serviceWorker" in navigator && "PushManager" in window) {
     const subscriptionCheck = navigator.serviceWorker.ready.then(
-      (registration) => {
-        return Notification.requestPermission().then((permission) => {
+      async (registration) => {
+        return Notification.requestPermission().then(async (permission) => {
           // If permission is granted, subscribe the user
           if (permission === "granted") {
             // Subscribe the user
-            return registration.pushManager.subscribe({
+            const sub = await registration.pushManager.subscribe({
               userVisibleOnly: true,
               applicationServerKey: import.meta.env.VITE_VAPID_PUBLIC_KEY,
             });
+
+            const completeSubscriptionObject = completeSubscription(sub);
+
+            return completeSubscriptionObject;
           } else {
             throw new Error("Permission denied for notifications");
           }

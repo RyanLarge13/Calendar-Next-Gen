@@ -217,3 +217,35 @@ export const H_FetchWeather = async (lng, lat) => {
     return null;
   }
 };
+
+export const completeSubscription = (sub) => {
+  const platform = navigator.userAgentData?.platform || "Unknown Platform";
+  const browser = navigator.userAgent || "Unknown Device";
+  const isStandalone =
+    window.matchMedia("(display-mode: standalone)").matches ||
+    window.navigator.standalone === true;
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const language = navigator.language;
+  const screen = { width: window.screen.width, height: window.screen.height };
+
+  // Change this in the future to update with stored app version in ENV maybe?
+  const appVersion = 1.0;
+
+  const createdAt = new Date();
+  const lastSeenAt = new Date();
+
+  const fullSub = {
+    ...sub,
+    platform,
+    browser,
+    isStandalone,
+    timezone,
+    language,
+    screen,
+    appVersion,
+    createdAt,
+    lastSeenAt,
+  };
+
+  return fullSub;
+};

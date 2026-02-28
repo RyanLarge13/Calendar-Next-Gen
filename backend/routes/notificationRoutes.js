@@ -22,6 +22,8 @@ notifRouter.post("/mark-as-read", markAsRead);
 notifRouter.post("/mark-as-unread", markAsUnRead);
 notifRouter.post("/new/notification", auth, createNotification);
 notifRouter.patch("/:username/update/notif", auth, updateNotification);
+
+// One delete is from user frontend app other is for service worker
 notifRouter.delete("/notification/:notifId", auth, deleteNotification);
 notifRouter.delete("/delete-notif/notification/:notifId", deleteNotification);
 
