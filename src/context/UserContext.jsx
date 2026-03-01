@@ -14,6 +14,7 @@ import {
   getFriendInfo,
   getUserDataFresh,
   API_GetLocation,
+  loginWithGoogle,
 } from "../utils/api";
 import QRCode from "qrcode-generator";
 import IndexedDBManager from "../utils/indexDBApi";
@@ -282,25 +283,44 @@ export const UserProvider = ({ children }) => {
 
   useEffect(() => {
     if (googleToken && !authToken) {
-      getGoogleData(googleToken)
-        .then((res) => {
-          loginWithGoogle(res.data)
-            .then((response) => {
-              setUser(response.data.user);
-              setAuthToken(response.data.token);
-              localStorage.setItem("authToken", response.data.token);
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        })
-        .catch((err) => {
-          console.log(err);
-          setUser(false);
-          setEvents(localStorage.getItem("events") || []);
-        });
+      completeAutomaticGoogleLogin();
     }
   }, [isOnline, googleToken]);
+
+  const completeAutomaticGoogleLogin = async () => {
+    const resetOnFailure = () => {
+      setUser(false);
+      setEvents(localStorage.getItem("events") || []);
+    };
+
+    try {
+      const googleLoginData = await getGoogleData(googleToken);
+
+      try {
+        if (googleLoginData?.data) {
+          const CNGLoginResponse = await loginWithGoogle(googleLoginData.data);
+
+          if (CNGLoginResponse?.data) {
+            setUser(CNGLoginResponse.data.user);
+            setAuthToken(CNGLoginResponse.data.token);
+            localStorage.setItem("authToken", CNGLoginResponse.data.token);
+          } else {
+            throw new Error("loginWithGoogle() succeeded but returned no data");
+          }
+        } else {
+          throw new Error("getGoogleData() succeeded but returned no data");
+        }
+      } catch (err) {
+        console.log("Error logging in to CNG using Google");
+        console.log(err);
+        resetOnFailure();
+      }
+    } catch (err) {
+      console.log("Error with grabbing Google login auth data");
+      console.log(err);
+      resetOnFailure();
+    }
+  };
 
   const continueRequests = async (user) => {
     if (user.importedGoogleEvents) {
@@ -317,7 +337,7 @@ export const UserProvider = ({ children }) => {
           },
           {
             text: "get events",
-            func: () => fetchGoogleEvents(googleToken),
+            func: () => M_FetchGoogleEvents(googleToken),
           },
         ],
       };
@@ -326,7 +346,7 @@ export const UserProvider = ({ children }) => {
 
     // The user clearly has no notification subscription and potentially never accepted permissions
     if (user.notifSub?.length < 1 || user.notifSub === null) {
-      requestPermissionsAndSubscribe(authToken);
+      M_RequestPermissionsAndSubscribe(authToken);
     }
 
     // User has at least one subscription that is valid
@@ -344,7 +364,7 @@ export const UserProvider = ({ children }) => {
 
       // If not a single subscription is valid. Then we need to make sure we request new
       if (!isAtLeastOneSubValid) {
-        requestPermissionsAndSubscribe(authToken);
+        M_RequestPermissionsAndSubscribe(authToken);
         return;
       }
 
@@ -377,16 +397,21 @@ export const UserProvider = ({ children }) => {
       }
     }
 
-    getFriendInfo(authToken)
-      .then((response) => {
-        const data = response.data;
-        setFriends(data.userFriends);
-        setFriendRequests(data.friendRequests);
-        setConnectionRequests(data.connectionRequests);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    try {
+      const friendInformation = await getFriendInfo(authToken);
+
+      if (!friendInformation?.data) {
+        throw new Error("getFriendInfo() succeeded but returned no data");
+      }
+
+      const data = response.data;
+      setFriends(data.userFriends);
+      setFriendRequests(data.friendRequests);
+      setConnectionRequests(data.connectionRequests);
+    } catch (err) {
+      console.log("Error fetching friend info from server");
+      console.log(err);
+    }
   };
 
   const updateUI = (user, fresh) => {
@@ -420,7 +445,7 @@ export const UserProvider = ({ children }) => {
     setLists(sortedLists);
     setKanbans(user.kanbans);
     setStickies(sortedStickies);
-    generateQrCode(user.email);
+    M_GenerateQrCode(user.email);
     setUserTasks(sortedTasks);
     if (fresh) {
       continueRequests(user);
@@ -429,15 +454,7 @@ export const UserProvider = ({ children }) => {
 
   useEffect(() => {
     if (authToken) {
-      getUserData(authToken)
-        .then((res) => {
-          const user = res.data.user;
-          updateUI(user, true);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-      registerServiceWorkerSync();
+      M_Async_LoadApp();
     }
     if (!authToken && user) {
       console.log("No token user there");
@@ -448,7 +465,26 @@ export const UserProvider = ({ children }) => {
     }
   }, [authToken]);
 
-  const generateQrCode = (userEmail) => {
+  const M_Async_LoadApp = async () => {
+    try {
+      const userData = await getUserData(authToken);
+
+      if (!userData?.data) {
+        throw new Error(
+          "getUserData() succeeded but returned no data. Server error",
+        );
+      }
+
+      const user = userData.data?.user;
+      updateUI(user, true);
+      registerServiceWorkerSync();
+    } catch (err) {
+      console.log("Error fetching user data from the server");
+      console.log(err);
+    }
+  };
+
+  const M_GenerateQrCode = (userEmail) => {
     const qr = QRCode(0, "L");
     const data = `https://calendar-next-gen-production.up.railway.app/friends/add/request/qrcode/${userEmail}`;
     qr.addData(data);
@@ -457,7 +493,7 @@ export const UserProvider = ({ children }) => {
     setQrCodeUrl(qrCodeDataUrl);
   };
 
-  const fetchGoogleEvents = (googleToken) => {
+  const M_FetchGoogleEvents = (googleToken) => {
     setSystemNotif({ show: false });
     getGoogleCalendarEvents(authToken, googleToken)
       .then((res) => {
@@ -468,7 +504,7 @@ export const UserProvider = ({ children }) => {
       .catch((err) => console.log(err));
   };
 
-  const requestPermissionsAndSubscribe = async (token) => {
+  const M_RequestPermissionsAndSubscribe = async (token) => {
     try {
       requestAndSubscribe(token)
         .then((res) => res.json())
