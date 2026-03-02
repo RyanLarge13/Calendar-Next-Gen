@@ -4,7 +4,7 @@ import UserContext from "../../context/UserContext";
 import { updateSticky } from "../../utils/api.js";
 
 const StickyBody = ({ sticky, minimize = false }) => {
-  const { preferences } = useContext(UserContext);
+  const { preferences, setStickies } = useContext(UserContext);
 
   const [editText, setEditText] = useState(sticky.body);
   const [initialText, setInitialText] = useState(sticky.body);
@@ -67,6 +67,11 @@ const StickyBody = ({ sticky, minimize = false }) => {
     try {
       const token = localStorage.getItem("authToken");
       await updateSticky(token, sticky.id, editText);
+
+      // Trigger state update for stickies in all areas of the application
+      setStickies((prev) =>
+        prev.map((s) => (s.id === sticky.id ? { ...s, body: editText } : s)),
+      );
 
       setInitialText(editText);
     } catch (err) {

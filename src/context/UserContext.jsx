@@ -378,7 +378,7 @@ export const UserProvider = ({ children }) => {
       });
 
       if (userHasSub) {
-        send(authToken, user.id);
+        send(authToken, user);
       }
 
       if (!userHasSub) {
@@ -389,7 +389,7 @@ export const UserProvider = ({ children }) => {
           localStorage.setItem("user", JSON.stringify(newUserRes.data.user));
 
           setUser(newUserRes.data.user);
-          send(newUserRes.data.token, newUserRes.data.user.id);
+          send(newUserRes.data.token, newUserRes.data.user);
         } catch (err) {
           console.log("Error adding new subscription to user");
           console.log(err);
@@ -512,7 +512,7 @@ export const UserProvider = ({ children }) => {
           setUser(data.user);
           localStorage.setItem("authToken", data.token);
           localStorage.setItem("user", JSON.stringify(data.user));
-          send(data.token, data.user.id);
+          send(data.token, data.user);
         })
         .catch((err) => {
           console.log("Error calling request and subscribe to notifications");
@@ -526,12 +526,12 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  const send = async (token, userId) => {
-    if (!userId) {
+  const send = async (token, user) => {
+    if (!user.id || !user) {
       return;
     }
     try {
-      const serverSentSource = getNotifications(userId);
+      const serverSentSource = getNotifications(user.id);
       getNotificationsAtStart(user.username, token)
         .then((res) => {
           console.log(
@@ -540,7 +540,7 @@ export const UserProvider = ({ children }) => {
           const oldNotifs = res.data.notifs;
           const sortedOldNotifs = oldNotifs.sort((a, b) => b.time - a.time);
           setNotifications(sortedOldNotifs);
-          setupNotifListener(serverSentSource, userId);
+          setupNotifListener(serverSentSource, user.id);
         })
         .catch((err) => {
           console.log(

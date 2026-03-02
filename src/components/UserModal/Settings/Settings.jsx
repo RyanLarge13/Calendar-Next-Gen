@@ -1,5 +1,5 @@
 import { motion, AnimatePresence, useDragControls } from "framer-motion";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { BiSolidMoon } from "react-icons/bi";
 import { FaGripHorizontal, FaMinusCircle } from "react-icons/fa";
 import { RiSunFill } from "react-icons/ri";
@@ -10,6 +10,8 @@ import NotificationSubscriptions from "./NotificationSubscriptions";
 
 const Settings = ({ setOption }) => {
   const { preferences, setPreferences } = useContext(UserContext);
+
+  const [start, setStart] = useState(0);
 
   const controls = useDragControls();
 
