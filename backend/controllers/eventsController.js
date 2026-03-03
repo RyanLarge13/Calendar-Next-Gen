@@ -1,5 +1,4 @@
 import prisma from "../utils/prismaClient.js";
-import { v4 as uuidv4 } from "uuid";
 import { bucket } from "../utils/googleStorage.js";
 
 const getSignedUrl = async (filename) => {
@@ -42,6 +41,12 @@ export const getEvents = async (req, res) => {
 //   });
 // };
 
+// Reminder type coming through from the frontend
+// const newReminder = {
+//   id: uuidv4(): String,
+//   onlyNotify: false: Boolean,
+//   time: reminderTime.toString(): String,
+// };
 const createReminders = async (event) => {
   let newReminders = [];
   let newNotifs = [];
@@ -54,7 +59,7 @@ const createReminders = async (event) => {
 
   for (let i = 0; i < remindersToSave.length; i++) {
     const reminder = remindersToSave[i];
-    const reminderId = uuidv4();
+    const reminderId = reminder.id;
 
     if (!reminder) {
       continue;
