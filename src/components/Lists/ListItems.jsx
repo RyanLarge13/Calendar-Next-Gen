@@ -13,7 +13,7 @@ import UserContext from "../../context/UserContext.jsx";
 
 const ListItems = ({ addItems, listId, items }) => {
   const { listUpdate, setListUpdate } = useContext(InteractiveContext);
-  const { setSystemNotif } = useContext(UserContext);
+  const { setSystemNotif, preferences } = useContext(UserContext);
   const [indexes, setIndexes] = useState(items);
   const [newItemText, setNewItemText] = useState("");
   const [sortOrder, setSortOrder] = useState(1);
@@ -117,24 +117,110 @@ const ListItems = ({ addItems, listId, items }) => {
   };
 
   return (
-    <>
-      <div className="mb-2 bg-white rounded-md shadow-md p-3 flex justify-start items-center gap-x-3">
-        <button onClick={() => setSortOrder(2)}>
+    <div className="space-y-3">
+      {/* Sort / Filter toolbar */}
+      <div
+        className={`
+      rounded-3xl border shadow-sm p-3
+      flex items-center gap-2 ml-3 flex-wrap
+      ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-white border-black/10"}
+    `}
+      >
+        <p
+          className={`text-[11px] font-semibold tracking-wide mr-1 ${
+            preferences.darkMode ? "text-white/55" : "text-slate-500"
+          }`}
+        >
+          Sort
+        </p>
+
+        <button
+          onClick={() => setSortOrder(2)}
+          className={`
+        h-10 w-10 grid place-items-center rounded-2xl border shadow-sm transition
+        hover:shadow-md active:scale-[0.97]
+        ${
+          preferences.darkMode
+            ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70"
+            : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600"
+        }
+      `}
+          aria-label="Sort A to Z"
+          title="A → Z"
+        >
           <FaSortAlphaUp />
         </button>
-        <button onClick={() => setSortOrder(3)}>
+
+        <button
+          onClick={() => setSortOrder(3)}
+          className={`
+        h-10 w-10 grid place-items-center rounded-2xl border shadow-sm transition
+        hover:shadow-md active:scale-[0.97]
+        ${
+          preferences.darkMode
+            ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70"
+            : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600"
+        }
+      `}
+          aria-label="Sort Z to A"
+          title="Z → A"
+        >
           <FaSortAlphaDownAlt />
         </button>
-        <button onClick={() => setSortOrder(1)}>
+
+        <div
+          className={`h-6 w-px ${preferences.darkMode ? "bg-white/10" : "bg-black/10"}`}
+        />
+
+        <button
+          onClick={() => setSortOrder(1)}
+          className={`
+        h-10 w-10 grid place-items-center rounded-2xl border shadow-sm transition
+        hover:shadow-md active:scale-[0.97]
+        ${
+          preferences.darkMode
+            ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70"
+            : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600"
+        }
+      `}
+          aria-label="Sort by largest first"
+          title="Largest first"
+        >
           <FaSortAmountDown />
         </button>
-        <button onClick={() => setSortOrder(4)}>
+
+        <button
+          onClick={() => setSortOrder(4)}
+          className={`
+        h-10 w-10 grid place-items-center rounded-2xl border shadow-sm transition
+        hover:shadow-md active:scale-[0.97]
+        ${
+          preferences.darkMode
+            ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70"
+            : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600"
+        }
+      `}
+          aria-label="Sort by smallest first"
+          title="Smallest first"
+        >
           <FaSortAmountUp />
         </button>
+
+        {/* Optional: space for future filter chips */}
+        <div className="flex-1" />
       </div>
+
+      {/* Add item row */}
       {addItems.includes(listId) && (
-        <div className="flex justify-between items-center p-3 rounded-md shadow-md">
+        <div
+          className={`
+        rounded-3xl border shadow-sm p-3
+        flex items-center gap-3
+        ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-white border-black/10"}
+      `}
+        >
           <form
+            className="flex-1 min-w-0"
             onSubmit={(e) => {
               e.preventDefault();
               addNewItem();
@@ -142,52 +228,119 @@ const ListItems = ({ addItems, listId, items }) => {
           >
             <input
               type="text"
-              className="rounded-md shadow-md px-3 py-2 outline-none"
-              placeholder="New Item"
+              className={`
+            w-full px-4 py-3 rounded-2xl border shadow-inner outline-none text-sm font-semibold
+            transition
+            ${
+              preferences.darkMode
+                ? "bg-[#161616]/40 border-white/10 text-white placeholder:text-white/40 focus:bg-[#161616]/55"
+                : "bg-black/[0.03] border-black/10 text-slate-900 placeholder:text-slate-400 focus:bg-black/[0.05]"
+            }
+          `}
+              placeholder="New item…"
               value={newItemText}
               onChange={(e) => setNewItemText(e.target.value)}
-              autoFocus={true}
+              autoFocus
             />
           </form>
-          <AiFillPlusCircle
+
+          <button
+            type="button"
             onClick={() => addNewItem()}
-            className="text-lg cursor-pointer"
-          />
+            className={`
+          h-12 w-12 grid place-items-center rounded-2xl border shadow-sm transition
+          hover:shadow-md active:scale-[0.97]
+          ${
+            preferences.darkMode
+              ? "bg-cyan-500/15 border-cyan-300/20 text-cyan-100 hover:bg-cyan-500/20"
+              : "bg-cyan-50 border-cyan-200 text-cyan-700 hover:bg-cyan-100"
+          }
+        `}
+            aria-label="Add item"
+          >
+            <AiFillPlusCircle className="text-2xl" />
+          </button>
         </div>
       )}
+
+      {/* List */}
       <Reorder.Group
         axis="y"
         values={indexes}
         onReorder={updateOrderIndexes}
-        className="max-h-[700px] overflow-y-auto"
+        className={`
+      max-h-[700px] pt-3 overflow-y-auto scrollbar-hide pr-1
+      space-y-2
+    `}
       >
         {indexes?.map((listItem, index) => (
           <Reorder.Item
-            whileDrag={{
-              scale: 1.025,
-              backgroundColor: "rgba(255,255,255,1)",
-              cursor: "grabbing",
-            }}
             key={listItem.id}
             value={listItem}
-            className="bg-white bg-opacity-20 rounded-md ml-0 shadow-md px-2 py-5 my-3 flex justify-between items-center cursor-grab relative"
+            whileDrag={{
+              scale: 1.02,
+              cursor: "grabbing",
+            }}
+            className={`
+          relative cursor-grab select-none
+          rounded-3xl border shadow-sm
+          px-4 py-4
+          flex items-center justify-between gap-3
+          transition
+          ${
+            preferences.darkMode
+              ? "bg-white/5 border-white/10 hover:bg-white/7"
+              : "bg-white border-black/10 hover:bg-black/[0.02]"
+          }
+        `}
           >
-            <div>
-              <p className="absolute top-[-6px] left-[-6px] w-[15px] h-[15px] shadow-md flex justify-center items-center rounded-full bg-white text-xs">
-                {index + 1}
+            {/* Index badge */}
+            <div
+              className={`
+            absolute -top-2 -left-2
+            h-7 min-w-[28px] px-2
+            grid place-items-center
+            rounded-2xl border shadow-md text-[11px] font-bold
+            ${
+              preferences.darkMode
+                ? "bg-white/10 border-white/15 text-white/80"
+                : "bg-white border-black/10 text-slate-700"
+            }
+          `}
+            >
+              {index + 1}
+            </div>
+
+            {/* Text */}
+            <div className="min-w-0">
+              <p
+                className={`text-sm font-semibold break-words ${preferences.darkMode ? "text-white/85" : "text-slate-900"}`}
+              >
+                {listItem.text}
               </p>
-              <p className="mr-5 text-sm">{listItem.text}</p>
             </div>
-            <div>
-              <AiFillCloseCircle
-                onClick={() => removeItem(listItem)}
-                className="cursor-pointer text-lg"
-              />
-            </div>
+
+            {/* Remove */}
+            <button
+              type="button"
+              onClick={() => removeItem(listItem)}
+              className={`
+            flex-shrink-0 h-10 w-10 grid place-items-center rounded-2xl border shadow-sm transition
+            hover:shadow-md active:scale-[0.97]
+            ${
+              preferences.darkMode
+                ? "bg-white/5 border-white/10 text-white/60 hover:text-rose-200 hover:bg-white/10"
+                : "bg-black/[0.03] border-black/10 text-slate-500 hover:text-rose-600 hover:bg-black/[0.06]"
+            }
+          `}
+              aria-label="Remove item"
+            >
+              <AiFillCloseCircle className="text-xl" />
+            </button>
           </Reorder.Item>
         ))}
       </Reorder.Group>
-    </>
+    </div>
   );
 };
 

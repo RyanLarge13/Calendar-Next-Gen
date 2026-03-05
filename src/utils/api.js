@@ -499,6 +499,12 @@ export const createTask = (token, task) => {
   return res;
 };
 
+// General task update type
+// const update = {
+//   taskId: task.id,
+//   taskItems: newItems,
+// };
+
 export const updateTasks = (token, taskUpdates) => {
   const res = Axios.post(
     `${productionUrl}/update/tasks`,

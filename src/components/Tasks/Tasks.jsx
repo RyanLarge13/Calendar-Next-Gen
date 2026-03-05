@@ -13,6 +13,12 @@ const Tasks = ({ taskSort, taskSortOpt, taskSearch, taskSearchTxt }) => {
 
   const [tasksToRender, setTasksToRender] = useState(userTasks);
 
+  // find a better way than useEffect maybe? Not sure. This is forcing an update
+  // which is good but could lead to unnecessary stuff if not paid attention to
+  useEffect(() => {
+    setTasksToRender(userTasks);
+  }, [userTasks]);
+
   useEffect(() => {
     if (taskSort && taskSortOpt) {
       switch (taskSort) {

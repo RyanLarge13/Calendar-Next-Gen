@@ -35,11 +35,13 @@ const NotificationSubscriptions = () => {
             No devices are subscribed to get push notifications
           </p>
         ) : (
-          notifSubs.map((ns) => (
-            <div key={ns.id}>
-              <p>{ns}</p>
-            </div>
-          ))
+          notifSubs.map((ns) => {
+            const info = JSON.parse(ns);
+
+            <div key={info.id}>
+              <p>{info.platform}</p>
+            </div>;
+          })
         )}
       </div>
     </div>

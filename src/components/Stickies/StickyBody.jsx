@@ -64,16 +64,17 @@ const StickyBody = ({ sticky, minimize = false }) => {
       return;
     }
 
+    setStickies((prev) =>
+      prev.map((s) => (s.id === sticky.id ? { ...s, body: editText } : s)),
+    );
+
+    setInitialText(editText);
+
     try {
       const token = localStorage.getItem("authToken");
       await updateSticky(token, sticky.id, editText);
 
       // Trigger state update for stickies in all areas of the application
-      setStickies((prev) =>
-        prev.map((s) => (s.id === sticky.id ? { ...s, body: editText } : s)),
-      );
-
-      setInitialText(editText);
     } catch (err) {
       console.log(`Error from server saving sticky note. Error: ${err}`);
     }

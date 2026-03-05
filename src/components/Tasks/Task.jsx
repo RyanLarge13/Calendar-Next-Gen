@@ -1,10 +1,11 @@
 import { useContext, useState } from "react";
-import { BsShareFill, BsTrashFill } from "react-icons/bs";
+import { BsCheck2Circle, BsShareFill, BsTrashFill } from "react-icons/bs";
 import { FaPaintBrush } from "react-icons/fa";
 import UserContext from "../../context/UserContext";
-import { API_UpdateTaskColor, deleteTask } from "../../utils/api";
+import { API_UpdateTaskColor, deleteTask, updateTasks } from "../../utils/api";
 import EditColor from "../Misc/EditColor";
 import TaskItems from "../Tasks/TaskItems";
+import { MdOutlineClear, MdOutlineClearAll } from "react-icons/md";
 
 const Task = ({ task }) => {
   const { preferences, setUserTasks, userTasks, setSystemNotif } =
@@ -14,7 +15,7 @@ const Task = ({ task }) => {
   const [color, setColor] = useState(task.color);
 
   // Deleting task
-  const confirmDeleteTask = (taskId) => {
+  const confirmDeleteTask = () => {
     const newConfirmation = {
       show: true,
       title: "Delete Task",
@@ -23,19 +24,37 @@ const Task = ({ task }) => {
       hasCancel: true,
       actions: [
         { text: "cancel", func: () => setSystemNotif({ show: false }) },
-        { text: "delete", func: () => deleteMyTask(taskId) },
+        { text: "delete", func: () => deleteMyTask() },
       ],
     };
     setSystemNotif(newConfirmation);
   };
 
-  const deleteMyTask = (taskId) => {
+  const confirmClearAllTaskItems = () => {
+    if (task.tasks?.length < 1) {
+      return;
+    }
+    const newConfirmation = {
+      show: true,
+      title: "Clear All Task Items",
+      text: "Are you sure you want to clear all of the task items?",
+      color: "bg-red-300",
+      hasCancel: true,
+      actions: [
+        { text: "cancel", func: () => setSystemNotif({ show: false }) },
+        { text: "clear items", func: () => clearAllTasks() },
+      ],
+    };
+    setSystemNotif(newConfirmation);
+  };
+
+  const deleteMyTask = () => {
     try {
       const token = localStorage.getItem("authToken");
       if (!token) {
         return;
       }
-      deleteTask(token, taskId)
+      deleteTask(token, task.id)
         .then((res) => {
           setSystemNotif({ show: false });
           const deletedTaskId = res.data.deletedTaskId;
@@ -71,6 +90,60 @@ const Task = ({ task }) => {
       await API_UpdateTaskColor(token, task.id, color);
     } catch (err) {
       console.log("Error updating task color");
+      console.log(err);
+    }
+  };
+
+  const markAllComplete = async () => {
+    const now = new Date();
+    const newItems = task.tasks.map((t) => ({
+      ...t,
+      complete: true,
+      completedAt: now,
+    }));
+
+    setUserTasks((prev) =>
+      prev.map((t) =>
+        t.id === task.id
+          ? {
+              ...t,
+              tasks: newItems,
+            }
+          : t,
+      ),
+    );
+
+    const update = {
+      taskId: task.id,
+      taskItems: newItems,
+    };
+
+    try {
+      const token = localStorage.getItem("authToken");
+      await updateTasks(token, [update]);
+    } catch (err) {
+      console.log("Error updating all tasks to be completed");
+      console.log(err);
+    }
+  };
+
+  const clearAllTasks = async () => {
+    const newTasks = [];
+
+    const update = {
+      taskId: task.id,
+      taskItems: newTasks,
+    };
+
+    setUserTasks((prev) =>
+      prev.map((t) => (t.id === task.id ? { ...t, tasks: newTasks } : t)),
+    );
+
+    try {
+      const token = localStorage.getItem("authToken");
+      await updateTasks(token, [update]);
+    } catch (err) {
+      console.log("Error clearing users tasks");
       console.log(err);
     }
   };
@@ -118,6 +191,36 @@ const Task = ({ task }) => {
 
         <div className="flex items-center gap-2">
           <button
+            onClick={confirmClearAllTaskItems}
+            type="button"
+            className={`
+                    grid place-items-center h-9 w-9 rounded-2xl border shadow-sm transition active:scale-95
+                    ${
+                      preferences.darkMode
+                        ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70"
+                        : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600"
+                    }
+                  `}
+            aria-label="Mark All Complete"
+          >
+            <MdOutlineClearAll />
+          </button>
+          <button
+            onClick={markAllComplete}
+            type="button"
+            className={`
+                    grid place-items-center h-9 w-9 rounded-2xl border shadow-sm transition active:scale-95
+                    ${
+                      preferences.darkMode
+                        ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70"
+                        : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600"
+                    }
+                  `}
+            aria-label="Mark All Complete"
+          >
+            <BsCheck2Circle />
+          </button>
+          <button
             type="button"
             className={`
                     grid place-items-center h-9 w-9 rounded-2xl border shadow-sm transition active:scale-95
@@ -150,7 +253,7 @@ const Task = ({ task }) => {
 
           <button
             type="button"
-            onClick={() => confirmDeleteTask(task.id)}
+            onClick={() => confirmDeleteTask()}
             className={`
                     grid place-items-center h-9 w-9 rounded-2xl border shadow-sm transition active:scale-95
                     ${
