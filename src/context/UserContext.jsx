@@ -322,13 +322,14 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  const M_HandleNotificationSubscriptions = async () => {
+  const M_HandleNotificationSubscriptions = async (freshUser) => {
     if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+      console.log("No serviceWorker in navigator and no pushManager in window");
       return;
     }
 
     // The user clearly has no notification subscription and potentially never accepted permissions
-    if (!user.notifSub || user.notifSub.length < 1) {
+    if (!freshUser.notifSub || freshUser.notifSub.length < 1) {
       console.log(
         "User has no user.notifSub array, or user.notifSub.length is less then 1. Requesting new and returning",
       );
@@ -355,7 +356,9 @@ export const UserProvider = ({ children }) => {
 
     const currentEndpoint = currentSub.endpoint;
 
-    const storedSubs = Array.isArray(user.notifSub) ? user.notifSub : [];
+    const storedSubs = Array.isArray(freshUser.notifSub)
+      ? freshUser.notifSub
+      : [];
 
     const userHasSub = storedSubs.some((storedSub) => {
       try {
@@ -369,7 +372,7 @@ export const UserProvider = ({ children }) => {
 
     if (userHasSub) {
       console.log("User does have sub, running send");
-      send(authToken, user);
+      send(authToken, freshUser);
       return;
     }
 
@@ -412,7 +415,7 @@ export const UserProvider = ({ children }) => {
       setSystemNotif(newNotif);
     }
 
-    await M_HandleNotificationSubscriptions();
+    await M_HandleNotificationSubscriptions(user);
 
     try {
       const friendInformation = await getFriendInfo(authToken);
