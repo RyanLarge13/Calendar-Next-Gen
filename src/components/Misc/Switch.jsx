@@ -8,7 +8,7 @@ const Switch = ({ title, styles, value, toggle }) => {
       onClick={() => toggle(!value)}
       className={`${styles} flex w-full items-center justify-between`}
     >
-      <p>{title}</p>
+      <div>{title}</div>
       <div
         className={`relative h-[20px] w-[40px] rounded-full shadow-md bg-gradient-to-tr ${
           preferences.darkMode

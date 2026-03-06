@@ -304,7 +304,7 @@ export const requestAndSubscribe = async (token) => {
                 applicationServerKey: import.meta.env.VITE_VAPID_PUBLIC_KEY,
               });
             } else {
-              throw new Error("Permission denied for notifications");
+              console.log("Permissions denied for notifications");
             }
           })
           .then(async (subscription) => {

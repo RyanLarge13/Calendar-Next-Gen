@@ -322,6 +322,74 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  const M_HandleNotificationSubscriptions = async () => {
+    if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+      return;
+    }
+
+    // The user clearly has no notification subscription and potentially never accepted permissions
+    if (!user.notifSub || user.notifSub.length < 1) {
+      console.log(
+        "User has no user.notifSub array, or user.notifSub.length is less then 1. Requesting new and returning",
+      );
+      await M_RequestPermissionsAndSubscribe(authToken);
+      return;
+    }
+
+    if (Notification.permission === "denied") {
+      console.log("User denied Notifications");
+      // Do something!
+      return;
+    }
+
+    const registration = await navigator.serviceWorker.ready;
+    let currentSub = await registration.pushManager.getSubscription();
+
+    if (!currentSub) {
+      console.log("No current sub creating new");
+      currentSub = await checkPermissionsAndCreateNewSub();
+      console.log("New currentSub created");
+      console.log(currentSub);
+      if (!currentSub) return;
+    }
+
+    const currentEndpoint = currentSub.endpoint;
+
+    const storedSubs = Array.isArray(user.notifSub) ? user.notifSub : [];
+
+    const userHasSub = storedSubs.some((storedSub) => {
+      try {
+        const parsed = JSON.parse(storedSub);
+        return parsed?.endpoint === currentEndpoint;
+      } catch (err) {
+        console.log("Error parsing stored user subscriptions");
+        return false;
+      }
+    });
+
+    if (userHasSub) {
+      console.log("User does have sub, running send");
+      send(authToken, user);
+      return;
+    }
+
+    try {
+      console.log(
+        "User does not have subscription stored, creating new and server request for new user",
+      );
+      const newUserRes = await addSubscriptionToUser(currentSub, authToken);
+
+      localStorage.setItem("authToken", newUserRes.data.token);
+      localStorage.setItem("user", JSON.stringify(newUserRes.data.user));
+
+      setUser(newUserRes.data.user);
+      send(newUserRes.data.token, newUserRes.data.user);
+    } catch (err) {
+      console.log("Error adding new subscription to user");
+      console.log(err);
+    }
+  };
+
   const continueRequests = async (user) => {
     if (user.importedGoogleEvents) {
       const newNotif = {
@@ -344,61 +412,7 @@ export const UserProvider = ({ children }) => {
       setSystemNotif(newNotif);
     }
 
-    // The user clearly has no notification subscription and potentially never accepted permissions
-    if (!user.notifSub || user.notifSub.length < 1) {
-      M_RequestPermissionsAndSubscribe(authToken);
-    }
-
-    // User has at least one subscription that is valid
-    if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
-      return;
-    }
-
-    if (Notification.permission === "denied") {
-      console.log("User denied Notifications");
-      // Do something!
-      return;
-    }
-
-    const registration = await navigator.serviceWorker.ready;
-    let currentSub = await registration.pushManager.getSubscription();
-
-    if (!currentSub) {
-      currentSub = await checkPermissionsAndCreateNewSub();
-      if (!currentSub) return;
-    }
-
-    const currentEndpoint = currentSub.endpoint;
-
-    const storedSubs = Array.isArray(user.notifSub) ? user.notifSub : [];
-
-    const userHasSub = storedSubs.some((storedSub) => {
-      try {
-        const parsed = JSON.parse(storedSub);
-        return parsed?.endpoint === currentEndpoint;
-      } catch (err) {
-        console.log("Error parsing stored user subscriptions");
-        return false;
-      }
-    });
-
-    if (userHasSub) {
-      send(authToken, user);
-      return;
-    }
-
-    try {
-      const newUserRes = await addSubscriptionToUser(currentSub, authToken);
-
-      localStorage.setItem("authToken", newUserRes.data.token);
-      localStorage.setItem("user", JSON.stringify(newUserRes.data.user));
-
-      setUser(newUserRes.data.user);
-      send(newUserRes.data.token, newUserRes.data.user);
-    } catch (err) {
-      console.log("Error adding new subscription to user");
-      console.log(err);
-    }
+    await M_HandleNotificationSubscriptions();
 
     try {
       const friendInformation = await getFriendInfo(authToken);
@@ -407,7 +421,7 @@ export const UserProvider = ({ children }) => {
         throw new Error("getFriendInfo() succeeded but returned no data");
       }
 
-      const data = response.data;
+      const data = friendInformation.data;
       setFriends(data.userFriends);
       setFriendRequests(data.friendRequests);
       setConnectionRequests(data.connectionRequests);
@@ -507,9 +521,9 @@ export const UserProvider = ({ children }) => {
       .catch((err) => console.log(err));
   };
 
-  const M_RequestPermissionsAndSubscribe = async (token) => {
+  const M_RequestPermissionsAndSubscribe = async () => {
     try {
-      requestAndSubscribe(token)
+      requestAndSubscribe(authToken)
         .then((res) => res.json())
         .then((data) => {
           setUser(data.user);
