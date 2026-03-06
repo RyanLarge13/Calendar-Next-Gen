@@ -14,6 +14,7 @@ import {
   getUserDataFresh,
   API_GetLocation,
   loginWithGoogle,
+  checkPermissionsAndCreateNewSub,
 } from "../utils/api";
 import QRCode from "qrcode-generator";
 import IndexedDBManager from "../utils/indexDBApi";
@@ -363,7 +364,7 @@ export const UserProvider = ({ children }) => {
     let currentSub = await registration.pushManager.getSubscription();
 
     if (!currentSub) {
-      currentSub = await M_RequestPermissionsAndSubscribe(authToken);
+      currentSub = await checkPermissionsAndCreateNewSub();
       if (!currentSub) return;
     }
 

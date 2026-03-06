@@ -342,6 +342,60 @@ export const addSubscriptionToUser = (sub, token) => {
   return response;
 };
 
+export const checkPermissionsAndCreateNewSub = async () => {
+  if ("serviceWorker" in navigator && "PushManager" in window) {
+    const reg = await navigator.serviceWorker.ready;
+    if (!reg) return null;
+
+    const permission = await Notification.requestPermission();
+    if (permission === "granted") {
+      const publicVapidKey = import.meta.env.VITE_VAPID_PUBLIC_KEY || null;
+
+      if (publicVapidKey === null)
+        throw new Error("importing public vapid key failed. Check .env");
+
+      const sub = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: publicVapidKey,
+      });
+
+      const completeSubscriptionObject = completeSubscription(sub);
+
+      return completeSubscriptionObject;
+    }
+    // Maybe customize this method to return differently if
+    // permissions are not accepted to handle that special case
+    return null;
+  }
+  return null;
+};
+
+// export const checkPermissionsAndCreateNewSub = () => {
+//   if ("serviceWorker" in navigator && "PushManager" in window) {
+//     const subscriptionCheck = navigator.serviceWorker.ready.then(
+//       async (registration) => {
+//         return Notification.requestPermission().then(async (permission) => {
+//           // If permission is granted, subscribe the user
+//           if (permission === "granted") {
+//             // Subscribe the user
+//             const sub = await registration.pushManager.subscribe({
+//               userVisibleOnly: true,
+//               applicationServerKey: import.meta.env.VITE_VAPID_PUBLIC_KEY,
+//             });
+
+//             const completeSubscriptionObject = completeSubscription(sub);
+
+//             return completeSubscriptionObject;
+//           } else {
+//             throw new Error("Permission denied for notifications");
+//           }
+//         });
+//       },
+//     );
+//     return subscriptionCheck;
+//   }
+// };
+
 export const createNotification = (newNotif, token) => {
   const res = Axios.post(
     `${productionUrl}/new/notification`,
