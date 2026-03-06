@@ -236,7 +236,7 @@ export const completeSubscription = (sub) => {
   const lastSeenAt = new Date();
 
   const fullSub = {
-    ...sub,
+    ...sub.toJSON(),
     id: uuidv4(),
     platform,
     browser,

@@ -4,13 +4,15 @@ import prisma from "./prismaClient.js";
 WebPush.setVapidDetails(
   "mailto:ryanlarge@ryanlarge.dev",
   process.env.VAPID_PUBLIC_KEY,
-  process.env.VAPID_PRIVATE_KEY
+  process.env.VAPID_PRIVATE_KEY,
 );
 
 const sendNotification = (payload, subscriptions, userId) => {
-  console.log(subscriptions);
   if (!subscriptions) {
-    throw new Error("Subscription not set");
+    console.log(
+      `Attempting to send notification but cancelled early. No existing subscriptions for user ${userId}`,
+    );
+    return;
   }
   if (subscriptions.length < 2) {
     WebPush.sendNotification(subscriptions[0], payload).catch((error) => {
@@ -32,10 +34,10 @@ const sendNotification = (payload, subscriptions, userId) => {
               .map((subscription) => JSON.parse(subscription))
               .filter(
                 (parsedSubscription) =>
-                  parsedSubscription.endpoint !== endpointToDelete
+                  parsedSubscription.endpoint !== endpointToDelete,
               );
             const updatedNotifSubStringified = updatedNotifSub.map(
-              (subscription) => JSON.stringify(subscription)
+              (subscription) => JSON.stringify(subscription),
             );
             await prisma.user.update({
               where: { id: userId },
@@ -44,7 +46,7 @@ const sendNotification = (payload, subscriptions, userId) => {
               },
             });
           }
-        }
+        },
       );
     });
   }

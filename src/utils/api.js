@@ -329,32 +329,6 @@ export const requestAndSubscribe = async (token) => {
   }
 };
 
-export const checkSubscription = () => {
-  if ("serviceWorker" in navigator && "PushManager" in window) {
-    const subscriptionCheck = navigator.serviceWorker.ready.then(
-      async (registration) => {
-        return Notification.requestPermission().then(async (permission) => {
-          // If permission is granted, subscribe the user
-          if (permission === "granted") {
-            // Subscribe the user
-            const sub = await registration.pushManager.subscribe({
-              userVisibleOnly: true,
-              applicationServerKey: import.meta.env.VITE_VAPID_PUBLIC_KEY,
-            });
-
-            const completeSubscriptionObject = completeSubscription(sub);
-
-            return completeSubscriptionObject;
-          } else {
-            throw new Error("Permission denied for notifications");
-          }
-        });
-      },
-    );
-    return subscriptionCheck;
-  }
-};
-
 export const addSubscriptionToUser = (sub, token) => {
   const response = Axios.post(
     `${productionUrl}/add/subscription`,

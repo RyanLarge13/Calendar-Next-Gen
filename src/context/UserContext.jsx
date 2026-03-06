@@ -7,7 +7,6 @@ import {
   requestAndSubscribe,
   getNotifications,
   getNotificationsAtStart,
-  checkSubscription,
   addSubscriptionToUser,
   getGoogleCalendarEvents,
   markAsRead,
@@ -345,56 +344,59 @@ export const UserProvider = ({ children }) => {
     }
 
     // The user clearly has no notification subscription and potentially never accepted permissions
-    if (user.notifSub?.length < 1 || user.notifSub === null) {
+    if (!user.notifSub || user.notifSub.length < 1) {
       M_RequestPermissionsAndSubscribe(authToken);
     }
 
     // User has at least one subscription that is valid
-    if (user.notifSub?.length > 0 && user.notifSub !== null) {
-      const sub = await checkSubscription();
+    if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+      return;
+    }
 
-      const isAtLeastOneSubValid = user.notifSub.some((s) => {
-        try {
-          const subEndpoint = JSON.parse(s)?.endpoint;
-          subEndpoint ? true : false;
-        } catch (err) {
-          return false;
-        }
-      });
+    if (Notification.permission === "denied") {
+      console.log("User denied Notifications");
+      // Do something!
+      return;
+    }
 
-      // If not a single subscription is valid. Then we need to make sure we request new
-      if (!isAtLeastOneSubValid) {
-        M_RequestPermissionsAndSubscribe(authToken);
-        return;
+    const registration = await navigator.serviceWorker.ready;
+    let currentSub = await registration.pushManager.getSubscription();
+
+    if (!currentSub) {
+      currentSub = await M_RequestPermissionsAndSubscribe(authToken);
+      if (!currentSub) return;
+    }
+
+    const currentEndpoint = currentSub.endpoint;
+
+    const storedSubs = Array.isArray(user.notifSub) ? user.notifSub : [];
+
+    const userHasSub = storedSubs.some((storedSub) => {
+      try {
+        const parsed = JSON.parse(storedSub);
+        return parsed?.endpoint === currentEndpoint;
+      } catch (err) {
+        console.log("Error parsing stored user subscriptions");
+        return false;
       }
+    });
 
-      const userHasSub = user.notifSub.some((storedSub) => {
-        try {
-          const subEndpoint = JSON.parse(storedSub)?.endpoint;
-          subEndpoint ? true : false;
-        } catch (err) {
-          return false;
-        }
-      });
+    if (userHasSub) {
+      send(authToken, user);
+      return;
+    }
 
-      if (userHasSub) {
-        send(authToken, user);
-      }
+    try {
+      const newUserRes = await addSubscriptionToUser(currentSub, authToken);
 
-      if (!userHasSub) {
-        try {
-          const newUserRes = await addSubscriptionToUser(sub, authToken);
+      localStorage.setItem("authToken", newUserRes.data.token);
+      localStorage.setItem("user", JSON.stringify(newUserRes.data.user));
 
-          localStorage.setItem("authToken", newUserRes.data.token);
-          localStorage.setItem("user", JSON.stringify(newUserRes.data.user));
-
-          setUser(newUserRes.data.user);
-          send(newUserRes.data.token, newUserRes.data.user);
-        } catch (err) {
-          console.log("Error adding new subscription to user");
-          console.log(err);
-        }
-      }
+      setUser(newUserRes.data.user);
+      send(newUserRes.data.token, newUserRes.data.user);
+    } catch (err) {
+      console.log("Error adding new subscription to user");
+      console.log(err);
     }
 
     try {
