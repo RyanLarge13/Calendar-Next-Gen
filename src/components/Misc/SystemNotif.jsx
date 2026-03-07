@@ -39,7 +39,7 @@ const SystemNotif = () => {
           initial={{ y: -50, opacity: 0 }}
           exit={{ x: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className={`will-change-transform fixed top-10 z-[999] px-4 py-3 pb-1 rounded-xl shadow-lg w-[90vw] left-[5vw] max-w-[400px] backdrop-blur-sm border 
+          className={`will-change-transform fixed top-10 z-[1000] px-4 py-3 pb-1 rounded-xl shadow-lg w-[90vw] left-[5vw] max-w-[400px] backdrop-blur-sm border 
     ${
       preferences.darkMode
         ? "bg-[#222]/90 text-white border-white/10"
