@@ -57,6 +57,7 @@ const NotificationSubscriptions = () => {
 
     try {
       const token = localStorage.getItem("authToken");
+      setSystemNotif({ show: false });
 
       const newSubs = notifSubs.filter(
         (ns) => JSON.parse(ns).endpoint !== endpoint,
