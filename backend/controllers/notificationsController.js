@@ -91,6 +91,45 @@ export const addSubscriptionToUser = async (req, res) => {
   }
 };
 
+export const removeSubscriptionToDevice = async (req, res) => {
+  const newSubs = req.body;
+  const user = req.user;
+
+  if (!Array.isArray(newSubs) || !newSubs) {
+    console.log("No new subscription object was sent to the server to update");
+    console.log(newSubs);
+    res.status(400).json({
+      message:
+        "Please provide new subscription list for the subscriptions you would like to update",
+    });
+    return;
+  }
+
+  if (!user) {
+    res.status(400).json({
+      message: "You are not authorized to make this request. Please login",
+    });
+    return;
+  }
+
+  try {
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: { notifSub: newSubs },
+    });
+
+    res.status(201).json({ message: "Subscription successfully deleted" });
+    return;
+  } catch (err) {
+    console.log(
+      "Error removing notification subscription from users data in DB via a patch update",
+    );
+    console.log(err);
+  }
+};
+
 const processNotifications = async (userId, res) => {
   try {
     const notifications = await prisma.notification.findMany({

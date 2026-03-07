@@ -259,6 +259,8 @@ export const completeSubscription = (sub) => {
   const createdAt = new Date();
   const lastSeenAt = new Date();
 
+  const stringSubscriptionInfo = sub.toJSON;
+
   const fullSub = {
     ...sub.toJSON(),
     id: uuidv4(),

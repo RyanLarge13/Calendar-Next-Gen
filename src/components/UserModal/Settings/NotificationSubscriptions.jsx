@@ -1,12 +1,62 @@
 import { useContext } from "react";
 import UserContext from "../../../context/UserContext";
+import { removeNotificationSubFromServer } from "../../../utils/api";
 
 const NotificationSubscriptions = () => {
-  const { preferences, notifSubs } = useContext(UserContext);
+  const { preferences, notifSubs, setSystemNotif, setUser } =
+    useContext(UserContext);
 
   const pauseNotificationsToDevice = async (info) => {};
 
-  const cancelNotificationsToDevice = async (info) => {};
+  const confirmRemoveSub = (info) => {
+    const confirmation = {
+      show: true,
+      title: "Remove Subscription From Device?",
+      text: "Are you sure you want to remove this notification subscription from the device shown?",
+      color: "bg-red-200",
+      hasCancel: false,
+      actions: [
+        {
+          text: "close",
+          func: () => setSystemNotif({ show: false }),
+        },
+        {
+          text: "delete",
+          func: () => cancelNotificationsToDevice(info.endpoint),
+        },
+      ],
+    };
+
+    setSystemNotif(confirmation);
+  };
+
+  const cancelNotificationsToDevice = async (endpoint) => {
+    const endpoint = endpoint;
+    const reg = await navigator.serviceWorker.ready;
+    const currentSub = await reg.pushManager.getSubscription();
+
+    if (endpoint === currentSub.endpoint) {
+      currentSub.unsubscribe();
+    }
+
+    try {
+      const token = localStorage.getItem("authToken");
+
+      const newSubs = notifSubs.filter(
+        (ns) => JSON.parse(ns).endpoint !== endpoint,
+      );
+
+      await removeNotificationSubFromServer(newSubs, token);
+
+      setUser((prev) => ({
+        ...prev,
+        notifSubs: newSubs,
+      }));
+    } catch (err) {
+      console.log("Failed to remove the notification subscription from server");
+      console.log(err);
+    }
+  };
 
   return (
     <div className="mt-5">
@@ -283,7 +333,7 @@ const NotificationSubscriptions = () => {
                         : "Pause Notifications To This Device"}
                     </button>
                     <button
-                      onClick={() => cancelNotificationsToDevice(info)}
+                      onClick={() => confirmRemoveSub(info)}
                       className={`
                     flex-shrink-0 px-3 py-1.5 rounded-2xl border text-[11px] font-semibold shadow-sm
                     ${

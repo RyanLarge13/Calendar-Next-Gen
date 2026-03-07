@@ -370,31 +370,14 @@ export const checkPermissionsAndCreateNewSub = async () => {
   return null;
 };
 
-// export const checkPermissionsAndCreateNewSub = () => {
-//   if ("serviceWorker" in navigator && "PushManager" in window) {
-//     const subscriptionCheck = navigator.serviceWorker.ready.then(
-//       async (registration) => {
-//         return Notification.requestPermission().then(async (permission) => {
-//           // If permission is granted, subscribe the user
-//           if (permission === "granted") {
-//             // Subscribe the user
-//             const sub = await registration.pushManager.subscribe({
-//               userVisibleOnly: true,
-//               applicationServerKey: import.meta.env.VITE_VAPID_PUBLIC_KEY,
-//             });
-
-//             const completeSubscriptionObject = completeSubscription(sub);
-
-//             return completeSubscriptionObject;
-//           } else {
-//             throw new Error("Permission denied for notifications");
-//           }
-//         });
-//       },
-//     );
-//     return subscriptionCheck;
-//   }
-// };
+export const removeNotificationSubFromServer = (newSubs, token) => {
+  const res = Axios.patch(
+    `${productionUrl}/remove/subscription`,
+    { newSubs },
+    { headers: { Authorization: `Bearer ${token}` } },
+  );
+  return res;
+};
 
 export const createNotification = (newNotif, token) => {
   const res = Axios.post(

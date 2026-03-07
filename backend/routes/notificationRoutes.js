@@ -10,6 +10,7 @@ import {
   markAsRead,
   createNotification,
   markAsUnRead,
+  removeSubscriptionToDevice,
 } from "../controllers/notificationsController.js";
 
 const notifRouter = express.Router();
@@ -18,6 +19,7 @@ notifRouter.get("/:userId/notifications", getNotifications);
 notifRouter.get("/:username/notifs", auth, getOldNotifications);
 notifRouter.post("/subscribe/notifs", auth, subscribeToNotifications);
 notifRouter.post("/add/subscription", auth, addSubscriptionToUser);
+notifRouter.post("/remove/subscription", auth, removeSubscriptionToDevice);
 notifRouter.post("/mark-as-read", markAsRead);
 notifRouter.post("/mark-as-unread", markAsUnRead);
 notifRouter.post("/new/notification", auth, createNotification);
