@@ -23,11 +23,11 @@ const MenuNavigation = () => {
   return (
     <motion.div
       initial={{ y: "-110%" }}
-      animate={hideMenuNav ? { y: "-70%" } : { y: 0 }}
+      animate={hideMenuNav ? { y: "-90%" } : { y: 0 }}
       transition={{ type: "spring", stiffness: 260, damping: 28 }}
       className={`
     fixed top-0 left-0 right-0 z-20
-    px-3 pt-3 pb-20
+    px-3 pt-3
     ${preferences.darkMode ? "text-white" : "text-slate-900"}
   `}
     >
