@@ -1,10 +1,27 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import UserContext from "../../../context/UserContext";
 import { removeNotificationSubFromServer } from "../../../utils/api";
 
 const NotificationSubscriptions = () => {
   const { preferences, notifSubs, setSystemNotif, setUser } =
     useContext(UserContext);
+
+  const [hasSub, setHasSub] = useState(false);
+
+  useEffect(() => {
+    checkForSub();
+  }, []);
+
+  const checkForSub = async () => {
+    const reg = await navigator.serviceWorker.ready;
+    const currentSub = await reg.pushManager.getSubscription();
+
+    if (currentSub) {
+      setHasSub(true);
+    } else {
+      setHasSub(false);
+    }
+  };
 
   const pauseNotificationsToDevice = async (info) => {};
 
@@ -21,7 +38,7 @@ const NotificationSubscriptions = () => {
           func: () => setSystemNotif({ show: false }),
         },
         {
-          text: "delete",
+          text: "remove sub",
           func: () => cancelNotificationsToDevice(info.endpoint),
         },
       ],
@@ -31,7 +48,6 @@ const NotificationSubscriptions = () => {
   };
 
   const cancelNotificationsToDevice = async (endpoint) => {
-    const endpoint = endpoint;
     const reg = await navigator.serviceWorker.ready;
     const currentSub = await reg.pushManager.getSubscription();
 
@@ -70,6 +86,28 @@ const NotificationSubscriptions = () => {
             Notifications
           </p>
           <h3 className="text-lg font-semibold tracking-tight">Your Devices</h3>
+          {hasSub ? (
+            <div>
+              <p
+                className={`text-[11px] font-semibold ${
+                  preferences.darkMode ? "text-white/45" : "text-slate-500"
+                }`}
+              >
+                You are subscribed to notifications on this device
+              </p>
+            </div>
+          ) : (
+            <div>
+              <p
+                className={`text-[10px] font-semibold max-w-60 ${
+                  preferences.darkMode ? "text-white/45" : "text-slate-500"
+                }`}
+              >
+                It seems as though you are not subscribed to get reminders and
+                other notifications on this device
+              </p>
+            </div>
+          )}
         </div>
 
         <div
@@ -138,7 +176,7 @@ const NotificationSubscriptions = () => {
 
               return (
                 <div
-                  key={info.id || index}
+                  key={index}
                   className={`
                 rounded-3xl border shadow-sm overflow-hidden
                 ${
