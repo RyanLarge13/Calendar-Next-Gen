@@ -17,7 +17,7 @@ export const subscribeToNotifications = async (req, res) => {
     if (updatedUser) {
       const payload = JSON.stringify({
         title: "Welcome!",
-        body: "Thank you for subscribing to notifications with Calng!",
+        body: "You are subscribed to notifications with CNG",
         data: {
           notifType: "system",
           time: new Date(),
@@ -143,12 +143,12 @@ export const getNotifications = async (req, res) => {
     return res.end();
   }
   const existingClientIndex = connectedClients.findIndex(
-    (client) => client.id === id
+    (client) => client.id === id,
   );
   if (existingClientIndex !== -1) {
     const existingClient = connectedClients[existingClientIndex];
     console.log(
-      `User is attempting reconnection with user id: ${existingClient.id}`
+      `User is attempting reconnection with user id: ${existingClient.id}`,
     );
     existingClient.response = clientResponse;
     existingClient.job.stop();

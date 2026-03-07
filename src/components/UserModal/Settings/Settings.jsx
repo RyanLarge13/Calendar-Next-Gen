@@ -140,7 +140,7 @@ const Settings = ({ setOption }) => {
         </div>
 
         {/* Content */}
-        <div className="px-5 pb-24 pt-5 overflow-y-auto scrollbar-hide">
+        <div className="px-5 pb-[200px] pt-5 overflow-y-auto max-h-screen scrollbar-hide bg-white/80">
           <div className="mx-auto w-full max-w-xl space-y-4">
             {/* Section Card */}
             <div
@@ -244,7 +244,7 @@ const Settings = ({ setOption }) => {
         {/* Bottom bar (matches your notifications style) */}
         <div
           className={`
-            fixed bottom-0 !left-0 right-0 z-[999]
+            fixed !bottom-0 !left-0 right-0 z-[999]
             px-5 py-4
             border-t
             ${preferences.darkMode ? "border-white/10 bg-[#161616]/80" : "border-black/10 bg-white/80"}

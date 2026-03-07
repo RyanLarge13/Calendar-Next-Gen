@@ -219,9 +219,33 @@ export const H_FetchWeather = async (lng, lat) => {
   }
 };
 
+export const getDeviceLabel = (userAgent = "") => {
+  const ua = userAgent.toLowerCase();
+
+  let browser = "Unknown Browser";
+  let os = "Unknown OS";
+
+  // Browser detection
+  if (ua.includes("edg")) browser = "Edge";
+  else if (ua.includes("chrome") && !ua.includes("edg")) browser = "Chrome";
+  else if (ua.includes("firefox")) browser = "Firefox";
+  else if (ua.includes("safari") && !ua.includes("chrome")) browser = "Safari";
+  else if (ua.includes("opera") || ua.includes("opr")) browser = "Opera";
+
+  // OS detection
+  if (ua.includes("windows")) os = "Windows";
+  else if (ua.includes("mac os")) os = "Mac";
+  else if (ua.includes("iphone")) os = "iPhone";
+  else if (ua.includes("ipad")) os = "iPad";
+  else if (ua.includes("android")) os = "Android";
+  else if (ua.includes("linux")) os = "Linux";
+
+  return `${browser} on ${os}`;
+};
+
 export const completeSubscription = (sub) => {
   const platform = navigator.userAgentData?.platform || "Unknown Platform";
-  const browser = navigator.userAgent || "Unknown Device";
+  const browser = getDeviceLabel(navigator.userAgent);
   const isStandalone =
     window.matchMedia("(display-mode: standalone)").matches ||
     window.navigator.standalone === true;
@@ -247,6 +271,7 @@ export const completeSubscription = (sub) => {
     appVersion,
     createdAt,
     lastSeenAt,
+    paused: false,
   };
 
   return fullSub;
