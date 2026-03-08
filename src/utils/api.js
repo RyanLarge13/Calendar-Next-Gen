@@ -294,6 +294,10 @@ export const requestAndSubscribe = async (token) => {
   if ("serviceWorker" in navigator && "PushManager" in window) {
     const newSub = await checkPermissionsAndCreateNewSub();
 
+    if (newSub === null) {
+      return null;
+    }
+
     return fetch(`${productionUrl}/subscribe/notifs`, {
       method: "POST",
       headers: {
@@ -325,25 +329,34 @@ export const checkPermissionsAndCreateNewSub = async () => {
     const reg = await navigator.serviceWorker.ready;
     if (!reg) return null;
 
-    const permission = await Notification.requestPermission();
-    if (permission === "granted") {
-      const publicVapidKey = import.meta.env.VITE_VAPID_PUBLIC_KEY || null;
-
-      if (publicVapidKey === null)
-        throw new Error("importing public vapid key failed. Check .env");
-
-      const sub = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: publicVapidKey,
-      });
-
-      const completeSubscriptionObject = completeSubscription(sub);
-
-      return completeSubscriptionObject;
+    // Don't prompt again if already decided
+    if (Notification.permission === "denied") {
+      return null;
     }
-    // Maybe customize this method to return differently if
-    // permissions are not accepted to handle that special case
-    return null;
+
+    let permission = Notification.permission;
+
+    if (permission === "default") {
+      permission = await Notification.requestPermission();
+    }
+
+    if (permission !== "granted") {
+      return null;
+    }
+
+    const publicVapidKey = import.meta.env.VITE_VAPID_PUBLIC_KEY || null;
+
+    if (publicVapidKey === null)
+      throw new Error("importing public vapid key failed. Check .env");
+
+    const sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: publicVapidKey,
+    });
+
+    const completeSubscriptionObject = completeSubscription(sub);
+
+    return completeSubscriptionObject;
   }
   return null;
 };

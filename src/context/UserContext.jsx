@@ -543,8 +543,18 @@ export const UserProvider = ({ children }) => {
   const M_RequestPermissionsAndSubscribe = async () => {
     try {
       return requestAndSubscribe(authToken)
-        .then((res) => res.json())
+        .then((res) => {
+          if (res === null) {
+            // Do something here. Maybe ask for permissions via notification or show notification
+            // to remind user that they do not have permissions accepted
+            return null;
+          }
+          return res.json();
+        })
         .then((data) => {
+          if (data === null) {
+            return;
+          }
           setUser(data.user);
           localStorage.setItem("authToken", data.token);
           localStorage.setItem("user", JSON.stringify(data.user));
