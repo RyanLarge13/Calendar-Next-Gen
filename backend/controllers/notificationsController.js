@@ -112,7 +112,7 @@ export const addSubscriptionToUser = async (req, res) => {
   const newSubscription = req.body.sub;
 
   const existingUser = await prisma.user.findUnique({
-    where: { id: userId },
+    where: { id: id },
   });
   if (!existingUser) {
     res.status(404).json({ message: "Please login" });
