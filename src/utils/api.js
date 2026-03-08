@@ -292,38 +292,16 @@ export const getNotificationsAtStart = (username, token) => {
 
 export const requestAndSubscribe = async (token) => {
   if ("serviceWorker" in navigator && "PushManager" in window) {
-    const subscribeFunction = navigator.serviceWorker.ready.then(
-      async (registration) => {
-        return Notification.requestPermission()
-          .then((permission) => {
-            // If permission is granted, subscribe the user
-            if (permission === "granted") {
-              // Subscribe the user
-              return registration.pushManager.subscribe({
-                userVisibleOnly: true,
-                applicationServerKey: import.meta.env.VITE_VAPID_PUBLIC_KEY,
-              });
-            } else {
-              console.log("Permissions denied for notifications");
-            }
-          })
-          .then(async (subscription) => {
-            const completeSubscriptionObject =
-              completeSubscription(subscription);
+    const newSub = await checkPermissionsAndCreateNewSub();
 
-            // Send the subscription details to the server
-            return fetch(`${productionUrl}/subscribe/notifs`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-              body: JSON.stringify(completeSubscriptionObject),
-            });
-          });
+    return fetch(`${productionUrl}/subscribe/notifs`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
-    );
-    return subscribeFunction;
+      body: JSON.stringify(newSub),
+    });
   } else {
     console.warn("Push notifications are not supported");
   }

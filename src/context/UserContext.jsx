@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useRef } from "react";
 import { weekDays } from "../constants/dateAndTimeConstants";
 import { holidays } from "../constants/holidays";
 import {
@@ -62,6 +62,9 @@ export const UserProvider = ({ children }) => {
   const [weatherData, setWeatherData] = useState(null);
   const [notifSubs, setNotifSubs] = useState([]);
 
+  // Refs
+  const subscribedFresh = useRef(false);
+
   // Update when necessary for indexedDB changes
   const myLocalDBVersion = Number(import.meta.env.VITE_INDEXED_DB_VERSION) || 3;
 
@@ -70,28 +73,26 @@ export const UserProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const handleSWMessage = (event) => {
+    const handleSWMessage = async (event) => {
       console.log(
         `Message from service worker to client, type: ${event.data.type}`,
       );
       if (event.data && event.data.type === "user-cache-update") {
-        getUserDataFresh()
-          .then((res) => {
-            if (res.status !== 200) {
-              throw new Error(
-                `No cache in service worker. Response status: ${res.status}`,
-              );
-            }
-            return res;
-          })
-          .then((res) => {
-            const user = res.data.user;
-            updateUI(user, false);
-          })
-          .catch((err) => {
-            console.log(err);
-            console.log("No cache in service worker");
-          });
+        try {
+          const freshData = await getUserDataFresh();
+
+          if (freshData.status !== 200) {
+            throw new Error(
+              `No cache in service worker. Response status: ${res.status}`,
+            );
+          }
+
+          const freshUser = freshData.data.user;
+          updateUI(freshUser, false);
+        } catch (err) {
+          console.log(err);
+          console.log("No cache in service worker");
+        }
       }
     };
     navigator.serviceWorker.addEventListener("message", handleSWMessage);
@@ -323,6 +324,10 @@ export const UserProvider = ({ children }) => {
   };
 
   const M_HandleNotificationSubscriptions = async (freshUser) => {
+    if (subscribedFresh.current === true) {
+      return;
+    }
+
     if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
       console.log("No serviceWorker in navigator and no pushManager in window");
       return;
@@ -334,6 +339,7 @@ export const UserProvider = ({ children }) => {
         "User has no user.notifSub array, or user.notifSub.length is less then 1. Requesting new and returning",
       );
       await M_RequestPermissionsAndSubscribe(authToken);
+      subscribedFresh.current = true;
       return;
     }
 
@@ -382,6 +388,8 @@ export const UserProvider = ({ children }) => {
       );
       const newUserRes = await addSubscriptionToUser(currentSub, authToken);
 
+      subscribedFresh.current = true;
+
       localStorage.setItem("authToken", newUserRes.data.token);
       localStorage.setItem("user", JSON.stringify(newUserRes.data.user));
 
@@ -393,8 +401,8 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  const continueRequests = async (user) => {
-    if (user.importedGoogleEvents) {
+  const continueRequests = async (freshUser) => {
+    if (freshUser.importedGoogleEvents) {
       const newNotif = {
         show: true,
         title: "Google Events",
@@ -415,7 +423,7 @@ export const UserProvider = ({ children }) => {
       setSystemNotif(newNotif);
     }
 
-    await M_HandleNotificationSubscriptions(user);
+    await M_HandleNotificationSubscriptions(freshUser);
 
     try {
       const friendInformation = await getFriendInfo(authToken);
@@ -434,41 +442,41 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  const updateUI = (user, fresh) => {
+  const updateUI = (freshUser, fresh) => {
     const basicUser = {
-      username: user.username,
-      email: user.email,
-      avatarUrl: user.avatarUrl,
-      id: user.id,
-      birthday: user.birthday,
-      createdAt: user.createAt,
+      username: freshUser.username,
+      email: freshUser.email,
+      avatarUrl: freshUser.avatarUrl,
+      id: freshUser.id,
+      birthday: freshUser.birthday,
+      createdAt: freshUser.createAt,
     };
     setUser(basicUser);
     localStorage.setItem("user", JSON.stringify(basicUser));
-    setEvents(user.events);
-    buildEventsMap(user.events);
-    setStaticEvents(user.events);
-    const sortedReminders = user.reminders.sort(
+    setEvents(freshUser.events);
+    buildEventsMap(freshUser.events);
+    setStaticEvents(freshUser.events);
+    const sortedReminders = freshUser.reminders.sort(
       (a, b) => new Date(a.time) - new Date(b.time),
     );
     setReminders(sortedReminders);
-    const sortedLists = user.lists.sort(
+    const sortedLists = freshUser.lists.sort(
       (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt),
     );
-    const sortedTasks = user.tasks.sort(
+    const sortedTasks = freshUser.tasks.sort(
       (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt),
     );
-    const sortedStickies = user.stickies.sort(
+    const sortedStickies = freshUser.stickies.sort(
       (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt),
     );
-    setNotifSubs(user.notifSub || []);
+    setNotifSubs(freshUser.notifSub || []);
     setLists(sortedLists);
-    setKanbans(user.kanbans);
+    setKanbans(freshUser.kanbans);
     setStickies(sortedStickies);
-    M_GenerateQrCode(user.email);
+    M_GenerateQrCode(freshUser.email);
     setUserTasks(sortedTasks);
     if (fresh) {
-      continueRequests(user);
+      continueRequests(freshUser);
     }
   };
 
@@ -495,8 +503,8 @@ export const UserProvider = ({ children }) => {
         );
       }
 
-      const user = userData.data?.user;
-      updateUI(user, true);
+      const freshUser = userData.data?.user;
+      updateUI(freshUser, true);
       registerServiceWorkerSync();
     } catch (err) {
       console.log("Error fetching user data from the server");
@@ -526,7 +534,7 @@ export const UserProvider = ({ children }) => {
 
   const M_RequestPermissionsAndSubscribe = async () => {
     try {
-      requestAndSubscribe(authToken)
+      return requestAndSubscribe(authToken)
         .then((res) => res.json())
         .then((data) => {
           setUser(data.user);
@@ -552,7 +560,7 @@ export const UserProvider = ({ children }) => {
     }
     try {
       const serverSentSource = getNotifications(user.id);
-      getNotificationsAtStart(user.username, token)
+      return getNotificationsAtStart(user.username, token)
         .then((res) => {
           console.log(
             "Get notifications at start returned a success. Setting notifications",
