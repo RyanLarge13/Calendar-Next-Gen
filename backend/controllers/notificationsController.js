@@ -4,10 +4,67 @@ import signToken from "../auth/signToken.js";
 import cron from "node-cron";
 const connectedClients = [];
 
+const checkForExistingSubscriptionOnUser = (existingNotifSubs, newEndpoint) => {
+  const userHasEndpoint = existingNotifSubs.some((s) => {
+    try {
+      const sub = JSON.parse(s);
+
+      const subEndpoint = sub?.endpoint || "";
+
+      if (subEndpoint === newEndpoint) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (err) {
+      console.log("Parsing users stored subscription objects are failing");
+      console.log(err);
+    }
+  });
+
+  if (userHasEndpoint) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
 export const subscribeToNotifications = async (req, res) => {
   const subscription = req.body;
   const userId = req.user.id;
   try {
+    const existingUser = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+    if (!existingUser) {
+      res.status(404).json({ message: "Please login" });
+      return;
+    }
+
+    const existingNotifSubs = existingUser.notifSub;
+
+    const newEndpoint = subscription?.endpoint;
+
+    if (!newEndpoint) {
+      res
+        .status(400)
+        .json({ message: "Please send a valid subscription to the server" });
+      return;
+    }
+
+    const userHasEndpoint = checkForExistingSubscriptionOnUser(
+      existingNotifSubs,
+      newEndpoint,
+    );
+
+    if (userHasEndpoint) {
+      res.status(400).jso({
+        message:
+          "This user already has a subscription with this endpoint stored on the server",
+      });
+      return;
+    }
+
     const updatedUser = await prisma.user.update({
       where: {
         id: userId,
@@ -53,6 +110,39 @@ export const subscribeToNotifications = async (req, res) => {
 export const addSubscriptionToUser = async (req, res) => {
   const { id } = req.user;
   const newSubscription = req.body.sub;
+
+  const existingUser = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+  if (!existingUser) {
+    res.status(404).json({ message: "Please login" });
+    return;
+  }
+
+  const existingNotifSubs = existingUser.notifSub;
+
+  const newEndpoint = subscription?.endpoint;
+
+  if (!newEndpoint) {
+    res
+      .status(400)
+      .json({ message: "Please send a valid subscription to the server" });
+    return;
+  }
+
+  const userHasEndpoint = checkForExistingSubscriptionOnUser(
+    existingNotifSubs,
+    newEndpoint,
+  );
+
+  if (userHasEndpoint) {
+    res.status(400).jso({
+      message:
+        "This user already has a subscription with this endpoint stored on the server",
+    });
+    return;
+  }
+
   const updatedUser = await prisma.user.update({
     where: {
       id: id,
