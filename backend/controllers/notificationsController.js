@@ -121,7 +121,7 @@ export const addSubscriptionToUser = async (req, res) => {
 
   const existingNotifSubs = existingUser.notifSub;
 
-  const newEndpoint = subscription?.endpoint;
+  const newEndpoint = newSubscription?.endpoint;
 
   if (!newEndpoint) {
     res

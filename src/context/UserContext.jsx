@@ -333,14 +333,15 @@ export const UserProvider = ({ children }) => {
       return;
     }
 
+    const registration = await navigator.serviceWorker.ready;
+    let currentSub = await registration.pushManager.getSubscription();
+
     // The user clearly has no notification subscription and potentially never accepted permissions
     if (!freshUser.notifSub || freshUser.notifSub.length < 1) {
       console.log(
         "User has no user.notifSub array, or user.notifSub.length is less then 1. Requesting new and returning",
       );
       // Remove any lingering subscriptions on the client
-      const registration = await navigator.serviceWorker.ready;
-      const currentSub = await registration.pushManager.getSubscription();
 
       if (currentSub) {
         currentSub.unsubscribe();
@@ -356,9 +357,6 @@ export const UserProvider = ({ children }) => {
       // Do something!
       return;
     }
-
-    const registration = await navigator.serviceWorker.ready;
-    let currentSub = await registration.pushManager.getSubscription();
 
     if (!currentSub) {
       console.log("No current sub creating new");
@@ -556,6 +554,7 @@ export const UserProvider = ({ children }) => {
             return;
           }
           setUser(data.user);
+          setNotifSubs(data.user.notifSub);
           localStorage.setItem("authToken", data.token);
           localStorage.setItem("user", JSON.stringify(data.user));
           send(data.token, data.user);
