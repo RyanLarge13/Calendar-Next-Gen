@@ -338,6 +338,14 @@ export const UserProvider = ({ children }) => {
       console.log(
         "User has no user.notifSub array, or user.notifSub.length is less then 1. Requesting new and returning",
       );
+      // Remove any lingering subscriptions on the client
+      const registration = await navigator.serviceWorker.ready;
+      const currentSub = await registration.pushManager.getSubscription();
+
+      if (currentSub) {
+        currentSub.unsubscribe();
+      }
+
       await M_RequestPermissionsAndSubscribe(authToken);
       subscribedFresh.current = true;
       return;
