@@ -58,7 +58,7 @@ export const subscribeToNotifications = async (req, res) => {
     );
 
     if (userHasEndpoint) {
-      res.status(400).jso({
+      res.status(400).json({
         message:
           "This user already has a subscription with this endpoint stored on the server",
       });
@@ -136,7 +136,7 @@ export const addSubscriptionToUser = async (req, res) => {
   );
 
   if (userHasEndpoint) {
-    res.status(400).jso({
+    res.status(400).json({
       message:
         "This user already has a subscription with this endpoint stored on the server",
     });
