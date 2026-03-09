@@ -328,6 +328,8 @@ export const UserProvider = ({ children }) => {
       return;
     }
 
+    subscribedFresh = true;
+
     if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
       console.log("No serviceWorker in navigator and no pushManager in window");
       return;
@@ -348,7 +350,6 @@ export const UserProvider = ({ children }) => {
       }
 
       await M_RequestPermissionsAndSubscribe(authToken);
-      subscribedFresh.current = true;
       return;
     }
 
@@ -393,8 +394,6 @@ export const UserProvider = ({ children }) => {
         "User does not have subscription stored, creating new and server request for new user",
       );
       const newUserRes = await addSubscriptionToUser(currentSub, authToken);
-
-      subscribedFresh.current = true;
 
       localStorage.setItem("authToken", newUserRes.data.token);
       localStorage.setItem("user", JSON.stringify(newUserRes.data.user));
