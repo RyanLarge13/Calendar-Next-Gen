@@ -87,6 +87,10 @@ export const UserProvider = ({ children }) => {
           // calling updateUI(). User data MUST be server fresh because down the road notification subscriptions are made
           const isFresh = responseTypeForUserData === "network";
 
+          console.log("SW message. . .");
+          console.log(responseTypeForUserData);
+          console.log(isFresh);
+
           if (freshData.status !== 200) {
             throw new Error(
               `No cache in service worker. Response status: ${res.status}`,
@@ -513,6 +517,10 @@ export const UserProvider = ({ children }) => {
       // The service worker will be first grabbing stale cache quickly. Make sure this is not the case before
       // calling updateUI(). User data MUST be server fresh because down the road notification subscriptions are made
       const isFresh = responseTypeForUserData === "network";
+
+      console.log("user/data call fresh or sw intercept?");
+      console.log(responseTypeForUserData);
+      console.log(isFresh);
 
       if (!userData?.data) {
         throw new Error(
