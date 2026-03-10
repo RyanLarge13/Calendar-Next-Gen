@@ -81,6 +81,12 @@ export const UserProvider = ({ children }) => {
         try {
           const freshData = await getUserDataFresh();
 
+          const responseTypeForUserData = freshData.headers["x-sw-source"];
+
+          // The service worker will be first grabbing stale cache quickly. Make sure this is not the case before
+          // calling updateUI(). User data MUST be server fresh because down the road notification subscriptions are made
+          const isFresh = responseTypeForUserData === "network";
+
           if (freshData.status !== 200) {
             throw new Error(
               `No cache in service worker. Response status: ${res.status}`,
@@ -88,7 +94,7 @@ export const UserProvider = ({ children }) => {
           }
 
           const freshUser = freshData.data.user;
-          updateUI(freshUser, false);
+          updateUI(freshUser, isFresh);
         } catch (err) {
           console.log(err);
           console.log("No cache in service worker");
@@ -502,7 +508,7 @@ export const UserProvider = ({ children }) => {
     try {
       const userData = await getUserData(authToken);
 
-      const responseTypeForUserData = freshData.headers["x-sw-source"];
+      const responseTypeForUserData = userData.headers["x-sw-source"];
 
       // The service worker will be first grabbing stale cache quickly. Make sure this is not the case before
       // calling updateUI(). User data MUST be server fresh because down the road notification subscriptions are made
