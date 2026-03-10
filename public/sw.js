@@ -49,11 +49,23 @@ const formatDbText = (text) => {
 //   event.waitUntil(self.clients.claim());
 // });
 
+const markResponseSource = async (response, source) => {
+  const headers = new Headers(response.headers);
+  headers.set("x-sw-source", source);
+
+  return new Response(await response.clone().blob(), {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+};
+
 const interceptUserData = (event) => {
   event.respondWith(
     (async () => {
       const cache = await caches.open("user-cache");
       const cachedResponse = await cache.match(event.request);
+
       if (cachedResponse) {
         event.waitUntil(
           (async () => {
@@ -61,11 +73,10 @@ const interceptUserData = (event) => {
               const networkResponse = await fetch(event.request);
               if (networkResponse && networkResponse.ok) {
                 await cache.put(event.request, networkResponse.clone());
+
                 const clients = await self.clients.matchAll();
                 clients.forEach((client) => {
-                  client.postMessage({
-                    type: "user-cache-update",
-                  });
+                  client.postMessage({ type: "user-cache-update" });
                 });
               }
             } catch (err) {
@@ -73,20 +84,31 @@ const interceptUserData = (event) => {
             }
           })(),
         );
-        return cachedResponse;
+
+        return markResponseSource(cachedResponse, "cache");
       }
+
       try {
         const networkResponse = await fetch(event.request);
+
         if (networkResponse && networkResponse.ok) {
           await cache.put(event.request, networkResponse.clone());
-          return networkResponse;
+          return markResponseSource(networkResponse, "network");
         }
+
+        return markResponseSource(networkResponse, "network-non-ok");
       } catch (err) {
         console.log(
           `Error fetching user data from initial load in service worker: ${err}`,
         );
       }
-      return cachedResponse;
+
+      return new Response("Unable to load user data", {
+        status: 503,
+        headers: {
+          "x-sw-source": "none",
+        },
+      });
     })(),
   );
 };
@@ -105,6 +127,7 @@ const grabFreshCache = (event) => {
   );
 };
 
+// Custom url interceptions
 self.addEventListener("fetch", (event) => {
   if (event.request.url.includes("/user/data")) {
     interceptUserData(event);

@@ -480,7 +480,7 @@ export const UserProvider = ({ children }) => {
     setStickies(sortedStickies);
     M_GenerateQrCode(freshUser.email);
     setUserTasks(sortedTasks);
-    if (fresh) {
+    if (fresh === true) {
       continueRequests(freshUser);
     }
   };
@@ -502,6 +502,12 @@ export const UserProvider = ({ children }) => {
     try {
       const userData = await getUserData(authToken);
 
+      const responseTypeForUserData = freshData.headers["x-sw-source"];
+
+      // The service worker will be first grabbing stale cache quickly. Make sure this is not the case before
+      // calling updateUI(). User data MUST be server fresh because down the road notification subscriptions are made
+      const isFresh = responseTypeForUserData === "network";
+
       if (!userData?.data) {
         throw new Error(
           "getUserData() succeeded but returned no data. Server error",
@@ -509,7 +515,7 @@ export const UserProvider = ({ children }) => {
       }
 
       const freshUser = userData.data?.user;
-      updateUI(freshUser, true);
+      updateUI(freshUser, isFresh);
       registerServiceWorkerSync();
     } catch (err) {
       console.log("Error fetching user data from the server");
