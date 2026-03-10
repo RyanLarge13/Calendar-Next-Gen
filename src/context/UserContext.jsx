@@ -328,7 +328,7 @@ export const UserProvider = ({ children }) => {
       return;
     }
 
-    subscribedFresh = true;
+    subscribedFresh.current = true;
 
     if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
       console.log("No serviceWorker in navigator and no pushManager in window");

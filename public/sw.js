@@ -206,6 +206,7 @@ self.addEventListener("notificationclick", (event) => {
   const notifId = event.notification.data.id;
   if (event.action === "close-notif") {
     event.notification.close();
+    return;
   }
   if (event.action === "open-app") {
     let urlAddition = "";
