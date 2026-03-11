@@ -66,6 +66,7 @@ const interceptUserData = (event) => {
       const cache = await caches.open("user-cache");
       const cachedResponse = await cache.match(event.request);
 
+      // if (cachedResponse) only runs if /user/data already exists in cache
       if (cachedResponse) {
         event.waitUntil(
           (async () => {
@@ -119,7 +120,11 @@ const grabFreshCache = (event) => {
       const cache = await caches.open("user-cache");
       const cachedResponse = await cache.match(`${productionUrl}/user/data`);
       if (cachedResponse) {
-        return cachedResponse;
+        // Why does this cache response contain network? It is because this fetch interception event
+        // is called ONLY after a successful cache update is made with fresh server data
+        // creating the stale while revalidate effect next level. So yes, this is a cache response
+        // but we know for fact it is with most relevant server data
+        return markResponseSource(cachedResponse, "network");
       } else {
         return new Response("No cache", { status: 404 });
       }
