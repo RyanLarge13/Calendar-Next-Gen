@@ -12,7 +12,7 @@ export default defineConfig({
       injectRegister: false,
       includeAssets: [
         "favicon.svg",
-        "badge.svg",
+        "badge.png",
         "ios/180.png",
         "android/android-launchericon-512-512.png",
         "robots.txt",

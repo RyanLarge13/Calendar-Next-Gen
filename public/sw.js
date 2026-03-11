@@ -170,7 +170,7 @@ self.addEventListener("push", (event) => {
         ).toLocaleTimeString("en-US")}`,
         data,
         icon: "./event-icon.svg",
-        badge: "./badge.svg",
+        badge: "./badge.png",
         vibrate: [100, 100, 100],
         actions: [
           { action: "delete-notif", title: "Delete", type: "button" },
@@ -188,7 +188,7 @@ self.addEventListener("push", (event) => {
         ).toLocaleTimeString("en-US")}`,
         data,
         icon: "./rem-icon.svg",
-        badge: "./badge.svg",
+        badge: "./badge.png",
         vibrate: [100, 100, 100],
         actions: [
           { action: "delete-notif", title: "Delete", type: "button" },
@@ -206,7 +206,7 @@ self.addEventListener("push", (event) => {
         ).toLocaleTimeString("en-US")}`,
         data,
         icon: "./sys-icon.svg",
-        badge: "./badge.svg",
+        badge: "./badge.png",
         vibrate: [100, 100, 100],
         actions: [
           { action: "close-notif", title: "Close", type: "button" },
