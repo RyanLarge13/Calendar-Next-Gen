@@ -6,7 +6,7 @@ const NotificationSubscriptions = () => {
   const { preferences, notifSubs, setSystemNotif, setUser } =
     useContext(UserContext);
 
-  const [hasSub, setHasSub] = useState(false);
+  const [hasSub, setHasSub] = useState({ hasSub: false, endpoint: null });
 
   useEffect(() => {
     checkForSub();
@@ -17,9 +17,9 @@ const NotificationSubscriptions = () => {
     const currentSub = await reg.pushManager.getSubscription();
 
     if (currentSub) {
-      setHasSub(true);
+      setHasSub({ hasSub: true, endpoint: currentSub.endpoint });
     } else {
-      setHasSub(false);
+      setHasSub({ hasSub: false, endpoint: null });
     }
   };
 
@@ -173,7 +173,9 @@ const NotificationSubscriptions = () => {
                   year: "numeric",
                 });
 
-              const deviceBrowser = info;
+              const isDeviceSub = hasSub.hasSub
+                ? info.endpoint === hasSub.endpoint
+                : false;
 
               return (
                 <div
@@ -198,7 +200,9 @@ const NotificationSubscriptions = () => {
                   >
                     <div className="min-w-0">
                       <p className="text-sm font-semibold truncate">
-                        {info.platform || "Unknown Platform"}
+                        {isDeviceSub
+                          ? "Current Device Subscription"
+                          : info.platform || "Unknown Platform"}
                       </p>
                       <p
                         className={`text-[11px] mt-1 font-semibold truncate ${
