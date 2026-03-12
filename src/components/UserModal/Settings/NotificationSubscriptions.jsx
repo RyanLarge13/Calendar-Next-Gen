@@ -1,9 +1,14 @@
 import { useContext, useEffect, useState } from "react";
 import UserContext from "../../../context/UserContext";
-import { removeNotificationSubFromServer } from "../../../utils/api";
+import {
+  addSubscriptionToUser,
+  checkPermissionsAndCreateNewSub,
+  removeNotificationSubFromServer,
+  requestAndSubscribe,
+} from "../../../utils/api";
 
 const NotificationSubscriptions = () => {
-  const { preferences, notifSubs, setSystemNotif, setUser } =
+  const { preferences, notifSubs, setNotifSubs, setSystemNotif, setUser } =
     useContext(UserContext);
 
   const [hasSub, setHasSub] = useState({ hasSub: false, endpoint: null });
@@ -24,6 +29,44 @@ const NotificationSubscriptions = () => {
   };
 
   const pauseNotificationsToDevice = async (info) => {};
+
+  const handleSubscribe = async () => {
+    if (notifSubs.length > 0) {
+      const newSubscription = await checkPermissionsAndCreateNewSub();
+      try {
+        const token = localStorage.getItem("authToken");
+        await addSubscriptionToUser(newSubscription, token);
+      } catch (err) {
+        console.log(
+          "Something went wrong when attempting to add a subscription to the users profile",
+        );
+        console.log(err);
+      }
+
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("authToken");
+      const res = await requestAndSubscribe(token);
+      const data = res.json();
+
+      if (data === null) {
+        // Print error
+        throw new Error(
+          "Error, requestAndSubscribe failed. Data returned null",
+        );
+      }
+
+      setUser(data.user);
+      setNotifSubs(data.user.notifSub);
+      localStorage.setItem("authToken", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+    } catch (err) {
+      console.log("Error starting subscription for user for the first time");
+      console.log(err);
+    }
+  };
 
   const confirmRemoveSub = (info) => {
     const confirmation = {
@@ -107,6 +150,23 @@ const NotificationSubscriptions = () => {
                 It seems as though you are not subscribed to get reminders and
                 other notifications on this device
               </p>
+              <button
+                onClick={handleSubscribe}
+                className={`
+                    flex-shrink-0 px-3 py-1.5 rounded-2xl border text-[11px] font-semibold shadow-sm
+                    ${
+                      info.isStandalone
+                        ? preferences.darkMode
+                          ? "bg-cyan-500/15 border-cyan-300/20 text-cyan-100"
+                          : "bg-cyan-50 border-cyan-200 text-cyan-700"
+                        : preferences.darkMode
+                          ? "bg-white/5 border-white/10 text-white/70"
+                          : "bg-black/[0.03] border-black/10 text-slate-600"
+                    }
+                  `}
+              >
+                {info.isStandalone ? "App Installed" : "Not Installed"}
+              </button>
             </div>
           )}
         </div>
