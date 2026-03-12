@@ -182,7 +182,7 @@ export const addSubscriptionToUser = async (req, res) => {
 };
 
 export const removeSubscriptionToDevice = async (req, res) => {
-  const newSubs = req.body;
+  const { newSubs } = req.body;
   const user = req.user;
 
   if (!Array.isArray(newSubs) || !newSubs) {

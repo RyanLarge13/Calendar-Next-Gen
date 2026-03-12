@@ -409,6 +409,7 @@ export const UserProvider = ({ children }) => {
       localStorage.setItem("user", JSON.stringify(newUserRes.data.user));
 
       setUser(newUserRes.data.user);
+      setNotifSubs(newUserRes.data.user.notifSub);
       send(newUserRes.data.token, newUserRes.data.user);
     } catch (err) {
       console.log("Error adding new subscription to user");
