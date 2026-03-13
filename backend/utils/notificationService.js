@@ -21,6 +21,18 @@ const sendNotification = (payload, subscriptions, userId) => {
   }
   if (subscriptions.length > 1) {
     subscriptions.forEach((sub) => {
+      try {
+        const parsedSub = JSON.parse(sub);
+
+        if (parsedSub.paused) {
+          return;
+        }
+      } catch (err) {
+        console.log(
+          "Error parsing subscription object pre-sending webpush notifications",
+        );
+        console.log(err);
+      }
       WebPush.sendNotification(JSON.parse(sub), payload).catch(
         async (error) => {
           console.error("Error sending notification:", error);

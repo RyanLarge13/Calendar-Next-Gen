@@ -220,6 +220,59 @@ export const removeSubscriptionToDevice = async (req, res) => {
   }
 };
 
+const pauseAllNotifications = async (req, res) => {
+  const user = req.user;
+
+  if (!user) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to make this request" });
+    return;
+  }
+
+  let userInfo = null;
+
+  try {
+    userInfo = await prisma.user.findUnique({ where: { id: user.id } });
+  } catch (err) {
+    console.log("Error calling prisma find unique for user");
+    console.log(err);
+  }
+
+  if (!userInfo) {
+    res.status(404).json({
+      message: "YCannot find user information. User does not seem to exist",
+    });
+    return;
+  }
+
+  let newNotifSubs;
+
+  try {
+    newNotifSubs = userInfo.notifSub.map((s) => {
+      const subObj = JSON.parse(s);
+      const newSub = { ...subObj, paused: true };
+      return newSub;
+    });
+
+    const stringWorthySubs = newNotifSubs.map((s) => JSON.stringify(s));
+
+    await prisma.user.update({
+      where: { id: id },
+      data: { notifSub: stringWorthySubs },
+    });
+
+    res
+      .status(201)
+      .json({
+        message: "Successfully paused all users notification subscriptions",
+      });
+  } catch (err) {
+    console.log("Error parsing users notifications subscriptions objects");
+    console.log(err);
+  }
+};
+
 const processNotifications = async (userId, res) => {
   try {
     const notifications = await prisma.notification.findMany({

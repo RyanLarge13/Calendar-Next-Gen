@@ -361,6 +361,17 @@ export const checkPermissionsAndCreateNewSub = async () => {
   return null;
 };
 
+export const API_PauseAllNotifications = (token) => {
+  const res = Axios.patch(
+    `${productionUrl}/pause/all/notifications`,
+    {},
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    },
+  );
+  return res;
+};
+
 export const removeNotificationSubFromServer = (newSubs, token) => {
   const res = Axios.patch(
     `${productionUrl}/remove/subscription`,

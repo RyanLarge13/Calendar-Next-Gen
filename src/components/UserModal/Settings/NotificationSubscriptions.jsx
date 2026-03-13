@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import UserContext from "../../../context/UserContext";
 import {
   addSubscriptionToUser,
+  API_PauseAllNotifications,
   checkPermissionsAndCreateNewSub,
   removeNotificationSubFromServer,
   requestAndSubscribe,
@@ -12,10 +13,40 @@ const NotificationSubscriptions = () => {
     useContext(UserContext);
 
   const [hasSub, setHasSub] = useState({ hasSub: false, endpoint: null });
+  const [allSubsPaused, setAllSubsPaused] = useState(false);
 
   useEffect(() => {
     checkForSub();
   }, []);
+
+  useEffect(() => {
+    checkForAllSubsPaused();
+  }, [notifSubs]);
+
+  const checkForAllSubsPaused = () => {
+    try {
+      const everySubIsPaused = notifSubs.every((s) => {
+        const subObj = JSON.parse(s);
+        const isPaused = subObj.paused;
+        if (isPaused) {
+          return true;
+        }
+        return false;
+      });
+
+      if (everySubIsPaused) {
+        setAllSubsPaused(true);
+        return;
+      }
+
+      setAllSubsPaused(false);
+    } catch (err) {
+      console.log(
+        "Error parsing user notification subscription objects when checking for all subs paused",
+      );
+      console.log(err);
+    }
+  };
 
   const checkForSub = async () => {
     const reg = await navigator.serviceWorker.ready;
@@ -36,6 +67,7 @@ const NotificationSubscriptions = () => {
       try {
         const token = localStorage.getItem("authToken");
         await addSubscriptionToUser(newSubscription, token);
+        setNotifSubs((prev) => [...prev, JSON.stringify(newSubscription)]);
       } catch (err) {
         console.log(
           "Something went wrong when attempting to add a subscription to the users profile",
@@ -118,6 +150,42 @@ const NotificationSubscriptions = () => {
     }
   };
 
+  const confirmPauseAllSubscriptions = () => {
+    const confirmation = {
+      show: true,
+      title: "Pause All Device Subscriptions?",
+      text: "Are you sure you want to pause notifications to all of your devices?",
+      color: "bg-red-200",
+      hasCancel: false,
+      actions: [
+        {
+          text: "close",
+          func: () => setSystemNotif({ show: false }),
+        },
+        {
+          text: "remove sub",
+          func: () => pauseAllSubscriptions(),
+        },
+      ],
+    };
+
+    setSystemNotif(confirmation);
+  };
+
+  const pauseAllSubscriptions = async () => {
+    try {
+      const token = localStorage.getItem("authToken");
+      await API_PauseAllNotifications(token);
+
+      setNotifSubs((prev) =>
+        prev.map((s) => ({ ...JSON.parse(s), paused: true })),
+      );
+    } catch (err) {
+      console.log("Error requesting to pause all notifications");
+      console.log(err);
+    }
+  };
+
   return (
     <div className="mt-5">
       <div className="flex items-end justify-between gap-3">
@@ -155,17 +223,13 @@ const NotificationSubscriptions = () => {
                 className={`
                     flex-shrink-0 px-3 py-1.5 rounded-2xl border text-[11px] font-semibold shadow-sm
                     ${
-                      info.isStandalone
-                        ? preferences.darkMode
-                          ? "bg-cyan-500/15 border-cyan-300/20 text-cyan-100"
-                          : "bg-cyan-50 border-cyan-200 text-cyan-700"
-                        : preferences.darkMode
-                          ? "bg-white/5 border-white/10 text-white/70"
-                          : "bg-black/[0.03] border-black/10 text-slate-600"
+                      preferences.darkMode
+                        ? "bg-emerald-500/15 border-emerald-300/20 text-emerald-100"
+                        : "bg-emerald-50 border-emerald-200 text-emerald-700"
                     }
                   `}
               >
-                {info.isStandalone ? "App Installed" : "Not Installed"}
+                Get Notifications On This Device
               </button>
             </div>
           )}
@@ -214,6 +278,21 @@ const NotificationSubscriptions = () => {
           </div>
         ) : (
           <div className="space-y-3">
+            {!allSubsPaused ? (
+              <button
+                onClick={confirmPauseAllSubscriptions}
+                className={`
+                    flex-shrink-0 px-3 py-1.5 rounded-2xl border text-[11px] font-semibold shadow-sm
+                    ${
+                      preferences.darkMode
+                        ? "bg-orange-500/15 border-orange-300/20 text-orange-100"
+                        : "bg-orange-50 border-orange-200 text-orange-700"
+                    }
+                  `}
+              >
+                Pause Notifications To All Devices
+              </button>
+            ) : null}
             {notifSubs.map((ns, index) => {
               const info = JSON.parse(ns);
 
@@ -421,13 +500,9 @@ const NotificationSubscriptions = () => {
                       className={`
                     flex-shrink-0 px-3 py-1.5 rounded-2xl border text-[11px] font-semibold shadow-sm
                     ${
-                      info.isStandalone
-                        ? preferences.darkMode
-                          ? "bg-cyan-500/15 border-cyan-300/20 text-cyan-100"
-                          : "bg-cyan-50 border-emerald-200 text-emerald-700"
-                        : preferences.darkMode
-                          ? "bg-white/5 border-white/10 text-white/70"
-                          : "bg-black/[0.03] border-emerald-200 text-emerald-600"
+                      preferences.darkMode
+                        ? "bg-orange-500/15 border-orange-300/20 text-orange-100"
+                        : "bg-orange-50 border-orange-200 text-orange-700"
                     }
                   `}
                     >
@@ -440,13 +515,9 @@ const NotificationSubscriptions = () => {
                       className={`
                     flex-shrink-0 px-3 py-1.5 rounded-2xl border text-[11px] font-semibold shadow-sm
                     ${
-                      info.isStandalone
-                        ? preferences.darkMode
-                          ? "bg-cyan-500/15 border-cyan-300/20 text-cyan-100"
-                          : "bg-cyan-50 border-red-200 text-red-700"
-                        : preferences.darkMode
-                          ? "bg-white/5 border-white/10 text-white/70"
-                          : "bg-black/[0.03] border-red-200 text-red-600"
+                      preferences.darkMode
+                        ? "bg-rose-500/15 border-rose-300/20 text-rose-100"
+                        : "bg-rose-50 border-rose-200 text-rose-700"
                     }
                   `}
                     >
