@@ -314,7 +314,7 @@ export const requestAndSubscribe = async (token) => {
 export const addSubscriptionToUser = (sub, token) => {
   const response = Axios.post(
     `${productionUrl}/add/subscription`,
-    { sub },
+    { sub: JSON.stringify(sub) },
     {
       headers: {
         Authorization: `Bearer ${token}`,
