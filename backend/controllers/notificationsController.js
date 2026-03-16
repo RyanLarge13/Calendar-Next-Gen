@@ -154,7 +154,7 @@ export const addSubscriptionToUser = async (req, res) => {
   if (updatedUser) {
     const payload = JSON.stringify({
       title: "New Device",
-      body: `Notifications will now be sent this device as well ${updatedUser.username}`,
+      body: `Notifications will now be sent to this device as well ${updatedUser.username}`,
       data: {
         notifType: "system",
         time: new Date(),
@@ -262,11 +262,9 @@ const pauseAllNotifications = async (req, res) => {
       data: { notifSub: stringWorthySubs },
     });
 
-    res
-      .status(201)
-      .json({
-        message: "Successfully paused all users notification subscriptions",
-      });
+    res.status(201).json({
+      message: "Successfully paused all users notification subscriptions",
+    });
   } catch (err) {
     console.log("Error parsing users notifications subscriptions objects");
     console.log(err);

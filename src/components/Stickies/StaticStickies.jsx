@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { BiListPlus } from "react-icons/bi";
+import { BiListPlus, BiTrash } from "react-icons/bi";
 import { IoIosAddCircle } from "react-icons/io";
 import Masonry from "react-masonry-css";
 import UserContext from "../../context/UserContext.jsx";
@@ -48,18 +48,23 @@ const StaticStickies = () => {
             `}
               >
                 {/* Title */}
-                <input
-                  defaultValue={sticky.title}
-                  className={`
+                <div>
+                  <input
+                    defaultValue={sticky.title}
+                    className={`
                             w-full bg-transparent
                             text-lg font-semibold tracking-tight
                             outline-none
                             border-b pb-2
                             ${preferences.darkMode ? "border-white/10 text-white placeholder:text-white/50" : "border-black/10 text-slate-900 placeholder:text-slate-400"}
                           `}
-                  style={{ caretColor: tailwindBgToHex(sticky.color) }}
-                  placeholder="Title…"
-                />
+                    style={{ caretColor: tailwindBgToHex(sticky.color) }}
+                    placeholder="Title…"
+                  />
+                  <button>
+                    <BiTrash />
+                  </button>
+                </div>
                 <p
                   className={`text-xs mt-1 ${preferences.darkMode ? "text-white/55" : "text-slate-500"}`}
                 >
