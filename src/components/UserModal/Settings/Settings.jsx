@@ -140,7 +140,9 @@ const Settings = ({ setOption }) => {
         </div>
 
         {/* Content */}
-        <div className="px-5 pb-[250px] pt-5 overflow-y-auto max-h-screen scrollbar-hide bg-white/80">
+        <div
+          className={`px-5 pb-[250px] pt-5 overflow-y-auto max-h-screen scrollbar-hide ${preferences.darkMode ? "bg-black/[0.03]" : " bg-white/80"}`}
+        >
           <div className="mx-auto w-full max-w-xl space-y-4">
             {/* Section Card */}
             <div

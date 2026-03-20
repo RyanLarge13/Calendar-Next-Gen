@@ -109,7 +109,16 @@ export const subscribeToNotifications = async (req, res) => {
 
 export const addSubscriptionToUser = async (req, res) => {
   const { id } = req.user;
-  const newSubscription = req.body.sub;
+  let newSubscription;
+  try {
+    newSubscription = JSON.parse(req.body.sub);
+  } catch (err) {
+    console.log(
+      "Error parsing subscription object user sent from frontend when trying to add notification subscription to user",
+    );
+    console.log(err);
+    console.log(newSubscription);
+  }
 
   const existingUser = await prisma.user.findUnique({
     where: { id: id },
