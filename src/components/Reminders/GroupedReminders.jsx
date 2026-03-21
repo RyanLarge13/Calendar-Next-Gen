@@ -72,17 +72,16 @@ const GroupedReminders = ({ groupType = "week", reminders = [] }) => {
             ))}
           </div>
         ) : (
-          // <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4 sm:gap-5">
           <Masonry
             breakpointCols={breakpointColumnsObj}
-            className="my-masonry-grid"
-            columnClassName="my-masonry-grid_column"
+            className="my-masonry-grid_reminders gap-5"
+            columnClassName="my-masonry-grid_column_reminders"
           >
             {remindersSorted.map((g, index) => (
               <section
                 key={g.key || index}
                 className={`
-              rounded-3xl border my-4 mx-1 shadow-sm overflow-hidden
+              rounded-3xl border shadow-sm overflow-hidden mb-5
               ${
                 preferences.darkMode
                   ? "bg-white/5 border-white/10"
@@ -146,7 +145,6 @@ const GroupedReminders = ({ groupType = "week", reminders = [] }) => {
               </section>
             ))}
           </Masonry>
-          // </div>
         )}
       </div>
     </div>

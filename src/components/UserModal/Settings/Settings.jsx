@@ -75,7 +75,7 @@ const Settings = ({ setOption }) => {
               max-h-[92vh] overflow-hidden
               rounded-t-[32px] border shadow-2xl
               will-change-transform
-              ${preferences.darkMode ? "bg-[#161616]/92 border-white/10 text-white" : "bg-white/92 border-black/10 text-slate-900"}
+              ${preferences.darkMode ? "bg-[#161616]/75 border-white/10 text-white" : "bg-white/92 border-black/10 text-slate-900"}
               backdrop-blur-md
               lg:top-0 lg:bottom-0 lg:left-[60%] lg:right-0
               lg:rounded-none lg:rounded-l-[32px] lg:max-h-screen

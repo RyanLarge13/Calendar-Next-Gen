@@ -214,27 +214,28 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
           </div>
         ) : (
           <div>
-            <div className="flex items-start gap-3 mb-3">
-              <div
-                className={`
+            <div className="flex flex-wrap gap-y-5 justify-between items-start gap-3 mb-3 mt-40">
+              <div className="flex gap-x-5 items-center">
+                <div
+                  className={`
                   grid place-items-center h-12 w-12 rounded-2xl border shadow-sm
                   ${preferences.darkMode ? "bg-cyan-500/15 border-cyan-300/20 text-cyan-100" : "bg-cyan-50 border-cyan-200 text-cyan-700"}
                 `}
-              >
-                <BiCheckCircle className="text-2xl" />
-              </div>
-
-              <div>
-                <h2 className="text-lg font-semibold tracking-tight">
-                  Reminders
-                </h2>
-                <p
-                  className={`text-sm mt-1 ${preferences.darkMode ? "text-white/60" : "text-slate-500"}`}
                 >
-                  Here are your reminders
-                </p>
+                  <BiCheckCircle className="text-2xl" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold tracking-tight">
+                    Completed Reminders
+                  </h2>
+                  <p
+                    className={`text-sm mt-1 ${preferences.darkMode ? "text-white/60" : "text-slate-500"}`}
+                  >
+                    Here are your complete reminders
+                  </p>
+                </div>
               </div>
-              <div className="flex flex-wrap items-center gap-2 ml-auto">
+              <div className="flex flex-wrap items-center gap-2">
                 {/* Delete Completed */}
                 <button
                   className={`
@@ -339,27 +340,29 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
             />
           </div>
         )}
-        <div className="flex items-start gap-3 mb-3 mt-40">
-          <div
-            className={`
+        <div className="flex flex-wrap gap-y-5 justify-between items-start gap-3 mb-3 mt-40">
+          <div className="flex gap-x-5 items-center">
+            <div
+              className={`
                   grid place-items-center h-12 w-12 rounded-2xl border shadow-sm
                   ${preferences.darkMode ? "bg-cyan-500/15 border-cyan-300/20 text-cyan-100" : "bg-cyan-50 border-cyan-200 text-cyan-700"}
                 `}
-          >
-            <BiCheckCircle className="text-2xl" />
+            >
+              <BiCheckCircle className="text-2xl" />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold tracking-tight">
+                Completed Reminders
+              </h2>
+              <p
+                className={`text-sm mt-1 ${preferences.darkMode ? "text-white/60" : "text-slate-500"}`}
+              >
+                Here are your complete reminders
+              </p>
+            </div>
           </div>
 
-          <div>
-            <h2 className="text-lg font-semibold tracking-tight">
-              Completed Reminders
-            </h2>
-            <p
-              className={`text-sm mt-1 ${preferences.darkMode ? "text-white/60" : "text-slate-500"}`}
-            >
-              Here are your complete reminders
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-2 ml-auto">
+          <div className="flex flex-wrap items-center gap-2">
             {/* Delete Completed */}
             <button
               className={`

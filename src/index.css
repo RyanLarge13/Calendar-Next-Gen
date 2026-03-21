@@ -91,13 +91,18 @@ li {
   width: auto;
 }
 
+.my-masonry-grid_reminders {
+  display: flex;
+  margin-left: 0px; /* gutter size offset */
+  width: auto;
+}
+
 .my-masonry-grid_column {
   padding-left: 10px; /* gutter size */
   background-clip: padding-box;
 }
 
 .my-masonry-grid_column_reminders {
-  padding-left: 10px; /* gutter size */
   background-clip: padding-box;
   width: 100% !important;
 }

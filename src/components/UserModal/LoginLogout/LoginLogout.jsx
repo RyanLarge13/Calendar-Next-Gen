@@ -114,7 +114,9 @@ const LoginLogout = () => {
               initial={{ y: 50, opacity: 0 }}
               exit={{ y: 50, opacity: 0 }}
               animate={
-                showNotifs ? { y: "85%", opacity: 1 } : { y: 0, opacity: 1 }
+                showNotifs || option !== null
+                  ? { y: "85%", opacity: 1 }
+                  : { y: 0, opacity: 1 }
               }
               className={`p-3 fixed bottom-0 left-0 right-0 rounded-md shadow-md z-10 lg:right-[65%] ${
                 !user ? "top-0" : ""
@@ -217,7 +219,7 @@ const LoginLogout = () => {
                           href={`mailto:${user.email}`}
                           className={`
             text-sm font-semibold break-words transition
-            ${preferences.darkMode ? "text-cyan-200 hover:underline" : "text-cyan-600 hover:underline"}
+            ${preferences.darkMode ? "text-cyan-100 hover:underline" : "text-cyan-300 hover:underline"}
           `}
                         >
                           {user.email}

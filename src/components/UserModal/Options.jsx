@@ -5,7 +5,7 @@ import { FaCogs, FaUserFriends } from "react-icons/fa";
 import UserContext from "../../context/UserContext";
 
 const Options = ({ setOption }) => {
-  const { friendRequests } = useContext(UserContext);
+  const { friendRequests, preferences } = useContext(UserContext);
 
   return (
     <motion.div
@@ -15,12 +15,20 @@ const Options = ({ setOption }) => {
       className=""
     >
       <div className="m-3">
-        <button className="my-2 p-2 flex justify-between items-center rounded-md shadow-sm hover:scale-[1.005] duration-200 hover:bg-cyan-200 hover:text-black w-full">
+        <button
+          className={`
+            border w-full
+           ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/20 hover:border-white/30" : "bg-white border-black/10 hover:bg-white/20 hover:border-black/30"}
+          my-2 p-2 px-4 flex justify-between items-center rounded-md shadow-sm hover:scale-[1.005] duration-200`}
+        >
           <p>Messages</p>
           <AiFillMessage />
         </button>
         <button
-          className="my-2 p-2 flex justify-between items-center rounded-md shadow-sm relative hover:scale-[1.005] duration-200 hover:bg-cyan-200 hover:text-black w-full"
+          className={`
+            border w-full
+           ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/20 hover:border-white/30" : "bg-white border-black/10 hover:bg-white/20 hover:border-black/30"}
+          my-2 p-2 px-4 flex justify-between items-center rounded-md shadow-sm hover:scale-[1.005] duration-200`}
           onClick={() => setOption("connections")}
         >
           {friendRequests.length > 0 && (
@@ -31,12 +39,20 @@ const Options = ({ setOption }) => {
           <p>Connections</p>
           <FaUserFriends />
         </button>
-        <button className="my-2 p-2 flex justify-between items-center rounded-md shadow-sm hover:scale-[1.005] duration-200 hover:bg-cyan-200 hover:text-black w-full">
+        <button
+          className={`
+            border w-full
+           ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/20 hover:border-white/30" : "bg-white border-black/10 hover:bg-white/20 hover:border-black/30"}
+          my-2 p-2 px-4 flex justify-between items-center rounded-md shadow-sm hover:scale-[1.005] duration-200`}
+        >
           <p>Calendar</p>
           <AiFillCalendar />
         </button>
         <button
-          className="my-2 p-2 flex justify-between items-center rounded-md shadow-sm hover:scale-[1.005] duration-200 hover:bg-cyan-200 hover:text-black w-full"
+          className={`
+            border w-full
+           ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/20 hover:border-white/30" : "bg-white border-black/10 hover:bg-white/20 hover:border-black/30"}
+          my-2 p-2 px-4 flex justify-between items-center rounded-md shadow-sm hover:scale-[1.005] duration-200`}
           onClick={() => setOption("settings")}
         >
           <p>Settings</p>
