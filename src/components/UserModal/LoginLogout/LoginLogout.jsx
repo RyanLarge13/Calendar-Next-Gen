@@ -219,7 +219,7 @@ const LoginLogout = () => {
                           href={`mailto:${user.email}`}
                           className={`
             text-sm font-semibold break-words transition
-            ${preferences.darkMode ? "text-cyan-100 hover:underline" : "text-cyan-300 hover:underline"}
+            ${preferences.darkMode ? "text-cyan-100 hover:underline" : "text-cyan-700 hover:underline"}
           `}
                         >
                           {user.email}
