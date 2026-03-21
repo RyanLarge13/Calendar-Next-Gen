@@ -372,8 +372,14 @@ const Event = ({ dayEvents = [] }) => {
         dragListener={false}
         onDragEnd={checkToClose}
         initial={{ y: "100%" }}
-        exit={{ y: "100%" }}
         animate={{ y: 0 }}
+        exit={{ y: "100%" }}
+        transition={{
+          type: "spring",
+          stiffness: 400,
+          damping: 31,
+          mass: 1,
+        }}
         className={`z-[901] fixed inset-0 lg:left-0 lg:bottom-0 ${
           maximize ? "lg:right-0" : "lg:right-[66%]"
         } will-change-transform top-20 overflow-y-auto rounded-t-2xl shadow-2xl

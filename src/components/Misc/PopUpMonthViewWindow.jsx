@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import { useContext, useEffect } from "react";
-import { BiAlarmSnooze, BiCalendarEvent } from "react-icons/bi";
 import {
   BsAlarmFill,
   BsFillCalendar2EventFill,
@@ -9,6 +8,7 @@ import {
 import DatesContext from "../../context/DatesContext";
 import InteractiveContext from "../../context/InteractiveContext";
 import UserContext from "../../context/UserContext";
+import Reminder from "../Reminders/Reminder";
 import { formatTime } from "../../utils/helpers";
 
 const PopUpMonthViewWindow = ({
@@ -75,44 +75,7 @@ const PopUpMonthViewWindow = ({
       {remindersToRender && remindersToRender.length > 0 ? (
         <div className="grid grid-cols-2 gap-3 my-5">
           {remindersToRender.map((reminder) => (
-            <motion.div
-              key={reminder.id}
-              className={`${
-                new Date(reminder.time) < dateObj
-                  ? "border-l-4 border-rose-400"
-                  : new Date(reminder.time).toLocaleDateString() ===
-                      dateObj.toLocaleDateString()
-                    ? "border-l-4 border-amber-400"
-                    : "border-l-4 border-cyan-400"
-              } min-w-[200px] max-w-[200px] shadow-lg p-4 rounded-2xl text-gray-900`}
-            >
-              <div className="space-y-3">
-                {/* Time + Title */}
-                <div>
-                  <div className="flex justify-between items-center mb-3">
-                    {/* Date Row */}
-                    {reminder.eventRefId ? (
-                      <BiCalendarEvent className="text-xl text-gray-500" />
-                    ) : (
-                      <BiAlarmSnooze className="text-xl text-gray-500" />
-                    )}
-                    <p className="text-sm font-semibold text-gray-700">
-                      {new Date(reminder.time).toLocaleTimeString("en-US", {
-                        timeZoneName: "short",
-                        hour: "numeric",
-                        minute: "numeric",
-                      })}
-                    </p>
-                  </div>
-                  <p className="text-xs text-gray-600">
-                    {formatTime(new Date(reminder.time))}
-                  </p>
-                  <div className="flex-1 p-3 bg-gray-50 rounded-xl shadow-inner cursor-pointer">
-                    <p className="text-sm font-semibold">{reminder.title}</p>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+            <Reminder key={reminder.id} reminder={reminder} />
           ))}
         </div>
       ) : null}

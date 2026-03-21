@@ -1,18 +1,33 @@
 import { motion } from "framer-motion";
 import { useContext, useEffect, useState } from "react";
-import { BiAlarmSnooze } from "react-icons/bi";
+import { BiAlarmSnooze, BiCheckCircle } from "react-icons/bi";
+import { FaTrashAlt } from "react-icons/fa";
 import { IoIosAddCircle } from "react-icons/io";
 import DatesContext from "../../context/DatesContext.jsx";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
 import UserContext from "../../context/UserContext.jsx";
 import Reminder from "./Reminder.jsx";
+import { BsCalendarDay, BsCalendarMonth, BsCalendarWeek } from "react-icons/bs";
+import GroupedReminders from "./GroupedReminders.jsx";
 
 const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
   const { reminders, preferences } = useContext(UserContext);
   const { dateObj, string, setString, setOpenModal } = useContext(DatesContext);
   const { setType, setMenu, setAddNewEvent } = useContext(InteractiveContext);
 
-  const [remindersToRender, setRemindersToRender] = useState(reminders);
+  const [incompleteReminders, setIncompleteReminders] = useState(
+    reminders.filter((r) => r.completed === false),
+  );
+  const [completedRemindersToRender, setCompletedRemindersToRender] = useState(
+    reminders.filter((r) => r.completed === true),
+  );
+
+  useEffect(() => {
+    setIncompleteReminders(reminders.filter((r) => r.completed === false));
+    setCompletedRemindersToRender(
+      reminders.filter((r) => r.completed === true),
+    );
+  }, [reminders]);
 
   useEffect(() => {
     if (sort && sortOpt) {
@@ -26,7 +41,7 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
             const sortedByTitle = copy.sort((a, b) =>
               a.title.localeCompare(b.title),
             );
-            setRemindersToRender(sortedByTitle);
+            setIncompleteReminders(sortedByTitle);
           }
           break;
         case "important":
@@ -36,7 +51,7 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
             const importantReminders = reminders.filter(
               (rem) => new Date(rem.time) >= hourAgo && new Date(rem.time) <= d,
             );
-            setRemindersToRender(importantReminders);
+            setIncompleteReminders(importantReminders);
           }
           break;
         case "event":
@@ -48,7 +63,7 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
             const sortedEventRems = eventCarryingRems.sort((a, b) =>
               a.title.localeCompare(b.title),
             );
-            setRemindersToRender(sortedEventRems);
+            setIncompleteReminders(sortedEventRems);
           }
           break;
         case "today":
@@ -59,7 +74,7 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
               const remTime = new Date(rem.time);
               return remTime >= startOfDay && remTime <= dayAhead;
             });
-            setRemindersToRender(todaysRems);
+            setIncompleteReminders(todaysRems);
           }
           break;
         case "tomorrow":
@@ -73,7 +88,7 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
               const remTime = new Date(rem.time);
               return remTime >= midnightTomorrow && remTime <= endOfTomorrow;
             });
-            setRemindersToRender(tomorrowsRems);
+            setIncompleteReminders(tomorrowsRems);
           }
           break;
         case "month":
@@ -83,7 +98,7 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
               const remTime = new Date(rem.time);
               return remTime <= monthAhead && remTime >= d;
             });
-            setRemindersToRender(monthRems);
+            setIncompleteReminders(monthRems);
           }
           break;
         case "week":
@@ -94,7 +109,7 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
               const remTime = new Date(rem.time);
               return remTime <= weekAhead && remTime >= now;
             });
-            setRemindersToRender(weekRems);
+            setIncompleteReminders(weekRems);
           }
           break;
         case "past":
@@ -103,25 +118,25 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
               const remTime = new Date(rem.time);
               return remTime < now;
             });
-            setRemindersToRender(pastRems);
+            setIncompleteReminders(pastRems);
           }
           break;
         default:
-          setRemindersToRender(reminders);
+          setIncompleteReminders(incompleteReminders);
       }
     } else {
-      setRemindersToRender(reminders);
+      setIncompleteReminders(incompleteReminders);
     }
   }, [sort, sortOpt, reminders]);
 
   useEffect(() => {
     if (search && searchTxt) {
-      const filteredReminders = reminders.filter((rem) =>
+      const filteredReminders = incompleteReminders.filter((rem) =>
         rem.title.toLowerCase().includes(searchTxt.toLowerCase()),
       );
-      setRemindersToRender(filteredReminders);
+      setIncompleteReminders(filteredReminders);
     } else {
-      setRemindersToRender(reminders);
+      setIncompleteReminders(incompleteReminders);
     }
   }, [search, searchTxt]);
 
@@ -136,10 +151,10 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
   };
 
   return (
-    <motion.div className="mt-6 px-3 sm:px-6">
+    <motion.div className="mt-6 px-3 sm:px-6 mb-96">
       {/* Center container to prevent "stretching across the universe" */}
       <div className="mx-auto max-w-6xl">
-        {remindersToRender.length < 1 ? (
+        {incompleteReminders.length < 1 ? (
           <div className="min-h-[55vh] grid place-items-center">
             <div
               className={`
@@ -185,20 +200,227 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
             </div>
           </div>
         ) : (
+          <div>
+            <div className="flex items-start gap-3 mb-3">
+              <div
+                className={`
+                  grid place-items-center h-12 w-12 rounded-2xl border shadow-sm
+                  ${preferences.darkMode ? "bg-cyan-500/15 border-cyan-300/20 text-cyan-100" : "bg-cyan-50 border-cyan-200 text-cyan-700"}
+                `}
+              >
+                <BiCheckCircle className="text-2xl" />
+              </div>
+
+              <div>
+                <h2 className="text-lg font-semibold tracking-tight">
+                  Reminders
+                </h2>
+                <p
+                  className={`text-sm mt-1 ${preferences.darkMode ? "text-white/60" : "text-slate-500"}`}
+                >
+                  Here are your reminders
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center gap-2 ml-auto">
+                {/* Delete Completed */}
+                <button
+                  className={`
+                flex flex-col items-center justify-center
+                h-14 w-14 rounded-2xl border shadow-sm
+                text-[10px] font-semibold gap-1
+                transition active:scale-[0.95]
+                ${
+                  preferences.darkMode
+                    ? "bg-white/5 border-white/10 text-white/70 hover:bg-rose-500/20 hover:text-rose-200"
+                    : "bg-white border-black/10 text-slate-600 hover:bg-rose-50 hover:text-rose-600"
+                }
+              `}
+                >
+                  <FaTrashAlt className="text-sm" />
+                  Clear
+                </button>
+
+                {/* Group by Day */}
+                <button
+                  className={`
+              flex flex-col items-center justify-center
+              h-14 w-14 rounded-2xl border shadow-sm
+              text-[10px] font-semibold gap-1
+              transition active:scale-[0.95]
+              ${
+                preferences.darkMode
+                  ? "bg-white/5 border-white/10 text-white/70 hover:bg-cyan-500/20 hover:text-cyan-200"
+                  : "bg-white border-black/10 text-slate-600 hover:bg-cyan-50 hover:text-cyan-600"
+              }
+            `}
+                >
+                  <BsCalendarDay className="text-sm" />
+                  Day
+                </button>
+
+                {/* Group by Week */}
+                <button
+                  className={`
+      flex flex-col items-center justify-center
+      h-14 w-14 rounded-2xl border shadow-sm
+      text-[10px] font-semibold gap-1
+      transition active:scale-[0.95]
+      ${
+        preferences.darkMode
+          ? "bg-white/5 border-white/10 text-white/70 hover:bg-indigo-500/20 hover:text-indigo-200"
+          : "bg-white border-black/10 text-slate-600 hover:bg-indigo-50 hover:text-indigo-600"
+      }
+    `}
+                >
+                  <BsCalendarWeek className="text-sm" />
+                  Week
+                </button>
+
+                {/* Group by Month */}
+                <button
+                  className={`
+      flex flex-col items-center justify-center
+      h-14 w-14 rounded-2xl border shadow-sm
+      text-[10px] font-semibold gap-1
+      transition active:scale-[0.95]
+      ${
+        preferences.darkMode
+          ? "bg-white/5 border-white/10 text-white/70 hover:bg-amber-500/20 hover:text-amber-200"
+          : "bg-white border-black/10 text-slate-600 hover:bg-amber-50 hover:text-amber-600"
+      }
+    `}
+                >
+                  <BsCalendarMonth className="text-sm" />
+                  Month
+                </button>
+              </div>
+            </div>
+            <div
+              className={`
+          grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3
+          gap-4 sm:gap-5 mb-10
+        `}
+            >
+              {incompleteReminders.map((r) => (
+                <Reminder
+                  reminder={r}
+                  key={r.id || r._id || r.time || JSON.stringify(r)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+        <div className="flex items-start gap-3 mb-3 mt-40">
           <div
             className={`
+                  grid place-items-center h-12 w-12 rounded-2xl border shadow-sm
+                  ${preferences.darkMode ? "bg-cyan-500/15 border-cyan-300/20 text-cyan-100" : "bg-cyan-50 border-cyan-200 text-cyan-700"}
+                `}
+          >
+            <BiCheckCircle className="text-2xl" />
+          </div>
+
+          <div>
+            <h2 className="text-lg font-semibold tracking-tight">
+              Completed Reminders
+            </h2>
+            <p
+              className={`text-sm mt-1 ${preferences.darkMode ? "text-white/60" : "text-slate-500"}`}
+            >
+              Here are your complete reminders
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 ml-auto">
+            {/* Delete Completed */}
+            <button
+              className={`
+                flex flex-col items-center justify-center
+                h-14 w-14 rounded-2xl border shadow-sm
+                text-[10px] font-semibold gap-1
+                transition active:scale-[0.95]
+                ${
+                  preferences.darkMode
+                    ? "bg-white/5 border-white/10 text-white/70 hover:bg-rose-500/20 hover:text-rose-200"
+                    : "bg-white border-black/10 text-slate-600 hover:bg-rose-50 hover:text-rose-600"
+                }
+              `}
+            >
+              <FaTrashAlt className="text-sm" />
+              Clear
+            </button>
+
+            {/* Group by Day */}
+            <button
+              className={`
+              flex flex-col items-center justify-center
+              h-14 w-14 rounded-2xl border shadow-sm
+              text-[10px] font-semibold gap-1
+              transition active:scale-[0.95]
+              ${
+                preferences.darkMode
+                  ? "bg-white/5 border-white/10 text-white/70 hover:bg-cyan-500/20 hover:text-cyan-200"
+                  : "bg-white border-black/10 text-slate-600 hover:bg-cyan-50 hover:text-cyan-600"
+              }
+            `}
+            >
+              <BsCalendarDay className="text-sm" />
+              Day
+            </button>
+
+            {/* Group by Week */}
+            <button
+              className={`
+      flex flex-col items-center justify-center
+      h-14 w-14 rounded-2xl border shadow-sm
+      text-[10px] font-semibold gap-1
+      transition active:scale-[0.95]
+      ${
+        preferences.darkMode
+          ? "bg-white/5 border-white/10 text-white/70 hover:bg-indigo-500/20 hover:text-indigo-200"
+          : "bg-white border-black/10 text-slate-600 hover:bg-indigo-50 hover:text-indigo-600"
+      }
+    `}
+            >
+              <BsCalendarWeek className="text-sm" />
+              Week
+            </button>
+
+            {/* Group by Month */}
+            <button
+              className={`
+      flex flex-col items-center justify-center
+      h-14 w-14 rounded-2xl border shadow-sm
+      text-[10px] font-semibold gap-1
+      transition active:scale-[0.95]
+      ${
+        preferences.darkMode
+          ? "bg-white/5 border-white/10 text-white/70 hover:bg-amber-500/20 hover:text-amber-200"
+          : "bg-white border-black/10 text-slate-600 hover:bg-amber-50 hover:text-amber-600"
+      }
+    `}
+            >
+              <BsCalendarMonth className="text-sm" />
+              Month
+            </button>
+          </div>
+        </div>
+        {/* <div
+          className={`
           grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3
           gap-4 sm:gap-5
         `}
-          >
-            {remindersToRender.map((r) => (
-              <Reminder
-                reminder={r}
-                key={r.id || r._id || r.time || JSON.stringify(r)}
-              />
-            ))}
-          </div>
-        )}
+        >
+          {completedRemindersToRender.map((r) => (
+            <Reminder
+              reminder={r}
+              key={r.id || r._id || r.time || JSON.stringify(r)}
+            />
+          ))}
+        </div> */}
+        <GroupedReminders
+          groupType="month"
+          reminders={completedRemindersToRender}
+        />
       </div>
     </motion.div>
   );

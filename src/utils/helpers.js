@@ -276,3 +276,45 @@ export const completeSubscription = (sub) => {
 
   return fullSub;
 };
+
+export const getWeekOfMonthMondayStart = (date) => {
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const dayOfMonth = date.getDate();
+
+  // Create a date object for the current day
+  const currentDayDate = new Date(year, month, dayOfMonth);
+
+  // Adjust the date to the previous Monday
+  // ((getDay() + 6) % 7) handles Sunday (0) correctly when we want Monday as day 0 of our calculation week
+  const previousMonday = new Date(currentDayDate);
+  previousMonday.setDate(dayOfMonth - ((currentDayDate.getDay() + 6) % 7));
+
+  // The week number is determined by which 'Monday' of the month this calculated Monday falls on
+  return Math.ceil(previousMonday.getDate() / 7);
+};
+
+// Example Usage:
+const specificDateISO = new Date(2024, 2, 14); // March 14, 2024 (Thursday)
+console.log(
+  `The ISO week of the month for ${specificDateISO.toDateString()} is: ${getWeekOfMonthMondayStart(specificDateISO)}`,
+); // Output: 2
+
+export const returnSortDatedDate = (type, date) => {
+  let strReturn = "";
+  switch (type) {
+    case "day":
+      strReturn = `${date.getMonth()}${date.getDate()}${getWeekOfMonthMondayStart(date)}${date.getFullYear()}`;
+      break;
+    case "week":
+      strReturn = `${date.getMonth()}${getWeekOfMonthMondayStart(date)}${date.getFullYear()}`;
+      break;
+    case "month":
+      strReturn = `${date.getMonth()}${date.getFullYear()}`;
+      break;
+    default:
+      return null;
+  }
+
+  return strReturn;
+};

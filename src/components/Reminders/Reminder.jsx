@@ -14,7 +14,7 @@ import { BiAlarmSnooze, BiCalendarEvent } from "react-icons/bi";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
 import DatesContext from "../../context/DatesContext.jsx";
 
-const Reminder = ({ reminder, showOpenEvent = true }) => {
+const Reminder = ({ reminder, showOpenEvent = true, styles = {} }) => {
   const {
     reminders = [],
     events = [],
@@ -88,22 +88,21 @@ const Reminder = ({ reminder, showOpenEvent = true }) => {
   };
 
   const toggleComplete = async (reminderInfo) => {
-    const token = localStorage.getItem("authToken");
+    const newReminders = reminders.map((r) => {
+      if (r.id === reminderInfo.reminderId) {
+        return {
+          ...r,
+          completed: reminderInfo.completed,
+        };
+      } else {
+        return r;
+      }
+    });
+
+    setReminders(newReminders);
     try {
+      const token = localStorage.getItem("authToken");
       await updateReminderComplete(reminderInfo, token);
-
-      const newReminders = reminders.map((r) => {
-        if (r.id === reminderInfo.reminderId) {
-          return {
-            ...r,
-            completed: reminderInfo.completed,
-          };
-        } else {
-          return r;
-        }
-      });
-
-      setReminders(newReminders);
     } catch (err) {
       console.log(err);
     }
@@ -186,6 +185,7 @@ const Reminder = ({ reminder, showOpenEvent = true }) => {
   return (
     <motion.div
       key={reminder.id}
+      style={styles}
       animate={
         selected.includes(reminder.id)
           ? {
@@ -202,7 +202,7 @@ const Reminder = ({ reminder, showOpenEvent = true }) => {
     relative my-4 rounded-3xl border overflow-hidden
     backdrop-blur-md
     ${preferences.darkMode ? "bg-white/5 border-white/10 text-white" : "bg-white/85 border-black/10 text-slate-900"}
-  `}
+   `}
       onPointerDown={() => startTime(reminder.id)}
       onPointerUp={() => stopTime(reminder.id)}
       onPointerCancel={() => clearTimeout(timeout.current)}
