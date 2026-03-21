@@ -280,41 +280,42 @@ export const completeSubscription = (sub) => {
 export const getWeekOfMonthMondayStart = (date) => {
   const year = date.getFullYear();
   const month = date.getMonth();
+
+  const firstOfMonth = new Date(year, month, 1);
   const dayOfMonth = date.getDate();
+  const firstDayOffset = (firstOfMonth.getDay() + 6) % 7;
 
-  // Create a date object for the current day
-  const currentDayDate = new Date(year, month, dayOfMonth);
-
-  // Adjust the date to the previous Monday
-  // ((getDay() + 6) % 7) handles Sunday (0) correctly when we want Monday as day 0 of our calculation week
-  const previousMonday = new Date(currentDayDate);
-  previousMonday.setDate(dayOfMonth - ((currentDayDate.getDay() + 6) % 7));
-
-  // The week number is determined by which 'Monday' of the month this calculated Monday falls on
-  return Math.ceil(previousMonday.getDate() / 7);
+  return Math.ceil((dayOfMonth + firstDayOffset) / 7);
 };
 
-// Example Usage:
-const specificDateISO = new Date(2024, 2, 14); // March 14, 2024 (Thursday)
-console.log(
-  `The ISO week of the month for ${specificDateISO.toDateString()} is: ${getWeekOfMonthMondayStart(specificDateISO)}`,
-); // Output: 2
-
 export const returnSortDatedDate = (type, date) => {
-  let strReturn = "";
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const day = date.getDate();
+  const week = getWeekOfMonthMondayStart(date);
+
+  const monthName = date.toLocaleString("en-US", { month: "long" });
+
   switch (type) {
     case "day":
-      strReturn = `${date.getMonth()}${date.getDate()}${getWeekOfMonthMondayStart(date)}${date.getFullYear()}`;
-      break;
+      return {
+        key: `${year}-${month + 1}-${day}`,
+        label: `${monthName} ${day}, ${year}`,
+      };
+
     case "week":
-      strReturn = `${date.getMonth()}${getWeekOfMonthMondayStart(date)}${date.getFullYear()}`;
-      break;
+      return {
+        key: `${year}-${month + 1}-week-${week}`,
+        label: `${monthName} ${year} - Week ${week}`,
+      };
+
     case "month":
-      strReturn = `${date.getMonth()}${date.getFullYear()}`;
-      break;
+      return {
+        key: `${year}-${month + 1}`,
+        label: `${monthName} ${year}`,
+      };
+
     default:
       return null;
   }
-
-  return strReturn;
 };

@@ -5,7 +5,7 @@ import UserContext from "../../context/UserContext";
 import { API_UpdateTaskColor, deleteTask, updateTasks } from "../../utils/api";
 import EditColor from "../Misc/EditColor";
 import TaskItems from "../Tasks/TaskItems";
-import { MdOutlineClear, MdOutlineClearAll } from "react-icons/md";
+import { MdOutlineClearAll } from "react-icons/md";
 
 const Task = ({ task }) => {
   const { preferences, setUserTasks, userTasks, setSystemNotif } =

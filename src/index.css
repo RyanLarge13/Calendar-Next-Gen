@@ -96,6 +96,12 @@ li {
   background-clip: padding-box;
 }
 
+.my-masonry-grid_column_reminders {
+  padding-left: 10px; /* gutter size */
+  background-clip: padding-box;
+  width: 100% !important;
+}
+
 .my-masonry-grid-attachments {
   display: flex;
   margin-left: 0px; /* gutter size offset */

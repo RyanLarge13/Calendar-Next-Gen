@@ -6,9 +6,9 @@ import { IoIosAddCircle } from "react-icons/io";
 import DatesContext from "../../context/DatesContext.jsx";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
 import UserContext from "../../context/UserContext.jsx";
-import Reminder from "./Reminder.jsx";
 import { BsCalendarDay, BsCalendarMonth, BsCalendarWeek } from "react-icons/bs";
 import GroupedReminders from "./GroupedReminders.jsx";
+import { MdOutlineClearAll } from "react-icons/md";
 
 const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
   const { reminders, preferences } = useContext(UserContext);
@@ -22,12 +22,18 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
     reminders.filter((r) => r.completed === true),
   );
 
+  // Pull this from user preferences in the future
+  const [grouping, setGrouping] = useState({
+    complete: "week",
+    incomplete: "week",
+  });
+
   useEffect(() => {
     setIncompleteReminders(reminders.filter((r) => r.completed === false));
     setCompletedRemindersToRender(
       reminders.filter((r) => r.completed === true),
     );
-  }, [reminders]);
+  }, [reminders, grouping]);
 
   useEffect(() => {
     if (sort && sortOpt) {
@@ -150,6 +156,13 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
     setAddNewEvent(true);
   };
 
+  const updateGroup = (complete, type) => {
+    setGrouping((prev) => ({
+      complete: complete ? type : prev.complete,
+      incomplete: complete ? prev.incomplete : type,
+    }));
+  };
+
   return (
     <motion.div className="mt-6 px-3 sm:px-6 mb-96">
       {/* Center container to prevent "stretching across the universe" */}
@@ -236,17 +249,38 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
                 }
               `}
                 >
+                  <MdOutlineClearAll className="text-sm" />
+                  Delete All
+                </button>
+                {/* Clear Grouping */}
+                <button
+                  onClick={() => updateGroup(false, null)}
+                  className={`
+                flex flex-col items-center justify-center
+                h-14 w-14 rounded-2xl border shadow-sm
+                text-[10px] font-semibold gap-1
+                transition active:scale-[0.95]
+                ${grouping.incomplete === null ? "text-orange-600 bg-orange-50" : ""}
+                ${
+                  preferences.darkMode
+                    ? "bg-white/5 border-white/10 text-white/70 hover:bg-orange-500/20 hover:text-orange-200"
+                    : "bg-white border-black/10 text-slate-600 hover:bg-orange-50 hover:text-orange-600"
+                }
+              `}
+                >
                   <FaTrashAlt className="text-sm" />
                   Clear
                 </button>
 
                 {/* Group by Day */}
                 <button
+                  onClick={() => updateGroup(false, "day")}
                   className={`
               flex flex-col items-center justify-center
               h-14 w-14 rounded-2xl border shadow-sm
               text-[10px] font-semibold gap-1
               transition active:scale-[0.95]
+              ${grouping.incomplete === "day" ? "text-cyan-600 bg-cyan-50" : ""}
               ${
                 preferences.darkMode
                   ? "bg-white/5 border-white/10 text-white/70 hover:bg-cyan-500/20 hover:text-cyan-200"
@@ -260,11 +294,13 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
 
                 {/* Group by Week */}
                 <button
+                  onClick={() => updateGroup(false, "week")}
                   className={`
       flex flex-col items-center justify-center
       h-14 w-14 rounded-2xl border shadow-sm
       text-[10px] font-semibold gap-1
       transition active:scale-[0.95]
+      ${grouping.incomplete === "week" ? "text-indigo-600 bg-indigo-50" : ""}
       ${
         preferences.darkMode
           ? "bg-white/5 border-white/10 text-white/70 hover:bg-indigo-500/20 hover:text-indigo-200"
@@ -278,11 +314,13 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
 
                 {/* Group by Month */}
                 <button
+                  onClick={() => updateGroup(false, "month")}
                   className={`
       flex flex-col items-center justify-center
       h-14 w-14 rounded-2xl border shadow-sm
       text-[10px] font-semibold gap-1
       transition active:scale-[0.95]
+      ${grouping.incomplete === "month" ? "text-amber-600 bg-amber-50" : ""}
       ${
         preferences.darkMode
           ? "bg-white/5 border-white/10 text-white/70 hover:bg-amber-500/20 hover:text-amber-200"
@@ -295,19 +333,10 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
                 </button>
               </div>
             </div>
-            <div
-              className={`
-          grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3
-          gap-4 sm:gap-5 mb-10
-        `}
-            >
-              {incompleteReminders.map((r) => (
-                <Reminder
-                  reminder={r}
-                  key={r.id || r._id || r.time || JSON.stringify(r)}
-                />
-              ))}
-            </div>
+            <GroupedReminders
+              groupType={grouping.incomplete}
+              reminders={incompleteReminders}
+            />
           </div>
         )}
         <div className="flex items-start gap-3 mb-3 mt-40">
@@ -345,17 +374,38 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
                 }
               `}
             >
+              <MdOutlineClearAll className="text-sm" />
+              Delete All
+            </button>
+            {/* Clear Grouping */}
+            <button
+              onClick={() => updateGroup(true, null)}
+              className={`
+                flex flex-col items-center justify-center
+                h-14 w-14 rounded-2xl border shadow-sm
+                text-[10px] font-semibold gap-1
+                transition active:scale-[0.95]
+                ${grouping.complete === null ? "text-orange-600 bg-orange-50" : ""}
+                ${
+                  preferences.darkMode
+                    ? "bg-white/5 border-white/10 text-white/70 hover:bg-orange-500/20 hover:text-orange-200"
+                    : "bg-white border-black/10 text-slate-600 hover:bg-orange-50 hover:text-orange-600"
+                }
+              `}
+            >
               <FaTrashAlt className="text-sm" />
               Clear
             </button>
 
             {/* Group by Day */}
             <button
+              onClick={() => updateGroup(true, "day")}
               className={`
               flex flex-col items-center justify-center
               h-14 w-14 rounded-2xl border shadow-sm
               text-[10px] font-semibold gap-1
               transition active:scale-[0.95]
+              ${grouping.complete === "day" ? "text-cyan-600 bg-cyan-50" : ""}
               ${
                 preferences.darkMode
                   ? "bg-white/5 border-white/10 text-white/70 hover:bg-cyan-500/20 hover:text-cyan-200"
@@ -369,11 +419,13 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
 
             {/* Group by Week */}
             <button
+              onClick={() => updateGroup(true, "week")}
               className={`
       flex flex-col items-center justify-center
       h-14 w-14 rounded-2xl border shadow-sm
       text-[10px] font-semibold gap-1
       transition active:scale-[0.95]
+      ${grouping.complete === "week" ? "text-indigo-600 bg-indigo-50" : ""}
       ${
         preferences.darkMode
           ? "bg-white/5 border-white/10 text-white/70 hover:bg-indigo-500/20 hover:text-indigo-200"
@@ -387,11 +439,13 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
 
             {/* Group by Month */}
             <button
+              onClick={() => updateGroup(true, "month")}
               className={`
       flex flex-col items-center justify-center
       h-14 w-14 rounded-2xl border shadow-sm
       text-[10px] font-semibold gap-1
       transition active:scale-[0.95]
+      ${grouping.complete === "month" ? "text-amber-600 bg-amber-50" : ""}
       ${
         preferences.darkMode
           ? "bg-white/5 border-white/10 text-white/70 hover:bg-amber-500/20 hover:text-amber-200"
@@ -404,21 +458,8 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
             </button>
           </div>
         </div>
-        {/* <div
-          className={`
-          grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3
-          gap-4 sm:gap-5
-        `}
-        >
-          {completedRemindersToRender.map((r) => (
-            <Reminder
-              reminder={r}
-              key={r.id || r._id || r.time || JSON.stringify(r)}
-            />
-          ))}
-        </div> */}
         <GroupedReminders
-          groupType="month"
+          groupType={grouping.complete}
           reminders={completedRemindersToRender}
         />
       </div>
