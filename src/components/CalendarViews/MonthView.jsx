@@ -128,7 +128,7 @@ const MonthView = () => {
 
     if (repeatEvents.length > 0) {
       repeatEvents.forEach((e) => {
-        const eLandsOnDay = eventOccursOnDay(e, new Date(dtStr));
+        const eLandsOnDay = eventOccursOnDay(e, dtStr);
         if (eLandsOnDay) {
           const eventRepeated = cloneEventForDay(e, new Date(dtStr));
           eventsToSort.push(eventRepeated);

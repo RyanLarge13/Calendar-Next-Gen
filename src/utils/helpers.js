@@ -309,56 +309,78 @@ const yearsBetween = (a, b) => {
 };
 
 export const eventOccursOnDay = (event, candidateDay) => {
-  const eventStart = new Date(event.date);
-  const candidate = startOfDay(candidateDay);
-
-  // first occurrence always counts
-  if (isSameCalendarDay(eventStart, candidate)) return true;
+  const eventStart = startOfDay(new Date(event.startDate));
+  const candidate = startOfDay(new Date(candidateDay));
 
   // no repeat
   if (!event.repeats?.repeat) return false;
 
-  // cannot repeat before start date
-  if (candidate < startOfDay(eventStart)) return false;
+  // do not render on original day
+  if (isSameCalendarDay(eventStart, candidate)) return false;
 
-  const interval = event.repeats.interval || 1;
+  // cannot repeat before start date
+  if (candidate < eventStart) return false;
+
+  const repeatCount = event.repeats.interval ?? 0;
   const howOften = event.repeats.howOften;
 
   switch (howOften) {
-    case "day": {
+    case "Daily": {
       const diffDays = daysBetween(eventStart, candidate);
-      return diffDays % interval === 0;
+
+      // daily repeats happen on day 1..repeatCount
+      return diffDays >= 1 && diffDays <= repeatCount;
     }
 
-    case "week": {
+    case "Weekly": {
       const diffDays = daysBetween(eventStart, candidate);
 
       // must be same weekday
       if (candidate.getDay() !== eventStart.getDay()) return false;
 
-      const diffWeeks = Math.floor(diffDays / 7);
-      return diffWeeks % interval === 0;
+      const diffWeeks = diffDays / 7;
+
+      // weekly repeats happen on week 1..repeatCount
+      return (
+        Number.isInteger(diffWeeks) &&
+        diffWeeks >= 1 &&
+        diffWeeks <= repeatCount
+      );
     }
 
-    case "month": {
+    case "Bi Weekly": {
+      const diffDays = daysBetween(eventStart, candidate);
+
+      // must be same weekday
+      if (candidate.getDay() !== eventStart.getDay()) return false;
+
+      const diffBiWeeks = diffDays / 14;
+
+      // biweekly repeats happen on 2-week step 1..repeatCount
+      return (
+        Number.isInteger(diffBiWeeks) &&
+        diffBiWeeks >= 1 &&
+        diffBiWeeks <= repeatCount
+      );
+    }
+
+    case "Monthly": {
       const diffMonths = monthsBetween(eventStart, candidate);
 
-      if (diffMonths < 0) return false;
-      if (diffMonths % interval !== 0) return false;
+      if (candidate.getDate() !== eventStart.getDate()) return false;
 
-      // simple rule: same day-of-month only
-      return candidate.getDate() === eventStart.getDate();
+      // monthly repeats happen on month 1..repeatCount
+      return diffMonths >= 1 && diffMonths <= repeatCount;
     }
 
-    case "year": {
+    case "Yearly": {
       const diffYears = yearsBetween(eventStart, candidate);
-
-      if (diffYears < 0) return false;
-      if (diffYears % interval !== 0) return false;
 
       return (
         candidate.getMonth() === eventStart.getMonth() &&
-        candidate.getDate() === eventStart.getDate()
+        candidate.getDate() === eventStart.getDate() &&
+        diffYears >= 1 &&
+        diffYears <= repeatCount
       );
     }
 
@@ -412,6 +434,7 @@ export const cloneEventForDay = (event, day) => {
 
   return {
     ...event,
+    id: uuidv4(),
     startDate: newStartDate,
     endDate: newEndDate,
     start: {

@@ -55,14 +55,6 @@ const Event = ({ dayEvents = [] }) => {
   };
 
   useEffect(() => {
-    console.log(
-      "Logging event and then reminders to find discrepencies in the reminder id's",
-    );
-    console.log(event);
-    console.log(reminders);
-  }, []);
-
-  useEffect(() => {
     if (event.attachmentLength > 0) {
       setImagesLoading(true);
       const token = localStorage.getItem("authToken");
