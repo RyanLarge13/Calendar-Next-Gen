@@ -16,6 +16,8 @@ const PopUpMonthViewWindow = ({
   remindersToRender,
   eventsToRender,
   day,
+  onMouseEnter,
+  onMouseLeave,
 }) => {
   const { preferences } = useContext(UserContext);
   const { setString, setOpenModal, dateObj } = useContext(DatesContext);
@@ -53,6 +55,8 @@ const PopUpMonthViewWindow = ({
             : "bg-white/90 backdrop-blur-md border-gray-200 text-gray-900"
         }`}
       onWheel={(e) => e.stopPropagation()}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
     >
       {/* Date heading */}
       <p

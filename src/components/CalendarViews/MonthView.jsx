@@ -1,7 +1,13 @@
 import { motion } from "framer-motion";
-import { useContext, useEffect, useState } from "react";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { AiFillCheckCircle, AiFillCloseCircle } from "react-icons/ai";
-import { IoIosAlarm } from "react-icons/io";
 import DatesContext from "../../context/DatesContext.jsx";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
 import UserContext from "../../context/UserContext.jsx";
@@ -14,10 +20,8 @@ import {
 import PopUpMonthViewWindow from "../Misc/PopUpMonthViewWindow.jsx";
 
 const MonthView = () => {
-  const { events, eventMap, holidays, preferences, reminders } =
-    useContext(UserContext);
-  const { setMenu, setShowLogin, setAddNewEvent, setType } =
-    useContext(InteractiveContext);
+  const { eventMap, preferences, reminders } = useContext(UserContext);
+  const { setMenu, setShowLogin } = useContext(InteractiveContext);
   const {
     paddingDays,
     daysInMonth,
@@ -40,25 +44,16 @@ const MonthView = () => {
   const [longPressTimeout, setLongPressTimeout] = useState(null);
   const [newPopup, setNewPopup] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [popupTimeout, setPopupTimeout] = useState(null);
   const [popupEvents, setPopupEvents] = useState([]);
   const [popUpReminders, setPopUpReminders] = useState([]);
   const [hoverDay, setHoverDay] = useState(null);
   const [renderPopup, setRenderPopup] = useState(false);
 
-  const targetDate = new Date(dateString);
+  const popupTimeoutRef = useRef(null);
+  const closePopupTimeoutRef = useRef(null);
+  const isHoveringPopupRef = useRef(false);
 
-  useEffect(() => {
-    if (!renderPopup) {
-      setNewPopup(false);
-      setMousePosition({ x: 0, y: 0 });
-      setRenderPopup(false);
-      setHoverDay(null);
-      setPopupEvents([]);
-      setPopUpReminders([]);
-      clearTimeout(popupTimeout);
-    }
-  }, [renderPopup]);
+  const targetDate = new Date(dateString);
 
   useEffect(() => {
     selected.length > 0 ? setConfirmDates(true) : setConfirmDates(false);
@@ -119,46 +114,49 @@ const MonthView = () => {
     setString(date);
   };
 
-  const getIndicesForEvents = (dtStr) => {
-    const targetDateObj = new Date(dtStr);
-    targetDateObj.setHours(0, 0, 0, 0);
-    const key = `${year}-${month}`;
-    const baseEvents = eventMap.get(key)?.events || [];
-    const eventsToSort = [...baseEvents];
-    const repeatEvents = eventMap.get("repeat-events")?.events || [];
+  const getIndicesForEvents = useCallback(
+    (dtStr) => {
+      const targetDateObj = new Date(dtStr);
+      targetDateObj.setHours(0, 0, 0, 0);
+      const key = `${year}-${month}`;
+      const baseEvents = eventMap.get(key)?.events || [];
+      const eventsToSort = [...baseEvents];
+      const repeatEvents = eventMap.get("repeat-events")?.events || [];
 
-    if (repeatEvents.length > 0) {
-      repeatEvents.forEach((e) => {
-        const eLandsOnDay = eventOccursOnDay(e, dtStr);
-        if (eLandsOnDay) {
-          const eventRepeated = cloneEventForDay(e, new Date(dtStr));
-          eventsToSort.push(eventRepeated);
-        }
-      });
-    }
+      if (repeatEvents.length > 0) {
+        repeatEvents.forEach((e) => {
+          const eLandsOnDay = eventOccursOnDay(e, dtStr);
+          if (eLandsOnDay) {
+            const eventRepeated = cloneEventForDay(e, new Date(dtStr));
+            eventsToSort.push(eventRepeated);
+          }
+        });
+      }
 
-    if (!eventsToSort || eventsToSort.length < 1) {
-      return [];
-    }
-    return eventsToSort
-      .map((event) => {
-        const startDate = new Date(event.startDate);
-        const endDate = new Date(event.endDate);
-        startDate.setHours(0, 0, 0, 0);
-        endDate.setHours(0, 0, 0, 0);
-        return {
-          ...event,
-          startDate,
-          endDate,
-          duration: (endDate - startDate) / (24 * 60 * 60 * 1000),
-        };
-      })
-      .filter(
-        (event) =>
-          event.startDate <= targetDateObj && event.endDate >= targetDateObj,
-      )
-      .sort((a, b) => b.duration - a.duration);
-  };
+      if (!eventsToSort || eventsToSort.length < 1) {
+        return [];
+      }
+      return eventsToSort
+        .map((event) => {
+          const startDate = new Date(event.startDate);
+          const endDate = new Date(event.endDate);
+          startDate.setHours(0, 0, 0, 0);
+          endDate.setHours(0, 0, 0, 0);
+          return {
+            ...event,
+            startDate,
+            endDate,
+            duration: (endDate - startDate) / (24 * 60 * 60 * 1000),
+          };
+        })
+        .filter(
+          (event) =>
+            event.startDate <= targetDateObj && event.endDate >= targetDateObj,
+        )
+        .sort((a, b) => b.duration - a.duration);
+    },
+    [month, year, eventMap],
+  );
 
   const addNewTypeWithDays = () => {
     const firstDay = selected[0] - paddingDays + 1;
@@ -169,46 +167,125 @@ const MonthView = () => {
     setSelected([]);
   };
 
-  const createPopup = (e, eventsToRender, remindersToRender, index) => {
-    if (popupTimeout) {
-      clearTimeout(popupTimeout);
-      setPopupTimeout(null);
-    }
-    if (index - paddingDays < 0) {
-      return;
-    }
-    setNewPopup(false);
-    setPopupEvents([]);
-    setPopUpReminders([]);
-    setMousePosition({ x: 0, y: 0 });
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    if (isMobile || !renderPopup) {
-      return;
-    }
-    const mousePositions = {
-      x: e.clientX,
-      y: e.clientY,
-    };
-    const timeoutId = setTimeout(() => {
-      const theHoverDay = `${month + 1}/${index - paddingDays + 1}/${year}`;
-      setPopupEvents(eventsToRender);
-      setPopUpReminders(remindersToRender);
-      setMousePosition(mousePositions);
-      setHoverDay(theHoverDay);
-      setNewPopup(true);
-    }, 1000);
-    setPopupTimeout(timeoutId);
-  };
+  const createPopup = useCallback(
+    (e, eventsToRender, remindersToRender, index) => {
+      if (popupTimeoutRef.current) {
+        clearTimeout(popupTimeoutRef.current);
+        popupTimeoutRef.current = null;
+      }
 
-  useEffect(() => {
-    return () => {
-      if (popupTimeout) {
-        clearTimeout(popupTimeout);
-        setPopupEvents([]);
+      if (closePopupTimeoutRef.current) {
+        clearTimeout(closePopupTimeoutRef.current);
+        closePopupTimeoutRef.current = null;
+      }
+
+      if (index - paddingDays < 0 || !renderPopup) {
+        return;
+      }
+
+      const mousePositions = {
+        x: e.clientX,
+        y: e.clientY,
+      };
+
+      popupTimeoutRef.current = setTimeout(() => {
+        const theHoverDay = `${month + 1}/${index - paddingDays + 1}/${year}`;
+
+        setPopupEvents(eventsToRender);
+        setPopUpReminders(remindersToRender);
+        setMousePosition(mousePositions);
+        setHoverDay(theHoverDay);
+        setNewPopup(true);
+      }, 1000);
+    },
+    [paddingDays, renderPopup, month, year],
+  );
+
+  const scheduleClearPopup = useCallback(() => {
+    if (closePopupTimeoutRef.current) {
+      clearTimeout(closePopupTimeoutRef.current);
+    }
+
+    closePopupTimeoutRef.current = setTimeout(() => {
+      if (!isHoveringPopupRef.current) {
         setNewPopup(false);
       }
-    };
-  }, [popupTimeout]);
+    }, 120);
+  }, []);
+
+  const clearPopupNow = useCallback(() => {
+    if (popupTimeoutRef.current) {
+      clearTimeout(popupTimeoutRef.current);
+      popupTimeoutRef.current = null;
+    }
+
+    if (closePopupTimeoutRef.current) {
+      clearTimeout(closePopupTimeoutRef.current);
+      closePopupTimeoutRef.current = null;
+    }
+
+    setNewPopup(false);
+  }, []);
+
+  const clearPopup = useCallback(() => {
+    if (popupTimeoutRef.current) {
+      clearTimeout(popupTimeoutRef.current);
+      popupTimeoutRef.current = null;
+    }
+
+    setNewPopup(false);
+  }, []);
+
+  const daysData = useMemo(() => {
+    return [...Array(paddingDays + daysInMonth)].map((_, index) => {
+      const dayNumber = index - paddingDays + 1;
+      const isPaddingDay = index < paddingDays;
+
+      if (isPaddingDay) {
+        return {
+          index,
+          dayNumber,
+          dateStr: null,
+          isCurrentDate: false,
+          eventsToRender: [],
+          remindersToRender: [],
+          isPaddingDay: true,
+        };
+      }
+
+      const dateStr = `${month + 1}/${dayNumber}/${year}`;
+
+      const isCurrentDate =
+        dayNumber === day &&
+        month === dateObj.getMonth() &&
+        year === dateObj.getFullYear();
+
+      const eventsToRender = getIndicesForEvents(dateStr);
+
+      const remindersToRender = reminders.filter(
+        (reminder) => new Date(reminder.time).toLocaleDateString() === dateStr,
+      );
+
+      return {
+        index,
+        dayNumber,
+        dateStr,
+        isCurrentDate,
+        eventsToRender,
+        remindersToRender,
+        isPaddingDay: false,
+      };
+    });
+  }, [
+    paddingDays,
+    daysInMonth,
+    month,
+    year,
+    day,
+    dateObj,
+    reminders,
+    getIndicesForEvents,
+  ]);
 
   return (
     <motion.div
@@ -216,8 +293,13 @@ const MonthView = () => {
       initial="hidden"
       animate="show"
       className="grid grid-cols-7 min-h-[50vh] h-[83vh] gap-1"
-      onMouseLeave={() => setRenderPopup(false)}
-      onMouseEnter={() => setRenderPopup(true)}
+      onMouseEnter={() => {
+        if (!renderPopup) setRenderPopup(true);
+      }}
+      onMouseLeave={() => {
+        setRenderPopup(false);
+        clearPopup();
+      }}
     >
       {newPopup && (
         <PopUpMonthViewWindow
@@ -225,103 +307,108 @@ const MonthView = () => {
           remindersToRender={popUpReminders}
           eventsToRender={popupEvents}
           day={hoverDay}
+          onMouseEnter={() => {
+            isHoveringPopupRef.current = true;
+            if (closePopupTimeoutRef.current) {
+              clearTimeout(closePopupTimeoutRef.current);
+              closePopupTimeoutRef.current = null;
+            }
+          }}
+          onMouseLeave={() => {
+            isHoveringPopupRef.current = false;
+            clearPopupNow();
+          }}
         />
       )}
-      {[...Array(paddingDays + daysInMonth)].map((_, index) => {
-        const isCurrentDate =
-          index - paddingDays + 1 === day &&
-          month === dateObj.getMonth() &&
-          year === dateObj.getFullYear();
-        const dateStr = `${month + 1}/${index - paddingDays + 1}/${year}`;
-        const eventsToRender = getIndicesForEvents(dateStr);
-        const remindersToRender = reminders.filter(
-          (reminder) =>
-            new Date(reminder.time).toLocaleDateString() === dateStr,
-        );
+      {daysData.map(
+        ({
+          index,
+          dayNumber,
+          dateStr,
+          isCurrentDate,
+          eventsToRender,
+          remindersToRender,
+        }) => {
+          const hasReminders = remindersToRender.length;
 
-        const hasReminders =
-          reminders.filter(
-            (r) => new Date(r.time).toLocaleDateString() === dateStr,
-          )?.length || 0;
-
-        return (
-          <motion.div
-            variants={calendarBlocks}
-            whileHover={{
-              outline: preferences.darkMode
-                ? "1px solid white"
-                : "1px solid black",
-              backgroundColor: preferences.darkMode ? "#333333" : "#f2f2f2",
-            }}
-            onMouseEnter={(e) =>
-              createPopup(e, eventsToRender, remindersToRender, index)
-            }
-            onContextMenu={(e) => {
-              e.preventDefault();
-              handleDayLongPress(index);
-            }}
-            onClick={() => handleDayClick(index)}
-            key={index}
-            style={getCellStyle(index)}
-            className={`relative w-full ${
-              preferences.darkMode ? "shadow-slate-700" : "shadow-slate-200"
-            } rounded-sm shadow-sm flex flex-col items-center justify-start gap-y-1 cursor-pointer ${
-              isCurrentDate &&
-              "shadow-cyan-400 shadow-md outline outline-slate-400"
-            }`}
-          >
-            <div
-              className={`text-center flex justify-center items-center text-sm mt-1 ${
-                isCurrentDate
-                  ? "w-[25px] h-[25px] rounded-full bg-white shadow-md text-black"
-                  : preferences.darkMode
-                    ? "text-white"
-                    : "text-black"
+          return (
+            <motion.div
+              variants={calendarBlocks}
+              whileHover={{
+                outline: preferences.darkMode
+                  ? "1px solid white"
+                  : "1px solid black",
+                backgroundColor: preferences.darkMode ? "#333333" : "#f2f2f2",
+              }}
+              onMouseEnter={(e) =>
+                createPopup(e, eventsToRender, remindersToRender, index)
+              }
+              onMouseLeave={scheduleClearPopup}
+              onContextMenu={(e) => {
+                e.preventDefault();
+                handleDayLongPress(index);
+              }}
+              onClick={() => handleDayClick(index)}
+              key={index}
+              style={getCellStyle(index)}
+              className={`relative w-full ${
+                preferences.darkMode ? "shadow-slate-700" : "shadow-slate-200"
+              } rounded-sm shadow-sm flex flex-col items-center justify-start gap-y-1 cursor-pointer ${
+                isCurrentDate &&
+                "shadow-cyan-400 shadow-md outline outline-slate-400"
               }`}
             >
-              <p>{index >= paddingDays && index - paddingDays + 1}</p>
-            </div>
-            <div
-              className={`w-full absolute inset-0 pt-11 overflow-y-clip ${
-                selected.includes(index)
-                  ? "bg-cyan-100 bg-opacity-50"
-                  : "bg-transparent"
-              }`}
-            >
-              {eventsToRender.map((event) => (
-                <motion.div
-                  key={`${event.id}_${index}`}
-                  initial={{ opacity: 0 }}
-                  animate={{
-                    opacity: 1,
-                  }}
-                  style={{
-                    color: tailwindBgToHex(event.color),
-                  }}
-                  className={`rounded-lg ${event.color} shadow-md p-1 my-1 mx-auto relative`}
-                >
-                  {new Date(event.startDate).toLocaleDateString() ===
-                  dateStr ? (
-                    <p className="whitespace-nowrap text-xs overflow-hidden">
-                      {event.summary}
-                    </p>
-                  ) : (
-                    <>
-                      {/* On Desktop microsoft chrome Sausage Links are acting strange */}
-                      <div
-                        className={`absolute left-0 w-2 translate-x-[-75%] top-[50%] translate-y-[-50%] rounded-full ${event.color} h-1`}
-                      ></div>
-                      <p className="text-xs whitespace-nowrap overflow-hidden">
+              <div
+                className={`text-center flex justify-center items-center text-sm mt-1 ${
+                  isCurrentDate
+                    ? "w-[25px] h-[25px] rounded-full bg-white shadow-md text-black"
+                    : preferences.darkMode
+                      ? "text-white"
+                      : "text-black"
+                }`}
+              >
+                <p>{index >= paddingDays && dayNumber}</p>
+              </div>
+
+              <div
+                className={`w-full absolute inset-0 pt-11 overflow-y-clip ${
+                  selected.includes(index)
+                    ? "bg-cyan-100 bg-opacity-50"
+                    : "bg-transparent"
+                }`}
+              >
+                {eventsToRender.map((event) => (
+                  <motion.div
+                    key={`${event.id}_${index}`}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    style={{
+                      color: tailwindBgToHex(event.color),
+                    }}
+                    className={`rounded-lg ${event.color} shadow-md p-1 my-1 mx-auto relative`}
+                  >
+                    {new Date(event.startDate).toLocaleDateString() ===
+                    dateStr ? (
+                      <p className="whitespace-nowrap text-xs overflow-hidden">
                         {event.summary}
                       </p>
-                    </>
-                  )}
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        );
-      })}
+                    ) : (
+                      <>
+                        <div
+                          className={`absolute left-0 w-2 translate-x-[-75%] top-[50%] translate-y-[-50%] rounded-full ${event.color} h-1`}
+                        ></div>
+                        <p className="text-xs whitespace-nowrap overflow-hidden">
+                          {event.summary}
+                        </p>
+                      </>
+                    )}
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          );
+        },
+      )}
       {confirmDates && (
         <motion.div
           initial={{ opacity: 0 }}
