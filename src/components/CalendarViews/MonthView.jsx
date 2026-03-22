@@ -6,7 +6,11 @@ import DatesContext from "../../context/DatesContext.jsx";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
 import UserContext from "../../context/UserContext.jsx";
 import { calendar, calendarBlocks } from "../../motion.js";
-import { tailwindBgToHex } from "../../utils/helpers.js";
+import {
+  cloneEventForDay,
+  eventOccursOnDay,
+  tailwindBgToHex,
+} from "../../utils/helpers.js";
 import PopUpMonthViewWindow from "../Misc/PopUpMonthViewWindow.jsx";
 
 const MonthView = () => {
@@ -120,6 +124,17 @@ const MonthView = () => {
     targetDateObj.setHours(0, 0, 0, 0);
     const key = `${year}-${month}`;
     const eventsToSort = eventMap.get(key)?.events;
+    const repeatEvents = eventMap.get("repeat-events")?.events || [];
+
+    if (repeatEvents.length > 0) {
+      repeatEvents.forEach((e) => {
+        const eLandsOnDay = eventOccursOnDay(e, new Date(dtStr));
+        if (eLandsOnDay) {
+          const eventRepeated = cloneEventForDay(e, new Date(dtStr));
+          eventsToSort.push(eventRepeated);
+        }
+      });
+    }
 
     if (!eventsToSort || eventsToSort.length < 1) {
       return [];

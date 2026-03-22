@@ -130,48 +130,6 @@ export const eventIsAllDay = (event) => {
   }
 };
 
-// Helper function to normalize date (ignore time)
-const normalizeDate = (d) =>
-  new Date(d.getFullYear(), d.getMonth(), d.getDate());
-
-export const hasRepeatYear = (repeaters, date) => {
-  const target = normalizeDate(date);
-  return repeaters.some((r) => {
-    const rd = normalizeDate(new Date(r));
-    return (
-      rd.getMonth() === target.getMonth() && rd.getDate() === target.getDate()
-    );
-  });
-};
-
-export const hasRepeatMonth = (repeaters, date) => {
-  const target = normalizeDate(date);
-  return repeaters.some((r) => {
-    const rd = normalizeDate(new Date(r));
-    return rd.getDate() === target.getDate();
-  });
-};
-
-export const hasRepeatBiWeekly = (repeaters, date) => {
-  const target = normalizeDate(date);
-  return repeaters.some((r) => {
-    const rd = normalizeDate(new Date(r));
-    const diffDays = Math.abs((target - rd) / (1000 * 60 * 60 * 24));
-    // Bi-weekly = every 14 days
-    return diffDays % 14 === 0;
-  });
-};
-
-export const hasRepeatWeekly = (repeaters, date) => {
-  const target = normalizeDate(date);
-  return repeaters.some((r) => {
-    const rd = normalizeDate(new Date(r));
-    const diffDays = Math.abs((target - rd) / (1000 * 60 * 60 * 24));
-    // Weekly = every 7 days
-    return diffDays % 7 === 0;
-  });
-};
-
 export const hasRepeatDaily = (repeaters, date) => {
   const target = normalizeDate(date);
   return repeaters.some(
@@ -318,4 +276,153 @@ export const returnSortDatedDate = (type, date) => {
     default:
       return null;
   }
+};
+
+// Helper methods for checking if event is repeating on a specific day
+const isSameCalendarDay = (a, b) => {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
+};
+
+const startOfDay = (date) => {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+};
+
+const daysBetween = (a, b) => {
+  const msPerDay = 1000 * 60 * 60 * 24;
+  const aStart = startOfDay(a);
+  const bStart = startOfDay(b);
+  return Math.floor((bStart - aStart) / msPerDay);
+};
+
+const monthsBetween = (a, b) => {
+  return (
+    (b.getFullYear() - a.getFullYear()) * 12 + (b.getMonth() - a.getMonth())
+  );
+};
+
+const yearsBetween = (a, b) => {
+  return b.getFullYear() - a.getFullYear();
+};
+
+export const eventOccursOnDay = (event, candidateDay) => {
+  const eventStart = new Date(event.date);
+  const candidate = startOfDay(candidateDay);
+
+  // first occurrence always counts
+  if (isSameCalendarDay(eventStart, candidate)) return true;
+
+  // no repeat
+  if (!event.repeats?.repeat) return false;
+
+  // cannot repeat before start date
+  if (candidate < startOfDay(eventStart)) return false;
+
+  const interval = event.repeats.interval || 1;
+  const howOften = event.repeats.howOften;
+
+  switch (howOften) {
+    case "day": {
+      const diffDays = daysBetween(eventStart, candidate);
+      return diffDays % interval === 0;
+    }
+
+    case "week": {
+      const diffDays = daysBetween(eventStart, candidate);
+
+      // must be same weekday
+      if (candidate.getDay() !== eventStart.getDay()) return false;
+
+      const diffWeeks = Math.floor(diffDays / 7);
+      return diffWeeks % interval === 0;
+    }
+
+    case "month": {
+      const diffMonths = monthsBetween(eventStart, candidate);
+
+      if (diffMonths < 0) return false;
+      if (diffMonths % interval !== 0) return false;
+
+      // simple rule: same day-of-month only
+      return candidate.getDate() === eventStart.getDate();
+    }
+
+    case "year": {
+      const diffYears = yearsBetween(eventStart, candidate);
+
+      if (diffYears < 0) return false;
+      if (diffYears % interval !== 0) return false;
+
+      return (
+        candidate.getMonth() === eventStart.getMonth() &&
+        candidate.getDate() === eventStart.getDate()
+      );
+    }
+
+    default:
+      return false;
+  }
+};
+
+const mergeDateWithTime = (baseDate, newDay) => {
+  return new Date(
+    newDay.getFullYear(),
+    newDay.getMonth(),
+    newDay.getDate(),
+    baseDate.getHours(),
+    baseDate.getMinutes(),
+    baseDate.getSeconds(),
+    baseDate.getMilliseconds(),
+  );
+};
+
+export const cloneEventForDay = (event, day) => {
+  const originalStart = new Date(event.startDate);
+  const originalEnd = new Date(event.endDate);
+
+  const duration = originalEnd.getTime() - originalStart.getTime();
+
+  const newStartDate = mergeDateWithTime(originalStart, day);
+  const newEndDate = new Date(newStartDate.getTime() + duration);
+
+  // Parse safely
+  const parsedStartTime = event.start?.startTime
+    ? new Date(event.start.startTime)
+    : null;
+
+  const parsedEndTime = event.end?.endTime ? new Date(event.end.endTime) : null;
+
+  // Validate BOTH must exist and be valid
+  const hasValidTimes =
+    parsedStartTime &&
+    parsedEndTime &&
+    !Number.isNaN(parsedStartTime.getTime()) &&
+    !Number.isNaN(parsedEndTime.getTime());
+
+  const newStartTime = hasValidTimes
+    ? mergeDateWithTime(parsedStartTime, day)
+    : null;
+
+  const newEndTime = hasValidTimes
+    ? mergeDateWithTime(parsedEndTime, day)
+    : null;
+
+  return {
+    ...event,
+    startDate: newStartDate,
+    endDate: newEndDate,
+    start: {
+      ...event.start,
+      timeZone: event.start?.timeZone ?? null,
+      startTime: newStartTime ? newStartTime.toString() : null,
+    },
+    end: {
+      ...event.end,
+      timeZone: event.end?.timeZone ?? null,
+      endTime: newEndTime ? newEndTime.toString() : null,
+    },
+  };
 };

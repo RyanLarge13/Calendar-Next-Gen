@@ -199,7 +199,7 @@ const AddEvent = () => {
           repeat,
           howOften: repeat ? howOften : null,
           nextDate: null,
-          interval: interval ? interval : 7,
+          interval: interval ? interval : 1,
           repeatId: uuidv4(),
         },
         color: color ? color : "bg-white",
