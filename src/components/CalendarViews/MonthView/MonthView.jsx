@@ -1,0 +1,200 @@
+import { motion } from "framer-motion";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import DatesContext from "../../../context/DatesContext.jsx";
+import UserContext from "../../../context/UserContext.jsx";
+import { calendar } from "../../../motion.js";
+import { cloneEventForDay, eventOccursOnDay } from "../../../utils/helpers.js";
+import PopUpMonthViewWindow from "../../Misc/PopUpMonthViewWindow.jsx";
+import DayCell from "./DayCell.jsx";
+
+const MonthView = () => {
+  const { eventMap } = useContext(UserContext);
+  const { paddingDays, daysInMonth, month, year, day, dateObj } =
+    useContext(DatesContext);
+
+  const [selected, setSelected] = useState([]);
+  const [confirmDates, setConfirmDates] = useState(false);
+  const [newPopup, setNewPopup] = useState(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [popupEvents, setPopupEvents] = useState([]); // Changing?
+  const [popUpReminders, setPopUpReminders] = useState([]);
+  const [hoverDay, setHoverDay] = useState(null);
+  const [renderPopup, setRenderPopup] = useState(false);
+
+  const popupTimeoutRef = useRef(null);
+  const closePopupTimeoutRef = useRef(null);
+  const isHoveringPopupRef = useRef(false);
+
+  useEffect(() => {
+    selected.length > 0 ? setConfirmDates(true) : setConfirmDates(false);
+  }, [selected]);
+
+  const getIndicesForEvents = useCallback(
+    (dtStr) => {
+      const targetDateObj = new Date(dtStr);
+      targetDateObj.setHours(0, 0, 0, 0);
+      const key = `${year}-${month}`;
+      const baseEvents = eventMap.get(key)?.events || [];
+      const eventsToSort = [...baseEvents];
+      const repeatEvents = eventMap.get("repeat-events")?.events || [];
+
+      if (repeatEvents.length > 0) {
+        repeatEvents.forEach((e) => {
+          const eLandsOnDay = eventOccursOnDay(e, dtStr);
+          if (eLandsOnDay) {
+            const eventRepeated = cloneEventForDay(e, new Date(dtStr));
+            eventsToSort.push(eventRepeated);
+          }
+        });
+      }
+
+      if (!eventsToSort || eventsToSort.length < 1) {
+        return [];
+      }
+      return eventsToSort
+        .map((event) => {
+          const startDate = new Date(event.startDate);
+          const endDate = new Date(event.endDate);
+          startDate.setHours(0, 0, 0, 0);
+          endDate.setHours(0, 0, 0, 0);
+          return {
+            ...event,
+            startDate,
+            endDate,
+            duration: (endDate - startDate) / (24 * 60 * 60 * 1000),
+          };
+        })
+        .filter(
+          (event) =>
+            event.startDate <= targetDateObj && event.endDate >= targetDateObj,
+        )
+        .sort((a, b) => b.duration - a.duration);
+    },
+    [month, year, eventMap],
+  );
+
+  const clearPopupNow = useCallback(() => {
+    if (popupTimeoutRef.current) {
+      clearTimeout(popupTimeoutRef.current);
+      popupTimeoutRef.current = null;
+    }
+
+    if (closePopupTimeoutRef.current) {
+      clearTimeout(closePopupTimeoutRef.current);
+      closePopupTimeoutRef.current = null;
+    }
+
+    setNewPopup(false);
+  }, []);
+
+  const clearPopup = useCallback(() => {
+    if (popupTimeoutRef.current) {
+      clearTimeout(popupTimeoutRef.current);
+      popupTimeoutRef.current = null;
+    }
+
+    setNewPopup(false);
+  }, []);
+
+  const daysData = useMemo(() => {
+    return [...Array(paddingDays + daysInMonth)].map((_, index) => {
+      const dayNumber = index - paddingDays + 1;
+      const isPaddingDay = index < paddingDays;
+
+      if (isPaddingDay) {
+        return {
+          index,
+          dayNumber,
+          dateStr: null,
+          isCurrentDate: false,
+          eventsToRender: [],
+          remindersToRender: [],
+          isPaddingDay: true,
+        };
+      }
+
+      const dateStr = `${month + 1}/${dayNumber}/${year}`;
+
+      const isCurrentDate =
+        dayNumber === day &&
+        month === dateObj.getMonth() &&
+        year === dateObj.getFullYear();
+
+      const eventsToRender = getIndicesForEvents(dateStr);
+
+      return {
+        index,
+        dayNumber,
+        dateStr,
+        isCurrentDate,
+        eventsToRender,
+        isPaddingDay: false,
+      };
+    });
+  }, [
+    paddingDays,
+    daysInMonth,
+    month,
+    year,
+    day,
+    dateObj,
+    getIndicesForEvents,
+  ]);
+
+  return (
+    <motion.div
+      variants={calendar}
+      initial="hidden"
+      animate="show"
+      className="grid grid-cols-7 min-h-[50vh] h-[83vh] gap-1"
+      onMouseEnter={() => {
+        if (!renderPopup) setRenderPopup(true);
+      }}
+      onMouseLeave={() => {
+        setRenderPopup(false);
+        clearPopup();
+      }}
+    >
+      {newPopup && (
+        <PopUpMonthViewWindow
+          positions={mousePosition}
+          remindersToRender={popUpReminders}
+          eventsToRender={popupEvents}
+          day={hoverDay}
+          onMouseEnter={() => {
+            isHoveringPopupRef.current = true;
+            if (closePopupTimeoutRef.current) {
+              clearTimeout(closePopupTimeoutRef.current);
+              closePopupTimeoutRef.current = null;
+            }
+          }}
+          onMouseLeave={() => {
+            isHoveringPopupRef.current = false;
+            clearPopupNow();
+          }}
+        />
+      )}
+      {daysData.map(
+        ({ index, dayNumber, dateStr, isCurrentDate, eventsToRender }) => (
+          <DayCell
+            index={index}
+            dayNumber={dayNumber}
+            dateStr={dateStr}
+            isCurrentDate={isCurrentDate}
+            eventsToRender={eventsToRender}
+          />
+        ),
+      )}
+      {/* <ConfirmDates /> */}
+    </motion.div>
+  );
+};
+
+export default MonthView;
