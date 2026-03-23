@@ -10,11 +10,19 @@ import Views from "../components/CalendarViews/Views";
 import SideBar from "../components/Misc/SideBar";
 import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
+import UserContext from "../context/UserContext";
 
 const MainPage = () => {
-  const { setAddNewEvent, setType, setMenu, setShowLogin, setShowNotifs } =
-    useContext(InteractiveContext);
+  const {
+    setAddNewEvent,
+    setType,
+    setEvent,
+    setMenu,
+    setShowLogin,
+    setShowNotifs,
+  } = useContext(InteractiveContext);
   const { setOpenModal } = useContext(DatesContext);
+  const { events } = useContext(UserContext);
 
   const location = useLocation();
 
@@ -36,8 +44,18 @@ const MainPage = () => {
       setShowLogin(true);
       setShowNotifs(true);
     }
-    if (location.pathname === "/event") {
-      console.log("Event");
+    if (location.pathname.startsWith("/event/")) {
+      const uuid = location.pathname.split("/event/")[1];
+      console.log(uuid);
+
+      if (uuid) {
+        closeMenu();
+        const e = events.find((ev) => ev.id === uuid);
+
+        if (e) {
+          setEvent(e);
+        }
+      }
     }
   }, [location]);
 

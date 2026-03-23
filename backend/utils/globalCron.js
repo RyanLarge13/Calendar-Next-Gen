@@ -36,6 +36,8 @@ const processPushNotifications = async () => {
               userId: notification.userId,
               time: notification.time,
               notifType: notification.type,
+              eventRefId:
+                notification.type === "event" ? notification.eventRefId : null,
             },
           });
           if (user.notifSub.length > 1) {

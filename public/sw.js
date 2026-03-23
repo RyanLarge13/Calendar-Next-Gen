@@ -240,6 +240,7 @@ self.addEventListener("notificationclick", (event) => {
     let urlAddition = "";
 
     const type = notification.data?.notifType;
+    const eventRefId = notification.data?.eventRefId;
 
     switch (type) {
       case null || undefined || "":
@@ -247,7 +248,9 @@ self.addEventListener("notificationclick", (event) => {
         break;
       case "event":
         // Update to carry real ID
-        urlAddition = "event/eventId";
+        if (eventRefId !== null) {
+          urlAddition = `event/${eventRefId}`;
+        }
         break;
       case "reminder":
         urlAddition = "notifications";
