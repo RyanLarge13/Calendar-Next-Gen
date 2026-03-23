@@ -26,6 +26,7 @@ import SuggestCities from "../Misc/SuggestCities.jsx";
 import NewReminder from "../Reminders/NewReminder.jsx";
 import TimeSetter from "../DatePickers/TimeSetter";
 import Toggle from "../Misc/Toggle";
+import { useModalActions } from "../../context/ContextHooks/ModalContext.jsx";
 
 const AddEvent = () => {
   const {
@@ -43,8 +44,9 @@ const AddEvent = () => {
     addEventWithStartEndTime,
     setAddEventWithStartEndTime,
   } = useContext(InteractiveContext);
-  const { setString, string, setOpenModal, secondString } =
-    useContext(DatesContext);
+  const { setString, string, secondString } = useContext(DatesContext);
+
+  const { closeModal } = useModalActions();
 
   // Basic event data
   const [summary, setSummary] = useState("");
@@ -239,7 +241,7 @@ const AddEvent = () => {
           }
           setAddNewEvent(false);
           setType(null);
-          setOpenModal(false);
+          closeModal();
           if (attachments.length > 0) {
             setTimeout(() => {
               createAttachments(

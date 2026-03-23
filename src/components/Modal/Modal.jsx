@@ -14,11 +14,14 @@ import Portal from "../Misc/Portal";
 import AddTask from "../AddData/AddTask";
 import Reminder from "../Reminders/Reminder";
 import { eventIsAllDay } from "../../utils/helpers";
+import {
+  useModalActions,
+  useModalState,
+} from "../../context/ContextHooks/ModalContext";
 
 const Modal = () => {
   const { events, preferences, reminders } = useContext(UserContext);
-  const { string, setOpenModal, openModal, dateObj, theDay, setSecondString } =
-    useContext(DatesContext);
+  const { string, dateObj, theDay, setSecondString } = useContext(DatesContext);
   const {
     addNewEvent,
     setAddNewEvent,
@@ -27,6 +30,9 @@ const Modal = () => {
     setAddEventWithStartEndTime,
     setEvent,
   } = useContext(InteractiveContext);
+
+  const { closeModal } = useModalActions();
+  const { open } = useModalState();
 
   const [dayEvents, setDayEvents] = useState([]);
   const [staticTimeHeight, setStaticTimeHeight] = useState(0);
@@ -153,7 +159,7 @@ const Modal = () => {
     return 0;
   };
 
-  return openModal ? (
+  return open ? (
     <motion.div
       initial={{ x: 100, opacity: 0 }}
       exit={{ x: 200, opacity: 0 }}
@@ -171,7 +177,7 @@ const Modal = () => {
           animate={{ opacity: 1 }}
           onClick={() => {
             setAddNewEvent(false);
-            setOpenModal(false);
+            closeModal();
             setType(null);
             setEvent(null);
           }}

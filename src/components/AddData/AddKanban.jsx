@@ -2,18 +2,18 @@ import { useContext, useRef, useState } from "react";
 import { BsFillCalendarPlusFill } from "react-icons/bs";
 import { MdFreeCancellation } from "react-icons/md";
 import { colors } from "../../constants/miscConstants.js";
-import DatesContext from "../../context/DatesContext.jsx";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
 import UserContext from "../../context/UserContext.jsx";
 import { createNewKanban } from "../../utils/api.js";
 import Color from "../Misc/Color";
 import AddKanbanFolder from "./AddKanbanFolder.jsx";
+import { useModalActions } from "../../context/ContextHooks/ModalContext.jsx";
 
 const AddKanban = () => {
   const { setType, setShowCategory, setAddNewEvent, setMenu } =
     useContext(InteractiveContext);
   const { setSystemNotif, setKanbans, preferences } = useContext(UserContext);
-  const { setOpenModal } = useContext(DatesContext);
+  const { closeModal } = useModalActions();
 
   const [title, setTitle] = useState("");
   const [color, setColor] = useState("");
@@ -69,7 +69,7 @@ const AddKanban = () => {
         .then((res) => {
           console.log(res);
           setKanbans((prev) => [...prev, res.data.kanban]);
-          setOpenModal(false);
+          closeModal();
           setAddNewEvent(false);
           setType(null);
           setMenu(true);

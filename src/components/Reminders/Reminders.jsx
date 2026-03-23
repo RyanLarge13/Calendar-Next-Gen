@@ -9,11 +9,14 @@ import UserContext from "../../context/UserContext.jsx";
 import { BsCalendarDay, BsCalendarMonth, BsCalendarWeek } from "react-icons/bs";
 import GroupedReminders from "./GroupedReminders.jsx";
 import { MdOutlineClearAll } from "react-icons/md";
+import { useModalActions } from "../../context/ContextHooks/ModalContext.jsx";
 
 const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
   const { reminders, preferences } = useContext(UserContext);
-  const { dateObj, string, setString, setOpenModal } = useContext(DatesContext);
+  const { dateObj, string, setString } = useContext(DatesContext);
   const { setType, setMenu, setAddNewEvent } = useContext(InteractiveContext);
+
+  const { openModal } = useModalActions();
 
   const [incompleteReminders, setIncompleteReminders] = useState(
     reminders.filter((r) => r.completed === false),
@@ -152,7 +155,7 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
     }
     setType("reminder");
     setMenu(false);
-    setOpenModal(true);
+    openModal();
     setAddNewEvent(true);
   };
 

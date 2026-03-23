@@ -1,36 +1,15 @@
 import { motion } from "framer-motion";
-import {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useContext, useEffect, useMemo } from "react";
 import DatesContext from "../../../context/DatesContext.jsx";
 import UserContext from "../../../context/UserContext.jsx";
 import { calendar } from "../../../motion.js";
 import { cloneEventForDay, eventOccursOnDay } from "../../../utils/helpers.js";
-import PopUpMonthViewWindow from "../../Misc/PopUpMonthViewWindow.jsx";
 import DayCell from "./DayCell.jsx";
 
 const MonthView = () => {
   const { eventMap } = useContext(UserContext);
   const { paddingDays, daysInMonth, month, year, day, dateObj } =
     useContext(DatesContext);
-
-  const [selected, setSelected] = useState([]);
-  const [confirmDates, setConfirmDates] = useState(false);
-  const [newPopup, setNewPopup] = useState(false);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [popupEvents, setPopupEvents] = useState([]); // Changing?
-  const [popUpReminders, setPopUpReminders] = useState([]);
-  const [hoverDay, setHoverDay] = useState(null);
-  const [renderPopup, setRenderPopup] = useState(false);
-
-  const popupTimeoutRef = useRef(null);
-  const closePopupTimeoutRef = useRef(null);
-  const isHoveringPopupRef = useRef(false);
 
   useEffect(() => {
     selected.length > 0 ? setConfirmDates(true) : setConfirmDates(false);
@@ -79,29 +58,6 @@ const MonthView = () => {
     },
     [month, year, eventMap],
   );
-
-  const clearPopupNow = useCallback(() => {
-    if (popupTimeoutRef.current) {
-      clearTimeout(popupTimeoutRef.current);
-      popupTimeoutRef.current = null;
-    }
-
-    if (closePopupTimeoutRef.current) {
-      clearTimeout(closePopupTimeoutRef.current);
-      closePopupTimeoutRef.current = null;
-    }
-
-    setNewPopup(false);
-  }, []);
-
-  const clearPopup = useCallback(() => {
-    if (popupTimeoutRef.current) {
-      clearTimeout(popupTimeoutRef.current);
-      popupTimeoutRef.current = null;
-    }
-
-    setNewPopup(false);
-  }, []);
 
   const daysData = useMemo(() => {
     return [...Array(paddingDays + daysInMonth)].map((_, index) => {
@@ -154,43 +110,18 @@ const MonthView = () => {
       initial="hidden"
       animate="show"
       className="grid grid-cols-7 min-h-[50vh] h-[83vh] gap-1"
-      onMouseEnter={() => {
-        if (!renderPopup) setRenderPopup(true);
-      }}
-      onMouseLeave={() => {
-        setRenderPopup(false);
-        clearPopup();
-      }}
     >
-      {newPopup && (
-        <PopUpMonthViewWindow
-          positions={mousePosition}
-          remindersToRender={popUpReminders}
-          eventsToRender={popupEvents}
-          day={hoverDay}
-          onMouseEnter={() => {
-            isHoveringPopupRef.current = true;
-            if (closePopupTimeoutRef.current) {
-              clearTimeout(closePopupTimeoutRef.current);
-              closePopupTimeoutRef.current = null;
-            }
-          }}
-          onMouseLeave={() => {
-            isHoveringPopupRef.current = false;
-            clearPopupNow();
-          }}
-        />
-      )}
       {daysData.map(
-        ({ index, dayNumber, dateStr, isCurrentDate, eventsToRender }) => (
-          <DayCell
-            index={index}
-            dayNumber={dayNumber}
-            dateStr={dateStr}
-            isCurrentDate={isCurrentDate}
-            eventsToRender={eventsToRender}
-          />
-        ),
+        ({ index, dayNumber, dateStr, isCurrentDate, eventsToRender }) =>
+          React.memo(
+            <DayCell
+              index={index}
+              dayNumber={dayNumber}
+              dateStr={dateStr}
+              isCurrentDate={isCurrentDate}
+              eventsToRender={eventsToRender}
+            />,
+          ),
       )}
       {/* <ConfirmDates /> */}
     </motion.div>

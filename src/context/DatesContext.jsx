@@ -21,7 +21,6 @@ export const DatesProvider = ({ children }) => {
   );
   const [dateString, setDateString] = useState(``);
   const [paddingDays, setPaddingDays] = useState(null);
-  const [openModal, setOpenModal] = useState(false);
   const [string, setString] = useState(new Date().toLocaleDateString());
   const [secondString, setSecondString] = useState("");
   const [theDay, setTheDay] = useState(new Date());
@@ -97,7 +96,6 @@ export const DatesProvider = ({ children }) => {
         day,
         string,
         nav,
-        openModal,
         theDay,
         currentWeek,
         secondString,
@@ -106,7 +104,6 @@ export const DatesProvider = ({ children }) => {
         setNav,
         setCurrentWeek,
         setTheDay,
-        setOpenModal,
         setString,
         setDt,
         setUpdatedDate,

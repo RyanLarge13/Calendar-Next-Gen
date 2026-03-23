@@ -11,11 +11,12 @@ import UserContext from "../../context/UserContext.jsx";
 import { addNewSticky } from "../../utils/api.js";
 import Color from "../Misc/Color.jsx";
 import Toggle from "../Misc/Toggle";
+import { useModalActions } from "../../context/ContextHooks/ModalContext.jsx";
 
 const AddSticky = () => {
   const { setStickies, setSystemNotif, preferences } = useContext(UserContext);
   const { setType, setAddNewEvent } = useContext(InteractiveContext);
-  const { setOpenModal } = useContext(DatesContext);
+  const { closeModal } = useModalActions();
 
   const [title, setTitle] = useState("");
   const [color, setColor] = useState("");
@@ -76,7 +77,7 @@ const AddSticky = () => {
       addNewSticky(token, newSticky)
         .then((res) => {
           setStickies((prev) => [res.data.sticky, ...prev]);
-          setOpenModal(false);
+          closeModal();
         })
         .catch((err) => {
           console.log(err);

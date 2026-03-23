@@ -1,10 +1,12 @@
 import { motion } from "framer-motion";
 import { calendarBlocks } from "../../../motion";
-import { useContext, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import UserContext from "../../../context/UserContext";
 import DatesContext from "../../../context/DatesContext";
 import { tailwindBgToHex } from "../../../utils/helpers";
 import InteractiveContext from "../../../context/InteractiveContext";
+import PopUpMonthViewWindow from "../../Misc/PopUpMonthViewWindow";
+import { useModalActions } from "../../../context/ContextHooks/ModalContext";
 
 const DayCell = ({
   index,
@@ -17,14 +19,27 @@ const DayCell = ({
   const { rowDays, dateString, setNav } = useContext(DatesContext);
   const { setMenu, setShowLogin } = useContext(InteractiveContext);
 
+  const { openModal } = useModalActions();
+
   const [remindersToRender, setRemindersToRender] = useState([]);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [popupEvents, setPopupEvents] = useState([]); // Changing?
+  const [popUpReminders, setPopUpReminders] = useState([]);
+  const [hoverDay, setHoverDay] = useState(null);
+  const [newPopup, setNewPopup] = useState(false);
+
+  const popupTimeoutRef = useRef(null);
+  const isHoveringPopupRef = useRef(false);
+  const closePopupTimeoutRef = useRef(null);
 
   const targetDate = new Date(dateString);
 
   const addEvent = (date) => {
-    setMenu(false);
+    setMenu((prev) => {
+      if (prev) false;
+    });
     setShowLogin(false);
-    setOpenModal(true);
+    openModal();
     setString(date);
   };
 
@@ -88,7 +103,7 @@ const DayCell = ({
         closePopupTimeoutRef.current = null;
       }
 
-      if (index - paddingDays < 0 || !renderPopup) {
+      if (index - paddingDays < 0) {
         return;
       }
 
@@ -107,7 +122,7 @@ const DayCell = ({
         setNewPopup(true);
       }, 1000);
     },
-    [paddingDays, renderPopup, month, year],
+    [paddingDays, month, year],
   );
 
   const scheduleClearPopup = useCallback(() => {
@@ -120,6 +135,20 @@ const DayCell = ({
         setNewPopup(false);
       }
     }, 120);
+  }, []);
+
+  const clearPopupNow = useCallback(() => {
+    if (popupTimeoutRef.current) {
+      clearTimeout(popupTimeoutRef.current);
+      popupTimeoutRef.current = null;
+    }
+
+    if (closePopupTimeoutRef.current) {
+      clearTimeout(closePopupTimeoutRef.current);
+      closePopupTimeoutRef.current = null;
+    }
+
+    setNewPopup(false);
   }, []);
 
   return (
@@ -192,6 +221,25 @@ const DayCell = ({
           </motion.div>
         ))}
       </div>
+      {newPopup && (
+        <PopUpMonthViewWindow
+          positions={mousePosition}
+          remindersToRender={popUpReminders}
+          eventsToRender={popupEvents}
+          day={hoverDay}
+          onMouseEnter={() => {
+            isHoveringPopupRef.current = true;
+            if (closePopupTimeoutRef.current) {
+              clearTimeout(closePopupTimeoutRef.current);
+              closePopupTimeoutRef.current = null;
+            }
+          }}
+          onMouseLeave={() => {
+            isHoveringPopupRef.current = false;
+            clearPopupNow();
+          }}
+        />
+      )}
     </motion.div>
   );
 };

@@ -21,12 +21,15 @@ import { formatTime, tailwindBgToHex } from "../../utils/helpers.js";
 import GoogleMaps from "../Misc/GoogleMaps";
 import SuggestCities from "../Misc/SuggestCities.jsx";
 import Reminder from "../Reminders/Reminder.jsx";
+import { useModalActions } from "../../context/ContextHooks/ModalContext.jsx";
 
 const Event = () => {
   const { event, setEvent, setAddNewEvent, setType, menu, setMenu } =
     useContext(InteractiveContext);
   const { preferences, setEventMap, reminders } = useContext(UserContext);
-  const { string, setOpenModal, setString } = useContext(DatesContext);
+  const { string, setString } = useContext(DatesContext);
+
+  const { openModal } = useModalActions();
 
   const [timeLeft, setTimeLeft] = useState(null);
   const [width, setWidth] = useState(0);
@@ -320,7 +323,7 @@ const Event = () => {
     if (menu) {
       setMenu(false);
     }
-    setOpenModal(true);
+    openModal();
     setAddNewEvent(true);
   };
 

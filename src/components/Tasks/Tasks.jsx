@@ -5,11 +5,14 @@ import DatesContext from "../../context/DatesContext";
 import InteractiveContext from "../../context/InteractiveContext";
 import UserContext from "../../context/UserContext";
 import Task from "./Task";
+import { useModalActions } from "../../context/ContextHooks/ModalContext";
 
 const Tasks = ({ taskSort, taskSortOpt, taskSearch, taskSearchTxt }) => {
   const { userTasks, preferences } = useContext(UserContext);
   const { setType, setAddNewEvent, setMenu } = useContext(InteractiveContext);
-  const { string, setString, setOpenModal } = useContext(DatesContext);
+  const { string, setString } = useContext(DatesContext);
+
+  const { openModal } = useModalActions();
 
   const [tasksToRender, setTasksToRender] = useState(userTasks);
 
@@ -66,7 +69,7 @@ const Tasks = ({ taskSort, taskSortOpt, taskSearch, taskSearchTxt }) => {
     }
     setType("task");
     setMenu(false);
-    setOpenModal(true);
+    openModal();
     setAddNewEvent(true);
   };
 

@@ -16,12 +16,14 @@ import LoginLogout from "../UserModal/LoginLogout/LoginLogout";
 import Menu from "../Menu/Menu";
 import Modal from "../Modal/Modal";
 import ModalHeader from "../Modal/ModalHeader";
+import { useModalActions } from "../../context/ContextHooks/ModalContext";
 
 const Calendar = () => {
   const { preferences } = useContext(UserContext);
   const { showFullDatePicker, view, setShowFullDatePicker } =
     useContext(InteractiveContext);
-  const { loading, setOpenModal, setNav, setTheDay } = useContext(DatesContext);
+  const { loading, setNav, setTheDay } = useContext(DatesContext);
+  const { openModal } = useModalActions();
 
   const containerRef = useRef(null);
 
@@ -42,7 +44,7 @@ const Calendar = () => {
   const setSecondDateObject = (newString) => {
     setSecondString(newString);
     setShowFullDatePicker(false);
-    setOpenModal(true);
+    openModal();
     setType("event");
     setAddNewEvent(true);
   };

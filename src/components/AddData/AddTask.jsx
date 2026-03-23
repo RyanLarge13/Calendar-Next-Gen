@@ -13,8 +13,10 @@ import Color from "../Misc/Color.jsx";
 const AddTask = () => {
   const { setType, setAddNewEvent, setMenu, setShowCategory } =
     useContext(InteractiveContext);
-  const { string, setOpenModal } = useContext(DatesContext);
+  const { string } = useContext(DatesContext);
   const { user, setUserTasks, preferences } = useContext(UserContext);
+
+  const { closeModal } = useModalActions();
 
   const [tasks, setTasks] = useState([]);
   const [title, setTitle] = useState("");
@@ -80,7 +82,7 @@ const AddTask = () => {
     createTask(token, newTaskSet)
       .then((res) => {
         setAddNewEvent(false);
-        setOpenModal(false);
+        closeModal();
         setUserTasks((prev) => [...prev, res.data.task]);
         setMenu(true);
         setShowCategory("task");

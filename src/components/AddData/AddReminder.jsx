@@ -9,6 +9,7 @@ import { addReminder, createNotification } from "../../utils/api";
 import { makeDateTime } from "../../utils/helpers";
 import TimeSetter from "../DatePickers/TimeSetter";
 import Toggle from "../Misc/Toggle";
+import { useModalActions } from "../../context/ContextHooks/ModalContext";
 
 const AddReminder = () => {
   const { setMenu, setAddNewEvent, setType, setShowCategory } =
@@ -21,7 +22,9 @@ const AddReminder = () => {
     preferences,
     eventMap,
   } = useContext(UserContext);
-  const { setOpenModal, string, setString } = useContext(DatesContext);
+  const { string, setString } = useContext(DatesContext);
+
+  const { closeModal } = useModalActions();
 
   const [time, setTime] = useState(null);
   const [title, setTitle] = useState("");
@@ -207,7 +210,7 @@ const AddReminder = () => {
               { text: "delete notification", func: () => {} },
             ],
           };
-          setOpenModal(false);
+          closeModal();
           setAddNewEvent(false);
           setType(null);
           return setSystemNotif(newNotif);
@@ -216,7 +219,7 @@ const AddReminder = () => {
     }
     addReminder(newReminder, token)
       .then((res) => {
-        setOpenModal(false);
+        closeModal();
         setAddNewEvent(false);
         setType(null);
         const sortedReminders = [...reminders, res.data.reminder].sort(

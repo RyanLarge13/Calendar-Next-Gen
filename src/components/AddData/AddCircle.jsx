@@ -20,6 +20,7 @@ import { IoIosAddCircle } from "react-icons/io";
 import DatesContext from "../../context/DatesContext";
 import InteractiveContext from "../../context/InteractiveContext";
 import UserContext from "../../context/UserContext";
+import { useModalActions } from "../../context/ContextHooks/ModalContext";
 
 export const AddCircle = () => {
   const {
@@ -31,8 +32,9 @@ export const AddCircle = () => {
     menu,
     showCategory,
   } = useContext(InteractiveContext);
-  const { setOpenModal, setString, string, dateObj } = useContext(DatesContext);
+  const { setString, string, dateObj } = useContext(DatesContext);
   const { setSystemNotif } = useContext(UserContext);
+  const { openModal } = useModalActions();
 
   const [show, setShow] = useState(false);
   const [showMenuBtns, setShowMenuBtns] = useState(false);
@@ -52,7 +54,7 @@ export const AddCircle = () => {
     if (menu) {
       setMenu(false);
     }
-    setOpenModal(true);
+    openModal();
     setAddNewEvent(true);
   };
 

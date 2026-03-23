@@ -10,12 +10,15 @@ import InteractiveContext from "../../context/InteractiveContext";
 import UserContext from "../../context/UserContext";
 import { deleteList, updateListTitle } from "../../utils/api";
 import ListItems from "./ListItems";
+import { useModalActions } from "../../context/ContextHooks/ModalContext";
 
 const Lists = ({ listSort, listSortOpt, listSearch, listSearchTxt }) => {
-  const { string, setString, setOpenModal } = useContext(DatesContext);
+  const { string, setString } = useContext(DatesContext);
   const { lists, setLists, setSystemNotif, preferences } =
     useContext(UserContext);
   const { setMenu, setType, setAddNewEvent } = useContext(InteractiveContext);
+
+  const { openModal } = useModalActions();
 
   const [listsToRender, setListsToRender] = useState(lists);
   const [addItems, setAddItems] = useState([]);
@@ -94,7 +97,7 @@ const Lists = ({ listSort, listSortOpt, listSearch, listSearchTxt }) => {
     }
     setType("todo-list");
     setMenu(false);
-    setOpenModal(true);
+    openModal();
     setAddNewEvent(true);
   };
 

@@ -7,12 +7,14 @@ import InteractiveContext from "../../context/InteractiveContext.jsx";
 import { AiOutlinePlusCircle } from "react-icons/ai";
 import { BsFillCalendarDayFill } from "react-icons/bs";
 import { tailwindBgToHex } from "../../utils/helpers.js";
+import { useModalActions } from "../../context/ContextHooks/ModalContext.jsx";
 
 const WeekView = () => {
   const { events, preferences } = useContext(UserContext);
   const { setEvent } = useContext(InteractiveContext);
-  const { currentWeek, setString, setOpenModal, dateObj } =
-    useContext(DatesContext);
+  const { currentWeek, setString, dateObj } = useContext(DatesContext);
+
+  const { openModal } = useModalActions();
 
   const [weeklyEvents, setWeeklyEvents] = useState([]);
   const dateContainerRefs = useRef([]);
@@ -73,7 +75,7 @@ const WeekView = () => {
 
   const addNewDataForDay = (date) => {
     setString(date.toLocaleDateString());
-    setOpenModal(true);
+    openModal();
   };
 
   const isEventAllDay = (event) => {

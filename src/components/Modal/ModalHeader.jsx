@@ -9,21 +9,21 @@ import {
   BsFillTrashFill,
 } from "react-icons/bs";
 import { MdLocationPin } from "react-icons/md";
+import { holidays } from "../../constants/holidays.js";
 import DatesContext from "../../context/DatesContext.jsx";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
 import UserContext from "../../context/UserContext.jsx";
 import { deleteEvent } from "../../utils/api.js";
 import { eventIsAllDay, tailwindBgToHex } from "../../utils/helpers.js";
+import { useModalState } from "../../context/ContextHooks/ModalContext.jsx";
 import weatherCodes from "../../constants/weatherContants.js";
 
 const ModalHeader = () => {
-  const { string, setString, secondString, openModal, theDay } =
-    useContext(DatesContext);
+  const { string, setString, secondString, theDay } = useContext(DatesContext);
   const {
     user,
     events,
     setEvents,
-    holidays,
     setSystemNotif,
     preferences,
     location,
@@ -32,6 +32,8 @@ const ModalHeader = () => {
   } = useContext(UserContext);
   const { addNewEvent, event, setEvent, setShowFullDatePicker } =
     useContext(InteractiveContext);
+
+  const { open } = useModalState();
 
   const [showAllDayEvents, setShowAllDayEvents] = useState(true);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -91,8 +93,6 @@ const ModalHeader = () => {
 
   useEffect(() => {
     const indexOfDay = getDateIndex();
-
-    console.log(indexOfDay);
 
     if (indexOfDay !== null) {
       const theCode = weatherData?.daily?.weathercode[indexOfDay];
@@ -192,7 +192,7 @@ const ModalHeader = () => {
     setShowFullDatePicker(true);
   };
 
-  return openModal || event ? (
+  return open || event ? (
     <motion.div
       initial={{
         width: event ? "99.5%" : windowWidth < 1024 ? "63.5%" : "29.5%",

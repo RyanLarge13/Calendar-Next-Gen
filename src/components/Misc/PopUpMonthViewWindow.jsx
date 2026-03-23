@@ -10,6 +10,7 @@ import InteractiveContext from "../../context/InteractiveContext";
 import UserContext from "../../context/UserContext";
 import Reminder from "../Reminders/Reminder";
 import { formatTime } from "../../utils/helpers";
+import { useModalActions } from "../../context/ContextHooks/ModalContext";
 
 const PopUpMonthViewWindow = ({
   positions,
@@ -20,9 +21,11 @@ const PopUpMonthViewWindow = ({
   onMouseLeave,
 }) => {
   const { preferences } = useContext(UserContext);
-  const { setString, setOpenModal, dateObj } = useContext(DatesContext);
+  const { setString } = useContext(DatesContext);
   const { setMenu, setShowLogin, setAddNewEvent, setType, setEvent } =
     useContext(InteractiveContext);
+
+  const { openModal } = useModalActions();
 
   useEffect(() => {
     console.log(positions);
@@ -31,7 +34,7 @@ const PopUpMonthViewWindow = ({
   const openModalAndSetType = (type) => {
     setMenu(false);
     setShowLogin(false);
-    setOpenModal(true);
+    openModal();
     setString(day);
     setAddNewEvent(true);
     setType(type);

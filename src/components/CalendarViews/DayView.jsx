@@ -10,6 +10,7 @@ import InteractiveContext from "../../context/InteractiveContext.jsx";
 import UserContext from "../../context/UserContext.jsx";
 import { createPortal } from "react-dom";
 import Reminder from "../Reminders/Reminder.jsx";
+import { useModalActions } from "../../context/ContextHooks/ModalContext.jsx";
 
 const DayView = ({ containerRef }) => {
   const {
@@ -20,8 +21,10 @@ const DayView = ({ containerRef }) => {
     event,
     view,
   } = useContext(InteractiveContext);
-  const { theDay, dateObj, setOpenModal, reminders } = useContext(DatesContext);
+  const { theDay, dateObj, reminders } = useContext(DatesContext);
   const { preferences, events } = useContext(UserContext);
+
+  const { openModal } = useModalActions();
 
   const [time, setTime] = useState(dateObj.toLocaleTimeString());
   const [height, setHeight] = useState(0);
@@ -204,7 +207,7 @@ const DayView = ({ containerRef }) => {
     });
     setType("event");
     setAddNewEvent(true);
-    setOpenModal(true);
+    openModal();
     setTimes([]);
   };
 

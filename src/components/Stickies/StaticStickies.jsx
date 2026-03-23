@@ -16,6 +16,8 @@ const StaticStickies = () => {
     1000: 1,
   };
 
+  const openModalAndSetType = () => {};
+
   return stickies.length > 0 ? (
     <div className="px-3 sm:px-6">
       <div className="mx-auto max-w-6xl">

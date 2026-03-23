@@ -4,17 +4,18 @@ import { BsCheck, BsList } from "react-icons/bs";
 import { MdClose } from "react-icons/md";
 import { v4 as uuidv4 } from "uuid";
 import { colors } from "../../constants/miscConstants.js";
-import DatesContext from "../../context/DatesContext.jsx";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
 import UserContext from "../../context/UserContext.jsx";
 import { createNewList } from "../../utils/api.js";
 import Color from "../Misc/Color";
+import { useModalActions } from "../../context/ContextHooks/ModalContext.jsx";
 
 const AddList = ({ eventsForDay }) => {
   const { user, setLists, setSystemNotif, preferences } =
     useContext(UserContext);
   const { setMenu, setType, setAddNewEvent } = useContext(InteractiveContext);
-  const { setOpenModal } = useContext(DatesContext);
+  const { closeModal } = useModalActions();
+
   const [addItems, setAddItems] = useState(false);
   const [listItems, setListItems] = useState([]);
   const [itemTitle, setItemTitle] = useState("");
@@ -130,7 +131,7 @@ const AddList = ({ eventsForDay }) => {
         const addedList = res.data.list;
         setType(null);
         setLists((prev) => [addedList, ...prev]);
-        setOpenModal(false);
+        closeModal();
         setAddNewEvent(false);
         setMenu(true);
       })

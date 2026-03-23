@@ -11,6 +11,7 @@ import SideBar from "../components/Misc/SideBar";
 import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext";
+import { useModalActions } from "../context/ContextHooks/ModalContext";
 
 const MainPage = () => {
   const {
@@ -21,8 +22,9 @@ const MainPage = () => {
     setShowLogin,
     setShowNotifs,
   } = useContext(InteractiveContext);
-  const { setOpenModal } = useContext(DatesContext);
   const { events } = useContext(UserContext);
+
+  const { openModal } = useModalActions();
 
   const location = useLocation();
 
@@ -30,13 +32,13 @@ const MainPage = () => {
     if (location.pathname === "/event") {
       setType("event");
       closeMenu();
-      setOpenModal(true);
+      openModal();
       setAddNewEvent(true);
     }
     if (location.pathname === "/reminder") {
       setType("reminder");
       closeMenu();
-      setOpenModal(true);
+      openModal();
       setAddNewEvent(true);
     }
     if (location.pathname === "/notifications") {

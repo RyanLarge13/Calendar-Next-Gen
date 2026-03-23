@@ -18,6 +18,7 @@ import {
   tailwindBgToHex,
 } from "../../utils/helpers.js";
 import PopUpMonthViewWindow from "../Misc/PopUpMonthViewWindow.jsx";
+import { useModalActions } from "../../context/ContextHooks/ModalContext.jsx";
 
 const MonthView = () => {
   const { eventMap, preferences, reminders } = useContext(UserContext);
@@ -30,12 +31,13 @@ const MonthView = () => {
     day,
     rowDays,
     dateString,
-    setOpenModal,
     setString,
     setSecondString,
     dateObj,
     setNav,
   } = useContext(DatesContext);
+
+  const { openModal } = useModalActions();
 
   const [selected, setSelected] = useState([]);
   const [confirmDates, setConfirmDates] = useState(false);
@@ -109,7 +111,7 @@ const MonthView = () => {
   const addEvent = (date) => {
     setMenu(false);
     setShowLogin(false);
-    setOpenModal(true);
+    openModal();
     setString(date);
   };
 
@@ -162,7 +164,7 @@ const MonthView = () => {
     const lastDay = selected[selected.length - 1] - paddingDays + 1;
     setString(`${month + 1}/${firstDay}/${year}`);
     setSecondString(`${month + 1}/${lastDay}/${year}`);
-    setOpenModal(true);
+    openModal();
     setSelected([]);
   };
 
