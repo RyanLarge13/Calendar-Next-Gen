@@ -35,7 +35,6 @@ const MonthView = () => {
     setSecondString,
     dateObj,
     setNav,
-    theDay,
   } = useContext(DatesContext);
 
   const [selected, setSelected] = useState([]);

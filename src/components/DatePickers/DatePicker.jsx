@@ -14,7 +14,7 @@ import UserContext from "../../context/UserContext.jsx";
 import Portal from "../Misc/Portal.jsx";
 
 const DatePicker = () => {
-  const { setShowDatePicker } = useContext(InteractiveContext);
+  const { setShowDatePicker, showDatePicker } = useContext(InteractiveContext);
   const { setUpdatedDate, setNav, nav, month, year } = useContext(DatesContext);
   const { preferences } = useContext(UserContext);
 
@@ -28,7 +28,7 @@ const DatePicker = () => {
 
   useEffect(() => {
     const itemHeight = 60;
-    if (scrollMonthRef) {
+    if (scrollMonthRef.current) {
       scrollMonthRef.current.scrollTo({
         top: month * itemHeight,
         behavior: "smooth",
@@ -37,11 +37,13 @@ const DatePicker = () => {
     }
     if (scrollYearRef) {
       const index = staticYears.indexOf(year.toString());
-      scrollYearRef.current.scrollTo({
-        top: index * itemHeight,
-        behavior: "smooth",
-      });
-      setNewYear(Number(staticYears[index]));
+      if (scrollYearRef.current) {
+        scrollYearRef.current.scrollTo({
+          top: index * itemHeight,
+          behavior: "smooth",
+        });
+        setNewYear(Number(staticYears[index]));
+      }
     }
   }, []);
 
@@ -139,7 +141,7 @@ const DatePicker = () => {
     setShowDatePicker(false);
   };
 
-  return (
+  return showDatePicker ? (
     <motion.div
       initial={{ opacity: 0, y: 18, scale: 0.98 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -457,7 +459,7 @@ const DatePicker = () => {
         </button>
       </div>
     </motion.div>
-  );
+  ) : null;
 };
 
 export default DatePicker;

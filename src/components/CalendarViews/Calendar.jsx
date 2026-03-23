@@ -19,23 +19,16 @@ import ModalHeader from "../Modal/ModalHeader";
 const Calendar = () => {
   const { events, holidays, reminders, weekDays, preferences } =
     useContext(UserContext);
-  const {
-    showDatePicker,
-    showFullDatePicker,
-    view,
-    event,
-    setShowFullDatePicker,
-  } = useContext(InteractiveContext);
+  const { showFullDatePicker, view, event, setShowFullDatePicker } =
+    useContext(InteractiveContext);
   const {
     finish,
     loading,
     theDay,
     openModal,
-    dateString,
     setOpenModal,
     setNav,
     string,
-    dateObj,
     setTheDay,
   } = useContext(DatesContext);
 
@@ -180,7 +173,7 @@ const Calendar = () => {
             </motion.div>
           ) : null}
         </section>
-        {showDatePicker && <DatePicker />}
+        <DatePicker />
         {showFullDatePicker && (
           <FullDatePicker
             stateSetter={view === "day" ? setDayViewDay : setSecondDateObject}
