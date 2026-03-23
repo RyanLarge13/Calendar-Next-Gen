@@ -13,10 +13,11 @@ import DayEvent from "../Events/DayEvent";
 import Portal from "../Misc/Portal";
 import AddTask from "../AddData/AddTask";
 import Reminder from "../Reminders/Reminder";
+import { eventIsAllDay } from "../../utils/helpers";
 
-const Modal = ({ allDayEvents, todaysReminders }) => {
-  const { events, holidays, preferences } = useContext(UserContext);
-  const { string, setOpenModal, dateObj, setSecondString } =
+const Modal = () => {
+  const { events, preferences, reminders } = useContext(UserContext);
+  const { string, setOpenModal, openModal, dateObj, setSecondString } =
     useContext(DatesContext);
   const {
     addNewEvent,
@@ -29,9 +30,41 @@ const Modal = ({ allDayEvents, todaysReminders }) => {
 
   const [dayEvents, setDayEvents] = useState([]);
   const [staticTimeHeight, setStaticTimeHeight] = useState(0);
+  const [todaysReminders, setTodaysReminders] = useState([]);
+  const [allDayEvents, setAllDayEvents] = useState([]);
 
   const staticTimesContainerRef = useRef(null);
   const modalRef = useRef(0);
+
+  useEffect(() => {
+    const remindersToday = reminders.filter(
+      (reminder) =>
+        new Date(reminder.time).toLocaleDateString() ===
+        theDay.toLocaleDateString(),
+    );
+    setTodaysReminders(remindersToday);
+  }, []);
+
+  useEffect(() => {
+    const eventsForDay = events.filter((event) => {
+      const startDate = new Date(event.startDate);
+      const endDate = new Date(event.endDate);
+      startDate.setHours(0, 0, 0, 0);
+      endDate.setHours(0, 0, 0, 0);
+      for (
+        let currentDate = startDate;
+        currentDate <= endDate;
+        currentDate.setDate(currentDate.getDate() + 1)
+      ) {
+        if (currentDate.toLocaleDateString() === string) {
+          return true;
+        }
+      }
+      return false;
+    });
+    const eventsAllDay = eventsForDay.filter((e) => eventIsAllDay(e));
+    setAllDayEvents(eventsAllDay);
+  }, [theDay, events, string]);
 
   useEffect(() => {
     if (string === dateObj.toLocaleDateString()) {
@@ -41,7 +74,7 @@ const Modal = ({ allDayEvents, todaysReminders }) => {
         : modalRef.current.scrollTo(0, 0);
     }
     addNewEvent && modalRef.current.scrollTo(0, 0);
-    const eventsForDay = [...events, ...holidays].filter((event) => {
+    const eventsForDay = events.filter((event) => {
       const startDate = new Date(event.startDate);
       const endDate = new Date(event.endDate);
       startDate.setHours(0, 0, 0, 0);
@@ -116,7 +149,7 @@ const Modal = ({ allDayEvents, todaysReminders }) => {
     return 0;
   };
 
-  return (
+  return openModal ? (
     <motion.div
       initial={{ x: 100, opacity: 0 }}
       exit={{ x: 200, opacity: 0 }}
@@ -232,7 +265,7 @@ const Modal = ({ allDayEvents, todaysReminders }) => {
         </>
       )}
     </motion.div>
-  );
+  ) : null;
 };
 
 export default Modal;

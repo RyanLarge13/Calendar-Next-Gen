@@ -9,16 +9,10 @@ import { BsFillCalendarDayFill } from "react-icons/bs";
 import { tailwindBgToHex } from "../../utils/helpers.js";
 
 const WeekView = () => {
-  const { events, holidays, preferences } = useContext(UserContext);
-  const { setEvent, setAddNewEvent, setType } = useContext(InteractiveContext);
-  const {
-    currentWeek,
-    setCurrentWeek,
-    string,
-    setString,
-    setOpenModal,
-    dateObj,
-  } = useContext(DatesContext);
+  const { events, preferences } = useContext(UserContext);
+  const { setEvent } = useContext(InteractiveContext);
+  const { currentWeek, setString, setOpenModal, dateObj } =
+    useContext(DatesContext);
 
   const [weeklyEvents, setWeeklyEvents] = useState([]);
   const dateContainerRefs = useRef([]);
@@ -28,12 +22,10 @@ const WeekView = () => {
 
   useEffect(() => {
     const matchingEvents = currentWeek.map((weekDay) =>
-      [...events, ...holidays].filter(
-        (e) => e.date === weekDay.toLocaleDateString(),
-      ),
+      events.filter((e) => e.date === weekDay.toLocaleDateString()),
     );
     setWeeklyEvents(matchingEvents);
-  }, [currentWeek, events, holidays]);
+  }, [currentWeek, events]);
 
   useEffect(() => {
     const scrollToFirstEvent = () => {

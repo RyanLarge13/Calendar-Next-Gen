@@ -17,6 +17,7 @@ const App = () => {
                 <Route path="/" element={<MainPage />}>
                   <Route path="event" element={null} />
                   <Route path="reminder" element={null} />
+                  <Route path="notifications" element={null} />
                 </Route>
               </Routes>
             </Router>

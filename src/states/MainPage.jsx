@@ -12,22 +12,13 @@ import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
 
 const MainPage = () => {
-  const {
-    setAddNewEvent,
-    setType,
-    setMenu,
-    menu,
-    setShowLogin,
-    setShowNotifs,
-  } = useContext(InteractiveContext);
-  const { setOpenModal, setString, string, dateObj } = useContext(DatesContext);
+  const { setAddNewEvent, setType, setMenu, setShowLogin, setShowNotifs } =
+    useContext(InteractiveContext);
+  const { setOpenModal } = useContext(DatesContext);
 
   const location = useLocation();
 
   useEffect(() => {
-    if (!string) {
-      setString(dateObj.toLocaleDateString());
-    }
     if (location.pathname === "/event") {
       setType("event");
       closeMenu();
@@ -51,9 +42,9 @@ const MainPage = () => {
   }, [location]);
 
   const closeMenu = () => {
-    if (menu) {
-      setMenu(false);
-    }
+    setMenu((prev) => {
+      if (prev) false;
+    });
   };
 
   return (

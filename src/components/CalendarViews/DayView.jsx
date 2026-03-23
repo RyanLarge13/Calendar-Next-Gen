@@ -11,10 +11,16 @@ import UserContext from "../../context/UserContext.jsx";
 import { createPortal } from "react-dom";
 import Reminder from "../Reminders/Reminder.jsx";
 
-const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
-  const { setEvent, setAddEventWithStartEndTime, setType, setAddNewEvent } =
-    useContext(InteractiveContext);
-  const { theDay, dateObj, setOpenModal } = useContext(DatesContext);
+const DayView = ({ containerRef }) => {
+  const {
+    setEvent,
+    setAddEventWithStartEndTime,
+    setType,
+    setAddNewEvent,
+    event,
+    view,
+  } = useContext(InteractiveContext);
+  const { theDay, dateObj, setOpenModal, reminders } = useContext(DatesContext);
   const { preferences, events } = useContext(UserContext);
 
   const [time, setTime] = useState(dateObj.toLocaleTimeString());
@@ -23,9 +29,31 @@ const DayView = ({ todaysEvents, todaysReminders, containerRef }) => {
   const [times, setTimes] = useState([]);
   const [isSettingTime, setIsSettingTime] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [todaysEvents, setTodaysEvents] = useState([]);
+  const [todaysReminders, setTodaysReminders] = useState([]);
 
   const dayViewContainer = useRef(null);
   let interval;
+
+  useEffect(() => {
+    const remindersToday = reminders.filter(
+      (reminder) =>
+        new Date(reminder.time).toLocaleDateString() ===
+        theDay.toLocaleDateString(),
+    );
+    setTodaysReminders(remindersToday);
+  }, [theDay, reminders]);
+
+  useEffect(() => {
+    if (event || view === "day") {
+      const eventsToday = events.filter(
+        (item) =>
+          new Date(item.date).toLocaleDateString() ===
+          theDay.toLocaleDateString(),
+      );
+      setTodaysEvents(eventsToday);
+    }
+  }, [event, view, theDay]);
 
   useEffect(() => {
     if (times.length > 1) {

@@ -22,7 +22,7 @@ import GoogleMaps from "../Misc/GoogleMaps";
 import SuggestCities from "../Misc/SuggestCities.jsx";
 import Reminder from "../Reminders/Reminder.jsx";
 
-const Event = ({ dayEvents = [] }) => {
+const Event = () => {
   const { event, setEvent, setAddNewEvent, setType, menu, setMenu } =
     useContext(InteractiveContext);
   const { preferences, setEventMap, reminders } = useContext(UserContext);
@@ -324,7 +324,7 @@ const Event = ({ dayEvents = [] }) => {
     setAddNewEvent(true);
   };
 
-  return (
+  return event ? (
     <>
       {/* Image Viewer */}
       <AnimatePresence>
@@ -636,7 +636,7 @@ const Event = ({ dayEvents = [] }) => {
         </div>
       </motion.div>
     </>
-  );
+  ) : null;
 };
 
 export default Event;

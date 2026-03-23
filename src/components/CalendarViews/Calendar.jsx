@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { weekDays } from "../../constants/dateAndTimeConstants";
 import DatesContext from "../../context/DatesContext";
 import InteractiveContext from "../../context/InteractiveContext";
 import UserContext from "../../context/UserContext";
@@ -17,85 +18,12 @@ import Modal from "../Modal/Modal";
 import ModalHeader from "../Modal/ModalHeader";
 
 const Calendar = () => {
-  const { events, holidays, reminders, weekDays, preferences } =
-    useContext(UserContext);
-  const { showFullDatePicker, view, event, setShowFullDatePicker } =
+  const { preferences } = useContext(UserContext);
+  const { showFullDatePicker, view, setShowFullDatePicker } =
     useContext(InteractiveContext);
-  const {
-    finish,
-    loading,
-    theDay,
-    openModal,
-    setOpenModal,
-    setNav,
-    string,
-    setTheDay,
-  } = useContext(DatesContext);
-
-  const [todaysEvents, setTodaysEvents] = useState([]);
-  const [todaysReminders, setTodaysReminder] = useState([]);
-  const [remindersOfDay, setRemindersOfDay] = useState([]);
-  const [allDayEvents, setAllDayEvents] = useState([]);
+  const { loading, setOpenModal, setNav, setTheDay } = useContext(DatesContext);
 
   const containerRef = useRef(null);
-
-  useEffect(() => {
-    if (event || view === "day") {
-      const eventsToday = [...events, ...holidays].filter(
-        (item) =>
-          new Date(item.date).toLocaleDateString() ===
-          theDay.toLocaleDateString(),
-      );
-      setTodaysEvents(eventsToday);
-    }
-  }, [event, view, theDay]);
-
-  useEffect(() => {
-    if (string) {
-      const eventsForDay = [...events, ...holidays].filter((event) => {
-        const startDate = new Date(event.startDate);
-        const endDate = new Date(event.endDate);
-        startDate.setHours(0, 0, 0, 0);
-        endDate.setHours(0, 0, 0, 0);
-        for (
-          let currentDate = startDate;
-          currentDate <= endDate;
-          currentDate.setDate(currentDate.getDate() + 1)
-        ) {
-          if (currentDate.toLocaleDateString() === string) {
-            return true;
-          }
-        }
-        return false;
-      });
-      const fullDayEvents = eventsForDay.filter((event) => {
-        const startDate = new Date(event.startDate);
-        const endDate = new Date(event.endDate);
-        startDate.setHours(0, 0, 0, 0);
-        endDate.setHours(0, 0, 0, 0);
-        const daysDifference = (endDate - startDate) / (24 * 60 * 60 * 1000);
-        if (
-          daysDifference >= 1 ||
-          event.end.endTime === null ||
-          event.start.startTime === null
-        ) {
-          return true;
-        }
-        return false;
-      });
-      setAllDayEvents(fullDayEvents);
-    }
-    const remindersToday = reminders.filter(
-      (reminder) =>
-        new Date(reminder.time).toLocaleDateString() ===
-        theDay.toLocaleDateString(),
-    );
-    const remindersOfTheDay = reminders.filter(
-      (r) => new Date(r.time).toLocaleDateString() === string,
-    );
-    setTodaysReminder(remindersToday);
-    setRemindersOfDay(remindersOfTheDay);
-  }, [theDay, events, reminders, string]);
 
   const checkScroll = (e) => {
     if (view !== "month") {
@@ -122,6 +50,17 @@ const Calendar = () => {
   const setDayViewDay = (newString) => {
     setTheDay(new Date(newString));
     setShowFullDatePicker(false);
+  };
+
+  const finish = (e, info) => {
+    const dragDistance = info.offset.x;
+    const cancelThreshold = 175;
+
+    if (dragDistance > cancelThreshold) {
+      setNav((prev) => prev - 1);
+    } else if (dragDistance < -cancelThreshold) {
+      setNav((prev) => prev + 1);
+    }
   };
 
   return (
@@ -157,13 +96,7 @@ const Calendar = () => {
             >
               <div>
                 {view === "month" && <MonthView />}
-                {view === "day" && (
-                  <DayView
-                    todaysEvents={todaysEvents}
-                    todaysReminders={todaysReminders}
-                    containerRef={containerRef}
-                  />
-                )}
+                {view === "day" && <DayView containerRef={containerRef} />}
                 {view === "week" && <WeekView />}
                 {view === "masonry" && (
                   <MasonryView containerRef={containerRef} />
@@ -179,20 +112,13 @@ const Calendar = () => {
             stateSetter={view === "day" ? setDayViewDay : setSecondDateObject}
           />
         )}
-        {openModal || event ? (
-          <ModalHeader allDayEvents={allDayEvents} />
-        ) : null}
+        <ModalHeader />
         <AnimatePresence>
-          {openModal && (
-            <Modal
-              allDayEvents={allDayEvents}
-              todaysReminders={remindersOfDay}
-            />
-          )}
+          <Modal />
         </AnimatePresence>
         <Menu />
         <LoginLogout />
-        {event && <Event dayEvents={todaysEvents} />}
+        <Event />
       </section>
     </main>
   );

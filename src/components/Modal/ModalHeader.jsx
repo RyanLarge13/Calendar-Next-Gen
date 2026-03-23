@@ -13,11 +13,12 @@ import DatesContext from "../../context/DatesContext.jsx";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
 import UserContext from "../../context/UserContext.jsx";
 import { deleteEvent } from "../../utils/api.js";
-import { tailwindBgToHex } from "../../utils/helpers.js";
+import { eventIsAllDay, tailwindBgToHex } from "../../utils/helpers.js";
 import weatherCodes from "../../constants/weatherContants.js";
 
-const ModalHeader = ({ allDayEvents }) => {
-  const { string, setString, secondString } = useContext(DatesContext);
+const ModalHeader = () => {
+  const { string, setString, secondString, openModal } =
+    useContext(DatesContext);
   const {
     user,
     events,
@@ -35,6 +36,28 @@ const ModalHeader = ({ allDayEvents }) => {
   const [showAllDayEvents, setShowAllDayEvents] = useState(true);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [weatherCode, setWeatherCode] = useState(null);
+  const [allDayEvents, setAllDayEvents] = useState([]);
+
+  useEffect(() => {
+    const eventsForDay = events.filter((event) => {
+      const startDate = new Date(event.startDate);
+      const endDate = new Date(event.endDate);
+      startDate.setHours(0, 0, 0, 0);
+      endDate.setHours(0, 0, 0, 0);
+      for (
+        let currentDate = startDate;
+        currentDate <= endDate;
+        currentDate.setDate(currentDate.getDate() + 1)
+      ) {
+        if (currentDate.toLocaleDateString() === string) {
+          return true;
+        }
+      }
+      return false;
+    });
+    const eventsAllDay = eventsForDay.filter((e) => eventIsAllDay(e));
+    setAllDayEvents(eventsAllDay);
+  }, [theDay, events, string]);
 
   const changeWidth = (e) => {
     setWindowWidth(window.innerWidth);
@@ -169,7 +192,7 @@ const ModalHeader = ({ allDayEvents }) => {
     setShowFullDatePicker(true);
   };
 
-  return (
+  return openModal || event ? (
     <motion.div
       initial={{
         width: event ? "99.5%" : windowWidth < 1024 ? "63.5%" : "29.5%",
@@ -339,7 +362,7 @@ const ModalHeader = ({ allDayEvents }) => {
         ))}
       </motion.div>
     </motion.div>
-  );
+  ) : null;
 };
 
 export default ModalHeader;

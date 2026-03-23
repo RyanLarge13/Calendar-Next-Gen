@@ -266,10 +266,8 @@ export const UserProvider = ({ children }) => {
     }
   }, [isOnline]);
 
-  const buildEventsMap = (eventsToMap) => {
+  const buildEventsMap = (allEvents) => {
     const newMap = new Map();
-    // const newMapDays = new Map();
-    const allEvents = eventsToMap.concat(holidays);
 
     allEvents.forEach((evt) => {
       const date = new Date(evt.date);
@@ -469,9 +467,9 @@ export const UserProvider = ({ children }) => {
     };
     setUser(basicUser);
     localStorage.setItem("user", JSON.stringify(basicUser));
-    setEvents(freshUser.events);
-    buildEventsMap(freshUser.events);
-    setStaticEvents(freshUser.events);
+    setEvents([...freshUser.events, ...holidays]);
+    buildEventsMap([...freshUser.events, ...holidays]);
+    setStaticEvents([...freshUser.events, ...holidays]);
     const sortedReminders = freshUser.reminders.sort(
       (a, b) => new Date(a.time) - new Date(b.time),
     );
@@ -701,8 +699,6 @@ export const UserProvider = ({ children }) => {
   return (
     <UserContext.Provider
       value={{
-        holidays,
-        weekDays,
         user,
         events,
         reminders,
