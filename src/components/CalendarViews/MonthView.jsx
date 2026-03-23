@@ -43,7 +43,7 @@ const MonthView = () => {
   const [longPressTimeout, setLongPressTimeout] = useState(null);
   const [newPopup, setNewPopup] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [popupEvents, setPopupEvents] = useState([]);
+  const [popupEvents, setPopupEvents] = useState([]); // Changing?
   const [popUpReminders, setPopUpReminders] = useState([]);
   const [hoverDay, setHoverDay] = useState(null);
   const [renderPopup, setRenderPopup] = useState(false);

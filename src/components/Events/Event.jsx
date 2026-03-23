@@ -34,15 +34,15 @@ const Event = () => {
   const [fetchedImages, setFetchedImages] = useState([]);
   const [imagesLoading, setImagesLoading] = useState(false);
   const [maximize, setMaximize] = useState(false);
-  const [title, setTitle] = useState(event.summary);
-  const [description, setDescription] = useState(event.description);
+  const [title, setTitle] = useState(event?.summary || "");
+  const [description, setDescription] = useState(event?.description || "");
   const [imageViewer, setImageViewer] = useState({ image: null, show: false });
-  const [location, setLocation] = useState(event.location);
+  const [location, setLocation] = useState(event?.location || "");
 
   const [inputChanges, setInputChanges] = useState({
-    summary: event.summary,
-    description: event.description,
-    location: event.location,
+    summary: event?.summary || "",
+    description: event?.description || "",
+    location: event?.location || "",
   });
 
   const controls = useDragControls();
@@ -55,7 +55,7 @@ const Event = () => {
   };
 
   useEffect(() => {
-    if (event.attachmentLength > 0) {
+    if (event?.attachmentLength > 0) {
       setImagesLoading(true);
       const token = localStorage.getItem("authToken");
       fetchAttachments(event.id, token)

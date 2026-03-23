@@ -17,7 +17,7 @@ import { eventIsAllDay, tailwindBgToHex } from "../../utils/helpers.js";
 import weatherCodes from "../../constants/weatherContants.js";
 
 const ModalHeader = () => {
-  const { string, setString, secondString, openModal } =
+  const { string, setString, secondString, openModal, theDay } =
     useContext(DatesContext);
   const {
     user,

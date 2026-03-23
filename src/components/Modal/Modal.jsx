@@ -17,7 +17,7 @@ import { eventIsAllDay } from "../../utils/helpers";
 
 const Modal = () => {
   const { events, preferences, reminders } = useContext(UserContext);
-  const { string, setOpenModal, openModal, dateObj, setSecondString } =
+  const { string, setOpenModal, openModal, dateObj, theDay, setSecondString } =
     useContext(DatesContext);
   const {
     addNewEvent,
@@ -34,7 +34,7 @@ const Modal = () => {
   const [allDayEvents, setAllDayEvents] = useState([]);
 
   const staticTimesContainerRef = useRef(null);
-  const modalRef = useRef(0);
+  const modalRef = useRef(null);
 
   useEffect(() => {
     const remindersToday = reminders.filter(
@@ -69,11 +69,13 @@ const Modal = () => {
   useEffect(() => {
     if (string === dateObj.toLocaleDateString()) {
       const todaysHours = dateObj.getHours();
-      !addNewEvent
-        ? modalRef.current.scrollTo(0, todaysHours * 240)
-        : modalRef.current.scrollTo(0, 0);
+      if (modalRef.current) {
+        !addNewEvent
+          ? modalRef.current.scrollTo(0, todaysHours * 240)
+          : modalRef.current.scrollTo(0, 0);
+      }
+      addNewEvent && modalRef.current.scrollTo(0, 0);
     }
-    addNewEvent && modalRef.current.scrollTo(0, 0);
     const eventsForDay = events.filter((event) => {
       const startDate = new Date(event.startDate);
       const endDate = new Date(event.endDate);
@@ -96,9 +98,11 @@ const Modal = () => {
       const firstEventHour = new Date(
         timedEvents[0]?.start?.startTime,
       ).getHours();
-      !addNewEvent
-        ? modalRef.current.scrollTo(0, firstEventHour * 240)
-        : modalRef.current.scrollTo(0, 0);
+      if (modalRef.current) {
+        !addNewEvent
+          ? modalRef.current.scrollTo(0, firstEventHour * 240)
+          : modalRef.current.scrollTo(0, 0);
+      }
     }
     setDayEvents(timedEvents);
     return () => setSecondString("");
