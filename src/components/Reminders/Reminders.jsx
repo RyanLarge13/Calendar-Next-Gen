@@ -19,10 +19,10 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
   const { openModal } = useModalActions();
 
   const [incompleteReminders, setIncompleteReminders] = useState(
-    reminders.filter((r) => r.completed === false),
+    reminders.filter((r) => !r.completed),
   );
   const [completedRemindersToRender, setCompletedRemindersToRender] = useState(
-    reminders.filter((r) => r.completed === true),
+    reminders.filter((r) => r.completed),
   );
 
   // Pull this from user preferences in the future
@@ -32,10 +32,8 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
   });
 
   useEffect(() => {
-    setIncompleteReminders(reminders.filter((r) => r.completed === false));
-    setCompletedRemindersToRender(
-      reminders.filter((r) => r.completed === true),
-    );
+    setIncompleteReminders(reminders.filter((r) => !r.completed));
+    setCompletedRemindersToRender(reminders.filter((r) => r.completed));
   }, [reminders, grouping]);
 
   useEffect(() => {
@@ -46,7 +44,7 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
       switch (sortOpt) {
         case "title":
           {
-            const copy = [...reminders];
+            const copy = [...incompleteReminders];
             const sortedByTitle = copy.sort((a, b) =>
               a.title.localeCompare(b.title),
             );
@@ -65,7 +63,7 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
           break;
         case "event":
           {
-            const copy = [...reminders];
+            const copy = [...incompleteReminders];
             const eventCarryingRems = copy.filter(
               (rem) => rem.eventRefId !== null,
             );
@@ -225,16 +223,16 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
                   ${preferences.darkMode ? "bg-cyan-500/15 border-cyan-300/20 text-cyan-100" : "bg-cyan-50 border-cyan-200 text-cyan-700"}
                 `}
                 >
-                  <BiCheckCircle className="text-2xl" />
+                  <BiAlarmSnooze className="text-2xl" />
                 </div>
                 <div>
                   <h2 className="text-lg font-semibold tracking-tight">
-                    Completed Reminders
+                    Active Reminders
                   </h2>
                   <p
                     className={`text-sm mt-1 ${preferences.darkMode ? "text-white/60" : "text-slate-500"}`}
                   >
-                    Here are your complete reminders
+                    Here are your active reminders
                   </p>
                 </div>
               </div>
@@ -260,17 +258,20 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
                 <button
                   onClick={() => updateGroup(false, null)}
                   className={`
-                flex flex-col items-center justify-center
-                h-14 w-14 rounded-2xl border shadow-sm
-                text-[10px] font-semibold gap-1
-                transition active:scale-[0.95]
-                ${grouping.incomplete === null ? "text-orange-600 bg-orange-50" : ""}
-                ${
-                  preferences.darkMode
-                    ? "bg-white/5 border-white/10 text-white/70 hover:bg-orange-500/20 hover:text-orange-200"
-                    : "bg-white border-black/10 text-slate-600 hover:bg-orange-50 hover:text-orange-600"
-                }
-              `}
+                    flex flex-col items-center justify-center
+                    h-14 w-14 rounded-2xl border shadow-sm
+                    text-[10px] font-semibold gap-1
+                    transition-colors active:scale-[0.95]
+                    ${
+                      grouping.incomplete === null
+                        ? preferences.darkMode
+                          ? "bg-orange-500/20 border-orange-400/30 text-orange-200"
+                          : "bg-orange-50 border-orange-200 text-orange-600"
+                        : preferences.darkMode
+                          ? "bg-white/5 border-white/10 text-white/70 hover:bg-orange-500/20 hover:text-orange-200"
+                          : "bg-white border-black/10 text-slate-600 hover:bg-orange-50 hover:text-orange-600"
+                    }
+                  `}
                 >
                   <FaTrashAlt className="text-sm" />
                   Clear
@@ -280,17 +281,20 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
                 <button
                   onClick={() => updateGroup(false, "day")}
                   className={`
-              flex flex-col items-center justify-center
-              h-14 w-14 rounded-2xl border shadow-sm
-              text-[10px] font-semibold gap-1
-              transition active:scale-[0.95]
-              ${grouping.incomplete === "day" ? "text-cyan-600 bg-cyan-50" : ""}
-              ${
-                preferences.darkMode
-                  ? "bg-white/5 border-white/10 text-white/70 hover:bg-cyan-500/20 hover:text-cyan-200"
-                  : "bg-white border-black/10 text-slate-600 hover:bg-cyan-50 hover:text-cyan-600"
-              }
-            `}
+  flex flex-col items-center justify-center
+  h-14 w-14 rounded-2xl border shadow-sm
+  text-[10px] font-semibold gap-1
+  transition-colors active:scale-[0.95]
+  ${
+    grouping.incomplete === "day"
+      ? preferences.darkMode
+        ? "bg-cyan-500/20 border-cyan-400/30 text-cyan-200"
+        : "bg-cyan-50 border-cyan-200 text-cyan-600"
+      : preferences.darkMode
+        ? "bg-white/5 border-white/10 text-white/70 hover:bg-cyan-500/20 hover:text-cyan-200"
+        : "bg-white border-black/10 text-slate-600 hover:bg-cyan-50 hover:text-cyan-600"
+  }
+`}
                 >
                   <BsCalendarDay className="text-sm" />
                   Day
@@ -300,17 +304,20 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
                 <button
                   onClick={() => updateGroup(false, "week")}
                   className={`
-      flex flex-col items-center justify-center
-      h-14 w-14 rounded-2xl border shadow-sm
-      text-[10px] font-semibold gap-1
-      transition active:scale-[0.95]
-      ${grouping.incomplete === "week" ? "text-indigo-600 bg-indigo-50" : ""}
-      ${
-        preferences.darkMode
-          ? "bg-white/5 border-white/10 text-white/70 hover:bg-indigo-500/20 hover:text-indigo-200"
-          : "bg-white border-black/10 text-slate-600 hover:bg-indigo-50 hover:text-indigo-600"
-      }
-    `}
+  flex flex-col items-center justify-center
+  h-14 w-14 rounded-2xl border shadow-sm
+  text-[10px] font-semibold gap-1
+  transition-colors active:scale-[0.95]
+  ${
+    grouping.incomplete === "week"
+      ? preferences.darkMode
+        ? "bg-indigo-500/20 border-indigo-400/30 text-indigo-200"
+        : "bg-indigo-50 border-indigo-200 text-indigo-600"
+      : preferences.darkMode
+        ? "bg-white/5 border-white/10 text-white/70 hover:bg-indigo-500/20 hover:text-indigo-200"
+        : "bg-white border-black/10 text-slate-600 hover:bg-indigo-50 hover:text-indigo-600"
+  }
+`}
                 >
                   <BsCalendarWeek className="text-sm" />
                   Week
@@ -320,17 +327,20 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
                 <button
                   onClick={() => updateGroup(false, "month")}
                   className={`
-      flex flex-col items-center justify-center
-      h-14 w-14 rounded-2xl border shadow-sm
-      text-[10px] font-semibold gap-1
-      transition active:scale-[0.95]
-      ${grouping.incomplete === "month" ? "text-amber-600 bg-amber-50" : ""}
-      ${
-        preferences.darkMode
-          ? "bg-white/5 border-white/10 text-white/70 hover:bg-amber-500/20 hover:text-amber-200"
-          : "bg-white border-black/10 text-slate-600 hover:bg-amber-50 hover:text-amber-600"
-      }
-    `}
+  flex flex-col items-center justify-center
+  h-14 w-14 rounded-2xl border shadow-sm
+  text-[10px] font-semibold gap-1
+  transition-colors active:scale-[0.95]
+  ${
+    grouping.incomplete === "month"
+      ? preferences.darkMode
+        ? "bg-amber-500/20 border-amber-400/30 text-amber-200"
+        : "bg-amber-50 border-amber-200 text-amber-600"
+      : preferences.darkMode
+        ? "bg-white/5 border-white/10 text-white/70 hover:bg-amber-500/20 hover:text-amber-200"
+        : "bg-white border-black/10 text-slate-600 hover:bg-amber-50 hover:text-amber-600"
+  }
+`}
                 >
                   <BsCalendarMonth className="text-sm" />
                   Month
@@ -387,17 +397,20 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
             <button
               onClick={() => updateGroup(true, null)}
               className={`
-                flex flex-col items-center justify-center
-                h-14 w-14 rounded-2xl border shadow-sm
-                text-[10px] font-semibold gap-1
-                transition active:scale-[0.95]
-                ${grouping.complete === null ? "text-orange-600 bg-orange-50" : ""}
-                ${
-                  preferences.darkMode
-                    ? "bg-white/5 border-white/10 text-white/70 hover:bg-orange-500/20 hover:text-orange-200"
-                    : "bg-white border-black/10 text-slate-600 hover:bg-orange-50 hover:text-orange-600"
-                }
-              `}
+  flex flex-col items-center justify-center
+  h-14 w-14 rounded-2xl border shadow-sm
+  text-[10px] font-semibold gap-1
+  transition-colors active:scale-[0.95]
+  ${
+    grouping.complete === null
+      ? preferences.darkMode
+        ? "bg-orange-500/20 border-orange-400/30 text-orange-200"
+        : "bg-orange-50 border-orange-200 text-orange-600"
+      : preferences.darkMode
+        ? "bg-white/5 border-white/10 text-white/70 hover:bg-orange-500/20 hover:text-orange-200"
+        : "bg-white border-black/10 text-slate-600 hover:bg-orange-50 hover:text-orange-600"
+  }
+`}
             >
               <FaTrashAlt className="text-sm" />
               Clear
@@ -407,17 +420,20 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
             <button
               onClick={() => updateGroup(true, "day")}
               className={`
-              flex flex-col items-center justify-center
-              h-14 w-14 rounded-2xl border shadow-sm
-              text-[10px] font-semibold gap-1
-              transition active:scale-[0.95]
-              ${grouping.complete === "day" ? "text-cyan-600 bg-cyan-50" : ""}
-              ${
-                preferences.darkMode
-                  ? "bg-white/5 border-white/10 text-white/70 hover:bg-cyan-500/20 hover:text-cyan-200"
-                  : "bg-white border-black/10 text-slate-600 hover:bg-cyan-50 hover:text-cyan-600"
-              }
-            `}
+  flex flex-col items-center justify-center
+  h-14 w-14 rounded-2xl border shadow-sm
+  text-[10px] font-semibold gap-1
+  transition-colors active:scale-[0.95]
+  ${
+    grouping.complete === "day"
+      ? preferences.darkMode
+        ? "bg-cyan-500/20 border-cyan-400/30 text-cyan-200"
+        : "bg-cyan-50 border-cyan-200 text-cyan-600"
+      : preferences.darkMode
+        ? "bg-white/5 border-white/10 text-white/70 hover:bg-cyan-500/20 hover:text-cyan-200"
+        : "bg-white border-black/10 text-slate-600 hover:bg-cyan-50 hover:text-cyan-600"
+  }
+`}
             >
               <BsCalendarDay className="text-sm" />
               Day
@@ -427,17 +443,20 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
             <button
               onClick={() => updateGroup(true, "week")}
               className={`
-      flex flex-col items-center justify-center
-      h-14 w-14 rounded-2xl border shadow-sm
-      text-[10px] font-semibold gap-1
-      transition active:scale-[0.95]
-      ${grouping.complete === "week" ? "text-indigo-600 bg-indigo-50" : ""}
-      ${
-        preferences.darkMode
-          ? "bg-white/5 border-white/10 text-white/70 hover:bg-indigo-500/20 hover:text-indigo-200"
-          : "bg-white border-black/10 text-slate-600 hover:bg-indigo-50 hover:text-indigo-600"
-      }
-    `}
+  flex flex-col items-center justify-center
+  h-14 w-14 rounded-2xl border shadow-sm
+  text-[10px] font-semibold gap-1
+  transition-colors active:scale-[0.95]
+  ${
+    grouping.complete === "week"
+      ? preferences.darkMode
+        ? "bg-indigo-500/20 border-indigo-400/30 text-indigo-200"
+        : "bg-indigo-50 border-indigo-200 text-indigo-600"
+      : preferences.darkMode
+        ? "bg-white/5 border-white/10 text-white/70 hover:bg-indigo-500/20 hover:text-indigo-200"
+        : "bg-white border-black/10 text-slate-600 hover:bg-indigo-50 hover:text-indigo-600"
+  }
+`}
             >
               <BsCalendarWeek className="text-sm" />
               Week
@@ -447,17 +466,20 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
             <button
               onClick={() => updateGroup(true, "month")}
               className={`
-      flex flex-col items-center justify-center
-      h-14 w-14 rounded-2xl border shadow-sm
-      text-[10px] font-semibold gap-1
-      transition active:scale-[0.95]
-      ${grouping.complete === "month" ? "text-amber-600 bg-amber-50" : ""}
-      ${
-        preferences.darkMode
-          ? "bg-white/5 border-white/10 text-white/70 hover:bg-amber-500/20 hover:text-amber-200"
-          : "bg-white border-black/10 text-slate-600 hover:bg-amber-50 hover:text-amber-600"
-      }
-    `}
+  flex flex-col items-center justify-center
+  h-14 w-14 rounded-2xl border shadow-sm
+  text-[10px] font-semibold gap-1
+  transition-colors active:scale-[0.95]
+  ${
+    grouping.complete === "month"
+      ? preferences.darkMode
+        ? "bg-amber-500/20 border-amber-400/30 text-amber-200"
+        : "bg-amber-50 border-amber-200 text-amber-600"
+      : preferences.darkMode
+        ? "bg-white/5 border-white/10 text-white/70 hover:bg-amber-500/20 hover:text-amber-200"
+        : "bg-white border-black/10 text-slate-600 hover:bg-amber-50 hover:text-amber-600"
+  }
+`}
             >
               <BsCalendarMonth className="text-sm" />
               Month

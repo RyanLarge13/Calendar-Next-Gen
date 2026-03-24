@@ -33,7 +33,7 @@ const ModalHeader = () => {
   const { addNewEvent, event, setEvent, setShowFullDatePicker } =
     useContext(InteractiveContext);
 
-  const { open } = useModalState();
+  const open = useModalState();
 
   const [showAllDayEvents, setShowAllDayEvents] = useState(true);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);

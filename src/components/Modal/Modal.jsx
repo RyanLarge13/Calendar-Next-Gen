@@ -32,7 +32,7 @@ const Modal = () => {
   } = useContext(InteractiveContext);
 
   const { closeModal } = useModalActions();
-  const { open } = useModalState();
+  const open = useModalState();
 
   const [dayEvents, setDayEvents] = useState([]);
   const [staticTimeHeight, setStaticTimeHeight] = useState(0);

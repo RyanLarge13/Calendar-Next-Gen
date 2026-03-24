@@ -60,16 +60,22 @@ const GroupedReminders = ({ groupType = "week", reminders = [] }) => {
   return (
     <div className="mt-10">
       <div className="mx-auto max-w-6xl">
+        {/* Don't forget remindersSorted is the groups! not the actual reminders. remindersSorted.reminders is the reminders */}
         {remindersSorted.length === 1 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5">
-            {remindersSorted[0].reminders.map((r) => (
-              <Reminder
-                key={r.id || r._id || r.time || JSON.stringify(r)}
-                reminder={r}
-                showOpenEvent={true}
-                styles={{}}
-              />
-            ))}
+          <div>
+            <h3 className="text-base sm:text-lg font-semibold tracking-tight truncate">
+              {remindersSorted[0].label}
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5">
+              {remindersSorted[0].reminders.map((r) => (
+                <Reminder
+                  key={r.id || r._id || r.time || JSON.stringify(r)}
+                  reminder={r}
+                  showOpenEvent={true}
+                  styles={{}}
+                />
+              ))}
+            </div>
           </div>
         ) : (
           <Masonry
