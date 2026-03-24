@@ -1,5 +1,11 @@
 import { motion } from "framer-motion";
-import React, { useCallback, useContext, useEffect, useMemo } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from "react";
 import DatesContext from "../../../context/DatesContext.jsx";
 import UserContext from "../../../context/UserContext.jsx";
 import { calendar } from "../../../motion.js";
@@ -10,6 +16,8 @@ const MonthView = () => {
   const { eventMap } = useContext(UserContext);
   const { paddingDays, daysInMonth, month, year, day, dateObj } =
     useContext(DatesContext);
+
+  const cloneMap = useRef(new Map());
 
   useEffect(() => {
     selected.length > 0 ? setConfirmDates(true) : setConfirmDates(false);
@@ -24,14 +32,28 @@ const MonthView = () => {
       const eventsToSort = [...baseEvents];
       const repeatEvents = eventMap.get("repeat-events")?.events || [];
 
-      if (repeatEvents.length > 0) {
-        repeatEvents.forEach((e) => {
-          const eLandsOnDay = eventOccursOnDay(e, dtStr);
-          if (eLandsOnDay) {
-            const eventRepeated = cloneEventForDay(e, new Date(dtStr));
-            eventsToSort.push(eventRepeated);
-          }
-        });
+      const cloneKey = `${year}-${month}-${dtStr}`;
+
+      if (cloneMap.has(cloneKey)) {
+        const eventClones = cloneMap.get(cloneKey).events;
+        eventsToSort.push(eventClones);
+      } else {
+        if (repeatEvents.length > 0) {
+          repeatEvents.forEach((e) => {
+            const eLandsOnDay = eventOccursOnDay(e, dtStr);
+            if (eLandsOnDay) {
+              const eventRepeated = cloneEventForDay(e, new Date(dtStr));
+
+              if (cloneMap.has(cloneKey)) {
+                cloneMap.get(cloneKey).events.push(eventRepeated);
+              } else {
+                cloneMap.set(cloneKey, { events: [eventRepeated] });
+              }
+
+              eventsToSort.push(eventRepeated);
+            }
+          });
+        }
       }
 
       if (!eventsToSort || eventsToSort.length < 1) {

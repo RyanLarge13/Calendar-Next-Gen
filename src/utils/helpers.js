@@ -437,6 +437,7 @@ export const cloneEventForDay = (event, day) => {
     id: uuidv4(),
     startDate: newStartDate,
     endDate: newEndDate,
+    cloneId: event.id,
     start: {
       ...event.start,
       timeZone: event.start?.timeZone ?? null,
