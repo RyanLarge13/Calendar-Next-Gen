@@ -44,7 +44,8 @@ const AddEvent = () => {
     addEventWithStartEndTime,
     setAddEventWithStartEndTime,
   } = useContext(InteractiveContext);
-  const { setString, string, secondString } = useContext(DatesContext);
+  const { setString, string, secondString, setSecondString } =
+    useContext(DatesContext);
 
   const { closeModal } = useModalActions();
 
@@ -161,7 +162,11 @@ const AddEvent = () => {
       // newDate.setTimezoneOffset(() => endTimeZone || timeZone);
       return newDate;
     } else {
-      return new Date(string);
+      if (endTime) {
+        return endWhen;
+      } else {
+        return new Date(string);
+      }
     }
   };
 
@@ -368,10 +373,11 @@ const AddEvent = () => {
     const { hour, minutes, meridiem } = values;
 
     const endTime = makeDateTime(tempEndTimeDtStr, hour, minutes, meridiem);
-    const endTimeString = startTime.toString();
+    const endTimeString = endTime.toString();
 
     setEndWhen(endTime);
     setEndTimeString(endTimeString);
+    setSecondString(endTimeString);
   };
 
   return (
@@ -735,8 +741,8 @@ const AddEvent = () => {
                           setEndWhen(null);
                         }}
                         dateChangerCallback={(newDt) => {
-                          setEndTimeString(newDt);
                           setTempEndTimeDtStr(newDt);
+                          setEndTimeString(newDt);
                         }}
                       />
                     </Portal>

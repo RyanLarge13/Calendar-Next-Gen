@@ -27,10 +27,6 @@ const PopUpMonthViewWindow = ({
 
   const { openModal } = useModalActions();
 
-  useEffect(() => {
-    console.log(positions);
-  }, []);
-
   const openModalAndSetType = (type) => {
     setMenu(false);
     setShowLogin(false);
