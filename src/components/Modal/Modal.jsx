@@ -214,8 +214,8 @@ const Modal = () => {
                 key={index}
                 onClick={() => {
                   setAddEventWithStartEndTime({
-                    start: timeObj.time,
-                    end: null,
+                    start: timeObj,
+                    end: staticTimes[index + 1],
                   });
                   setType("event");
                   setAddNewEvent(true);

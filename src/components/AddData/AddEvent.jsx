@@ -99,59 +99,36 @@ const AddEvent = () => {
   };
 
   useEffect(() => {
-    if (addEventWithStartEndTime.start != null) {
-      const splitStartTime = addEventWithStartEndTime.start.split(":");
-      const today = new Date(string);
-      const month = today.getMonth();
-      const year = today.getFullYear();
-      const day = today.getDate();
-      const newStartTime = new Date(
-        year,
-        month,
-        day,
-        splitStartTime[0],
-        splitStartTime[1],
-      );
-      const formattedDateString = () => {
-        return `${
-          splitStartTime[0] > 12
-            ? splitStartTime[0] % 12
-            : splitStartTime[0] == 0
-              ? "12"
-              : splitStartTime[0]
-        }:${splitStartTime[1]} ${splitStartTime[0] >= 12 ? "PM" : "AM"}`;
+    if (
+      addEventWithStartEndTime.start != null &&
+      addEventWithStartEndTime.end !== null
+    ) {
+      const meridiemStart = addEventWithStartEndTime.start.string.split(" ")[1];
+      const timeStart = addEventWithStartEndTime.start.time.split(":");
+      const hoursStart = timeStart[0];
+      const minutesStart = timeStart[1];
+
+      const meridiemEnd = addEventWithStartEndTime.end.string.split(" ")[1];
+      const timeEnd = addEventWithStartEndTime.end.time.split(":");
+      const hoursEnd = timeEnd[0];
+      const minutesEnd = timeEnd[1];
+
+      const timeValuesStart = {
+        meridiem: meridiemStart,
+        hour: hoursStart,
+        minutes: minutesStart,
       };
-      setStartTime(true);
-      setStartWhen(() => newStartTime);
-      setStartTimeString(formattedDateString);
-    }
-    if (addEventWithStartEndTime.end !== null) {
-      const splitEndTime = addEventWithStartEndTime.end.split(":");
-      const today = new Date(string);
-      const month = today.getMonth();
-      const year = today.getFullYear();
-      const day = today.getDate();
-      const newEndTime = new Date(
-        year,
-        month,
-        day,
-        splitEndTime[0],
-        splitEndTime[1],
-      );
-      const formattedDateString = () => {
-        return `${
-          splitEndTime[0] > 12
-            ? splitEndTime[0] % 12
-            : splitEndTime[0] == 0
-              ? "12"
-              : splitEndTime[0]
-        }:${splitEndTime[1]} ${splitEndTime[0] >= 12 ? "PM" : "AM"}`;
+
+      const timeValuesEnd = {
+        meridiem: meridiemEnd,
+        hour: hoursEnd,
+        minutes: minutesEnd,
       };
-      setEndTime(true);
-      setEndWhen(() => newEndTime);
-      setEndTimeString(formattedDateString);
+
+      createStartTime(timeValuesStart);
+      createEndTime(timeValuesEnd);
     }
-  }, [addEventWithStartEndTime.start, addEventWithStartEndTime.end]);
+  }, [addEventWithStartEndTime]);
 
   const getEndDate = () => {
     if (secondString) {

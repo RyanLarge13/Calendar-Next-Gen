@@ -21,8 +21,8 @@ const DayView = ({ containerRef }) => {
     event,
     view,
   } = useContext(InteractiveContext);
-  const { theDay, dateObj, reminders } = useContext(DatesContext);
-  const { preferences, events } = useContext(UserContext);
+  const { theDay, dateObj } = useContext(DatesContext);
+  const { preferences, events, reminders } = useContext(UserContext);
 
   const { openModal } = useModalActions();
 
