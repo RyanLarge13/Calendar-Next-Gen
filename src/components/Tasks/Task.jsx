@@ -142,6 +142,7 @@ const Task = ({ task }) => {
     try {
       const token = localStorage.getItem("authToken");
       await updateTasks(token, [update]);
+      setSystemNotif({ show: false });
     } catch (err) {
       console.log("Error clearing users tasks");
       console.log(err);

@@ -321,8 +321,9 @@ export const eventOccursOnDay = (event, candidateDay) => {
   // cannot repeat before start date
   if (candidate < eventStart) return false;
 
-  const repeatCount = event.repeats.interval - 1 ?? 0;
+  const rawCount = event.repeats.interval ?? 1;
   const howOften = event.repeats.howOften;
+  const repeatCount = rawCount === "infinity" ? Infinity : rawCount - 1;
 
   switch (howOften) {
     case "Daily": {

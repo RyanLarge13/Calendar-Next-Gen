@@ -409,7 +409,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                       key={notif.id}
                       animate={
                         notifOpen === notif.id
-                          ? { height: "auto" }
+                          ? { height: 400, minHeight: 400, maxHeight: 600 }
                           : { height: 250, maxHeight: 250 }
                       }
                       transition={{

@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { AiFillPlusCircle } from "react-icons/ai";
 import {
   FaSortAlphaDownAlt,
@@ -20,6 +20,10 @@ const TaskItems = ({ task, styles = "" }) => {
   const [titleTracker, setTitleTracker] = useState(task.title);
 
   const taskItemInputRef = useRef(null);
+
+  useEffect(() => {
+    setItemsCopy(task.tasks);
+  }, [task]);
 
   const addNewTaskItem = async () => {
     const newTask = {

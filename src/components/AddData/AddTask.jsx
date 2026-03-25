@@ -9,6 +9,7 @@ import InteractiveContext from "../../context/InteractiveContext.jsx";
 import UserContext from "../../context/UserContext.jsx";
 import { createTask } from "../../utils/api.js";
 import Color from "../Misc/Color.jsx";
+import { useModalActions } from "../../context/ContextHooks/ModalContext.jsx";
 
 const AddTask = () => {
   const { setType, setAddNewEvent, setMenu, setShowCategory } =

@@ -119,6 +119,15 @@ li {
   background-clip: padding-box;
 }
 
+.my-masonry-grid_list {
+  display: flex;
+  width: auto;
+}
+
+.my-masonry-grid_column_list {
+  background-clip: padding-box;
+}
+
 .ql-editor {
   font-size: 14px; /* make text larger overall */
   line-height: 1.6; /* improve readability */

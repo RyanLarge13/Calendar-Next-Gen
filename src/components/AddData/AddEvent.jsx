@@ -69,6 +69,7 @@ const AddEvent = () => {
   const [howOften, setHowOften] = useState(false);
   const [interval, setInterval] = useState(7);
   const [invalid, setInvalid] = useState(false);
+  const [repeatForever, setRepeatForever] = useState(false);
   // attachments
   const [attachments, setAttachments] = useState([]);
   const [preview, setPreview] = useState(null);
@@ -186,7 +187,7 @@ const AddEvent = () => {
           repeat,
           howOften: repeat ? howOften : null,
           nextDate: null,
-          interval: interval ? interval : 1,
+          interval: interval ? (repeatForever ? "infinity" : interval) : 1,
           repeatId: uuidv4(),
         },
         color: color ? color : "bg-white",
@@ -508,8 +509,22 @@ const AddEvent = () => {
                   </div>
                 ))}
               </div>
-
-              {howOften && (
+              <div
+                className={`mt-5 flex flex-col gap-1 justify-center items-start
+                ${
+                  preferences.darkMode
+                    ? "border-white/10 bg-white/5"
+                    : "border-black/10 bg-black/[0.02]"
+                }
+                `}
+              >
+                <p className="text-xs text-gray-700 ml-4">Repeat Forever</p>
+                <Toggle
+                  condition={repeatForever}
+                  setCondition={setRepeatForever}
+                />
+              </div>
+              {howOften && !repeatForever ? (
                 <input
                   placeholder={`How many ${
                     howOften === "Daily"
@@ -533,10 +548,10 @@ const AddEvent = () => {
                   className={`mt-3 w-full rounded-2xl border px-4 py-3 text-sm font-semibold outline-none transition ${
                     invalid
                       ? "bg-red-200 border-red-300 text-black placeholder:text-slate-600"
-                      : "bg-emerald-100 border-emerald-200 text-black placeholder:text-slate-600"
+                      : "bg-white-100 border-white-200 text-black placeholder:text-slate-600"
                   }`}
                 />
-              )}
+              ) : null}
             </motion.div>
           )}
         </div>

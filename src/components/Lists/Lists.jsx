@@ -117,7 +117,7 @@ const Lists = ({ listSort, listSortOpt, listSearch, listSearchTxt }) => {
   };
 
   return (
-    <motion.div className="py-4 px-3 sm:px-6">
+    <motion.div className="py-4 px-3 lg:px-6">
       <div className="mx-auto max-w-6xl">
         {listsToRender.length < 1 && (
           <div className="min-h-[55vh] grid place-items-center">
@@ -168,8 +168,8 @@ const Lists = ({ listSort, listSortOpt, listSearch, listSearchTxt }) => {
         <Reorder.Group values={listsToRender} onReorder={setListsToRender}>
           <Masonry
             breakpointCols={breakpointColumnsObj}
-            className="my-masonry-grid"
-            columnClassName="my-masonry-grid_column"
+            className="my-masonry-grid_list"
+            columnClassName="my-masonry-grid_column_list"
           >
             {listsToRender.map((list) => {
               const [title, setTitle] = useState(list.title);
@@ -204,7 +204,7 @@ const Lists = ({ listSort, listSortOpt, listSearch, listSearchTxt }) => {
                 relative list-none overflow-hidden
                 rounded-3xl border shadow-sm transition-all
                 ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/7" : "bg-white border-black/10 hover:bg-black/[0.02]"}
-                my-4 mr-6 md:mr-0
+                my-4 ml-0 mr-6 md:mr-4
               `}
                 >
                   {/* Accent strip */}
@@ -330,7 +330,7 @@ const Lists = ({ listSort, listSortOpt, listSearch, listSearchTxt }) => {
                   </div>
 
                   {/* Body */}
-                  <div className="p-4 pl-1">
+                  <div>
                     <ListItems
                       addItems={addItems}
                       listId={list.id}
