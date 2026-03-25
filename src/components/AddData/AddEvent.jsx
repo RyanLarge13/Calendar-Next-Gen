@@ -125,6 +125,9 @@ const AddEvent = () => {
         minutes: minutesEnd,
       };
 
+      setStartTime(true);
+      setEndTime(true);
+
       createStartTime(timeValuesStart);
       createEndTime(timeValuesEnd);
     }
@@ -354,7 +357,9 @@ const AddEvent = () => {
 
     setEndWhen(endTime);
     setEndTimeString(endTimeString);
-    setSecondString(endTimeString);
+
+    // Not sure that I want this
+    // setSecondString(endTimeString);
   };
 
   return (
