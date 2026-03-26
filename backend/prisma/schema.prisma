@@ -136,6 +136,7 @@ id String   @id @unique @default(uuid())
 title String
 notes String
 time String
+repeat Json?
 completed Boolean @default(false)
 groupId String?
 notification Notification[]
