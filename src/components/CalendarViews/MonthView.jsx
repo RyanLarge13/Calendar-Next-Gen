@@ -115,6 +115,20 @@ const MonthView = () => {
     setString(date);
   };
 
+  const handleFloatRepeat = (e, dtStr) => {
+    const kind = e.repeats.kind;
+    switch (kind) {
+      case "nth_weekend":
+        break;
+      case "last_weekday":
+        break;
+      case "special_first_tuesday_after_first_monday":
+        break;
+      default:
+        return;
+    }
+  };
+
   const getIndicesForEvents = useCallback(
     (dtStr) => {
       const targetDateObj = new Date(dtStr);
@@ -126,10 +140,17 @@ const MonthView = () => {
 
       if (repeatEvents.length > 0) {
         repeatEvents.forEach((e) => {
-          const eLandsOnDay = eventOccursOnDay(e, dtStr);
-          if (eLandsOnDay) {
-            const eventRepeated = cloneEventForDay(e, new Date(dtStr));
-            eventsToSort.push(eventRepeated);
+          if (!e.repeats.kind || e.repeats.kind === "fixed") {
+            const eLandsOnDay = eventOccursOnDay(e, dtStr);
+            if (eLandsOnDay) {
+              const eventRepeated = cloneEventForDay(e, new Date(dtStr));
+              eventsToSort.push(eventRepeated);
+            }
+          } else {
+            const clonedEvent = handleFloatRepeat(e, dtStr);
+            if (clonedEvent !== null) {
+              eventsToSort.push(clonedEvent);
+            }
           }
         });
       }
