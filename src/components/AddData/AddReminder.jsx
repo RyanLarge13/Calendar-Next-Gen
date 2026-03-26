@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { AiFillInfoCircle } from "react-icons/ai";
-import { BsAlarmFill, BsClock } from "react-icons/bs";
+import { BsAlarmFill, BsClock, BsRepeat } from "react-icons/bs";
+import { motion } from "framer-motion";
 import { MdClose } from "react-icons/md";
 import DatesContext from "../../context/DatesContext";
 import InteractiveContext from "../../context/InteractiveContext";
@@ -10,6 +11,7 @@ import { makeDateTime } from "../../utils/helpers";
 import TimeSetter from "../DatePickers/TimeSetter";
 import Toggle from "../Misc/Toggle";
 import { useModalActions } from "../../context/ContextHooks/ModalContext";
+import { repeatOptions } from "../../constants/dateAndTimeConstants";
 
 const AddReminder = () => {
   const { setMenu, setAddNewEvent, setType, setShowCategory } =
@@ -41,6 +43,14 @@ const AddReminder = () => {
     fifteen: false,
     thirty: false,
     hour: false,
+  });
+
+  // Repeat states
+  const [repeat, setRepeat] = useState({
+    on: false,
+    repeatForever: false,
+    howOften: null,
+    count: 0,
   });
 
   useEffect(() => {
@@ -168,6 +178,7 @@ const AddReminder = () => {
       notes,
       eventRefId: eventForReminder?.id || null,
       time: time ? time : getTime(),
+      repeat: repeat,
     };
     const newNotification = {
       type: "reminder",
@@ -274,6 +285,34 @@ const AddReminder = () => {
       minute: "numeric",
     });
     setTimeString(newTimeString);
+  };
+
+  // Repeat methods
+  const createRepeat = (isRepeatCallback) => {
+    const isRepeat = isRepeatCallback(repeat.on);
+
+    setRepeat((prev) => ({
+      ...prev,
+      on: isRepeat,
+    }));
+  };
+
+  const createHowOften = (newHowOftenCallback) => {
+    const newHowOften = newHowOftenCallback(repeat.howOften);
+
+    setRepeat((prev) => ({
+      ...prev,
+      howOften: newHowOften,
+    }));
+  };
+
+  const createNeverEndingRepeat = (isForeverCallback) => {
+    const isForever = isForeverCallback(repeat.repeatForever);
+
+    setRepeat((prev) => ({
+      ...prev,
+      repeatForever: isForever,
+    }));
   };
 
   return (
@@ -408,6 +447,113 @@ const AddReminder = () => {
             )}
           </div>
         )}
+
+        {/* Repeats */}
+        <div
+          className={`
+        rounded-2xl border p-4 shadow-sm transition-all
+        ${
+          preferences.darkMode
+            ? "bg-white/5 border-white/10 hover:bg-white/7"
+            : "bg-white border-black/10 hover:bg-black/[0.02]"
+        }
+      `}
+        >
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-3">
+              <div
+                className={`
+                grid place-items-center h-9 w-9 rounded-xl border
+                ${
+                  preferences.darkMode
+                    ? "bg-white/5 border-white/10 text-cyan-200"
+                    : "bg-cyan-50 border-cyan-100 text-cyan-600"
+                }
+              `}
+              >
+                <BsRepeat />
+              </div>
+              <div>
+                <p
+                  className={`text-sm font-semibold ${
+                    preferences.darkMode ? "text-white" : "text-slate-800"
+                  }`}
+                >
+                  Repeat
+                </p>
+                <p className="text-xs opacity-70">
+                  Set this reminder to repeat
+                </p>
+              </div>
+            </div>
+            <Toggle condition={repeat.on} setCondition={createRepeat} />
+          </div>
+        </div>
+
+        {repeat.on ? (
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-4"
+          >
+            <div className="space-y-2">
+              {repeatOptions.map((intervalString) => (
+                <div
+                  key={intervalString}
+                  className={`flex items-center justify-between rounded-2xl border px-4 py-3 ${
+                    preferences.darkMode
+                      ? "border-white/10 bg-white/5"
+                      : "border-black/10 bg-black/[0.02]"
+                  }`}
+                >
+                  <p className="text-sm font-medium">{intervalString}</p>
+                  <Toggle
+                    condition={repeat.howOften}
+                    setCondition={createHowOften}
+                    howOften={intervalString}
+                  />
+                </div>
+              ))}
+            </div>
+            <div
+              className={`mt-5 flex flex-col gap-1 justify-center items-start
+                ${
+                  preferences.darkMode
+                    ? "border-white/10 bg-white/5"
+                    : "border-black/10 bg-black/[0.02]"
+                }
+                `}
+            >
+              <p className="text-xs text-gray-700 ml-4">Repeat Forever</p>
+              <Toggle
+                condition={repeat.repeatForever}
+                setCondition={createNeverEndingRepeat}
+              />
+            </div>
+            {repeat.howOften && !repeat.repeatForever ? (
+              <input
+                placeholder={`How many ${
+                  repeat.howOften === "Daily"
+                    ? "days"
+                    : repeat.howOften === "Weekly"
+                      ? "weeks"
+                      : repeat.howOften === "Bi Weekly"
+                        ? "times"
+                        : repeat.howOften === "Monthly"
+                          ? "months"
+                          : repeat.howOften === "Yearly"
+                            ? "years"
+                            : ""
+                }?`}
+                className={`mt-3 w-full rounded-2xl border px-4 py-3 text-sm font-semibold outline-none transition ${
+                  preferences.darkMode
+                    ? "bg-white/5 border-white/10 hover:bg-white/7"
+                    : "bg-white border-black/10 hover:bg-black/[0.02]"
+                }`}
+              />
+            ) : null}
+          </motion.div>
+        ) : null}
 
         {/* Only Notify */}
         <div

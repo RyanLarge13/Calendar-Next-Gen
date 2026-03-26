@@ -95,72 +95,126 @@ const WeekView = () => {
   };
 
   return (
-    <section className="relative flex flex-col gap-6">
+    <section className="relative flex flex-col gap-5">
       {currentWeek.map((date, index) => (
-        <div
+        <motion.div
           key={index}
-          className={`w-full rounded-2xl border border-slate-200 shadow-sm bg-gradient-to-br ${
-            preferences.darkMode
-              ? "from-[#222] to-[#333] text-white"
-              : "from-purple-50 to-white text-black"
-          }`}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: index * 0.03 }}
+          className={`
+        w-full rounded-3xl border shadow-sm overflow-hidden
+        ${
+          preferences.darkMode
+            ? "bg-white/5 border-white/10"
+            : "bg-white border-black/10"
+        }
+      `}
         >
           {/* Day Header */}
           <div
-            className={`w-full px-4 py-2 rounded-t-2xl shadow-sm ${
-              date.getDay() === currentWeekday
-                ? "bg-purple-100 text-black"
-                : preferences.darkMode
-                  ? "bg-[#222] text-white"
-                  : "bg-white text-black"
-            }`}
+            className={`
+          w-full px-5 py-4 border-b
+          ${
+            preferences.darkMode
+              ? "border-white/10 bg-white/[0.03]"
+              : "border-black/10 bg-black/[0.02]"
+          }
+        `}
           >
-            <div className={`w-full flex justify-between items-center}`}>
-              <p className="font-semibold text-sm">
-                {date.toLocaleDateString("en-US", {
-                  weekday: "short",
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                })}
-              </p>
-              <div className="flex gap-x-4 items-center">
-                <BsFillCalendarDayFill className="text-lg" />
-                <AiOutlinePlusCircle
-                  className="text-xl cursor-pointer hover:text-purple-700 dark:hover:text-purple-300 transition-colors"
+            <div className="w-full flex justify-between items-center gap-3">
+              <div className="min-w-0">
+                <p
+                  className={`text-[11px] font-semibold tracking-wide ${
+                    preferences.darkMode ? "text-white/50" : "text-slate-500"
+                  }`}
+                >
+                  {date.getDay() === currentWeekday ? "Today" : "Day"}
+                </p>
+
+                <p className="font-semibold text-sm sm:text-base truncate">
+                  {date.toLocaleDateString("en-US", {
+                    weekday: "short",
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </p>
+              </div>
+
+              <div className="flex gap-2 items-center flex-shrink-0">
+                <div
+                  className={`
+                grid place-items-center h-10 w-10 rounded-2xl border shadow-sm
+                ${
+                  date.getDay() === currentWeekday
+                    ? preferences.darkMode
+                      ? "bg-cyan-500/15 border-cyan-300/20 text-cyan-100"
+                      : "bg-cyan-50 border-cyan-200 text-cyan-700"
+                    : preferences.darkMode
+                      ? "bg-white/5 border-white/10 text-white/70"
+                      : "bg-black/[0.03] border-black/10 text-slate-600"
+                }
+              `}
+                >
+                  <BsFillCalendarDayFill className="text-lg" />
+                </div>
+
+                <button
+                  type="button"
                   onClick={() => addNewDataForDay(date)}
-                />
+                  className={`
+                grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition
+                hover:shadow-md active:scale-[0.97]
+                ${
+                  preferences.darkMode
+                    ? "bg-cyan-500/15 border-cyan-300/20 text-cyan-100 hover:bg-cyan-500/20"
+                    : "bg-cyan-50 border-cyan-200 text-cyan-700 hover:bg-cyan-100"
+                }
+              `}
+                  aria-label="Add new event"
+                >
+                  <AiOutlinePlusCircle className="text-xl" />
+                </button>
               </div>
             </div>
-            <div className="mt-2">
-              {/* All Day Events */}
+
+            {/* All Day Events */}
+            <div className="mt-3 space-y-2">
               {weeklyEvents.length > 0 &&
                 weeklyEvents[index].map((weekEvent) => {
-                  if (isEventAllDay(weekEvent)) {
-                    return (
-                      <motion.div
-                        key={weekEvent.id}
-                        style={{
-                          color: tailwindBgToHex(weekEvent.color),
-                        }}
-                        whileHover={{ scale: 1.03, y: -2 }}
-                        className="rounded-xl my-2 shadow-md cursor-pointer relative"
-                        onClick={() => setEvent(weekEvent)}
-                      >
-                        <div
-                          className={`w-2 rounded-l-xl absolute left-0 top-0 bottom-0 ${weekEvent.color}`}
-                        ></div>
-                        <div className="flex flex-col h-full p-2">
-                          {/* Summary */}
-                          <p className="ml-3 text-sm font-semibold leading-snug truncate">
-                            {weekEvent.summary}
-                          </p>
-                        </div>
-                      </motion.div>
-                    );
-                  } else {
-                    return null;
-                  }
+                  if (!isEventAllDay(weekEvent)) return null;
+
+                  return (
+                    <motion.div
+                      key={weekEvent.id}
+                      style={{
+                        color: tailwindBgToHex(weekEvent.color),
+                      }}
+                      whileHover={{ scale: 1.01, y: -1 }}
+                      className={`
+                    rounded-2xl border shadow-sm cursor-pointer relative overflow-hidden
+                    ${
+                      preferences.darkMode
+                        ? "bg-white/5 border-white/10"
+                        : "bg-white border-black/10"
+                    }
+                  `}
+                      onClick={() => setEvent(weekEvent)}
+                    >
+                      <div
+                        className={`w-[10px] absolute left-0 top-0 bottom-0 ${weekEvent.color}`}
+                      />
+                      <div className="flex flex-col h-full px-4 py-3 pl-5">
+                        <p className="text-[11px] font-semibold opacity-80">
+                          All-day event
+                        </p>
+                        <p className="text-sm font-semibold leading-snug truncate mt-1">
+                          {weekEvent.summary}
+                        </p>
+                      </div>
+                    </motion.div>
+                  );
                 })}
             </div>
           </div>
@@ -171,19 +225,36 @@ const WeekView = () => {
               ref={(ref) => (dateContainerRefs.current[index] = ref)}
               className="overflow-x-auto scrollbar-hide"
             >
-              <div ref={containerWidth} className="flex relative w-[800vw]">
-                {staticTimes.map((time) => (
+              <div
+                ref={containerWidth}
+                className={`
+              relative flex w-[800vw]
+              ${preferences.darkMode ? "bg-[#101010]/30" : "bg-black/[0.015]"}
+            `}
+              >
+                {staticTimes.map((time, timeIndex) => (
                   <motion.div
                     key={time.string}
-                    whileTap={{ backgroundColor: "#eee" }}
-                    className={`border-l h-[30vh] flex justify-start items-start px-2 text-[11px] w-[200px] 
-                      ${
-                        preferences.darkMode
-                          ? "bg-[#222] text-slate-200"
-                          : "bg-white text-slate-600"
-                      }`}
+                    whileTap={{ scale: 0.995 }}
+                    className={`
+                  relative h-[30vh] w-[200px] flex justify-start items-start px-3 pt-3 text-[11px]
+                  border-l first:border-l-0
+                  ${
+                    preferences.darkMode
+                      ? "bg-transparent border-white/10 text-white/55"
+                      : "bg-transparent border-black/10 text-slate-500"
+                  }
+                `}
                   >
-                    <p>{time.string}</p>
+                    <p className="font-semibold">{time.string}</p>
+
+                    {/* subtle vertical lane emphasis */}
+                    <div
+                      className={`
+                    absolute top-0 bottom-0 right-0 w-px
+                    ${preferences.darkMode ? "bg-white/5" : "bg-black/[0.04]"}
+                  `}
+                    />
                   </motion.div>
                 ))}
 
@@ -193,9 +264,7 @@ const WeekView = () => {
                     const start = new Date(weekEvent?.start?.startTime);
                     const end = new Date(weekEvent?.end?.endTime);
 
-                    if (isEventAllDay(weekEvent)) {
-                      return null;
-                    }
+                    if (isEventAllDay(weekEvent)) return null;
 
                     return (
                       <motion.div
@@ -205,13 +274,14 @@ const WeekView = () => {
                           left: fromLeft(start),
                           color: tailwindBgToHex(weekEvent.color),
                         }}
-                        whileHover={{ scale: 1.03, y: -2 }}
-                        className={`absolute top-5 bottom-2 event-item rounded-xl shadow-lg cursor-pointer 
-          ${weekEvent.color}`}
+                        whileHover={{ scale: 1.015, y: -2 }}
+                        className={`
+                      absolute top-5 bottom-2 rounded-2xl shadow-lg cursor-pointer overflow-hidden
+                      ${weekEvent.color}
+                    `}
                         onClick={() => setEvent(weekEvent)}
                       >
-                        <div className="flex flex-col h-full p-2">
-                          {/* Time */}
+                        <div className="flex flex-col h-full px-3 py-2">
                           <span className="text-[10px] font-semibold opacity-90">
                             {start.toLocaleTimeString([], {
                               hour: "2-digit",
@@ -224,8 +294,7 @@ const WeekView = () => {
                             })}
                           </span>
 
-                          {/* Summary */}
-                          <p className="mt-1 text-sm font-medium leading-snug truncate">
+                          <p className="mt-1 text-sm font-semibold leading-snug truncate">
                             {weekEvent.summary}
                           </p>
                         </div>
@@ -235,7 +304,7 @@ const WeekView = () => {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       ))}
     </section>
   );
