@@ -41,7 +41,7 @@ const Switch = ({ title, styles, value, toggle }) => {
         {/* Thumb */}
         <div
           className={`
-            absolute top-1 bottom-1 w-5 rounded-full shadow-md
+            absolute top-1 bottom-1 w-5 min-w-5 rounded-full shadow-md
             transition-all duration-200
             ${value ? "left-[calc(100%-1.5rem)]" : "left-1"}
             ${preferences.darkMode ? "bg-white" : "bg-white"}

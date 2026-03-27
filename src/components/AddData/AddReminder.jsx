@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { AiFillInfoCircle } from "react-icons/ai";
 import { BsAlarmFill, BsClock, BsRepeat } from "react-icons/bs";
 import { motion } from "framer-motion";
-import { MdClose } from "react-icons/md";
+import { MdCancelScheduleSend, MdClose } from "react-icons/md";
 import DatesContext from "../../context/DatesContext";
 import InteractiveContext from "../../context/InteractiveContext";
 import UserContext from "../../context/UserContext";
@@ -44,6 +44,7 @@ const AddReminder = () => {
     thirty: false,
     hour: false,
   });
+  const [selectDevices, setSelectDevices] = useState(false);
 
   // Repeat states
   const [repeat, setRepeat] = useState({
@@ -596,6 +597,50 @@ const AddReminder = () => {
             <Toggle condition={onlyNotify} setCondition={setOnlyNotify} />
           </div>
         </div>
+
+        {/* Select Device To Not Notify */}
+        <div
+          className={`
+        rounded-2xl border p-4 shadow-sm transition-all
+        ${
+          preferences.darkMode
+            ? "bg-white/5 border-white/10 hover:bg-white/7"
+            : "bg-white border-black/10 hover:bg-black/[0.02]"
+        }
+      `}
+        >
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-3">
+              <div
+                className={`
+              grid place-items-center h-9 w-9 rounded-xl border
+              ${
+                preferences.darkMode
+                  ? "bg-white/5 border-white/10 text-cyan-200"
+                  : "bg-cyan-50 border-cyan-100 text-cyan-600"
+              }
+            `}
+              >
+                <MdCancelScheduleSend />
+              </div>
+              <div>
+                <p
+                  className={`text-sm font-semibold ${
+                    preferences.darkMode ? "text-white" : "text-slate-800"
+                  }`}
+                >
+                  Do Not Notify Devices
+                </p>
+                <p className="text-xs opacity-70">
+                  Pick devices you do not want this notification to ping
+                </p>
+              </div>
+            </div>
+            <Toggle condition={selectDevices} setCondition={setSelectDevices} />
+          </div>
+        </div>
+
+        {selectDevices ? {} : null}
 
         {/* Quick Selects */}
         <div className="space-y-3">
