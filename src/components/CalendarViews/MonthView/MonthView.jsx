@@ -1,11 +1,5 @@
 import { motion } from "framer-motion";
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-} from "react";
+import React, { useCallback, useContext, useMemo, useRef } from "react";
 import DatesContext from "../../../context/DatesContext.jsx";
 import UserContext from "../../../context/UserContext.jsx";
 import { calendar } from "../../../motion.js";
@@ -19,9 +13,19 @@ const MonthView = () => {
 
   const cloneMap = useRef(new Map());
 
-  useEffect(() => {
-    selected.length > 0 ? setConfirmDates(true) : setConfirmDates(false);
-  }, [selected]);
+  const handleFloatRepeat = (e, dtStr) => {
+    const kind = e.repeats.kind;
+    switch (kind) {
+      case "nth_weekend":
+        break;
+      case "last_weekday":
+        break;
+      case "special_first_tuesday_after_first_monday":
+        break;
+      default:
+        return;
+    }
+  };
 
   const getIndicesForEvents = useCallback(
     (dtStr) => {
@@ -34,9 +38,9 @@ const MonthView = () => {
 
       const cloneKey = `${year}-${month}-${dtStr}`;
 
-      if (cloneMap.has(cloneKey)) {
-        const eventClones = cloneMap.get(cloneKey).events;
-        eventsToSort.push(eventClones);
+      if (cloneMap.current.has(cloneKey)) {
+        const eventClones = cloneMap.current.get(cloneKey).events;
+        eventsToSort.push(...eventClones);
       } else {
         if (repeatEvents.length > 0) {
           repeatEvents.forEach((e) => {
@@ -44,10 +48,10 @@ const MonthView = () => {
             if (eLandsOnDay) {
               const eventRepeated = cloneEventForDay(e, new Date(dtStr));
 
-              if (cloneMap.has(cloneKey)) {
-                cloneMap.get(cloneKey).events.push(eventRepeated);
+              if (cloneMap.current.has(cloneKey)) {
+                cloneMap.current.get(cloneKey).events.push(eventRepeated);
               } else {
-                cloneMap.set(cloneKey, { events: [eventRepeated] });
+                cloneMap.current.set(cloneKey, { events: [eventRepeated] });
               }
 
               eventsToSort.push(eventRepeated);
@@ -93,7 +97,6 @@ const MonthView = () => {
           dateStr: null,
           isCurrentDate: false,
           eventsToRender: [],
-          remindersToRender: [],
           isPaddingDay: true,
         };
       }
@@ -134,16 +137,19 @@ const MonthView = () => {
       className="grid grid-cols-7 min-h-[50vh] h-[83vh] gap-1"
     >
       {daysData.map(
-        ({ index, dayNumber, dateStr, isCurrentDate, eventsToRender }) =>
-          React.memo(
-            <DayCell
-              index={index}
-              dayNumber={dayNumber}
-              dateStr={dateStr}
-              isCurrentDate={isCurrentDate}
-              eventsToRender={eventsToRender}
-            />,
-          ),
+        ({ index, dayNumber, dateStr, isCurrentDate, eventsToRender }) => (
+          <DayCell
+            key={index}
+            index={index}
+            dayNumber={dayNumber}
+            dateStr={dateStr}
+            isCurrentDate={isCurrentDate}
+            eventsToRender={eventsToRender}
+            month={month}
+            year={year}
+            dateObj={dateObj}
+          />
+        ),
       )}
       {/* <ConfirmDates /> */}
     </motion.div>

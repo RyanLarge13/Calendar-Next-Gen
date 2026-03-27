@@ -149,7 +149,7 @@ const MonthView = () => {
           } else {
             const clonedEvent = handleFloatRepeat(e, dtStr);
             if (clonedEvent !== null) {
-              eventsToSort.push(clonedEvent);
+              // eventsToSort.push(clonedEvent);
             }
           }
         });

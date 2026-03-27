@@ -47,7 +47,7 @@ const PopUpMonthViewWindow = ({
         top: `${positions.y - 200}px`,
         left: `${positions.x - 400}px`,
       }}
-      className={`absolute p-4 z-[900] rounded-2xl min-h-[120px] max-h-80 overflow-y-auto scrollbar-hide shadow-xl border
+      className={`fixed p-4 z-[900] rounded-2xl min-h-[120px] max-h-80 overflow-y-auto scrollbar-hide shadow-xl border
         ${
           preferences.darkMode
             ? "bg-[#1e1e1e] border-gray-700 text-gray-100"
@@ -93,7 +93,10 @@ const PopUpMonthViewWindow = ({
             return (
               <div
                 key={event.id}
-                onClick={() => setEvent(event)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setEvent(event);
+                }}
                 className="flex rounded-xl shadow-sm border transition hover:shadow-md cursor-pointer"
               >
                 {/* Accent bar */}

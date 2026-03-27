@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { calendarBlocks } from "../../../motion";
-import { useContext, useRef, useState } from "react";
+import React, { useContext, useRef, useState, useCallback } from "react";
 import UserContext from "../../../context/UserContext";
 import DatesContext from "../../../context/DatesContext";
 import { tailwindBgToHex } from "../../../utils/helpers";
@@ -14,9 +14,13 @@ const DayCell = ({
   dateStr,
   isCurrentDate,
   eventsToRender,
+  month,
+  year,
+  dateObj,
 }) => {
   const { preferences } = useContext(UserContext);
-  const { rowDays, dateString, setNav } = useContext(DatesContext);
+  const { rowDays, dateString, setNav, paddingDays, setString } =
+    useContext(DatesContext);
   const { setMenu, setShowLogin } = useContext(InteractiveContext);
 
   const { openModal } = useModalActions();
@@ -27,6 +31,10 @@ const DayCell = ({
   const [popUpReminders, setPopUpReminders] = useState([]);
   const [hoverDay, setHoverDay] = useState(null);
   const [newPopup, setNewPopup] = useState(false);
+  const [selected, setSelected] = useState([]);
+
+  const [longPressActive, setLongPressActive] = useState(false);
+  const [longPressTimeout, setLongPressTimeout] = useState(null);
 
   const popupTimeoutRef = useRef(null);
   const isHoveringPopupRef = useRef(false);
@@ -87,6 +95,7 @@ const DayCell = ({
       setSelected(sortedSelected);
     }
     if (!longPressActive) {
+      console.log("addEvent Called");
       addEvent(`${month + 1}/${index - paddingDays + 1}/${year}`, index);
     }
   };
@@ -125,18 +134,6 @@ const DayCell = ({
     [paddingDays, month, year],
   );
 
-  const scheduleClearPopup = useCallback(() => {
-    if (closePopupTimeoutRef.current) {
-      clearTimeout(closePopupTimeoutRef.current);
-    }
-
-    closePopupTimeoutRef.current = setTimeout(() => {
-      if (!isHoveringPopupRef.current) {
-        setNewPopup(false);
-      }
-    }, 120);
-  }, []);
-
   const clearPopupNow = useCallback(() => {
     if (popupTimeoutRef.current) {
       clearTimeout(popupTimeoutRef.current);
@@ -161,7 +158,7 @@ const DayCell = ({
       onMouseEnter={(e) =>
         createPopup(e, eventsToRender, remindersToRender, index)
       }
-      onMouseLeave={scheduleClearPopup}
+      onMouseLeave={clearPopupNow}
       onContextMenu={(e) => {
         e.preventDefault();
         handleDayLongPress(index);
@@ -244,4 +241,4 @@ const DayCell = ({
   );
 };
 
-export default DayCell;
+export default React.memo(DayCell);

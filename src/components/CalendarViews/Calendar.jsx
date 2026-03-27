@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useContext, useRef } from "react";
 import { weekDays } from "../../constants/dateAndTimeConstants";
 import DatesContext from "../../context/DatesContext";
 import InteractiveContext from "../../context/InteractiveContext";
@@ -7,7 +7,7 @@ import UserContext from "../../context/UserContext";
 import AgendaView from "../CalendarViews/AgendaView";
 import DayView from "../CalendarViews/DayView";
 import MasonryView from "../CalendarViews/MasonryView";
-import MonthView from "../CalendarViews/MonthView";
+import MonthView from "../CalendarViews/MonthView/MonthView";
 import WeekView from "../CalendarViews/WeekView";
 import DatePicker from "../DatePickers/DatePicker";
 import FullDatePicker from "../DatePickers/FullDatePicker";
