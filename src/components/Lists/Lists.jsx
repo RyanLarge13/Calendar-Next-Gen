@@ -330,7 +330,7 @@ const Lists = ({ listSort, listSortOpt, listSearch, listSearchTxt }) => {
                   </div>
 
                   {/* Body */}
-                  <div>
+                  <div className="p-2">
                     <ListItems
                       addItems={addItems}
                       listId={list.id}
