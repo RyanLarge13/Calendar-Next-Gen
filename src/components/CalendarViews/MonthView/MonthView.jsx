@@ -3,7 +3,7 @@ import React, { useCallback, useContext, useMemo, useRef } from "react";
 import DatesContext from "../../../context/DatesContext.jsx";
 import UserContext from "../../../context/UserContext.jsx";
 import { calendar } from "../../../motion.js";
-import { cloneEventForDay, eventOccursOnDay } from "../../../utils/helpers.js";
+import { cloneEventForDay, eventOccursOnDay, parseCalendarDate} from "../../../utils/helpers.js";
 import DayCell from "./DayCell.jsx";
 
 const MonthView = () => {
@@ -28,9 +28,8 @@ const MonthView = () => {
   };
 
   const getIndicesForEvents = useCallback(
-    (dtStr) => {
-      const targetDateObj = new Date(dtStr);
-      targetDateObj.setHours(0, 0, 0, 0);
+    dtStr => {
+      const targetDateObj = parseCalendarDate(dtStr);
       const key = `${year}-${month}`;
       const baseEvents = eventMap.get(key)?.events || [];
       const eventsToSort = [...baseEvents];
@@ -43,10 +42,10 @@ const MonthView = () => {
         eventsToSort.push(...eventClones);
       } else {
         if (repeatEvents.length > 0) {
-          repeatEvents.forEach((e) => {
-            const eLandsOnDay = eventOccursOnDay(e, dtStr);
+          repeatEvents.forEach(e => {
+            const eLandsOnDay = eventOccursOnDay(e, targetDateObj);
             if (eLandsOnDay) {
-              const eventRepeated = cloneEventForDay(e, new Date(dtStr));
+              const eventRepeated = cloneEventForDay(e, targetDateObj);
 
               if (cloneMap.current.has(cloneKey)) {
                 cloneMap.current.get(cloneKey).events.push(eventRepeated);
@@ -64,25 +63,24 @@ const MonthView = () => {
         return [];
       }
       return eventsToSort
-        .map((event) => {
-          const startDate = new Date(event.startDate);
-          const endDate = new Date(event.endDate);
-          startDate.setHours(0, 0, 0, 0);
-          endDate.setHours(0, 0, 0, 0);
+        .map(event => {
+          const startDate = parseCalendarDate(event.startDate);
+          const endDate = parseCalendarDate(event.endDate);
           return {
             ...event,
             startDate,
             endDate,
-            duration: (endDate - startDate) / (24 * 60 * 60 * 1000),
+            duration: (endDate - startDate) / (24 * 60 * 60 * 1000)
           };
         })
         .filter(
-          (event) =>
-            event.startDate <= targetDateObj && event.endDate >= targetDateObj,
+          event =>
+            parseCalendarDate(event.startDate) <= targetDateObj &&
+            parseCalendarDate(event.endDate) >= targetDateObj
         )
         .sort((a, b) => b.duration - a.duration);
     },
-    [month, year, eventMap],
+    [month, year, eventMap]
   );
 
   const daysData = useMemo(() => {
@@ -97,7 +95,7 @@ const MonthView = () => {
           dateStr: null,
           isCurrentDate: false,
           eventsToRender: [],
-          isPaddingDay: true,
+          isPaddingDay: true
         };
       }
 
@@ -116,7 +114,7 @@ const MonthView = () => {
         dateStr,
         isCurrentDate,
         eventsToRender,
-        isPaddingDay: false,
+        isPaddingDay: false
       };
     });
   }, [
@@ -126,7 +124,7 @@ const MonthView = () => {
     year,
     day,
     dateObj,
-    getIndicesForEvents,
+    getIndicesForEvents
   ]);
 
   return (
@@ -149,7 +147,7 @@ const MonthView = () => {
             year={year}
             dateObj={dateObj}
           />
-        ),
+        )
       )}
       {/* <ConfirmDates /> */}
     </motion.div>

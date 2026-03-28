@@ -451,3 +451,9 @@ export const cloneEventForDay = (event, day) => {
     },
   };
 };
+
+export const parseCalendarDate = (dateStr) => {
+  const [m, d, y] = dateStr.split("/").map(Number);
+  const fullYear = y < 100 ? 2000 + y : y;
+  return new Date(fullYear, m - 1, d, 0, 0, 0, 0);
+};
