@@ -75,8 +75,8 @@ const MonthView = () => {
         })
         .filter(
           event =>
-            parseCalendarDate(event.startDate) <= targetDateObj &&
-            parseCalendarDate(event.endDate) >= targetDateObj
+            event.startDate <= targetDateObj &&
+            event.endDate >= targetDateObj
         )
         .sort((a, b) => b.duration - a.duration);
     },
