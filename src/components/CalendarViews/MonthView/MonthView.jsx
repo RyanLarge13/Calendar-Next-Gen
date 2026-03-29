@@ -33,7 +33,7 @@ const MonthView = () => {
 
   const getIndicesForEvents = useCallback(
     dtStr => {
-      const targetDateObj = parseCalendarDate(dtStr);
+      const targetDateObj = new Date(dtStr);
       const key = `${year}-${month}`;
       const baseEvents = eventMap.get(key)?.events || [];
       const eventsToSort = [...baseEvents];
@@ -68,8 +68,8 @@ const MonthView = () => {
       }
       return eventsToSort
         .map(event => {
-          const startDate = parseCalendarDate(event.startDate);
-          const endDate = parseCalendarDate(event.endDate);
+          const startDate = new Date(event.startDate);
+          const endDate = new Date(event.endDate);
           return {
             ...event,
             startDate,
