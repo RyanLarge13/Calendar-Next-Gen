@@ -3,7 +3,11 @@ import React, { useCallback, useContext, useMemo, useRef } from "react";
 import DatesContext from "../../../context/DatesContext.jsx";
 import UserContext from "../../../context/UserContext.jsx";
 import { calendar } from "../../../motion.js";
-import { cloneEventForDay, eventOccursOnDay, parseCalendarDate} from "../../../utils/helpers.js";
+import {
+  cloneEventForDay,
+  eventOccursOnDay,
+  parseCalendarDate
+} from "../../../utils/helpers.js";
 import DayCell from "./DayCell.jsx";
 
 const MonthView = () => {
@@ -75,8 +79,7 @@ const MonthView = () => {
         })
         .filter(
           event =>
-            event.startDate <= targetDateObj &&
-            event.endDate >= targetDateObj
+            event.startDate <= targetDateObj && event.endDate >= targetDateObj
         )
         .sort((a, b) => b.duration - a.duration);
     },
