@@ -15,6 +15,31 @@ const sendNotification = (payload, subscriptions, userId) => {
     return;
   }
   if (subscriptions.length < 2) {
+    try {
+      const parsedSub = JSON.parse(subscriptions[0]);
+      const parsedPayload = JSON.parse(payload);
+
+      if (parsedSub.paused) {
+        return;
+      }
+
+      const deviceIsIgnored = parsedPayload?.data?.deviceExceptions?.some(
+        (endp) => endp === parsedSub.endpoint,
+      );
+
+      if (
+        parsedPayload?.data?.deviceExceptions?.length > 0 &&
+        deviceIsIgnored
+      ) {
+        console.log("This device was ignored for this notification");
+        return;
+      }
+    } catch (err) {
+      console.log(
+        "Error parsing subscription object pre-sending webpush notifications",
+      );
+      console.log(err);
+    }
     WebPush.sendNotification(subscriptions[0], payload).catch((error) => {
       console.error("Error sending notification:", error);
     });
@@ -23,15 +48,21 @@ const sendNotification = (payload, subscriptions, userId) => {
     subscriptions.forEach((sub) => {
       try {
         const parsedSub = JSON.parse(sub);
+        const parsedPayload = JSON.parse(payload);
 
         if (parsedSub.paused) {
           return;
         }
 
+        const deviceIsIgnored = parsedPayload?.data?.deviceExceptions?.some(
+          (endp) => endp === parsedSub.endpoint,
+        );
+
         if (
-          payload?.data?.deviceExceptions?.length > 0 &&
-          payload?.data?.deviceExceptions?.includes(parsedSub.endpoint)
+          parsedPayload?.data?.deviceExceptions?.length > 0 &&
+          deviceIsIgnored
         ) {
+          console.log("This device was ignored for this notification");
           return;
         }
       } catch (err) {
