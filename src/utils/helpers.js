@@ -2,7 +2,7 @@ import { API_GetWeather } from "./api";
 import { v4 as uuidv4 } from "uuid";
 
 const formatter = new Intl.RelativeTimeFormat(undefined, {
-  numeric: "auto"
+  numeric: "auto",
 });
 
 const DIVISIONS = [
@@ -12,10 +12,10 @@ const DIVISIONS = [
   { amount: 7, name: "days" },
   { amount: 4.34524, name: "weeks" },
   { amount: 12, name: "months" },
-  { amount: Number.POSITIVE_INFINITY, name: "years" }
+  { amount: Number.POSITIVE_INFINITY, name: "years" },
 ];
 
-export const formatTime = date => {
+export const formatTime = (date) => {
   if (date === null || date === undefined) {
     return "Try Refreshing Again";
   }
@@ -29,21 +29,21 @@ export const formatTime = date => {
   }
 };
 
-export const formatDbText = text => {
+export const formatDbText = (text) => {
   if (typeof text !== "string") {
     return "";
   }
   const delimiter = "|||";
   if (text.includes(delimiter)) {
-    const textParts = text.split(delimiter).map(part => part.trim());
-    const filteredTextParts = textParts.filter(part => part !== "");
+    const textParts = text.split(delimiter).map((part) => part.trim());
+    const filteredTextParts = textParts.filter((part) => part !== "");
     return filteredTextParts;
   } else {
     return [text.trim()];
   }
 };
 
-export const formatText = text => {
+export const formatText = (text) => {
   return text.replace("|||", "\n");
 };
 
@@ -51,8 +51,8 @@ export const getTimeZone = async (lng, lat) => {
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const response = await fetch(
     `https://maps.googleapis.com/maps/api/timezone/json?location=${lat},${lng}&timestamp=${Math.floor(
-      Date.now() / 1000
-    )}&key=${apiKey}`
+      Date.now() / 1000,
+    )}&key=${apiKey}`,
   );
   const data = await response.json();
   return data.timeZoneId;
@@ -60,7 +60,7 @@ export const getTimeZone = async (lng, lat) => {
 
 export const validateFormData = (data, rules) => {};
 
-export const tailwindBgToHex = bgClass => {
+export const tailwindBgToHex = (bgClass) => {
   const colorMap = {
     "bg-black": "#FFFFFF",
     "bg-white": "#000000",
@@ -101,7 +101,7 @@ export const tailwindBgToHex = bgClass => {
     "bg-pink-600": "#FFFFFF",
     "bg-slate-600": "#FFFFFF",
     "bg-zinc-600": "#FFFFFF",
-    "bg-stone-600": "#FFFFFF"
+    "bg-stone-600": "#FFFFFF",
   };
 
   const colorToReturn = colorMap[bgClass];
@@ -113,7 +113,7 @@ export const tailwindBgToHex = bgClass => {
   }
 };
 
-export const eventIsAllDay = event => {
+export const eventIsAllDay = (event) => {
   const startDate = new Date(event.startDate);
   const endDate = new Date(event.endDate);
   startDate.setHours(0, 0, 0, 0);
@@ -133,7 +133,7 @@ export const eventIsAllDay = event => {
 export const hasRepeatDaily = (repeaters, date) => {
   const target = normalizeDate(date);
   return repeaters.some(
-    r => normalizeDate(new Date(r)).getTime() === target.getTime()
+    (r) => normalizeDate(new Date(r)).getTime() === target.getTime(),
   );
 };
 
@@ -155,7 +155,7 @@ export const makeDateTime = (string, hour, minute, meridiem) => {
     hours24,
     minute,
     0,
-    0
+    0,
   );
 };
 
@@ -201,7 +201,7 @@ export const getDeviceLabel = (userAgent = "") => {
   return `${browser} on ${os}`;
 };
 
-export const completeSubscription = sub => {
+export const completeSubscription = (sub) => {
   const platform = navigator.userAgentData?.platform || "Unknown Platform";
   const browser = getDeviceLabel(navigator.userAgent);
   const isStandalone =
@@ -229,13 +229,13 @@ export const completeSubscription = sub => {
     appVersion,
     createdAt,
     lastSeenAt,
-    paused: false
+    paused: false,
   };
 
   return fullSub;
 };
 
-export const getWeekOfMonthMondayStart = date => {
+export const getWeekOfMonthMondayStart = (date) => {
   const year = date.getFullYear();
   const month = date.getMonth();
 
@@ -258,19 +258,19 @@ export const returnSortDatedDate = (type, date) => {
     case "day":
       return {
         key: `${year}-${month + 1}-${day}`,
-        label: `${monthName} ${day}, ${year}`
+        label: `${monthName} ${day}, ${year}`,
       };
 
     case "week":
       return {
         key: `${year}-${month + 1}-week-${week}`,
-        label: `${monthName} ${year} - Week ${week}`
+        label: `${monthName} ${year} - Week ${week}`,
       };
 
     case "month":
       return {
         key: `${year}-${month + 1}`,
-        label: `${monthName} ${year}`
+        label: `${monthName} ${year}`,
       };
 
     default:
@@ -287,7 +287,7 @@ const isSameCalendarDay = (a, b) => {
   );
 };
 
-const startOfDay = date => {
+const startOfDay = (date) => {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 };
 
@@ -398,7 +398,7 @@ const mergeDateWithTime = (baseDate, newDay) => {
     baseDate.getHours(),
     baseDate.getMinutes(),
     baseDate.getSeconds(),
-    baseDate.getMilliseconds()
+    baseDate.getMilliseconds(),
   );
 };
 
@@ -442,18 +442,38 @@ export const cloneEventForDay = (event, day) => {
     start: {
       ...event.start,
       timeZone: event.start?.timeZone ?? null,
-      startTime: newStartTime ? newStartTime.toString() : null
+      startTime: newStartTime ? newStartTime.toString() : null,
     },
     end: {
       ...event.end,
       timeZone: event.end?.timeZone ?? null,
-      endTime: newEndTime ? newEndTime.toString() : null
-    }
+      endTime: newEndTime ? newEndTime.toString() : null,
+    },
   };
 };
 
-export const parseCalendarDate = dateStr => {
+export const parseCalendarDate = (dateStr) => {
   const [m, d, y] = dateStr.split("/").map(Number);
   const fullYear = y < 100 ? 2000 + y : y;
   return new Date(fullYear, m - 1, d, 0, 0, 0, 0);
+};
+
+export const getEasterDate = (year) => {
+  const a = year % 19;
+  const b = Math.floor(year / 100);
+  const c = year % 100;
+  const d = Math.floor(b / 4);
+  const e = b % 4;
+  const f = Math.floor((b + 8) / 25);
+  const g = Math.floor((b - f + 1) / 3);
+  const h = (19 * a + b - d - g + 15) % 30;
+  const i = Math.floor(c / 4);
+  const k = c % 4;
+  const l = (32 + 2 * e + 2 * i - h - k) % 7;
+  const m = Math.floor((a + 11 * h + 22 * l) / 451);
+
+  const month = Math.floor((h + l - 7 * m + 114) / 31); // 3=March, 4=April
+  const day = ((h + l - 7 * m + 114) % 31) + 1;
+
+  return new Date(year, month - 1, day);
 };

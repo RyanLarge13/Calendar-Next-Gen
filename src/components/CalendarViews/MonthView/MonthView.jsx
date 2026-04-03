@@ -6,6 +6,7 @@ import { calendar } from "../../../motion.js";
 import {
   cloneEventForDay,
   eventOccursOnDay,
+  getEasterDate,
   parseCalendarDate,
 } from "../../../utils/helpers.js";
 import DayCell from "./DayCell.jsx";
@@ -17,17 +18,89 @@ const MonthView = () => {
 
   const cloneMap = useRef(new Map());
 
-  const handleFloatRepeat = (e, dtStr) => {
-    const kind = e.repeats.kind;
+  const handleFloatRepeat = (e, targetDate) => {
+    const kind = e?.repeats?.kind;
+    const rules = e?.repeats?.rules;
+
+    if (!kind || !rules) return false;
+
+    if (Number.isNaN(targetDate.getTime())) return false;
+
+    const year = targetDate.getFullYear();
+    const month = targetDate.getMonth();
+    const day = targetDate.getDate();
+
     switch (kind) {
-      case "nth_weekend":
-        break;
-      case "last_weekday":
-        break;
-      case "special_first_tuesday_after_first_monday":
-        break;
+      case "relative_to_easter": {
+        const easter = getEasterDate(year);
+
+        return (
+          targetDate.getFullYear() === easter.getFullYear() &&
+          targetDate.getMonth() === easter.getMonth() &&
+          targetDate.getDate() === easter.getDate()
+        );
+      }
+      case "nth_weekday": {
+        const { month: ruleMonth, weekday, nth } = rules;
+        if (
+          ruleMonth == null ||
+          weekday == null ||
+          nth == null ||
+          month !== ruleMonth ||
+          targetDate.getDay() !== weekday
+        ) {
+          return false;
+        }
+
+        const firstOfMonth = new Date(year, ruleMonth, 1);
+        const firstDayWeekday = firstOfMonth.getDay();
+        const offset = (weekday - firstDayWeekday + 7) % 7;
+        const firstMatchingDay = 1 + offset;
+        const targetNthDay = firstMatchingDay + (nth - 1) * 7;
+
+        return day === targetNthDay;
+      }
+
+      case "last_weekday": {
+        const { month: ruleMonth, weekday } = rules;
+        if (
+          ruleMonth == null ||
+          weekday == null ||
+          month !== ruleMonth ||
+          targetDate.getDay() !== weekday
+        ) {
+          return false;
+        }
+
+        const lastOfMonth = new Date(year, ruleMonth + 1, 0);
+        const lastDayWeekday = lastOfMonth.getDay();
+        const offset = (lastDayWeekday - weekday + 7) % 7;
+        const lastMatchingDay = lastOfMonth.getDate() - offset;
+
+        return day === lastMatchingDay;
+      }
+
+      case "special_first_tuesday_after_first_monday": {
+        const { month: ruleMonth } = rules;
+        if (
+          ruleMonth == null ||
+          month !== ruleMonth ||
+          targetDate.getDay() !== 2
+        ) {
+          return false;
+        }
+
+        const firstOfMonth = new Date(year, ruleMonth, 1);
+        const firstDayWeekday = firstOfMonth.getDay();
+        const firstMondayOffset = (1 - firstDayWeekday + 7) % 7;
+        const firstMonday = 1 + firstMondayOffset;
+        const firstTuesdayAfterFirstMonday = firstMonday + 1;
+
+        return day === firstTuesdayAfterFirstMonday;
+      }
+
       default:
-        return;
+        return false;
     }
   };
 
@@ -48,7 +121,13 @@ const MonthView = () => {
       } else {
         if (repeatEvents.length > 0) {
           repeatEvents.forEach((e) => {
-            const eLandsOnDay = eventOccursOnDay(e, targetDateObj);
+            let eLandsOnDay = false;
+
+            if (e.repeats.kind && e.repeats.rules) {
+              eLandsOnDay = handleFloatRepeat(e, targetDateObj);
+            } else {
+              eLandsOnDay = eventOccursOnDay(e, targetDateObj);
+            }
             if (eLandsOnDay) {
               const eventRepeated = cloneEventForDay(e, targetDateObj);
 

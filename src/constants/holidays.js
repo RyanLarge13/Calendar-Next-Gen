@@ -639,6 +639,87 @@ export const holidays = [
     time: false,
   },
   {
+    color: "bg-pink-300",
+    date: "1/1/1900",
+    startDate: "1/1/1900",
+    endDate: "1/1/1900",
+    summary: "Easter",
+    id: 2000,
+    reminders: {
+      reminder: false,
+    },
+    repeats: {
+      repeat: true,
+      howOften: "Yearly",
+      interval: "infinity",
+      kind: "relative_to_easter",
+      rules: {
+        offset: 0,
+      },
+    },
+    start: {
+      startTime: null,
+    },
+    end: {
+      endTime: null,
+    },
+    time: false,
+  },
+  {
+    color: "bg-pink-300",
+    date: "1/1/1900",
+    startDate: "1/1/1900",
+    endDate: "1/1/1900",
+    summary: "Ash Wednesday",
+    id: 2001,
+    reminders: {
+      reminder: false,
+    },
+    repeats: {
+      repeat: true,
+      howOften: "Yearly",
+      interval: "infinity",
+      kind: "relative_to_easter",
+      rules: {
+        offset: -46,
+      },
+    },
+    start: {
+      startTime: null,
+    },
+    end: {
+      endTime: null,
+    },
+    time: false,
+  },
+  {
+    color: "bg-slate-400",
+    date: "1/1/1900",
+    startDate: "1/1/1900",
+    endDate: "1/1/1900",
+    summary: "Good Friday",
+    id: 2004,
+    reminders: {
+      reminder: false,
+    },
+    repeats: {
+      repeat: true,
+      howOften: "Yearly",
+      interval: "infinity",
+      kind: "relative_to_easter",
+      rules: {
+        offset: -2,
+      },
+    },
+    start: {
+      startTime: null,
+    },
+    end: {
+      endTime: null,
+    },
+    time: false,
+  },
+  {
     color: "bg-teal-300",
     date: "1/1/1900",
     startDate: "1/1/1900",
