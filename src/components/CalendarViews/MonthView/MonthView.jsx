@@ -6,7 +6,7 @@ import { calendar } from "../../../motion.js";
 import {
   cloneEventForDay,
   eventOccursOnDay,
-  parseCalendarDate
+  parseCalendarDate,
 } from "../../../utils/helpers.js";
 import DayCell from "./DayCell.jsx";
 
@@ -32,8 +32,9 @@ const MonthView = () => {
   };
 
   const getIndicesForEvents = useCallback(
-    dtStr => {
-      const targetDateObj = new Date(dtStr);
+    (dtStr) => {
+      const targetDateObj = parseCalendarDate(dtStr);
+      // const targetDateObj = new Date(dtStr);
       const key = `${year}-${month}`;
       const baseEvents = eventMap.get(key)?.events || [];
       const eventsToSort = [...baseEvents];
@@ -46,7 +47,7 @@ const MonthView = () => {
         eventsToSort.push(...eventClones);
       } else {
         if (repeatEvents.length > 0) {
-          repeatEvents.forEach(e => {
+          repeatEvents.forEach((e) => {
             const eLandsOnDay = eventOccursOnDay(e, targetDateObj);
             if (eLandsOnDay) {
               const eventRepeated = cloneEventForDay(e, targetDateObj);
@@ -67,23 +68,23 @@ const MonthView = () => {
         return [];
       }
       return eventsToSort
-        .map(event => {
+        .map((event) => {
           const startDate = new Date(event.startDate);
           const endDate = new Date(event.endDate);
           return {
             ...event,
             startDate,
             endDate,
-            duration: (endDate - startDate) / (24 * 60 * 60 * 1000)
+            duration: (endDate - startDate) / (24 * 60 * 60 * 1000),
           };
         })
         .filter(
-          event =>
-            event.startDate <= targetDateObj && event.endDate >= targetDateObj
+          (event) =>
+            event.startDate <= targetDateObj && event.endDate >= targetDateObj,
         )
         .sort((a, b) => b.duration - a.duration);
     },
-    [month, year, eventMap]
+    [month, year, eventMap],
   );
 
   const daysData = useMemo(() => {
@@ -98,7 +99,7 @@ const MonthView = () => {
           dateStr: null,
           isCurrentDate: false,
           eventsToRender: [],
-          isPaddingDay: true
+          isPaddingDay: true,
         };
       }
 
@@ -117,7 +118,7 @@ const MonthView = () => {
         dateStr,
         isCurrentDate,
         eventsToRender,
-        isPaddingDay: false
+        isPaddingDay: false,
       };
     });
   }, [
@@ -127,7 +128,7 @@ const MonthView = () => {
     year,
     day,
     dateObj,
-    getIndicesForEvents
+    getIndicesForEvents,
   ]);
 
   return (
@@ -150,7 +151,7 @@ const MonthView = () => {
             year={year}
             dateObj={dateObj}
           />
-        )
+        ),
       )}
       {/* <ConfirmDates /> */}
     </motion.div>

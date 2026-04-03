@@ -241,9 +241,9 @@ const NotificationSubscriptions = () => {
                 Pause Notifications To All Devices
               </button>
             ) : null}
-            {notifSubs.map((ns, index) => {
-              <NotificationSubscription key={index} ns={ns} hasSub={hasSub} />;
-            })}
+            {notifSubs.map((ns, index) => (
+              <NotificationSubscription key={index} ns={ns} hasSub={hasSub} />
+            ))}
           </div>
         )}
       </div>

@@ -27,6 +27,13 @@ const sendNotification = (payload, subscriptions, userId) => {
         if (parsedSub.paused) {
           return;
         }
+
+        if (
+          payload?.data?.deviceExceptions?.length > 0 &&
+          payload?.data?.deviceExceptions?.includes(parsedSub.endpoint)
+        ) {
+          return;
+        }
       } catch (err) {
         console.log(
           "Error parsing subscription object pre-sending webpush notifications",

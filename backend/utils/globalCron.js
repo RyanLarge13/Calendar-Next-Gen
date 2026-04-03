@@ -38,13 +38,14 @@ const processPushNotifications = async () => {
               notifType: notification.type,
               eventRefId:
                 notification.type === "event" ? notification.eventRefId : null,
+              deviceExceptions: notification.deviceExceptions || [],
             },
           });
           if (user.notifSub.length > 1) {
             sendNotification(payload, [...user.notifSub], user.id);
           }
           if (user.notifSub.length < 2) {
-            sendNotification(payload, [JSON.parse(...user.notifSub)]);
+            sendNotification(payload, [JSON.parse(...user.notifSub)], user.id);
           }
           notificationIdsToUpdate.push(notification.id);
         }

@@ -12,6 +12,7 @@ import TimeSetter from "../DatePickers/TimeSetter";
 import Toggle from "../Misc/Toggle";
 import { useModalActions } from "../../context/ContextHooks/ModalContext";
 import { repeatOptions } from "../../constants/dateAndTimeConstants";
+import NotificationSubscription from "../Notifications/NotificationSubscription";
 
 const AddReminder = () => {
   const { setMenu, setAddNewEvent, setType, setShowCategory } =
@@ -23,6 +24,7 @@ const AddReminder = () => {
     setSystemNotif,
     preferences,
     eventMap,
+    notifSubs,
   } = useContext(UserContext);
   const { string, setString } = useContext(DatesContext);
 
@@ -34,6 +36,7 @@ const AddReminder = () => {
   const [timeString, setTimeString] = useState("");
   const [addTime, setAddTime] = useState(false);
   const [onlyNotify, setOnlyNotify] = useState(false);
+  const [deviceExceptions, setDeviceExceptions] = useState([]);
   const [todaysEvents, setTodaysEvent] = useState({
     loading: true,
     events: [],
@@ -180,6 +183,7 @@ const AddReminder = () => {
       eventRefId: eventForReminder?.id || null,
       time: time ? time : getTime(),
       repeat: repeat,
+      deviceExceptions: deviceExceptions,
     };
     const newNotification = {
       type: "reminder",
@@ -196,6 +200,7 @@ const AddReminder = () => {
       userId: user.id,
       sentNotification: false,
       sentWebPush: false,
+      deviceExceptions: deviceExceptions,
     };
     if (onlyNotify) {
       return createNotification(newNotification, token)
@@ -314,6 +319,43 @@ const AddReminder = () => {
       ...prev,
       repeatForever: isForever,
     }));
+  };
+
+  const addDeviceToDoNotNotify = (ns) => {
+    let sub = null;
+
+    try {
+      sub = JSON.parse(ns);
+    } catch (err) {
+      console.log("Error parsing device subscription");
+      console.log(err);
+    }
+    const deviceId = sub.endpoint;
+    const contains = deviceExceptions.find((id) => id === deviceId);
+
+    setDeviceExceptions((prev) =>
+      contains ? prev.filter((id) => id !== deviceId) : [...prev, deviceId],
+    );
+  };
+
+  const deviceSelected = (ns) => {
+    let sub = null;
+
+    try {
+      sub = JSON.parse(ns);
+    } catch (err) {
+      console.log("Error parsing device subscription");
+      console.log(err);
+    }
+
+    const deviceId = sub.endpoint;
+    const contains = deviceExceptions.find((id) => id === deviceId);
+
+    if (contains) {
+      return "border border-slate-400 border-2 rounded-lg duration-300";
+    }
+
+    return "";
   };
 
   return (
@@ -640,7 +682,18 @@ const AddReminder = () => {
           </div>
         </div>
 
-        {selectDevices ? {} : null}
+        <div className="overflow-y-auto max-h-[75vh] grid gap-3 grid-cols-2">
+          {selectDevices
+            ? notifSubs.map((ns, index) => (
+                <button
+                  onClick={() => addDeviceToDoNotNotify(ns)}
+                  className={`${deviceSelected(ns)}`}
+                >
+                  <NotificationSubscription key={index} ns={ns} hasSub={true} />
+                </button>
+              ))
+            : null}
+        </div>
 
         {/* Quick Selects */}
         <div className="space-y-3">

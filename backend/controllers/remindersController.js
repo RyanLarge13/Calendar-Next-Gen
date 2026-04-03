@@ -102,7 +102,8 @@ export const updateReminderComplete = async (req, res) => {
 };
 
 export const addNewReminder = async (req, res) => {
-  const { title, notes, time, eventRefId } = req.body.reminder;
+  const { title, notes, time, eventRefId, deviceExceptions } =
+    req.body.reminder;
   const { id } = req.user;
   const stringTime = new Date(time).toString();
   const newReminder = {
@@ -122,6 +123,7 @@ export const addNewReminder = async (req, res) => {
     sentNotification: false,
     sentWebPush: false,
     userId: id,
+    deviceExceptions,
   };
   const returnedReminder = await prisma.reminder.create({
     data: newReminder,

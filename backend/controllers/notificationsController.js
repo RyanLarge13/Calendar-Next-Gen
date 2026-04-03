@@ -80,7 +80,7 @@ export const subscribeToNotifications = async (req, res) => {
           time: new Date(),
         },
       });
-      sendNotification(payload, [subscription]);
+      sendNotification(payload, [subscription], userId);
       const userToSign = {
         id: updatedUser.id,
         username: updatedUser.username,
@@ -169,7 +169,7 @@ export const addSubscriptionToUser = async (req, res) => {
         time: new Date(),
       },
     });
-    sendNotification(payload, [newSubscription]);
+    sendNotification(payload, [newSubscription], id);
     const userToSign = {
       id: updatedUser.id,
       username: updatedUser.username,
