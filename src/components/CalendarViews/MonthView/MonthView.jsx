@@ -32,12 +32,20 @@ const MonthView = () => {
 
     switch (kind) {
       case "relative_to_easter": {
+        const { offset = 0 } = rules;
+
         const easter = getEasterDate(year);
+        easter.setHours(0, 0, 0, 0);
+
+        const targetEasterRelativeDate = new Date(easter);
+        targetEasterRelativeDate.setDate(
+          targetEasterRelativeDate.getDate() + offset,
+        );
 
         return (
-          targetDate.getFullYear() === easter.getFullYear() &&
-          targetDate.getMonth() === easter.getMonth() &&
-          targetDate.getDate() === easter.getDate()
+          targetDate.getFullYear() === targetEasterRelativeDate.getFullYear() &&
+          targetDate.getMonth() === targetEasterRelativeDate.getMonth() &&
+          targetDate.getDate() === targetEasterRelativeDate.getDate()
         );
       }
       case "nth_weekday": {
