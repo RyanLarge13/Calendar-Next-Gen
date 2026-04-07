@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import UserContext from "../../context/UserContext.jsx";
 import {
   updateReminderComplete,
@@ -9,8 +9,12 @@ import {
 import { motion } from "framer-motion";
 import { BsAlarmFill, BsTrashFill } from "react-icons/bs";
 import { MdOpenInNew } from "react-icons/md";
-import { formatTime } from "../../utils/helpers.js";
-import { BiAlarmSnooze, BiCalendarEvent } from "react-icons/bi";
+import { formatTime, isSameCalendarDay } from "../../utils/helpers.js";
+import {
+  BiAlarmSnooze,
+  BiCalendarEvent,
+  BiMoveHorizontal,
+} from "react-icons/bi";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
 import DatesContext from "../../context/DatesContext.jsx";
 
@@ -35,6 +39,7 @@ const Reminder = ({ reminder, showOpenEvent = true, styles = {} }) => {
   const [reminderTitle, setReminderTitle] = useState(reminder.title);
   const [selected, setSelected] = useState([]);
   const [selectable, setSelectable] = useState(false);
+
   let timeout = useRef(null);
 
   const saveReminderNote = async () => {
@@ -366,6 +371,25 @@ const Reminder = ({ reminder, showOpenEvent = true, styles = {} }) => {
             Open Event <MdOpenInNew />
           </button>
         ) : null}
+
+        <div className="flex flex-wrap justify-start items-center gap-2 mt-2">
+          {!isSameCalendarDay(new Date(reminder.time), new Date()) ? (
+            <button
+              className={`
+          grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition active:scale-95
+          ${
+            preferences.darkMode
+              ? "bg-cyan-500/20 border-cyan-300/20 text-cyan-100 hover:bg-cyan-500/25"
+              : "bg-cyan-50 border-cyan-200 text-cyan-700 hover:bg-cyan-100"
+          }
+        `}
+              aria-label="Move To Today"
+              type="button"
+            >
+              <BiMoveHorizontal />
+            </button>
+          ) : null}
+        </div>
       </div>
 
       {/* Selected “tools” overlay */}

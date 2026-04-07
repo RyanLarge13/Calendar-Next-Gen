@@ -279,7 +279,7 @@ export const returnSortDatedDate = (type, date) => {
 };
 
 // Helper methods for checking if event is repeating on a specific day
-const isSameCalendarDay = (a, b) => {
+export const isSameCalendarDay = (a, b) => {
   return (
     a.getFullYear() === b.getFullYear() &&
     a.getMonth() === b.getMonth() &&
