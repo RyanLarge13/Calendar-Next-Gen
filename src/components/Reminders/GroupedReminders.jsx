@@ -14,10 +14,10 @@ const GroupedReminders = ({ groupType = "week", reminders = [] }) => {
   }, [reminders]);
 
   const breakpointColumnsObj = {
-    default: 3, // Number of columns by default
-    1800: 3,
-    1400: 2, // Number of columns on screens > 1100px
-    1000: 1,
+    default: 2, // Number of columns by default
+    3300: 3,
+    2300: 2,
+    800: 1, // Number of columns on screens > 1100px
   };
 
   const calculateReminderSorts = () => {

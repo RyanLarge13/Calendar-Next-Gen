@@ -2,7 +2,7 @@ import { useContext } from "react";
 import UserContext from "../../context/UserContext";
 import { removeNotificationSubFromServer } from "../../utils/api";
 
-const NotificationSubscription = ({ ns, hasSub }) => {
+const NotificationSubscription = ({ ns, hasSub, simpleView = false }) => {
   const { preferences, setSystemNotif, setUser } = useContext(UserContext);
 
   const info = JSON.parse(ns);
