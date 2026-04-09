@@ -8,18 +8,19 @@ import {
 } from "../../utils/api.js";
 import { motion } from "framer-motion";
 import { BsAlarmFill, BsTrashFill } from "react-icons/bs";
-import {
-  MdOpenInNew,
-  MdOutlineUpdate,
-  MdSnooze,
-  MdSystemUpdate,
-} from "react-icons/md";
-import { formatTime, isSameCalendarDay } from "../../utils/helpers.js";
-import { BiAlarmSnooze, BiCalendarEvent, BiSlider } from "react-icons/bi";
+import { MdOpenInNew } from "react-icons/md";
+import { formatTime } from "../../utils/helpers.js";
+import { BiAlarmSnooze, BiCalendarEvent, BiFullscreen } from "react-icons/bi";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
 import DatesContext from "../../context/DatesContext.jsx";
+import ReminderView from "./ReminderView.jsx";
 
-const Reminder = ({ reminder, showOpenEvent = true, styles = {} }) => {
+const Reminder = ({
+  reminder,
+  showOpenEvent = true,
+  styles = {},
+  showFullViewButton = true,
+}) => {
   const {
     reminders = [],
     events = [],
@@ -40,6 +41,7 @@ const Reminder = ({ reminder, showOpenEvent = true, styles = {} }) => {
   const [reminderTitle, setReminderTitle] = useState(reminder.title);
   const [selected, setSelected] = useState([]);
   const [selectable, setSelectable] = useState(false);
+  const [reminderFullView, setReminderFullView] = useState(false);
 
   let timeout = useRef(null);
 
@@ -283,15 +285,16 @@ const Reminder = ({ reminder, showOpenEvent = true, styles = {} }) => {
             </div>
           </div>
 
-          {selected.includes(reminder.id) ? null : (
-            <button
-              onClick={() =>
-                toggleComplete({
-                  completed: !reminder.completed,
-                  reminderId: reminder.id,
-                })
-              }
-              className={`
+          <div className="flex justify-start items-center gap-x-2">
+            {selected.includes(reminder.id) ? null : (
+              <button
+                onClick={() =>
+                  toggleComplete({
+                    completed: !reminder.completed,
+                    reminderId: reminder.id,
+                  })
+                }
+                className={`
           grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition active:scale-95
           ${
             reminder.completed
@@ -303,18 +306,41 @@ const Reminder = ({ reminder, showOpenEvent = true, styles = {} }) => {
                 : "bg-black/[0.03] border-black/10 text-slate-600 hover:bg-black/[0.06]"
           }
         `}
-              aria-label={
-                reminder.completed ? "Mark incomplete" : "Mark complete"
+                aria-label={
+                  reminder.completed ? "Mark incomplete" : "Mark complete"
+                }
+                type="button"
+              >
+                {reminder.eventRefId ? (
+                  <BiCalendarEvent className="text-lg" />
+                ) : (
+                  <BiAlarmSnooze className="text-lg" />
+                )}
+              </button>
+            )}
+
+            {/* Open Full View Button */}
+            {showFullViewButton ? (
+              <button
+                onClick={() => setReminderFullView((prev) => !prev)}
+                className={`
+          grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition active:scale-95
+          
+              ${
+                preferences.darkMode
+                  ? "bg-slate-500/20 border-slate-300/20 text-slate-100 hover:bg-slate-500/25"
+                  : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100"
               }
-              type="button"
-            >
-              {reminder.eventRefId ? (
-                <BiCalendarEvent className="text-lg" />
-              ) : (
-                <BiAlarmSnooze className="text-lg" />
-              )}
-            </button>
-          )}
+        `}
+                aria-label={
+                  reminder.completed ? "Mark incomplete" : "Mark complete"
+                }
+                type="button"
+              >
+                <BiFullscreen />
+              </button>
+            ) : null}
+          </div>
         </div>
 
         {/* Title field */}
@@ -372,194 +398,6 @@ const Reminder = ({ reminder, showOpenEvent = true, styles = {} }) => {
             Open Event <MdOpenInNew />
           </button>
         ) : null}
-
-        {/* Changing Reminder Time/Day */}
-        <div
-          className={`
-    mt-4 rounded-3xl border shadow-sm p-3
-    ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-white border-black/10"}
-  `}
-        >
-          <div className="flex items-center justify-between gap-3 mb-3">
-            <div>
-              <p
-                className={`text-[11px] font-semibold tracking-wide ${
-                  preferences.darkMode ? "text-white/50" : "text-slate-500"
-                }`}
-              >
-                Quick Actions
-              </p>
-              <p className="text-sm font-semibold">Adjust reminder time</p>
-            </div>
-
-            <div
-              className={`
-        px-3 py-1.5 rounded-2xl border text-[11px] font-semibold shadow-sm
-        ${
-          preferences.darkMode
-            ? "bg-white/5 border-white/10 text-white/70"
-            : "bg-black/[0.03] border-black/10 text-slate-600"
-        }
-      `}
-            >
-              Fast controls
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-2">
-            {!isSameCalendarDay(new Date(reminder.time), new Date()) ? (
-              <button
-                type="button"
-                className={`
-          group rounded-2xl border shadow-sm px-3 py-3
-          flex flex-col items-center justify-center gap-2
-          transition active:scale-[0.97]
-          ${
-            preferences.darkMode
-              ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/80"
-              : "bg-white border-black/10 hover:bg-black/[0.02] text-slate-800"
-          }
-        `}
-              >
-                <div
-                  className={`
-            grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition
-            ${
-              preferences.darkMode
-                ? "bg-cyan-500/15 border-cyan-300/20 text-cyan-100 group-hover:bg-cyan-500/20"
-                : "bg-cyan-50 border-cyan-200 text-cyan-700 group-hover:bg-cyan-100"
-            }
-          `}
-                >
-                  <MdOutlineUpdate className="text-lg" />
-                </div>
-                <p className="text-[11px] font-semibold text-center leading-tight">
-                  Reset Today
-                </p>
-              </button>
-            ) : null}
-
-            <button
-              type="button"
-              className={`
-        group rounded-2xl border shadow-sm px-3 py-3
-        flex flex-col items-center justify-center gap-2
-        transition active:scale-[0.97]
-        ${
-          preferences.darkMode
-            ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/80"
-            : "bg-white border-black/10 hover:bg-black/[0.02] text-slate-800"
-        }
-      `}
-            >
-              <div
-                className={`
-          grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition
-          ${
-            preferences.darkMode
-              ? "bg-orange-500/15 border-orange-300/20 text-orange-100 group-hover:bg-orange-500/20"
-              : "bg-orange-50 border-orange-200 text-orange-700 group-hover:bg-orange-100"
-          }
-        `}
-              >
-                <MdSnooze className="text-lg" />
-              </div>
-              <p className="text-[11px] font-semibold text-center leading-tight">
-                Snooze 5
-              </p>
-            </button>
-
-            <button
-              type="button"
-              className={`
-        group rounded-2xl border shadow-sm px-3 py-3
-        flex flex-col items-center justify-center gap-2
-        transition active:scale-[0.97]
-        ${
-          preferences.darkMode
-            ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/80"
-            : "bg-white border-black/10 hover:bg-black/[0.02] text-slate-800"
-        }
-      `}
-            >
-              <div
-                className={`
-          grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition
-          ${
-            preferences.darkMode
-              ? "bg-indigo-500/15 border-indigo-300/20 text-indigo-100 group-hover:bg-indigo-500/20"
-              : "bg-indigo-50 border-indigo-200 text-indigo-700 group-hover:bg-indigo-100"
-          }
-        `}
-              >
-                <MdSnooze className="text-lg" />
-              </div>
-              <p className="text-[11px] font-semibold text-center leading-tight">
-                Snooze 10
-              </p>
-            </button>
-
-            <button
-              type="button"
-              className={`
-        group rounded-2xl border shadow-sm px-3 py-3
-        flex flex-col items-center justify-center gap-2
-        transition active:scale-[0.97]
-        ${
-          preferences.darkMode
-            ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/80"
-            : "bg-white border-black/10 hover:bg-black/[0.02] text-slate-800"
-        }
-      `}
-            >
-              <div
-                className={`
-          grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition
-          ${
-            preferences.darkMode
-              ? "bg-amber-500/15 border-amber-300/20 text-amber-100 group-hover:bg-amber-500/20"
-              : "bg-amber-50 border-amber-200 text-amber-700 group-hover:bg-amber-100"
-          }
-        `}
-              >
-                <MdSnooze className="text-lg" />
-              </div>
-              <p className="text-[11px] font-semibold text-center leading-tight">
-                Snooze 15
-              </p>
-            </button>
-
-            <button
-              type="button"
-              className={`
-        group rounded-2xl border shadow-sm px-3 py-3
-        flex flex-col items-center justify-center gap-2
-        transition active:scale-[0.97]
-        ${
-          preferences.darkMode
-            ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/80"
-            : "bg-white border-black/10 hover:bg-black/[0.02] text-slate-800"
-        }
-      `}
-            >
-              <div
-                className={`
-          grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition
-          ${
-            preferences.darkMode
-              ? "bg-emerald-500/15 border-emerald-300/20 text-emerald-100 group-hover:bg-emerald-500/20"
-              : "bg-emerald-50 border-emerald-200 text-emerald-700 group-hover:bg-emerald-100"
-          }
-        `}
-              >
-                <MdSnooze className="text-lg" />
-              </div>
-              <p className="text-[11px] font-semibold text-center leading-tight">
-                Snooze 30
-              </p>
-            </button>
-          </div>
-        </div>
       </div>
 
       {/* Selected “tools” overlay */}
@@ -590,6 +428,7 @@ const Reminder = ({ reminder, showOpenEvent = true, styles = {} }) => {
           </motion.button>
         </motion.div>
       )}
+      {reminderFullView ? <ReminderView reminder={reminder} /> : null}
     </motion.div>
   );
 };
