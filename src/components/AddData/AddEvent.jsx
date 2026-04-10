@@ -44,8 +44,7 @@ const AddEvent = () => {
     addEventWithStartEndTime,
     setAddEventWithStartEndTime,
   } = useContext(InteractiveContext);
-  const { setString, string, secondString, setSecondString } =
-    useContext(DatesContext);
+  const { setString, string, secondString } = useContext(DatesContext);
 
   const { closeModal } = useModalActions();
 

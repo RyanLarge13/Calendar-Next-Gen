@@ -2,16 +2,19 @@ import { motion } from "framer-motion";
 import { useContext, useEffect, useState } from "react";
 import UserContext from "../../context/UserContext";
 import { MdOutlineUpdate, MdSnooze } from "react-icons/md";
-import { isSameCalendarDay } from "../../utils/helpers";
+import { isSameCalendarDay, makeDateTime } from "../../utils/helpers";
 import Portal from "../Misc/Portal";
 import Reminder from "./Reminder";
-import DayEvent from "../Events/DayEvent";
 import EventCard from "../Events/EventCard";
+import TimeSetter from "../DatePickers/TimeSetter";
+import FullDatePicker from "../DatePickers/FullDatePicker";
 
 const ReminderView = ({ reminder, setShowFullReminder }) => {
-  const { preferences, eventMap } = useContext(UserContext);
+  const { preferences, eventMap, notifSubs } = useContext(UserContext);
 
   const [associatedEvent, setAssociatedEvent] = useState(null);
+  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   useEffect(() => {
     if (reminder.eventRefId) {
@@ -30,6 +33,31 @@ const ReminderView = ({ reminder, setShowFullReminder }) => {
       }
     }
   }, []);
+
+  const saveNewReminderTime = async (newTime) => {
+    const { hour, minutes, meridiem } = newTime;
+    setShowTimePicker(false);
+
+    const time = makeDateTime(
+      new Date(reminder.time).toLocaleDateString(),
+      hour,
+      minutes,
+      meridiem,
+    );
+
+    // Update server and local
+  };
+
+  const saveNewReminderDate = async (newDate) => {
+    const timeOfDay = new Date(reminder.time);
+    const hour = timeOfDay.getHours();
+    const minutes = timeOfDay.getMinutes();
+    const meridiem = hour > 12 ? "PM" : "AM";
+
+    const newReminderDate = makeDateTime(newDate, hour, minutes, meridiem);
+
+    // Update server and local
+  };
 
   return (
     <Portal>
@@ -99,7 +127,7 @@ const ReminderView = ({ reminder, setShowFullReminder }) => {
             {/* top bar */}
             <div
               className={`
-          sticky top-0 z-20 mb-4
+          sticky top-3 z-20 mb-4
           rounded-3xl border shadow-sm px-5 py-4
           backdrop-blur-md
           ${
@@ -178,6 +206,141 @@ const ReminderView = ({ reminder, setShowFullReminder }) => {
             {/* main layout */}
             <div className="grid grid-cols-1 xl:grid-cols-[1.15fr_0.85fr] gap-4 items-start">
               {/* left content */}
+
+              {/* Change Time Instance */}
+              <div className="space-y-4">
+                <div
+                  className={`
+              rounded-3xl border shadow-sm p-4 sm:p-5
+              backdrop-blur-md
+              ${
+                preferences.darkMode
+                  ? "bg-[#161616]/65 border-white/10"
+                  : "bg-white/75 border-black/10"
+              }
+            `}
+                >
+                  <p
+                    className={`text-[11px] font-semibold ${
+                      preferences.darkMode ? "text-white/50" : "text-slate-500"
+                    }`}
+                  >
+                    Time Set
+                  </p>
+                  <h3
+                    className={`text-base font-semibold mt-1 ${
+                      preferences.darkMode ? "text-white/50" : "text-slate-500"
+                    }`}
+                  >
+                    Change The Time Of Your Reminder
+                  </h3>
+                  <div className="flex justify-start items-center gap-x-3">
+                    <div>
+                      <p
+                        className={`text-[15px] font-semibold ${
+                          preferences.darkMode
+                            ? "text-white/50"
+                            : "text-slate-500"
+                        }`}
+                      >
+                        {new Date(reminder.time).toLocaleTimeString("en-US", {
+                          hour: "numeric",
+                          minute: "numeric",
+                        })}
+                      </p>
+                    </div>
+                    <div>
+                      <button
+                        onClick={() => setShowTimePicker(true)}
+                        className={`
+              px-3 py-1.5 rounded-2xl border shadow-sm text-[11px] font-semibold
+              ${
+                preferences.darkMode
+                  ? "bg-amber-500/15 border-amber-300/20 text-amber-100"
+                  : "bg-amber-50 border-amber-200 text-amber-700"
+              }`}
+                      >
+                        Change Time
+                      </button>
+                      {showTimePicker ? (
+                        <Portal>
+                          <TimeSetter
+                            saveData={saveNewReminderTime}
+                            cancelTimeSetter={() => setShowTimePicker(false)}
+                          />
+                        </Portal>
+                      ) : null}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Change Date Instance */}
+              <div className="space-y-4">
+                <div
+                  className={`
+              rounded-3xl border shadow-sm p-4 sm:p-5
+              backdrop-blur-md
+              ${
+                preferences.darkMode
+                  ? "bg-[#161616]/65 border-white/10"
+                  : "bg-white/75 border-black/10"
+              }
+            `}
+                >
+                  <p
+                    className={`text-[11px] font-semibold ${
+                      preferences.darkMode ? "text-white/50" : "text-slate-500"
+                    }`}
+                  >
+                    Date Set
+                  </p>
+                  <h3
+                    className={`text-base font-semibold mt-1 ${
+                      preferences.darkMode ? "text-white/50" : "text-slate-500"
+                    }`}
+                  >
+                    Change The Date Of Your Reminder
+                  </h3>
+                  <div className="flex justify-start items-center gap-x-3">
+                    <div>
+                      <p
+                        className={`text-[15px] font-semibold ${
+                          preferences.darkMode
+                            ? "text-white/50"
+                            : "text-slate-500"
+                        }`}
+                      >
+                        {new Date(reminder.time).toLocaleTimeString("en-US", {
+                          hour: "numeric",
+                          minute: "numeric",
+                        })}
+                      </p>
+                    </div>
+                    <div>
+                      <button
+                        onClick={() => setShowTimePicker(true)}
+                        className={`
+              px-3 py-1.5 rounded-2xl border shadow-sm text-[11px] font-semibold
+              ${
+                preferences.darkMode
+                  ? "bg-amber-500/15 border-amber-300/20 text-amber-100"
+                  : "bg-amber-50 border-amber-200 text-amber-700"
+              }`}
+                      >
+                        Change Date
+                      </button>
+                      {showDatePicker ? (
+                        <Portal>
+                          <FullDatePicker stateSetter={saveNewReminderDate} />
+                        </Portal>
+                      ) : null}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Parent Reminder instance */}
               <div className="space-y-4">
                 <div
                   className={`
@@ -386,7 +549,11 @@ const ReminderView = ({ reminder, setShowFullReminder }) => {
                   >
                     Reminder Impact
                   </p>
-                  <h3 className="text-base font-semibold mt-1">
+                  <h3
+                    className={`text-base font-semibold mt-1 ${
+                      preferences.darkMode ? "text-white/50" : "text-slate-500"
+                    }`}
+                  >
                     More context coming here
                   </h3>
                   <p
@@ -398,6 +565,40 @@ const ReminderView = ({ reminder, setShowFullReminder }) => {
                     overdue frequency, related events, and how this reminder
                     affects your schedule.
                   </p>
+                </div>
+
+                <div className="space-y-4">
+                  <div
+                    className={`
+              rounded-3xl border shadow-sm p-4 sm:p-5
+              backdrop-blur-md
+              ${
+                preferences.darkMode
+                  ? "bg-[#161616]/65 border-white/10"
+                  : "bg-white/75 border-black/10"
+              }
+            `}
+                  >
+                    <p
+                      className={`text-[11px] font-semibold ${
+                        preferences.darkMode
+                          ? "text-white/50"
+                          : "text-slate-500"
+                      }`}
+                    >
+                      Devices Set To Notify
+                    </p>
+                    <h3
+                      className={`text-base font-semibold mt-1 ${
+                        preferences.darkMode
+                          ? "text-white/50"
+                          : "text-slate-500"
+                      }`}
+                    >
+                      These are the devices this reminder is set to notify
+                    </h3>
+                    <div>{}</div>
+                  </div>
                 </div>
               </div>
 
