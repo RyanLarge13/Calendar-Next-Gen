@@ -428,7 +428,12 @@ const Reminder = ({
           </motion.button>
         </motion.div>
       )}
-      {reminderFullView ? <ReminderView reminder={reminder} /> : null}
+      {reminderFullView ? (
+        <ReminderView
+          reminder={reminder}
+          setShowFullReminder={setReminderFullView}
+        />
+      ) : null}
     </motion.div>
   );
 };

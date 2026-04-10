@@ -1,14 +1,35 @@
 import { motion } from "framer-motion";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import UserContext from "../../context/UserContext";
 import { MdOutlineUpdate, MdSnooze } from "react-icons/md";
 import { isSameCalendarDay } from "../../utils/helpers";
 import Portal from "../Misc/Portal";
 import Reminder from "./Reminder";
 import DayEvent from "../Events/DayEvent";
+import EventCard from "../Events/EventCard";
 
-const ReminderView = ({ reminder }) => {
-  const { preferences } = useContext(UserContext);
+const ReminderView = ({ reminder, setShowFullReminder }) => {
+  const { preferences, eventMap } = useContext(UserContext);
+
+  const [associatedEvent, setAssociatedEvent] = useState(null);
+
+  useEffect(() => {
+    if (reminder.eventRefId) {
+      const time = new Date(reminder.time);
+      const key = `${time.getFullYear()}-${time.getMonth()}`;
+      const eventsToSearch = eventMap.get(key)?.events || [];
+
+      if (eventsToSearch.length > 0) {
+        const foundEvent = eventsToSearch.find(
+          (e) => e.id === reminder.eventRefId,
+        );
+
+        if (foundEvent) {
+          setAssociatedEvent(foundEvent);
+        }
+      }
+    }
+  }, []);
 
   return (
     <Portal>
@@ -17,7 +38,7 @@ const ReminderView = ({ reminder }) => {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className={`
-      fixed inset-0 z-[999] overflow-y-auto
+      fixed inset-0 z-[999]
       ${
         reminder.completed
           ? preferences.darkMode
@@ -38,9 +59,10 @@ const ReminderView = ({ reminder }) => {
       }
     `}
       >
-        {/* soft color wash */}
-        <div
-          className={`
+        <div className="h-full min-h-full max-h-full overflow-y-auto">
+          {/* soft color wash */}
+          <div
+            className={`
         pointer-events-none absolute inset-0
         ${
           reminder.completed
@@ -53,11 +75,11 @@ const ReminderView = ({ reminder }) => {
                 : "bg-gradient-to-br from-cyan-500/15 via-sky-400/10 to-transparent"
         }
       `}
-        />
+          />
 
-        {/* radial glow */}
-        <div
-          className={`
+          {/* radial glow */}
+          <div
+            className={`
         pointer-events-none absolute inset-0
         ${
           reminder.completed
@@ -70,13 +92,13 @@ const ReminderView = ({ reminder }) => {
                 : "bg-[radial-gradient(circle_at_top_right,rgba(56,189,248,0.16),transparent_35%)]"
         }
       `}
-        />
+          />
 
-        {/* content shell */}
-        <div className="relative mx-auto max-w-6xl min-h-screen px-3 sm:px-6 lg:px-8 py-6">
-          {/* top bar */}
-          <div
-            className={`
+          {/* content shell */}
+          <div className="relative mx-auto max-w-6xl min-h-screen px-3 sm:px-6 lg:px-8 py-6">
+            {/* top bar */}
+            <div
+              className={`
           sticky top-0 z-20 mb-4
           rounded-3xl border shadow-sm px-5 py-4
           backdrop-blur-md
@@ -86,23 +108,24 @@ const ReminderView = ({ reminder }) => {
               : "bg-white/70 border-black/10 text-slate-900"
           }
         `}
-          >
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p
-                  className={`text-[11px] font-semibold ${
-                    preferences.darkMode ? "text-white/50" : "text-slate-500"
-                  }`}
-                >
-                  Reminder Details
-                </p>
-                <h2 className="text-lg font-semibold tracking-tight">
-                  Full Reminder View
-                </h2>
-              </div>
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p
+                    className={`text-[11px] font-semibold ${
+                      preferences.darkMode ? "text-white/50" : "text-slate-500"
+                    }`}
+                  >
+                    Reminder Details
+                  </p>
+                  <h2 className="text-lg font-semibold tracking-tight">
+                    Full Reminder View
+                  </h2>
+                </div>
 
-              <div
-                className={`
+                <div className="flex justify-start items-center gap-x-2">
+                  <div
+                    className={`
               px-3 py-1.5 rounded-2xl border shadow-sm text-[11px] font-semibold
               ${
                 reminder.completed
@@ -123,25 +146,41 @@ const ReminderView = ({ reminder }) => {
                         : "bg-cyan-50 border-cyan-200 text-cyan-700"
               }
             `}
-              >
-                {reminder.completed
-                  ? "Completed"
-                  : new Date(reminder.time) < new Date()
-                    ? "Overdue"
-                    : new Date(reminder.time).toLocaleDateString() ===
-                        new Date().toLocaleDateString()
-                      ? "Today"
-                      : "Upcoming"}
+                  >
+                    {reminder.completed
+                      ? "Completed"
+                      : new Date(reminder.time) < new Date()
+                        ? "Overdue"
+                        : new Date(reminder.time).toLocaleDateString() ===
+                            new Date().toLocaleDateString()
+                          ? "Today"
+                          : "Upcoming"}
+                  </div>
+
+                  {/* Close button */}
+                  <button
+                    onClick={() => setShowFullReminder(false)}
+                    className={`
+              px-3 py-1.5 rounded-2xl border shadow-sm text-[11px] font-semibold
+              ${
+                preferences.darkMode
+                  ? "bg-rose-500/15 border-rose-300/20 text-rose-100"
+                  : "bg-rose-50 border-rose-200 text-rose-700"
+              }
+            `}
+                  >
+                    Close
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* main layout */}
-          <div className="grid grid-cols-1 xl:grid-cols-[1.15fr_0.85fr] gap-4 items-start">
-            {/* left content */}
-            <div className="space-y-4">
-              <div
-                className={`
+            {/* main layout */}
+            <div className="grid grid-cols-1 xl:grid-cols-[1.15fr_0.85fr] gap-4 items-start">
+              {/* left content */}
+              <div className="space-y-4">
+                <div
+                  className={`
               rounded-3xl border shadow-sm p-4 sm:p-5
               backdrop-blur-md
               ${
@@ -150,17 +189,17 @@ const ReminderView = ({ reminder }) => {
                   : "bg-white/75 border-black/10"
               }
             `}
-              >
-                <Reminder
-                  reminder={reminder}
-                  showOpenEvent={false}
-                  styles={{}}
-                  showFullViewButton={false}
-                />
-              </div>
+                >
+                  <Reminder
+                    reminder={reminder}
+                    showOpenEvent={false}
+                    styles={{}}
+                    showFullViewButton={false}
+                  />
+                </div>
 
-              <div
-                className={`
+                <div
+                  className={`
               rounded-3xl border shadow-sm p-4 sm:p-5
               backdrop-blur-md
               ${
@@ -169,13 +208,13 @@ const ReminderView = ({ reminder }) => {
                   : "bg-white/75 border-black/10"
               }
             `}
-              >
-                {/* your quick actions section goes here */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-2">
-                  {!isSameCalendarDay(new Date(reminder.time), new Date()) ? (
-                    <button
-                      type="button"
-                      className={`
+                >
+                  {/* your quick actions section goes here */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-2">
+                    {!isSameCalendarDay(new Date(reminder.time), new Date()) ? (
+                      <button
+                        type="button"
+                        className={`
                   group rounded-2xl border shadow-sm px-3 py-3
                   flex flex-col items-center justify-center gap-2
                   transition active:scale-[0.97]
@@ -185,9 +224,9 @@ const ReminderView = ({ reminder }) => {
                       : "bg-white border-black/10 hover:bg-black/[0.02] text-slate-800"
                   }
                 `}
-                    >
-                      <div
-                        className={`
+                      >
+                        <div
+                          className={`
                     grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition
                     ${
                       preferences.darkMode
@@ -195,18 +234,18 @@ const ReminderView = ({ reminder }) => {
                         : "bg-cyan-50 border-cyan-200 text-cyan-700 group-hover:bg-cyan-100"
                     }
                   `}
-                      >
-                        <MdOutlineUpdate className="text-lg" />
-                      </div>
-                      <p className="text-[11px] font-semibold text-center leading-tight">
-                        Reset Today
-                      </p>
-                    </button>
-                  ) : null}
+                        >
+                          <MdOutlineUpdate className="text-lg" />
+                        </div>
+                        <p className="text-[11px] font-semibold text-center leading-tight">
+                          Reset Today
+                        </p>
+                      </button>
+                    ) : null}
 
-                  <button
-                    type="button"
-                    className={`
+                    <button
+                      type="button"
+                      className={`
                 group rounded-2xl border shadow-sm px-3 py-3
                 flex flex-col items-center justify-center gap-2
                 transition active:scale-[0.97]
@@ -216,9 +255,9 @@ const ReminderView = ({ reminder }) => {
                     : "bg-white border-black/10 hover:bg-black/[0.02] text-slate-800"
                 }
               `}
-                  >
-                    <div
-                      className={`
+                    >
+                      <div
+                        className={`
                   grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition
                   ${
                     preferences.darkMode
@@ -226,17 +265,17 @@ const ReminderView = ({ reminder }) => {
                       : "bg-orange-50 border-orange-200 text-orange-700 group-hover:bg-orange-100"
                   }
                 `}
-                    >
-                      <MdSnooze className="text-lg" />
-                    </div>
-                    <p className="text-[11px] font-semibold text-center leading-tight">
-                      Snooze 5
-                    </p>
-                  </button>
+                      >
+                        <MdSnooze className="text-lg" />
+                      </div>
+                      <p className="text-[11px] font-semibold text-center leading-tight">
+                        Snooze 5
+                      </p>
+                    </button>
 
-                  <button
-                    type="button"
-                    className={`
+                    <button
+                      type="button"
+                      className={`
                 group rounded-2xl border shadow-sm px-3 py-3
                 flex flex-col items-center justify-center gap-2
                 transition active:scale-[0.97]
@@ -246,9 +285,9 @@ const ReminderView = ({ reminder }) => {
                     : "bg-white border-black/10 hover:bg-black/[0.02] text-slate-800"
                 }
               `}
-                  >
-                    <div
-                      className={`
+                    >
+                      <div
+                        className={`
                   grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition
                   ${
                     preferences.darkMode
@@ -256,17 +295,17 @@ const ReminderView = ({ reminder }) => {
                       : "bg-indigo-50 border-indigo-200 text-indigo-700 group-hover:bg-indigo-100"
                   }
                 `}
-                    >
-                      <MdSnooze className="text-lg" />
-                    </div>
-                    <p className="text-[11px] font-semibold text-center leading-tight">
-                      Snooze 10
-                    </p>
-                  </button>
+                      >
+                        <MdSnooze className="text-lg" />
+                      </div>
+                      <p className="text-[11px] font-semibold text-center leading-tight">
+                        Snooze 10
+                      </p>
+                    </button>
 
-                  <button
-                    type="button"
-                    className={`
+                    <button
+                      type="button"
+                      className={`
                 group rounded-2xl border shadow-sm px-3 py-3
                 flex flex-col items-center justify-center gap-2
                 transition active:scale-[0.97]
@@ -276,9 +315,9 @@ const ReminderView = ({ reminder }) => {
                     : "bg-white border-black/10 hover:bg-black/[0.02] text-slate-800"
                 }
               `}
-                  >
-                    <div
-                      className={`
+                    >
+                      <div
+                        className={`
                   grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition
                   ${
                     preferences.darkMode
@@ -286,17 +325,17 @@ const ReminderView = ({ reminder }) => {
                       : "bg-amber-50 border-amber-200 text-amber-700 group-hover:bg-amber-100"
                   }
                 `}
-                    >
-                      <MdSnooze className="text-lg" />
-                    </div>
-                    <p className="text-[11px] font-semibold text-center leading-tight">
-                      Snooze 15
-                    </p>
-                  </button>
+                      >
+                        <MdSnooze className="text-lg" />
+                      </div>
+                      <p className="text-[11px] font-semibold text-center leading-tight">
+                        Snooze 15
+                      </p>
+                    </button>
 
-                  <button
-                    type="button"
-                    className={`
+                    <button
+                      type="button"
+                      className={`
                 group rounded-2xl border shadow-sm px-3 py-3
                 flex flex-col items-center justify-center gap-2
                 transition active:scale-[0.97]
@@ -306,9 +345,9 @@ const ReminderView = ({ reminder }) => {
                     : "bg-white border-black/10 hover:bg-black/[0.02] text-slate-800"
                 }
               `}
-                  >
-                    <div
-                      className={`
+                    >
+                      <div
+                        className={`
                   grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition
                   ${
                     preferences.darkMode
@@ -316,54 +355,18 @@ const ReminderView = ({ reminder }) => {
                       : "bg-emerald-50 border-emerald-200 text-emerald-700 group-hover:bg-emerald-100"
                   }
                 `}
-                    >
-                      <MdSnooze className="text-lg" />
-                    </div>
-                    <p className="text-[11px] font-semibold text-center leading-tight">
-                      Snooze 30
-                    </p>
-                  </button>
+                      >
+                        <MdSnooze className="text-lg" />
+                      </div>
+                      <p className="text-[11px] font-semibold text-center leading-tight">
+                        Snooze 30
+                      </p>
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* right insights / future sections */}
-            <div className="space-y-4">
-              <div
-                className={`
-              rounded-3xl border shadow-sm p-4 sm:p-5
-              backdrop-blur-md
-              ${
-                preferences.darkMode
-                  ? "bg-[#161616]/65 border-white/10"
-                  : "bg-white/75 border-black/10"
-              }
-            `}
-              >
-                <p
-                  className={`text-[11px] font-semibold ${
-                    preferences.darkMode ? "text-white/50" : "text-slate-500"
-                  }`}
-                >
-                  Reminder Impact
-                </p>
-                <h3 className="text-base font-semibold mt-1">
-                  More context coming here
-                </h3>
-                <p
-                  className={`text-sm mt-2 ${
-                    preferences.darkMode ? "text-white/65" : "text-slate-600"
-                  }`}
-                >
-                  This area can show streaks, completion rate, snooze history,
-                  overdue frequency, related events, and how this reminder
-                  affects your schedule.
-                </p>
-              </div>
-            </div>
-
-            {/* Event if any */}
-            {reminder.eventRefId ? (
+              {/* right insights / future sections */}
               <div className="space-y-4">
                 <div
                   className={`
@@ -381,17 +384,28 @@ const ReminderView = ({ reminder }) => {
                       preferences.darkMode ? "text-white/50" : "text-slate-500"
                     }`}
                   >
-                    Event Association
+                    Reminder Impact
                   </p>
-                  {/* Show event here maybe <EventCard /> */}
+                  <h3 className="text-base font-semibold mt-1">
+                    More context coming here
+                  </h3>
+                  <p
+                    className={`text-sm mt-2 ${
+                      preferences.darkMode ? "text-white/65" : "text-slate-600"
+                    }`}
+                  >
+                    This area can show streaks, completion rate, snooze history,
+                    overdue frequency, related events, and how this reminder
+                    affects your schedule.
+                  </p>
                 </div>
               </div>
-            ) : null}
 
-            {/* Repeating Reminders */}
-            <div className="space-y-4">
-              <div
-                className={`
+              {/* Event if any */}
+              {reminder.eventRefId ? (
+                <div className="space-y-4">
+                  <div
+                    className={`
               rounded-3xl border shadow-sm p-4 sm:p-5
               backdrop-blur-md
               ${
@@ -400,15 +414,45 @@ const ReminderView = ({ reminder }) => {
                   : "bg-white/75 border-black/10"
               }
             `}
-              >
-                <p
-                  className={`text-[11px] font-semibold ${
-                    preferences.darkMode ? "text-white/50" : "text-slate-500"
-                  }`}
+                  >
+                    <p
+                      className={`text-[11px] font-semibold ${
+                        preferences.darkMode
+                          ? "text-white/50"
+                          : "text-slate-500"
+                      }`}
+                    >
+                      Event Association
+                    </p>
+                    {associatedEvent ? (
+                      <EventCard event={associatedEvent} />
+                    ) : null}
+                  </div>
+                </div>
+              ) : null}
+
+              {/* Repeating Reminders */}
+              <div className="space-y-4">
+                <div
+                  className={`
+              rounded-3xl border shadow-sm p-4 sm:p-5
+              backdrop-blur-md
+              ${
+                preferences.darkMode
+                  ? "bg-[#161616]/65 border-white/10"
+                  : "bg-white/75 border-black/10"
+              }
+            `}
                 >
-                  Repeating Reminders
-                </p>
-                {/* Show event here maybe <EventCard /> */}
+                  <p
+                    className={`text-[11px] font-semibold ${
+                      preferences.darkMode ? "text-white/50" : "text-slate-500"
+                    }`}
+                  >
+                    Repeating Reminders
+                  </p>
+                  {/* Show event here maybe <EventCard /> */}
+                </div>
               </div>
             </div>
           </div>
