@@ -492,6 +492,22 @@ export const getDueStatus = (date) => {
   return "future";
 };
 
+export const parseNotifSubs = (subs) => {
+  const newSubArray = [];
+
+  subs.forEach((s) => {
+    try {
+      const parsedSub = JSON.parse(s);
+      newSubArray.push(parsedSub);
+    } catch (err) {
+      console.log("Error parsing notification subscription for user");
+      console.log(err);
+    }
+  });
+
+  return newSubArray;
+};
+
 export const getAuthToken = () => {
   try {
     const authToken = localStorage.getItem("authToken");

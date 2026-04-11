@@ -513,3 +513,35 @@ export const deleteNotification = async (req, res) => {
     });
   }
 };
+
+export const updateLastSeenOnDevice = async (req, res) => {
+  const user = req.user;
+  const { newSubs } = req.body;
+
+  if (!user) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to make this request" });
+    return;
+  }
+
+  if (!Array.isArray(newSubs) || !newSubs) {
+    res.status(404).json({
+      message: "Please provide a notification subscription endpoint to update",
+    });
+    return;
+  }
+
+  // each new sub was stringified on frontend before sending through
+  try {
+    await prisma.user.update({
+      where: { id: user.userId },
+      data: { notifSub: newSubs },
+    });
+  } catch (err) {
+    console.log(
+      "Error trying to update the last seen field in notifSub for the user in the DB",
+    );
+    console.log(err);
+  }
+};

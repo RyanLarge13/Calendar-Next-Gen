@@ -15,10 +15,11 @@ import {
   API_GetLocation,
   loginWithGoogle,
   checkPermissionsAndCreateNewSub,
+  updateLastSeenOnDevice,
 } from "../utils/api";
 import QRCode from "qrcode-generator";
 import IndexedDBManager from "../utils/indexDBApi";
-import { getAuthToken, H_FetchWeather } from "../utils/helpers";
+import { getAuthToken, H_FetchWeather, parseNotifSubs } from "../utils/helpers";
 
 const UserContext = createContext({});
 
@@ -511,7 +512,21 @@ export const UserProvider = ({ children }) => {
 
     const endpointToUpdate = currentSub.endpoint;
 
-    // Call API to update notif sub and then update state
+    const newSubs = parseNotifSubs(notifSubs).map((s) => {
+      if (s.endpoint === endpointToUpdate) {
+        return JSON.stringify({ ...s, lastSeen: new Date() });
+      }
+      return JSON.stringify(s);
+    });
+
+    try {
+      await updateLastSeenOnDevice(newSubs, authToken);
+    } catch (err) {
+      console.log(
+        "Error calling API to update last seen on notification subscriptions",
+      );
+      console.log(err);
+    }
   };
 
   const M_Async_LoadApp = async () => {

@@ -324,6 +324,19 @@ export const addSubscriptionToUser = (sub, token) => {
   return response;
 };
 
+export const updateLastSeenOnDevice = (newSubs, token) => {
+  const response = Axios.post(
+    `${productionUrl}/update/lastseen`,
+    { sub: JSON.stringify(newSubs) },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+  return response;
+};
+
 export const checkPermissionsAndCreateNewSub = async () => {
   if ("serviceWorker" in navigator && "PushManager" in window) {
     const reg = await navigator.serviceWorker.ready;
