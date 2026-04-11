@@ -9,7 +9,10 @@ const ReminderNotifications = () => {
 
   return reminderNotifications.length > 0
     ? reminderNotifications.map((n) => (
-        <ReminderNotification n={n} remindersVibrated={remindersVibrated} />
+        <ReminderNotification
+          notification={n}
+          remindersVibrated={remindersVibrated}
+        />
       ))
     : null;
 };
