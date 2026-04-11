@@ -18,15 +18,13 @@ import {
 } from "../utils/api";
 import QRCode from "qrcode-generator";
 import IndexedDBManager from "../utils/indexDBApi";
-import { H_FetchWeather } from "../utils/helpers";
+import { getAuthToken, H_FetchWeather } from "../utils/helpers";
 
 const UserContext = createContext({});
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(false);
-  const [authToken, setAuthToken] = useState(
-    localStorage.getItem("authToken") || false,
-  );
+  const [authToken, setAuthToken] = useState(getAuthToken);
   const [events, setEvents] = useState([]);
   const [staticEvents, setStaticEvents] = useState([]);
   // const [googleEvents, setGoogleEvents] = useState([]);

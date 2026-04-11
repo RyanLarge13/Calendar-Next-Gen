@@ -491,3 +491,45 @@ export const getDueStatus = (date) => {
 
   return "future";
 };
+
+export const getAuthToken = () => {
+  try {
+    const authToken = localStorage.getItem("authToken");
+    if (!authToken) {
+      return null;
+    }
+
+    return authToken;
+  } catch (err) {
+    console.log("Error reading localStorage for auth token");
+    console.log(err);
+    return null;
+  }
+};
+
+export const getPreferences = () => {
+  const defaultPrefs = {
+    view: "month",
+    darkMode: false,
+  };
+
+  try {
+    const prefString = localStorage.getItem("preferences");
+
+    if (!prefString) {
+      return defaultPrefs;
+    }
+
+    const preferences = JSON.parse(prefString);
+
+    if (!preferences) {
+      return defaultPrefs;
+    }
+
+    return preferences;
+  } catch (err) {
+    console.log("Error reading localStorage or parsing for Preferences");
+    console.log(err);
+    return defaultPrefs;
+  }
+};

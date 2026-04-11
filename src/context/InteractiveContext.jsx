@@ -1,4 +1,5 @@
 import { createContext, useState } from "react";
+import { getPreferences } from "../utils/helpers";
 
 const InteractiveContext = createContext({});
 
@@ -7,9 +8,7 @@ export const InteractiveProvider = ({ children }) => {
   const [showLogin, setShowLogin] = useState(false);
   const [filters, setFilters] = useState(null);
   const [showNotifs, setShowNotifs] = useState(false);
-  const [view, setView] = useState(
-    JSON.parse(localStorage.getItem("preferences"))?.view || "month",
-  );
+  const [view, setView] = useState(getPreferences().view);
   const [addNewEvent, setAddNewEvent] = useState(false);
   const [type, setType] = useState(null);
   const [listUpdate, setListUpdate] = useState([]);

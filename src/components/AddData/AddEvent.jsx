@@ -16,6 +16,7 @@ import InteractiveContext from "../../context/InteractiveContext.jsx";
 import UserContext from "../../context/UserContext.jsx";
 import { createAttachments, postEvent } from "../../utils/api.js";
 import {
+  getAuthToken,
   getTimeZone,
   makeDateTime,
   tailwindBgToHex,
@@ -200,7 +201,8 @@ const AddEvent = () => {
         },
         userId: user.id,
       };
-      postEvent(newEvent, localStorage.getItem("authToken"))
+      const token = getAuthToken();
+      postEvent(newEvent, token)
         .then((res) => {
           setAddEventWithStartEndTime({ start: null, end: null });
           setEvents((prev) => [...prev, ...res.data.event]);

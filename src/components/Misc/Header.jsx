@@ -111,7 +111,7 @@ const Header = () => {
               />
             </button>
           )}
-          {view === "week" && (
+          {view === "week" && currentWeek.length > 0 ? (
             <div className="flex flex-col justify-center items-center gap-y-1">
               <h2 className="text-[14px] font-semibold">
                 {currentWeek[0].toLocaleDateString("en-US", {
@@ -140,7 +140,7 @@ const Header = () => {
                 />
               </div>
             </div>
-          )}
+          ) : null}
           <div className="w-[25px] h-[25px]">
             {user ? (
               <>
