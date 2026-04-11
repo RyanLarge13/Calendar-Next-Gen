@@ -62,23 +62,23 @@ export const UserProvider = ({ children }) => {
   const [notifSubs, setNotifSubs] = useState([]);
   const [reminderNotifications, setReminderNotifications] = useState([
     // Test. Uncomment to text out layout
-    {
-      type: "reminder",
-      time: new Date(),
-      read: false,
-      readTime: "",
-      notifData: {
-        eventRefIId: null,
-        time: new Date(),
-        notes: "This is my test reminder to test UI",
-        title: "This Is My Test Title",
-        userId: 0,
-      },
-      userId: 0,
-      sentNotification: false,
-      sentWebPush: false,
-      deviceExceptions: [],
-    },
+    // {
+    //   type: "reminder",
+    //   time: new Date(),
+    //   read: false,
+    //   readTime: "",
+    //   notifData: {
+    //     eventRefIId: null,
+    //     time: new Date(),
+    //     notes: "This is my test reminder to test UI",
+    //     title: "This Is My Test Title",
+    //     userId: 0,
+    //   },
+    //   userId: 0,
+    //   sentNotification: false,
+    //   sentWebPush: false,
+    //   deviceExceptions: [],
+    // },
   ]);
 
   // Refs
