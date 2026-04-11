@@ -23,9 +23,14 @@ const ReminderNotification = ({ notification, remindersVibrated }) => {
 
   useEffect(() => {
     if ("vibrate" in navigator) {
-      if (!remindersVibrated.current.includes(n.id)) {
+      if (remindersVibrated.current.length < 1) {
         navigator.vibrate([100, 50, 300]);
-        remindersVibrated.current.push(n.id);
+        remindersVibrated.current.push(notification.id);
+        return;
+      }
+      if (!remindersVibrated.current.includes(notification.id)) {
+        navigator.vibrate([100, 50, 300]);
+        remindersVibrated.current.push(notification.id);
       }
     }
   }, []);
@@ -117,7 +122,11 @@ const ReminderNotification = ({ notification, remindersVibrated }) => {
   };
 
   return (
-    <Portal key={notification.id || n.time || notification.notifData?.title}>
+    <Portal
+      key={
+        notification.id || notification.time || notification.notifData?.title
+      }
+    >
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
