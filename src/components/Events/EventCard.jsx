@@ -15,7 +15,7 @@ const EventCard = ({ event }) => {
       key={event.id}
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
-      className={`p-3 rounded-md shadow-md duration-200 ${event.color} mt-5 w-min bg-opacity-10 hover:bg-opacity-50 right-0`}
+      className={`p-3 rounded-md shadow-md duration-200 ${event.color} mt-5 cursor-pointer bg-opacity-10 hover:bg-opacity-50 right-0`}
     >
       <div
         style={{
@@ -36,7 +36,7 @@ const EventCard = ({ event }) => {
           <p>{event.location && <MdLocationPin />}</p>
         </div>
       </div>
-      <div className="text-sm bg-white bg-opacity-40 break-words rounded-md p-2 max-w-80 mt-2">
+      <div className="text-sm bg-white bg-opacity-40 break-words rounded-md p-2 mt-2">
         {event.description}
       </div>
     </motion.div>

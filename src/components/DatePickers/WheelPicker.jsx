@@ -458,7 +458,7 @@ const WheelPicker = ({ value, setValue }) => {
                 transition={{ type: "spring", stiffness: 500, damping: 35 }}
                 className={`
           absolute top-0 bottom-0 w-1/2 rounded-xl
-          ${preferences.darkMode ? "bg-slate-200" : "bg-zinc-200"}
+          ${preferences.darkMode ? "bg-white/5" : "bg-black/[0.03]"}
           ${preferences.darkMode ? "shadow-none" : "shadow-sm"}
         `}
                 style={{ left: value.meridiem === "PM" ? "50%" : "0%" }}

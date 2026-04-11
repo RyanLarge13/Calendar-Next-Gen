@@ -15,7 +15,7 @@ import { TbSwitch3 } from "react-icons/tb";
 import InteractiveContext from "../../context/InteractiveContext";
 
 const Views = () => {
-  const { setView, setFilters, showLogin, menu, setMenu } =
+  const { setView, setFilters, showLogin, menu, setMenu, preferences } =
     useContext(InteractiveContext);
 
   const [show, setShow] = useState(false);
@@ -25,6 +25,16 @@ const Views = () => {
       setShow(false);
     }
   }, [showLogin]);
+
+  const updateViewPreferences = (viewType) => {
+    try {
+      const newPreferences = { ...preferences, view: viewType };
+      localStorage.setItem("preferences", JSON.stringify(newPreferences));
+    } catch (err) {
+      console.log("Error updating view in preferences");
+      console.log(err);
+    }
+  };
 
   return (
     <>
@@ -60,6 +70,7 @@ const Views = () => {
         onClick={() => {
           setShow(false);
           setView("agenda");
+          updateViewPreferences("agenda");
         }}
       >
         <MdViewAgenda />
@@ -81,6 +92,7 @@ const Views = () => {
         onClick={() => {
           setShow(false);
           setView("day");
+          updateViewPreferences("day");
         }}
       >
         <BsFillCalendarDayFill />
@@ -102,6 +114,7 @@ const Views = () => {
         onClick={() => {
           setShow(false);
           setView("month");
+          updateViewPreferences("month");
         }}
       >
         <BsFillCalendarMonthFill />
@@ -123,6 +136,7 @@ const Views = () => {
         onClick={() => {
           setShow(false);
           setView("masonry");
+          updateViewPreferences("masonry");
         }}
       >
         <BsColumnsGap />
@@ -144,6 +158,7 @@ const Views = () => {
         onClick={() => {
           setShow(false);
           setView("week");
+          updateViewPreferences("week");
         }}
       >
         <BsFillCalendarWeekFill />

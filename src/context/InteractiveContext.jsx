@@ -7,7 +7,9 @@ export const InteractiveProvider = ({ children }) => {
   const [showLogin, setShowLogin] = useState(false);
   const [filters, setFilters] = useState(null);
   const [showNotifs, setShowNotifs] = useState(false);
-  const [view, setView] = useState("month");
+  const [view, setView] = useState(
+    JSON.parse(localStorage.getItem("preferences"))?.view || "month",
+  );
   const [addNewEvent, setAddNewEvent] = useState(false);
   const [type, setType] = useState(null);
   const [listUpdate, setListUpdate] = useState([]);

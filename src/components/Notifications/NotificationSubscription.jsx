@@ -96,7 +96,11 @@ const NotificationSubscription = ({ ns, hasSub, simpleView = false }) => {
                 `}
       >
         <div className="min-w-0">
-          <p className="text-sm font-semibold truncate">
+          <p
+            className={`text-sm font-semibold truncate ${
+              preferences.darkMode ? "text-white/80" : "text-slate-600"
+            }`}
+          >
             {isDeviceSub
               ? "Current Device Subscription"
               : info.platform || "Unknown Platform"}
@@ -185,9 +189,11 @@ const NotificationSubscription = ({ ns, hasSub, simpleView = false }) => {
           </div>
         </div>
 
-        {/* Timestamps */}
-        <div
-          className={`
+        {simpleView ? null : (
+          <div>
+            {/* Timestamps */}
+            <div
+              className={`
                     rounded-2xl border shadow-inner px-3 py-3
                     ${
                       preferences.darkMode
@@ -196,80 +202,81 @@ const NotificationSubscription = ({ ns, hasSub, simpleView = false }) => {
                     }
                     flex items-center justify-between gap-3
                   `}
-        >
-          <div>
-            <p
-              className={`text-[10px] font-semibold ${
-                preferences.darkMode ? "text-white/45" : "text-slate-500"
-              }`}
             >
-              Created
-            </p>
-            <p className="text-xs font-semibold">{created || "--"}</p>
-          </div>
+              <div>
+                <p
+                  className={`text-[10px] font-semibold ${
+                    preferences.darkMode ? "text-white/45" : "text-slate-500"
+                  }`}
+                >
+                  Created
+                </p>
+                <p className="text-xs font-semibold">{created || "--"}</p>
+              </div>
 
-          <div
-            className={`h-6 w-px ${
-              preferences.darkMode ? "bg-white/10" : "bg-black/10"
-            }`}
-          />
+              <div
+                className={`h-6 w-px ${
+                  preferences.darkMode ? "bg-white/10" : "bg-black/10"
+                }`}
+              />
 
-          <div className="text-right">
-            <p
-              className={`text-[10px] font-semibold ${
-                preferences.darkMode ? "text-white/45" : "text-slate-500"
-              }`}
+              <div className="text-right">
+                <p
+                  className={`text-[10px] font-semibold ${
+                    preferences.darkMode ? "text-white/45" : "text-slate-500"
+                  }`}
+                >
+                  Last Seen
+                </p>
+                <p className="text-xs font-semibold">{lastSeen || "--"}</p>
+              </div>
+            </div>
+            {/* Endpoint preview */}
+            {info.endpoint && (
+              <div
+                className={`
+            rounded-2xl border px-3 py-2 mb-3 text-[11px] font-semibold truncate
+            ${
+              preferences.darkMode
+                ? "bg-white/5 border-white/10 text-white/50"
+                : "bg-black/[0.03] border-black/10 text-slate-500"
+            }
+            `}
+                title={info.endpoint}
+              >
+                Endpoint: {info.endpoint}
+              </div>
+            )}
+            <button
+              onClick={() => pauseNotificationsToDevice(info)}
+              className={`
+            flex-shrink-0 px-3 py-1.5 rounded-2xl border text-[11px] font-semibold shadow-sm
+            ${
+              preferences.darkMode
+                ? "bg-orange-500/15 border-orange-300/20 text-orange-100"
+                : "bg-orange-50 border-orange-200 text-orange-700"
+            }
+            `}
             >
-              Last Seen
-            </p>
-            <p className="text-xs font-semibold">{lastSeen || "--"}</p>
-          </div>
-        </div>
-
-        {/* Endpoint preview */}
-        {info.endpoint && (
-          <div
-            className={`
-                      rounded-2xl border px-3 py-2 text-[11px] font-semibold truncate
-                      ${
-                        preferences.darkMode
-                          ? "bg-white/5 border-white/10 text-white/50"
-                          : "bg-black/[0.03] border-black/10 text-slate-500"
-                      }
-                    `}
-            title={info.endpoint}
-          >
-            Endpoint: {info.endpoint}
+              {info.paused
+                ? "Resume Notifications To This Device"
+                : "Pause Notifications To This Device"}
+            </button>
+            <button
+              onClick={() => confirmRemoveSub(info)}
+              className={`
+            flex-shrink-0 px-3 py-1.5 rounded-2xl border text-[11px] font-semibold shadow-sm
+            ${
+              preferences.darkMode
+                ? "bg-rose-500/15 border-rose-300/20 text-rose-100"
+                : "bg-rose-50 border-rose-200 text-rose-700"
+            }
+            `}
+            >
+              Remove Notification Subscription From Device
+            </button>
           </div>
         )}
-        <button
-          onClick={() => pauseNotificationsToDevice(info)}
-          className={`
-                    flex-shrink-0 px-3 py-1.5 rounded-2xl border text-[11px] font-semibold shadow-sm
-                    ${
-                      preferences.darkMode
-                        ? "bg-orange-500/15 border-orange-300/20 text-orange-100"
-                        : "bg-orange-50 border-orange-200 text-orange-700"
-                    }
-                  `}
-        >
-          {info.paused
-            ? "Resume Notifications To This Device"
-            : "Pause Notifications To This Device"}
-        </button>
-        <button
-          onClick={() => confirmRemoveSub(info)}
-          className={`
-                    flex-shrink-0 px-3 py-1.5 rounded-2xl border text-[11px] font-semibold shadow-sm
-                    ${
-                      preferences.darkMode
-                        ? "bg-rose-500/15 border-rose-300/20 text-rose-100"
-                        : "bg-rose-50 border-rose-200 text-rose-700"
-                    }
-                  `}
-        >
-          Remove Notification Subscription From Device
-        </button>
       </div>
     </div>
   );

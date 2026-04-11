@@ -477,3 +477,17 @@ export const getEasterDate = (year) => {
 
   return new Date(year, month - 1, day);
 };
+
+export const getDueStatus = (date) => {
+  const now = new Date();
+
+  if (date < now) {
+    return "past";
+  }
+
+  if (date.toLocaleDateString() === now.toLocaleDateString()) {
+    return "today";
+  }
+
+  return "future";
+};

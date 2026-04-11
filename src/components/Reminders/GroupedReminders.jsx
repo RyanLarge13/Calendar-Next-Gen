@@ -52,7 +52,7 @@ const GroupedReminders = ({ groupType = "week", reminders = [] }) => {
       key: key,
       reminders: value.reminders,
       label: value.label,
-    }));
+    })).toReversed();
 
     setRemindersSorted(remindersArrayFromMap);
   };

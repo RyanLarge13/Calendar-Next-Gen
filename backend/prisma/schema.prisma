@@ -137,6 +137,8 @@ title String
 notes String
 time String
 snoozes Json?
+ignoreDates String[]
+ignoreDevices String[]
 repeat Json?
 completed Boolean @default(false)
 groupId String?
