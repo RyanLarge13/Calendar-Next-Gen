@@ -35,19 +35,21 @@ const ReminderNotification = ({ notification, remindersVibrated }) => {
     }
   }, []);
 
-  const dismissReminder = async (n) => {
-    setReminderNotifications((prev) => prev.filter((r) => r.id !== n.id));
+  const dismissReminder = async () => {
+    setReminderNotifications((prev) =>
+      prev.filter((r) => r.id !== notification.id),
+    );
 
     try {
       // Update reminder association
-      if (n.reminderRefId) {
+      if (notification.reminderRefId) {
         await updateReminderComplete({
-          reminderId: n.reminderRefId,
+          reminderId: notification.reminderRefId,
           completed: true,
         });
         setReminders((prev) => {
           const newReminders = prev.map((r) => {
-            if (r.id === n.reminderRefId) {
+            if (r.id === notification.reminderRefId) {
               return { ...r, completed: true };
             }
             return r;
@@ -58,10 +60,10 @@ const ReminderNotification = ({ notification, remindersVibrated }) => {
       }
 
       // Update actual notification
-      await markAsRead(n.id);
+      await markAsRead(notification.id);
       setNotifications((prev) => {
         const newNotifs = prev.map((notif) => {
-          if (notif.id === n.id) {
+          if (notif.id === notification.id) {
             return {
               ...notif,
               read: true,
@@ -79,20 +81,28 @@ const ReminderNotification = ({ notification, remindersVibrated }) => {
     }
   };
 
-  const snoozeNotification = async (n) => {
+  const snoozeNotification = async () => {
+    setReminderNotifications((prev) =>
+      prev.filter((r) => r.id !== notification.id),
+    );
+
     try {
       const token = getAuthToken();
 
       // Update notification to notify again later
-      const nDate = new Date(n.time);
+      const nDate = new Date(notification.time);
       nDate.setMinutes(nDate.getMinutes() + snoozeMinutes);
 
-      await snoozeNotification(n.id, nDate, token);
-      setNotifications((prev) => prev.filter((notif) => notif.id !== n.id));
+      await snoozeNotification(notification.id, nDate, token);
+      setNotifications((prev) =>
+        prev.filter((notif) => notif.id !== notification.id),
+      );
 
       // Update snoozing information on reminder association
-      if (n.reminderRefId) {
-        const reminder = reminders.find((r) => r.id === n.reminderRefId);
+      if (notification.reminderRefId) {
+        const reminder = reminders.find(
+          (r) => r.id === notification.reminderRefId,
+        );
 
         if (reminder && reminder.snoozes) {
           const newSnooze = {
@@ -104,10 +114,14 @@ const ReminderNotification = ({ notification, remindersVibrated }) => {
             snoozes: [...reminder.snoozes.snoozes, newSnooze],
           };
 
-          await updateReminderSnoozeCount(n.reminderRefId, newSnoozes, token);
+          await updateReminderSnoozeCount(
+            notification.reminderRefId,
+            newSnoozes,
+            token,
+          );
           setReminders((prev) =>
             prev.map((r) => {
-              if (r.id === n.reminderRefId) {
+              if (r.id === notification.reminderRefId) {
                 return { ...r, snoozes: newSnoozes };
               }
               return r;
@@ -211,7 +225,7 @@ const ReminderNotification = ({ notification, remindersVibrated }) => {
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_1.4fr]">
                   {/* Dismiss */}
                   <button
-                    onClick={() => dismissReminder(n)}
+                    onClick={() => dismissReminder()}
                     type="button"
                     className={`
                           flex h-16 items-center justify-center rounded-3xl border text-sm font-semibold shadow-sm transition
@@ -257,7 +271,7 @@ const ReminderNotification = ({ notification, remindersVibrated }) => {
                     </button>
 
                     <button
-                      onClick={() => snoozeNotification(n)}
+                      onClick={() => snoozeNotification()}
                       type="button"
                       className={`
                             flex h-full flex-1 items-center justify-center gap-3 px-4 text-sm font-semibold transition
