@@ -137,6 +137,8 @@ title String
 notes String
 time String
 snoozes Json?
+// Snoozes look like 
+// {count: Number, snoozes: [{when: date times, howMuchTime: Number minutes}]}
 ignoreDates String[]
 ignoreDevices String[]
 repeat Json?

@@ -545,3 +545,35 @@ export const updateLastSeenOnDevice = async (req, res) => {
     console.log(err);
   }
 };
+
+export const updateNotificationSnooze = async (req, res) => {
+  const user = req.user;
+  const { notifId, newTime } = req.body;
+
+  if (!user) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to make this request" });
+    return;
+  }
+
+  if (!notifId || !newTime) {
+    res.status(404).json({
+      message: "Please provide a notification to snooze",
+    });
+    return;
+  }
+
+  try {
+    await prisma.notification.update({
+      where: { id: notifId },
+      data: { read: false, time: newTime },
+    });
+  } catch (err) {
+    console.log("Error updating notification snooze on server");
+    console.log(err);
+    res
+      .status(500)
+      .json({ message: "Error updating notification snooze on server" });
+  }
+};

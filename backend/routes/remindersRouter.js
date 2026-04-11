@@ -9,6 +9,7 @@ import {
   updateReminderComplete,
   updateReminderNotes,
   updateReminderTitle,
+  updateReminderSnooze,
 } from "../controllers/remindersController.js";
 
 const reminderRouter = express.Router();
@@ -19,11 +20,12 @@ reminderRouter.post("/new/reminder", auth, addNewReminder);
 reminderRouter.patch("/update/reminder/complete", auth, updateReminderComplete);
 reminderRouter.patch("/update/reminder/notes", auth, updateReminderNotes);
 reminderRouter.patch("/update/reminder/title", auth, updateReminderTitle);
+reminderRouter.patch("/update/reminder/snooze", auth, updateReminderSnooze);
 reminderRouter.delete(
   "/:username/delete/reminder/:reminderId",
   auth,
   authorizeDelete("reminderId", prisma.reminder),
-  deleteReminder
+  deleteReminder,
 );
 
 export default reminderRouter;

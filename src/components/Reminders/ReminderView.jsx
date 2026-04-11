@@ -85,18 +85,18 @@ const ReminderView = ({ reminder, setShowFullReminder }) => {
         reminder.completed
           ? preferences.darkMode
             ? "bg-[#0b1210]"
-            : "bg-lime-50/80"
+            : "bg-lime-50"
           : reminderStatus === "past"
             ? preferences.darkMode
               ? "bg-[#160d10]"
-              : "bg-rose-50/80"
+              : "bg-rose-50"
             : reminderStatus === "today"
               ? preferences.darkMode
                 ? "bg-[#17120a]"
-                : "bg-amber-50/80"
+                : "bg-amber-50"
               : preferences.darkMode
                 ? "bg-[#0a1216]"
-                : "bg-cyan-50/80"
+                : "bg-cyan-50"
       }
     `}
       >

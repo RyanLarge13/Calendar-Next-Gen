@@ -1,6 +1,8 @@
 import Axios from "axios";
 import { completeSubscription } from "./helpers";
 
+// To navigate search "// {name of subject eg. Notifications}";
+
 const devUrl = "http://localhost:8080";
 const productionUrl = "https://calendar-next-gen-production.up.railway.app";
 // const productionUrl = "http://localhost:8080";
@@ -172,6 +174,18 @@ export const API_UpdateEventLocation = (eventId, location, token) => {
       eventId,
     },
     { headers: { Authorization: `Bearer ${token}` } },
+  );
+  return res;
+};
+
+// Reminders
+export const updateReminderSnoozeCount = (reminderId, newSnoozes, token) => {
+  const res = Axios.patch(
+    `${productionUrl}/update/reminder/snooze`,
+    { reminderId, newSnoozes },
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    },
   );
   return res;
 };
@@ -414,6 +428,20 @@ export const updateNotification = (idArray, token, username) => {
   const res = Axios.patch(
     `${productionUrl}/${username}/update/notif`,
     { notifs: idArray },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+  return res;
+};
+
+// Notifications
+export const snoozeNotification = (notifId, newTime, token) => {
+  const res = Axios.patch(
+    `${productionUrl}/notification/snooze`,
+    { notifId, newTime },
     {
       headers: {
         Authorization: `Bearer ${token}`,

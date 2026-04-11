@@ -8,10 +8,10 @@ import Stickies from "../components/Stickies/Stickies";
 import AddCircle from "../components/AddData/AddCircle";
 import Views from "../components/CalendarViews/Views";
 import SideBar from "../components/Misc/SideBar";
-import DatesContext from "../context/DatesContext";
 import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext";
 import { useModalActions } from "../context/ContextHooks/ModalContext";
+import ReminderNotifications from "../components/Reminders/ReminderNotifications";
 
 const MainPage = () => {
   const {
@@ -72,6 +72,7 @@ const MainPage = () => {
       <Header />
       <Search />
       <SystemNotif />
+      <ReminderNotifications />
       <Stickies />
       <div className="flex">
         <SideBar />

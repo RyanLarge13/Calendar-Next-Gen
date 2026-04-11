@@ -60,6 +60,26 @@ export const UserProvider = ({ children }) => {
   const [usersLocations, setUsersLocations] = useState([]); // {city: "", state: "", lng: "", lat: ""}
   const [weatherData, setWeatherData] = useState(null);
   const [notifSubs, setNotifSubs] = useState([]);
+  const [reminderNotifications, setReminderNotifications] = useState([
+    // Test. Uncomment to text out layout
+    {
+      type: "reminder",
+      time: new Date(),
+      read: false,
+      readTime: "",
+      notifData: {
+        eventRefIId: null,
+        time: new Date(),
+        notes: "This is my test reminder to test UI",
+        title: "This Is My Test Title",
+        userId: 0,
+      },
+      userId: 0,
+      sentNotification: false,
+      sentWebPush: false,
+      deviceExceptions: [],
+    },
+  ]);
 
   // Refs
   const subscribedFresh = useRef(false);
@@ -648,6 +668,11 @@ export const UserProvider = ({ children }) => {
     serverSentSource.addEventListener("message", (event) => {
       const notification = JSON.parse(event.data);
       setNotifications((prev) => [notification, ...prev]);
+
+      if (notification.type === "reminder") {
+        setReminderNotifications((prev) => [...prev, notification]);
+        return;
+      }
       setSystemNotif({
         show: true,
         title: notification.notifData.title,
@@ -665,7 +690,6 @@ export const UserProvider = ({ children }) => {
           },
         ],
       });
-      console.log("Received notification:", notification);
     });
     serverSentSource.addEventListener("error", (error) => {
       console.error("SSE error:", error);
@@ -747,6 +771,8 @@ export const UserProvider = ({ children }) => {
         usersLocations,
         notifSubs,
         localDB,
+        reminderNotifications,
+        setReminderNotifications,
         setNotifSubs,
         setWeatherData,
         setLocation,

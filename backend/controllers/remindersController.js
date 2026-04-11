@@ -77,6 +77,35 @@ export const updateReminderNotes = async (req, res) => {
   }
 };
 
+export const updateReminderSnooze = async (req, res) => {
+  const user = req.user;
+  const { reminderId, newSnoozes } = req.body;
+
+  if (!user) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to update this reminder" });
+    return;
+  }
+
+  if (!reminderId) {
+    res.status(404).json({ message: "Please provide a reminder to update" });
+    return;
+  }
+
+  try {
+    await prisma.reminder.update({
+      where: { id: reminderId },
+      data: { snoozes: newSnoozes },
+    });
+  } catch (err) {
+    console.log(
+      "Error updating reminder in database when calling reminder snooze update",
+    );
+    console.log(err);
+  }
+};
+
 export const updateReminderComplete = async (req, res) => {
   const { reminderId, completed } = req.body.reminder;
   const { id } = req.user;

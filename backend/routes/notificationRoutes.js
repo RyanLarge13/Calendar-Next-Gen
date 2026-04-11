@@ -12,6 +12,7 @@ import {
   markAsUnRead,
   removeSubscriptionToDevice,
   updateLastSeenOnDevice,
+  updateNotificationSnooze,
 } from "../controllers/notificationsController.js";
 
 const notifRouter = express.Router();
@@ -26,6 +27,7 @@ notifRouter.post("/mark-as-unread", markAsUnRead);
 notifRouter.post("/new/notification", auth, createNotification);
 notifRouter.patch("/:username/update/notif", auth, updateNotification);
 notifRouter.patch("/notif/lastseen", auth, updateLastSeenOnDevice);
+notifRouter.patch("/notification/snooze", auth, updateNotificationSnooze);
 
 // One delete is from user frontend app other is for service worker
 notifRouter.delete("/notification/:notifId", auth, deleteNotification);
