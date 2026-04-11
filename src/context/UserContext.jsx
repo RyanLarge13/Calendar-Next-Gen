@@ -507,6 +507,15 @@ export const UserProvider = ({ children }) => {
     }
   }, [authToken]);
 
+  const M_UpdateNotifSubLastSeen = async () => {
+    const registration = await navigator.serviceWorker.ready;
+    let currentSub = await registration.pushManager.getSubscription();
+
+    const endpointToUpdate = currentSub.endpoint;
+
+    // Call API to update notif sub and then update state
+  };
+
   const M_Async_LoadApp = async () => {
     try {
       const userData = await getUserData(authToken);
@@ -530,6 +539,7 @@ export const UserProvider = ({ children }) => {
       const freshUser = userData.data?.user;
       updateUI(freshUser, isFresh);
       registerServiceWorkerSync();
+      M_UpdateNotifSubLastSeen();
     } catch (err) {
       console.log("Error fetching user data from the server");
       console.log(err);

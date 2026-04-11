@@ -15,11 +15,11 @@ import FullDatePicker from "../DatePickers/FullDatePicker";
 import {
   BiAlarmSnooze,
   BiCheckCircle,
-  BiDevices,
   BiPause,
   BiRepeat,
 } from "react-icons/bi";
 import NotificationSubscription from "../Notifications/NotificationSubscription";
+import FollowUpReminder from "./ReminderView/FollowUpReminder";
 
 const ReminderView = ({ reminder, setShowFullReminder }) => {
   const { preferences, eventMap, notifSubs } = useContext(UserContext);
@@ -619,6 +619,11 @@ const ReminderView = ({ reminder, setShowFullReminder }) => {
                     </button>
                   </div>
                 </div>
+                <FollowUpReminder
+                  originalTitle={reminder.title}
+                  originalDesc={reminder.notes}
+                  reminderTime={new Date(reminder.time)}
+                />
 
                 {/* Repeating Reminders */}
                 {reminder.repeat?.repeats ? (
