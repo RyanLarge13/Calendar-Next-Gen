@@ -183,9 +183,7 @@ self.addEventListener("push", (event) => {
   if (notifType === "reminder") {
     return event.waitUntil(
       self.registration.showNotification(title, {
-        body: `${formatDbText(body || "")} \n @${new Date(
-          time,
-        ).toLocaleTimeString("en-US")}`,
+        body: `${formatDbText(body || "")}`,
         data,
         icon: "./rem-icon.svg",
         badge: "./badge.png",
@@ -201,9 +199,7 @@ self.addEventListener("push", (event) => {
   if (notifType === "system") {
     return event.waitUntil(
       self.registration.showNotification(title, {
-        body: `${formatDbText(body || "")} \n @${new Date(
-          time,
-        ).toLocaleTimeString("en-US")}`,
+        body: `${formatDbText(body || "")}`,
         data,
         icon: "./sys-icon.svg",
         badge: "./badge.png",

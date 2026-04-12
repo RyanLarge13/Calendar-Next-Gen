@@ -103,19 +103,22 @@ const AddReminder = () => {
   const getTime = () => {
     if (quickTimeSelect.fifteen) {
       const newDate = new Date(string);
-      newDate.setMinutes(newDate.getMinutes() + 15);
+      newDate.setHours(new Date().getHours());
+      newDate.setMinutes(new Date().getMinutes() + 15);
       return newDate.toString();
     }
     if (quickTimeSelect.thirty) {
       const newDate = new Date(string);
-      newDate.setMinutes(newDate.getMinutes() + 30);
+      newDate.setHours(new Date().getHours());
+      newDate.setMinutes(new Date().getMinutes() + 30);
       return newDate.toString();
     }
 
     // Handle hour here
 
-    const newDate = new Date();
-    newDate.setHours(newDate.getHours() + 1);
+    const newDate = new Date(string);
+    newDate.setHours(new Date().getHours() + 1);
+    newDate.setMinutes(new Date().getMinutes());
     return newDate.toString();
   };
 
@@ -177,17 +180,20 @@ const AddReminder = () => {
     }
 
     const token = localStorage.getItem("authToken");
+    const timeToAdd = time ? time : getTime();
+    console.log(timeToAdd);
+    return;
     const newReminder = {
       title,
       notes,
       eventRefId: eventForReminder?.id || null,
-      time: time ? time : getTime(),
+      time: timeToAdd,
       repeat: repeat,
       deviceExceptions: deviceExceptions,
     };
     const newNotification = {
       type: "reminder",
-      time: time ? time : getTime(),
+      time: timeToAdd,
       read: false,
       readTime: "",
       notifData: {
@@ -217,7 +223,7 @@ const AddReminder = () => {
               year: "numeric",
               month: "long",
               day: "numeric",
-            })} @${time.toLocaleTimeString("en-US", {
+            })} ${time.toLocaleTimeString("en-US", {
               timeZoneName: "short",
             })}`,
             color: "bg-cyan-100",

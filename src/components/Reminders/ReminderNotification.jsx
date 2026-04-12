@@ -91,7 +91,8 @@ const ReminderNotification = ({ notification, remindersVibrated }) => {
       const token = getAuthToken();
 
       // Update notification to notify again later
-      const nDate = new Date(notification.time);
+      // const nDate = new Date(notification.time);
+      const nDate = new Date();
       nDate.setMinutes(nDate.getMinutes() + snoozeMinutes);
 
       await API_SnoozeNotification(notification.id, nDate.toString(), token);
