@@ -1,11 +1,62 @@
 import React, { useContext } from "react";
 import { BiAlarmSnooze } from "react-icons/bi";
 import UserContext from "../../../context/UserContext";
+import { isPassedTime } from "../../../utils/helpers";
 
 const Snoozes = ({ reminder }) => {
-  const { preferences } = useContext(UserContext);
+  const { preferences, setReminders, setNotifications } =
+    useContext(UserContext);
 
   const snoozeLength = reminder.snoozes?.count || 0;
+  const isReminderPassed = isPassedTime(new Date(reminder.time), new Date());
+
+  const snoozeReminder = async (amount) => {
+    let timeBase = new Date(reminder.time);
+
+    if (isReminderPassed) {
+      timeBase.setHours(new Date().getHours());
+      timeBase.setMinutes(new Date().getMinutes() + amount);
+    } else {
+      timeBase.setHours(timeBase.getHours());
+      timeBase.setMinutes(timeBase.getMinutes() + amount);
+    }
+
+    const newTime = new Date(timeBase);
+
+    setReminders((prev) =>
+      prev.map((r) => {
+        if (r.id === reminder.id) {
+          const newSnooze = {
+            when: new Date(),
+            howMuchTime: amount,
+          };
+          const newSnoozes = {
+            ...r.snoozes,
+            count: r.snoozes.count + 1,
+            snoozes: [...r.snoozes.snoozes, newSnooze],
+          };
+          return {
+            ...r,
+            time: newTime.toString(),
+            snoozes: newSnoozes,
+          };
+        }
+        return r;
+      }),
+    );
+    setNotifications((prev) =>
+      prev.filter((n) => n.reminderRefId !== reminder.id),
+    );
+
+    try {
+      // Call server
+    } catch (err) {
+      console.log(
+        "Error updating reminder or notification on server to the new snoozed time",
+      );
+      console.log(err);
+    }
+  };
 
   return (
     <div className="mt-3">
