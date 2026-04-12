@@ -94,7 +94,7 @@ const ReminderNotification = ({ notification, remindersVibrated }) => {
       const nDate = new Date(notification.time);
       nDate.setMinutes(nDate.getMinutes() + snoozeMinutes);
 
-      await API_SnoozeNotification(notification.id, nDate, token);
+      await API_SnoozeNotification(notification.id, nDate.toString(), token);
       setNotifications((prev) =>
         prev.filter((notif) => notif.id !== notification.id),
       );

@@ -98,6 +98,8 @@ export const updateReminderSnooze = async (req, res) => {
       where: { id: reminderId },
       data: { snoozes: newSnoozes },
     });
+
+    res.status(200).json({ message: "Successfully updated your reminder" });
   } catch (err) {
     console.log(
       "Error updating reminder in database when calling reminder snooze update",

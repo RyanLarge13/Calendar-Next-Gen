@@ -538,6 +538,10 @@ export const updateLastSeenOnDevice = async (req, res) => {
       where: { id: user.userId },
       data: { notifSub: newSubs },
     });
+
+    res
+      .status(200)
+      .json({ message: "Successfully updated your subscriptions" });
   } catch (err) {
     console.log(
       "Error trying to update the last seen field in notifSub for the user in the DB",
@@ -567,8 +571,15 @@ export const updateNotificationSnooze = async (req, res) => {
   try {
     await prisma.notification.update({
       where: { id: notifId },
-      data: { read: false, time: newTime },
+      data: {
+        read: false,
+        time: newTime,
+        sentWebPush: false,
+        sentNotification: false,
+      },
     });
+
+    res.status(200).json({ message: "Successfully updated your notification" });
   } catch (err) {
     console.log("Error updating notification snooze on server");
     console.log(err);
