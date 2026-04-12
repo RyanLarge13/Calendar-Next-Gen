@@ -438,7 +438,7 @@ export const updateNotification = (idArray, token, username) => {
 };
 
 // Notifications
-export const snoozeNotification = (notifId, newTime, token) => {
+export const API_SnoozeNotification = (notifId, newTime, token) => {
   const res = Axios.patch(
     `${productionUrl}/notification/snooze`,
     { notifId, newTime },

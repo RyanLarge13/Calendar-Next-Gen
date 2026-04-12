@@ -173,13 +173,12 @@ const Reminder = ({
   const deleteAReminder = (id) => {
     const token = localStorage.getItem("authToken");
 
+    const newReminders = reminders.filter((reminder) => reminder.id !== id);
+    setReminders(newReminders);
+
     if (token) {
       deleteReminder(user.username, id, token)
         .then((res) => {
-          const newReminders = reminders.filter(
-            (reminder) => reminder.id !== res.data.reminderId,
-          );
-          setReminders(newReminders);
           const newSelected = selected.filter((itemId) => itemId !== id);
           setSelected(newSelected);
           if (newSelected.length < 1) {

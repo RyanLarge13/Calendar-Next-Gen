@@ -4,6 +4,7 @@ import Portal from "../Misc/Portal";
 import UserContext from "../../context/UserContext";
 import { FaMinus, FaPlus } from "react-icons/fa";
 import {
+  API_SnoozeNotification,
   markAsRead,
   updateReminderComplete,
   updateReminderSnoozeCount,
@@ -93,7 +94,7 @@ const ReminderNotification = ({ notification, remindersVibrated }) => {
       const nDate = new Date(notification.time);
       nDate.setMinutes(nDate.getMinutes() + snoozeMinutes);
 
-      await snoozeNotification(notification.id, nDate, token);
+      await API_SnoozeNotification(notification.id, nDate, token);
       setNotifications((prev) =>
         prev.filter((notif) => notif.id !== notification.id),
       );
