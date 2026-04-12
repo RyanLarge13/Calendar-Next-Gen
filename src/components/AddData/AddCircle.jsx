@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useContext, useEffect, useState } from "react";
 import { AiFillSchedule } from "react-icons/ai";
-import { BiCategoryAlt } from "react-icons/bi";
+import { BiCategoryAlt, BiTimer } from "react-icons/bi";
 import {
   BsAlarmFill,
   BsFillCalendar2EventFill,
@@ -16,11 +16,12 @@ import {
 } from "react-icons/bs";
 import { FaStickyNote } from "react-icons/fa";
 import { HiUserGroup } from "react-icons/hi";
-import { IoIosAddCircle } from "react-icons/io";
+import { IoIosAddCircle, IoMdTimer } from "react-icons/io";
 import DatesContext from "../../context/DatesContext";
 import InteractiveContext from "../../context/InteractiveContext";
 import UserContext from "../../context/UserContext";
 import { useModalActions } from "../../context/ContextHooks/ModalContext";
+import { MdTimer3 } from "react-icons/md";
 
 export const AddCircle = () => {
   const {
@@ -290,6 +291,24 @@ export const AddCircle = () => {
         }}
       >
         <HiUserGroup />
+      </motion.div>
+      <motion.div
+        onClick={() => openModalAndSetType("timer")}
+        initial={{ opacity: 0 }}
+        animate={
+          show
+            ? {
+                x: -175,
+                y: -30,
+                scale: 1.25,
+                opacity: 1,
+                transition: { delay: 0.8 },
+              }
+            : { x: 0, y: 0, scale: 0 }
+        }
+        className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] right-5 bottom-5 bg-gradient-to-r from-yellow-100 to-pink-200 shadow-md`}
+      >
+        <IoMdTimer />
       </motion.div>
     </>
   );

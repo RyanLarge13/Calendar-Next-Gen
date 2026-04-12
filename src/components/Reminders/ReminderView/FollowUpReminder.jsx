@@ -50,7 +50,7 @@ const FollowUpReminder = ({ originalTitle, originalDesc, reminderTime }) => {
           preferences.darkMode ? "text-white/80" : "text-slate-600"
         }`}
       >
-        Create a reminder to follow up on later
+        Follow Up reminder
       </h3>
       <p
         className={`text-sm mt-2 ${
@@ -111,30 +111,6 @@ const FollowUpReminder = ({ originalTitle, originalDesc, reminderTime }) => {
                 }
               `}
       >
-        <button
-          className={`
-                    px-3 py-1.5 flex justify-start items-center text-center gap-x-2 rounded-2xl border shadow-sm text-[11px] font-semibold
-                    ${
-                      preferences.darkMode
-                        ? "bg-green-500/15 border-green-300/20 text-green-100"
-                        : "bg-green-50 border-green-200 text-green-700"
-                    }
-                  `}
-        >
-          Save For Next Hour <BiTimer className="text-lg" />
-        </button>
-        <button
-          className={`
-                    px-3 py-1.5 flex justify-start items-center text-center gap-x-2 rounded-2xl border shadow-sm text-[11px] font-semibold
-                    ${
-                      preferences.darkMode
-                        ? "bg-red-500/15 border-red-300/20 text-red-100"
-                        : "bg-red-50 border-red-200 text-red-700"
-                    }
-                  `}
-        >
-          Save For Next 3 Hours <MdTimelapse className="text-lg" />
-        </button>
         {/* If not repeating */}
         <button
           className={`
@@ -146,7 +122,7 @@ const FollowUpReminder = ({ originalTitle, originalDesc, reminderTime }) => {
                     }
                   `}
         >
-          Save For Tomorrow <BsCalendarDay className="text-lg" />
+          Tomorrow <BsCalendarDay className="text-lg" />
         </button>
         {/* If repeating */}
         <button
@@ -159,7 +135,7 @@ const FollowUpReminder = ({ originalTitle, originalDesc, reminderTime }) => {
                     }
                   `}
         >
-          Save For Next Week <BiCalendarWeek className="text-lg" />
+          Next Week <BiCalendarWeek className="text-lg" />
         </button>
         <button
           className={`
@@ -171,7 +147,7 @@ const FollowUpReminder = ({ originalTitle, originalDesc, reminderTime }) => {
                     }
                   `}
         >
-          Save For Next Month <BsCalendarMonth className="text-lg" />
+          Next Month <BsCalendarMonth className="text-lg" />
         </button>
         <button
           onClick={() => setPickTime(true)}

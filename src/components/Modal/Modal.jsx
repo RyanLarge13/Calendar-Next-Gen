@@ -18,6 +18,7 @@ import {
   useModalActions,
   useModalState,
 } from "../../context/ContextHooks/ModalContext";
+import AddTimer from "../AddData/AddTimer";
 
 const Modal = () => {
   const { events, preferences, reminders } = useContext(UserContext);
@@ -195,6 +196,7 @@ const Modal = () => {
           {type === "kanban" ? <AddKanban /> : null}
           {type === "task" ? <AddTask /> : null}
           {type === "stickynote" ? <AddSticky /> : null}
+          {type === "timer" ? <AddTimer /> : null}
 
           {/* To be added with time */}
           {/* {type === "appointment" ? <AddAppointment /> : null}

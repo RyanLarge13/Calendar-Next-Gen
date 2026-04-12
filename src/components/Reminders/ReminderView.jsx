@@ -1,25 +1,18 @@
 import { motion } from "framer-motion";
 import { useContext, useEffect, useState } from "react";
 import UserContext from "../../context/UserContext";
-import { MdDeleteSweep, MdOutlineUpdate, MdSnooze } from "react-icons/md";
-import {
-  getDueStatus,
-  isSameCalendarDay,
-  makeDateTime,
-} from "../../utils/helpers";
+import { MdDeleteSweep } from "react-icons/md";
+import { getDueStatus, makeDateTime } from "../../utils/helpers";
 import Portal from "../Misc/Portal";
 import Reminder from "./Reminder";
 import EventCard from "../Events/EventCard";
 import TimeSetter from "../DatePickers/TimeSetter";
 import FullDatePicker from "../DatePickers/FullDatePicker";
-import {
-  BiAlarmSnooze,
-  BiCheckCircle,
-  BiPause,
-  BiRepeat,
-} from "react-icons/bi";
+import { BiCheckCircle, BiCircle, BiPause, BiRepeat } from "react-icons/bi";
 import NotificationSubscription from "../Notifications/NotificationSubscription";
 import FollowUpReminder from "./ReminderView/FollowUpReminder";
+import Snoozes from "./ReminderView/Snoozes";
+import QuickPanel from "./ReminderView/QuickPanel";
 
 const ReminderView = ({ reminder, setShowFullReminder }) => {
   const { preferences, eventMap, notifSubs } = useContext(UserContext);
@@ -225,9 +218,10 @@ const ReminderView = ({ reminder, setShowFullReminder }) => {
           }
         `}
             >
-              <button
-                onClick={() => setShowFullReminder(false)}
-                className={`
+              {!reminder.completed ? (
+                <button
+                  onClick={() => setShowFullReminder(false)}
+                  className={`
               px-3 py-1.5 flex justify-start items-center text-center gap-x-2 rounded-2xl border shadow-sm text-[11px] font-semibold
               ${
                 preferences.darkMode
@@ -235,9 +229,25 @@ const ReminderView = ({ reminder, setShowFullReminder }) => {
                   : "bg-green-50 border-green-200 text-green-700"
               }
             `}
-              >
-                Mark Reminder As Complete <BiCheckCircle className="text-lg" />
-              </button>
+                >
+                  Mark Reminder As Complete{" "}
+                  <BiCheckCircle className="text-lg" />
+                </button>
+              ) : (
+                <button
+                  onClick={() => setShowFullReminder(false)}
+                  className={`
+              px-3 py-1.5 flex justify-start items-center text-center gap-x-2 rounded-2xl border shadow-sm text-[11px] font-semibold
+              ${
+                preferences.darkMode
+                  ? "bg-rose-500/15 border-rose-300/20 text-rose-100"
+                  : "bg-rose-50 border-rose-200 text-rose-700"
+              }
+            `}
+                >
+                  Mark Reminder As InComplete <BiCircle className="text-lg" />
+                </button>
+              )}
               <button
                 onClick={() => setShowFullReminder(false)}
                 className={`
@@ -252,9 +262,10 @@ const ReminderView = ({ reminder, setShowFullReminder }) => {
                 Delete This Reminder <MdDeleteSweep className="text-lg" />
               </button>
               {/* If not repeating */}
-              <button
-                onClick={() => setShowFullReminder(false)}
-                className={`
+              {!reminder.repeats?.repeat ? (
+                <button
+                  onClick={() => setShowFullReminder(false)}
+                  className={`
               px-3 py-1.5 flex justify-start items-center text-center gap-x-2 rounded-2xl border shadow-sm text-[11px] font-semibold
               ${
                 preferences.darkMode
@@ -262,13 +273,15 @@ const ReminderView = ({ reminder, setShowFullReminder }) => {
                   : "bg-indigo-50 border-indigo-200 text-indigo-700"
               }
             `}
-              >
-                Make Repeatable <BiRepeat className="text-lg" />
-              </button>
+                >
+                  Make Repeatable <BiRepeat className="text-lg" />
+                </button>
+              ) : null}
               {/* If repeating */}
-              <button
-                onClick={() => setShowFullReminder(false)}
-                className={`
+              {reminder.repeats?.repeat ? (
+                <button
+                  onClick={() => setShowFullReminder(false)}
+                  className={`
               px-3 py-1.5 flex justify-start items-center text-center gap-x-2 rounded-2xl border shadow-sm text-[11px] font-semibold
               ${
                 preferences.darkMode
@@ -276,12 +289,14 @@ const ReminderView = ({ reminder, setShowFullReminder }) => {
                   : "bg-pink-50 border-pink-200 text-pink-700"
               }
             `}
-              >
-                Delete All Reminders <MdDeleteSweep className="text-lg" />
-              </button>
-              <button
-                onClick={() => setShowFullReminder(false)}
-                className={`
+                >
+                  Delete All Reminders <MdDeleteSweep className="text-lg" />
+                </button>
+              ) : null}
+              {reminder.repeats?.repeat ? (
+                <button
+                  onClick={() => setShowFullReminder(false)}
+                  className={`
               px-3 py-1.5 flex justify-start items-center text-center gap-x-2 rounded-2xl border shadow-sm text-[11px] font-semibold
               ${
                 preferences.darkMode
@@ -289,9 +304,10 @@ const ReminderView = ({ reminder, setShowFullReminder }) => {
                   : "bg-amber-50 border-amber-200 text-amber-700"
               }
             `}
-              >
-                Pause Reminders <BiPause className="text-lg" />
-              </button>
+                >
+                  Pause Reminders <BiPause className="text-lg" />
+                </button>
+              ) : null}
             </div>
 
             {/* main layout */}
@@ -465,159 +481,7 @@ const ReminderView = ({ reminder, setShowFullReminder }) => {
             `}
                 >
                   {/* your quick actions section goes here */}
-                  <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-2">
-                    {!isSameCalendarDay(new Date(reminder.time), new Date()) ? (
-                      <button
-                        type="button"
-                        className={`
-                  group rounded-2xl border shadow-sm px-3 py-3
-                  flex flex-col items-center justify-center gap-2
-                  transition active:scale-[0.97]
-                  ${
-                    preferences.darkMode
-                      ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/80"
-                      : "bg-white border-black/10 hover:bg-black/[0.02] text-slate-800"
-                  }
-                `}
-                      >
-                        <div
-                          className={`
-                    grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition
-                    ${
-                      preferences.darkMode
-                        ? "bg-cyan-500/15 border-cyan-300/20 text-cyan-100 group-hover:bg-cyan-500/20"
-                        : "bg-cyan-50 border-cyan-200 text-cyan-700 group-hover:bg-cyan-100"
-                    }
-                  `}
-                        >
-                          <MdOutlineUpdate className="text-lg" />
-                        </div>
-                        <p className="text-[11px] font-semibold text-center leading-tight">
-                          Reset Today
-                        </p>
-                      </button>
-                    ) : null}
-
-                    <button
-                      type="button"
-                      className={`
-                group rounded-2xl border shadow-sm px-3 py-3
-                flex flex-col items-center justify-center gap-2
-                transition active:scale-[0.97]
-                ${
-                  preferences.darkMode
-                    ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/80"
-                    : "bg-white border-black/10 hover:bg-black/[0.02] text-slate-800"
-                }
-              `}
-                    >
-                      <div
-                        className={`
-                  grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition
-                  ${
-                    preferences.darkMode
-                      ? "bg-orange-500/15 border-orange-300/20 text-orange-100 group-hover:bg-orange-500/20"
-                      : "bg-orange-50 border-orange-200 text-orange-700 group-hover:bg-orange-100"
-                  }
-                `}
-                      >
-                        <MdSnooze className="text-lg" />
-                      </div>
-                      <p className="text-[11px] font-semibold text-center leading-tight">
-                        Snooze 5
-                      </p>
-                    </button>
-
-                    <button
-                      type="button"
-                      className={`
-                group rounded-2xl border shadow-sm px-3 py-3
-                flex flex-col items-center justify-center gap-2
-                transition active:scale-[0.97]
-                ${
-                  preferences.darkMode
-                    ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/80"
-                    : "bg-white border-black/10 hover:bg-black/[0.02] text-slate-800"
-                }
-              `}
-                    >
-                      <div
-                        className={`
-                  grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition
-                  ${
-                    preferences.darkMode
-                      ? "bg-indigo-500/15 border-indigo-300/20 text-indigo-100 group-hover:bg-indigo-500/20"
-                      : "bg-indigo-50 border-indigo-200 text-indigo-700 group-hover:bg-indigo-100"
-                  }
-                `}
-                      >
-                        <MdSnooze className="text-lg" />
-                      </div>
-                      <p className="text-[11px] font-semibold text-center leading-tight">
-                        Snooze 10
-                      </p>
-                    </button>
-
-                    <button
-                      type="button"
-                      className={`
-                group rounded-2xl border shadow-sm px-3 py-3
-                flex flex-col items-center justify-center gap-2
-                transition active:scale-[0.97]
-                ${
-                  preferences.darkMode
-                    ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/80"
-                    : "bg-white border-black/10 hover:bg-black/[0.02] text-slate-800"
-                }
-              `}
-                    >
-                      <div
-                        className={`
-                  grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition
-                  ${
-                    preferences.darkMode
-                      ? "bg-amber-500/15 border-amber-300/20 text-amber-100 group-hover:bg-amber-500/20"
-                      : "bg-amber-50 border-amber-200 text-amber-700 group-hover:bg-amber-100"
-                  }
-                `}
-                      >
-                        <MdSnooze className="text-lg" />
-                      </div>
-                      <p className="text-[11px] font-semibold text-center leading-tight">
-                        Snooze 15
-                      </p>
-                    </button>
-
-                    <button
-                      type="button"
-                      className={`
-                group rounded-2xl border shadow-sm px-3 py-3
-                flex flex-col items-center justify-center gap-2
-                transition active:scale-[0.97]
-                ${
-                  preferences.darkMode
-                    ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/80"
-                    : "bg-white border-black/10 hover:bg-black/[0.02] text-slate-800"
-                }
-              `}
-                    >
-                      <div
-                        className={`
-                  grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition
-                  ${
-                    preferences.darkMode
-                      ? "bg-emerald-500/15 border-emerald-300/20 text-emerald-100 group-hover:bg-emerald-500/20"
-                      : "bg-emerald-50 border-emerald-200 text-emerald-700 group-hover:bg-emerald-100"
-                  }
-                `}
-                      >
-                        <MdSnooze className="text-lg" />
-                      </div>
-                      <p className="text-[11px] font-semibold text-center leading-tight">
-                        Snooze 30
-                      </p>
-                    </button>
-                  </div>
+                  <QuickPanel reminder={reminder} />
                 </div>
                 <FollowUpReminder
                   originalTitle={reminder.title}
@@ -720,46 +584,7 @@ const ReminderView = ({ reminder, setShowFullReminder }) => {
                     affects your schedule.
                   </p>
 
-                  {/* {reminder.snoozes && reminder.snoozes?.len > 0 ? ( */}
-                  <div className="mt-3">
-                    <p
-                      className={`text-base flex justify-start items-center gap-x-2 font-semibold mt-1 ${
-                        preferences.darkMode
-                          ? "text-white/80"
-                          : "text-slate-600"
-                      }`}
-                    >
-                      Snoozes <BiAlarmSnooze />
-                    </p>
-                    <div
-                      className={`
-                    rounded-3xl border shadow-sm p-4 sm:p-5
-                    backdrop-blur-md mt-2
-                    ${
-                      preferences.darkMode
-                        ? "bg-[#161616]/65 border-white/10"
-                        : "bg-white/75 border-black/10"
-                    }
-                    `}
-                    >
-                      <p
-                        className={`text-sm ${
-                          preferences.darkMode
-                            ? "text-white/65"
-                            : "text-slate-600"
-                        }`}
-                      >
-                        You have pushed this alarm back {reminder.snoozes?.len}{" "}
-                        times
-                      </p>
-                      <div className="mt-3">
-                        {reminder.snoozes?.snoozes.map((snooze) => (
-                          <div></div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                  {/* ) : null} */}
+                  <Snoozes reminder={reminder} />
                 </div>
 
                 <div className="space-y-4">

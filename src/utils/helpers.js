@@ -549,3 +549,17 @@ export const getPreferences = () => {
     return defaultPrefs;
   }
 };
+
+export const isPassedTime = (timeDate, timeCheck) => {
+  const t1 =
+    timeDate.getHours() * 3600 +
+    timeDate.getMinutes() * 60 +
+    timeDate.getSeconds();
+
+  const t2 =
+    timeCheck.getHours() * 3600 +
+    timeCheck.getMinutes() * 60 +
+    timeCheck.getSeconds();
+
+  return t1 > t2;
+};
