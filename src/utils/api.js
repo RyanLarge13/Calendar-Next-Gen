@@ -179,6 +179,22 @@ export const API_UpdateEventLocation = (eventId, location, token) => {
 };
 
 // Reminders
+export const API_SnoozeReminderAndNotification = (
+  reminderId,
+  token,
+  newTime,
+  newSnoozes,
+) => {
+  const res = Axios.patch(
+    `${productionUrl}/update/reminder/notification/snooze`,
+    { reminderId, newTime, newSnoozes },
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    },
+  );
+  return res;
+};
+
 export const updateReminderSnoozeCount = (reminderId, newSnoozes, token) => {
   const res = Axios.patch(
     `${productionUrl}/update/reminder/snooze`,

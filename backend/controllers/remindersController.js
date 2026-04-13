@@ -238,3 +238,57 @@ export const deleteReminder = async (req, res) => {
     });
   }
 };
+
+export const updateReminderAndNotificationSnooze = async (req, res) => {
+  const user = req.user;
+  const { reminderId, newTime, newSnoozes } = req.body;
+
+  if (!user) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to update this reminder" });
+    return;
+  }
+
+  if (!reminderId || !newTime) {
+    res
+      .status(404)
+      .json({ message: "Please provide a reminder to update with a new time" });
+    return;
+  }
+
+  try {
+    await prisma.reminder.update({
+      where: { id: reminderId },
+      data: {
+        time: newTime,
+        completed: false,
+        snoozes: newSnoozes,
+      },
+    });
+    await prisma.notification.update({
+      where: { reminderRefId: reminderId },
+      data: {
+        sentNotification: false,
+        sentWebPush: false,
+        time: newTime,
+        read: false,
+      },
+    });
+
+    res
+      .status(200)
+      .json({
+        message:
+          "Updated notification and reminder alike, snoozing the reminder and notification by allocated time",
+      });
+  } catch (err) {
+    console.log(
+      "Error attempting to update the database with a new reminder and notification time under updateReminderAndNotificationSnooze",
+    );
+    console.log(err);
+    res
+      .status(500)
+      .json({ message: "Server errored attempting to snooze reminder" });
+  }
+};

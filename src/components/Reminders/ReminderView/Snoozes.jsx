@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { BiAlarmSnooze } from "react-icons/bi";
 import UserContext from "../../../context/UserContext";
-import { isPassedTime } from "../../../utils/helpers";
+import { getAuthToken, isPassedTime } from "../../../utils/helpers";
 
 const Snoozes = ({ reminder }) => {
   const { preferences, setReminders, setNotifications } =
@@ -23,18 +23,24 @@ const Snoozes = ({ reminder }) => {
 
     const newTime = new Date(timeBase);
 
+    const newSnooze = {
+      when: new Date(),
+      howMuchTime: amount,
+    };
+
+    let globalSnoozes;
+
     setReminders((prev) =>
       prev.map((r) => {
         if (r.id === reminder.id) {
-          const newSnooze = {
-            when: new Date(),
-            howMuchTime: amount,
-          };
           const newSnoozes = {
             ...r.snoozes,
             count: r.snoozes.count + 1,
             snoozes: [...r.snoozes.snoozes, newSnooze],
           };
+
+          globalSnoozes = newSnoozes;
+
           return {
             ...r,
             time: newTime.toString(),
@@ -49,7 +55,13 @@ const Snoozes = ({ reminder }) => {
     );
 
     try {
-      // Call server
+      const token = getAuthToken();
+      await API_SnoozeReminderAndNotification(
+        reminder.id,
+        token,
+        newTime.toString(),
+        globalSnoozes,
+      );
     } catch (err) {
       console.log(
         "Error updating reminder or notification on server to the new snoozed time",

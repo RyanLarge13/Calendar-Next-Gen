@@ -166,7 +166,7 @@ notifData Json
 groupId String?
 deviceExceptions String[]
 reminderRef Reminder? @relation(fields: [reminderRefId], references: [id], onDelete: Cascade)
-reminderRefId String?
+reminderRefId String? @unique
 eventRef Event?   @relation(fields: [eventRefId], references: [id], onDelete: Cascade)
 eventRefId String?
 User User     @relation(fields: [userId], references: [id])
