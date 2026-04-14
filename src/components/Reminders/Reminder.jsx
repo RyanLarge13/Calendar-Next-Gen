@@ -13,7 +13,7 @@ import { formatTime } from "../../utils/helpers.js";
 import { BiAlarmSnooze, BiCalendarEvent, BiFullscreen } from "react-icons/bi";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
 import DatesContext from "../../context/DatesContext.jsx";
-import ReminderView from "./ReminderView.jsx";
+import ReminderView from "./ReminderView/ReminderView.jsx";
 
 const Reminder = ({
   reminder,

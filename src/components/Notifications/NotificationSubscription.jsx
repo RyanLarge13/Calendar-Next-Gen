@@ -235,7 +235,7 @@ const NotificationSubscription = ({ ns, hasSub, simpleView = false }) => {
             {info.endpoint && (
               <div
                 className={`
-            rounded-2xl border px-3 py-2 mb-3 text-[11px] font-semibold truncate
+            rounded-2xl border px-3 py-2 my-3 text-[11px] font-semibold truncate
             ${
               preferences.darkMode
                 ? "bg-white/5 border-white/10 text-white/50"
@@ -247,9 +247,10 @@ const NotificationSubscription = ({ ns, hasSub, simpleView = false }) => {
                 Endpoint: {info.endpoint}
               </div>
             )}
-            <button
-              onClick={() => pauseNotificationsToDevice(info)}
-              className={`
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => pauseNotificationsToDevice(info)}
+                className={`
             flex-shrink-0 px-3 py-1.5 rounded-2xl border text-[11px] font-semibold shadow-sm
             ${
               preferences.darkMode
@@ -257,14 +258,14 @@ const NotificationSubscription = ({ ns, hasSub, simpleView = false }) => {
                 : "bg-orange-50 border-orange-200 text-orange-700"
             }
             `}
-            >
-              {info.paused
-                ? "Resume Notifications To This Device"
-                : "Pause Notifications To This Device"}
-            </button>
-            <button
-              onClick={() => confirmRemoveSub(info)}
-              className={`
+              >
+                {info.paused
+                  ? "Resume Notifications To This Device"
+                  : "Pause Notifications To This Device"}
+              </button>
+              <button
+                onClick={() => confirmRemoveSub(info)}
+                className={`
             flex-shrink-0 px-3 py-1.5 rounded-2xl border text-[11px] font-semibold shadow-sm
             ${
               preferences.darkMode
@@ -272,9 +273,10 @@ const NotificationSubscription = ({ ns, hasSub, simpleView = false }) => {
                 : "bg-rose-50 border-rose-200 text-rose-700"
             }
             `}
-            >
-              Remove Notification Subscription From Device
-            </button>
+              >
+                Remove Notification Subscription From Device
+              </button>
+            </div>
           </div>
         )}
       </div>

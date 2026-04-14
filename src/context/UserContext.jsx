@@ -534,7 +534,7 @@ export const UserProvider = ({ children }) => {
 
     const newSubs = parseNotifSubs(notifSubs).map((s) => {
       if (s.endpoint === endpointToUpdate) {
-        return JSON.stringify({ ...s, lastSeen: new Date() });
+        return JSON.stringify({ ...s, lastSeenAt: new Date() });
       }
       return JSON.stringify(s);
     });
