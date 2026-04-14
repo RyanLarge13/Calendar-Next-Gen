@@ -9,7 +9,7 @@ import DatesContext from "../../context/DatesContext";
 import InteractiveContext from "../../context/InteractiveContext";
 import UserContext from "../../context/UserContext";
 import Reminder from "../Reminders/Reminder";
-import { formatTime } from "../../utils/helpers";
+import { formatRelativeTime } from "../../utils/helpers";
 import { useModalActions } from "../../context/ContextHooks/ModalContext";
 
 const PopUpMonthViewWindow = ({
@@ -71,7 +71,7 @@ const PopUpMonthViewWindow = ({
           day: "numeric",
           year: "numeric",
         })}{" "}
-        - {formatTime(new Date(day))}
+        - {formatRelativeTime(new Date(day))}
       </p>
 
       {/* Reminder Grid */}

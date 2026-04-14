@@ -1,32 +1,146 @@
 import { API_GetWeather } from "./api";
 import { v4 as uuidv4 } from "uuid";
 
-const formatter = new Intl.RelativeTimeFormat(undefined, {
-  numeric: "auto",
-});
+const MINUTE_MS = 60 * 1000;
+const HOUR_MS = 60 * MINUTE_MS;
+const DAY_MS = 24 * HOUR_MS;
+const WEEK_MS = 7 * DAY_MS;
+const MONTH_MS = 30 * DAY_MS;
+const YEAR_MS = 365 * DAY_MS;
 
-const DIVISIONS = [
-  { amount: 60, name: "seconds" },
-  { amount: 60, name: "minutes" },
-  { amount: 24, name: "hours" },
-  { amount: 7, name: "days" },
-  { amount: 4.34524, name: "weeks" },
-  { amount: 12, name: "months" },
-  { amount: Number.POSITIVE_INFINITY, name: "years" },
-];
+const pluralize = (value, unit) => {
+  return `${value} ${unit}${value === 1 ? "" : "s"}`;
+};
 
-export const formatTime = (date) => {
-  if (date === null || date === undefined) {
+export const formatRelativeTime = (targetDate) => {
+  if (targetDate === null || targetDate === undefined) {
     return "Try Refreshing Again";
   }
-  let duration = (date - new Date()) / 1000;
-  for (let i = 0; i < DIVISIONS.length; i++) {
-    const division = DIVISIONS[i];
-    if (Math.abs(duration) < division.amount) {
-      return formatter.format(Math.round(duration), division.name);
-    }
-    duration /= division.amount;
+
+  const target = targetDate instanceof Date ? targetDate : new Date(targetDate);
+
+  if (Number.isNaN(target.getTime())) {
+    return "Invalid date";
   }
+
+  const now = new Date();
+  const diff = target.getTime() - now.getTime();
+  const isFuture = diff > 0;
+  const absDiff = Math.abs(diff);
+
+  // Tiny range
+  if (absDiff < 30 * 1000) {
+    return "just now";
+  }
+
+  let result = "";
+
+  // Under 1 hour: round to nearest 15 minutes
+  if (absDiff < HOUR_MS) {
+    const minutes = Math.max(1, Math.round(absDiff / (15 * MINUTE_MS)) * 15);
+    result = pluralize(minutes, "minute");
+  }
+
+  // Under 1 day: hours + quarter-hour minutes
+  else if (absDiff < DAY_MS) {
+    const hours = Math.floor(absDiff / HOUR_MS);
+    const remainder = absDiff % HOUR_MS;
+
+    let minutes = Math.round(remainder / (15 * MINUTE_MS)) * 15;
+
+    let adjustedHours = hours;
+    if (minutes === 60) {
+      adjustedHours += 1;
+      minutes = 0;
+    }
+
+    result = pluralize(adjustedHours, "hour");
+    if (minutes > 0) {
+      result += ` ${pluralize(minutes, "minute")}`;
+    }
+  }
+
+  // Under 1 week: days + hours
+  else if (absDiff < WEEK_MS) {
+    const days = Math.floor(absDiff / DAY_MS);
+    const remainder = absDiff % DAY_MS;
+    const hours = Math.round(remainder / HOUR_MS);
+
+    let adjustedDays = days;
+    let adjustedHours = hours;
+
+    if (adjustedHours === 24) {
+      adjustedDays += 1;
+      adjustedHours = 0;
+    }
+
+    result = pluralize(adjustedDays, "day");
+    if (adjustedHours > 0) {
+      result += ` ${pluralize(adjustedHours, "hour")}`;
+    }
+  }
+
+  // Under 1 month: weeks + days
+  else if (absDiff < MONTH_MS) {
+    const weeks = Math.floor(absDiff / WEEK_MS);
+    const remainder = absDiff % WEEK_MS;
+    const days = Math.round(remainder / DAY_MS);
+
+    let adjustedWeeks = weeks;
+    let adjustedDays = days;
+
+    if (adjustedDays === 7) {
+      adjustedWeeks += 1;
+      adjustedDays = 0;
+    }
+
+    result = pluralize(adjustedWeeks, "week");
+    if (adjustedDays > 0) {
+      result += ` ${pluralize(adjustedDays, "day")}`;
+    }
+  }
+
+  // Under 1 year: months + weeks
+  else if (absDiff < YEAR_MS) {
+    const months = Math.floor(absDiff / MONTH_MS);
+    const remainder = absDiff % MONTH_MS;
+    const weeks = Math.round(remainder / WEEK_MS);
+
+    let adjustedMonths = months;
+    let adjustedWeeks = weeks;
+
+    if (adjustedWeeks >= 4) {
+      adjustedMonths += 1;
+      adjustedWeeks = 0;
+    }
+
+    result = pluralize(adjustedMonths, "month");
+    if (adjustedWeeks > 0) {
+      result += ` ${pluralize(adjustedWeeks, "week")}`;
+    }
+  }
+
+  // Years + months
+  else {
+    const years = Math.floor(absDiff / YEAR_MS);
+    const remainder = absDiff % YEAR_MS;
+    const months = Math.round(remainder / MONTH_MS);
+
+    let adjustedYears = years;
+    let adjustedMonths = months;
+
+    if (adjustedMonths === 12) {
+      adjustedYears += 1;
+      adjustedMonths = 0;
+    }
+
+    result = pluralize(adjustedYears, "year");
+    if (adjustedMonths > 0) {
+      result += ` ${pluralize(adjustedMonths, "month")}`;
+    }
+  }
+
+  return isFuture ? `in ${result}` : `${result} ago`;
 };
 
 export const formatDbText = (text) => {

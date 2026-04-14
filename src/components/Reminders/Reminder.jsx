@@ -9,7 +9,7 @@ import {
 import { motion } from "framer-motion";
 import { BsAlarmFill, BsTrashFill } from "react-icons/bs";
 import { MdOpenInNew } from "react-icons/md";
-import { formatTime } from "../../utils/helpers.js";
+import { formatRelativeTime } from "../../utils/helpers.js";
 import { BiAlarmSnooze, BiCalendarEvent, BiFullscreen } from "react-icons/bi";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
 import DatesContext from "../../context/DatesContext.jsx";
@@ -277,7 +277,7 @@ const Reminder = ({
                     <BsAlarmFill
                       className={`${preferences.darkMode ? "text-white/40" : "text-slate-400"}`}
                     />
-                    <p>{formatTime(new Date(reminder.time))}</p>
+                    <p>{formatRelativeTime(new Date(reminder.time))}</p>
                   </div>
                 )}
               </div>

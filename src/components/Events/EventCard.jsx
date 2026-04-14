@@ -9,11 +9,11 @@ import {
 } from "react-icons/md";
 import { tailwindBgToHex } from "../../utils/helpers.js";
 
-const EventCard = ({ event }) => {
+const EventCard = ({ event, styles = {} }) => {
   return (
     <motion.div
-      key={event.id}
       initial={{ opacity: 0 }}
+      style={styles}
       whileInView={{ opacity: 1 }}
       className={`p-3 rounded-md shadow-md duration-200 ${event.color} mt-5 cursor-pointer bg-opacity-10 hover:bg-opacity-50 right-0`}
     >

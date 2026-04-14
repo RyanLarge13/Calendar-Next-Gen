@@ -1,28 +1,23 @@
 import { useEffect, useRef, useState, useContext } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { staticTimes } from "../../constants/dateAndTimeConstants.js";
+import { staticTimes } from "../../../constants/dateAndTimeConstants.js";
 import { MdEventNote } from "react-icons/md";
 import { MdLocationPin } from "react-icons/md";
 import { FiRepeat } from "react-icons/fi";
 import { IoIosAlarm } from "react-icons/io";
-import DatesContext from "../../context/DatesContext.jsx";
-import InteractiveContext from "../../context/InteractiveContext.jsx";
-import UserContext from "../../context/UserContext.jsx";
+import DatesContext from "../../../context/DatesContext.jsx";
+import InteractiveContext from "../../../context/InteractiveContext.jsx";
+import UserContext from "../../../context/UserContext.jsx";
 import { createPortal } from "react-dom";
-import Reminder from "../Reminders/Reminder.jsx";
-import { useModalActions } from "../../context/ContextHooks/ModalContext.jsx";
+import Reminder from "../../Reminders/Reminder.jsx";
+import { useModalActions } from "../../../context/ContextHooks/ModalContext.jsx";
+import EventCard from "../../Events/EventCard.jsx";
 
 const DayView = ({ containerRef }) => {
-  const {
-    setEvent,
-    setAddEventWithStartEndTime,
-    setType,
-    setAddNewEvent,
-    event,
-    view,
-  } = useContext(InteractiveContext);
+  const { setEvent, setAddEventWithStartEndTime, setType, setAddNewEvent } =
+    useContext(InteractiveContext);
   const { theDay, dateObj } = useContext(DatesContext);
-  const { preferences, events, reminders } = useContext(UserContext);
+  const { preferences, eventMap, reminders } = useContext(UserContext);
 
   const { openModal } = useModalActions();
 
@@ -47,16 +42,23 @@ const DayView = ({ containerRef }) => {
     setTodaysReminders(remindersToday);
   }, [theDay, reminders]);
 
+  // Calculate quickly which events belong to this day view based on current viewing day
   useEffect(() => {
-    if (event || view === "day") {
-      const eventsToday = events.filter(
-        (item) =>
-          new Date(item.date).toLocaleDateString() ===
-          theDay.toLocaleDateString(),
-      );
-      setTodaysEvents(eventsToday);
+    const key = `${theDay.getFullYear()}-${theDay.getMonth()}`;
+    if (eventMap.has(key)) {
+      const events = eventMap.get(key).events || [];
+      if (events.length > 0) {
+        const eventsForDay = events.filter(
+          (e) =>
+            new Date(e.date).toLocaleDateString() ===
+            theDay.toLocaleDateString(),
+        );
+        if (eventsForDay.length > 0) {
+          setTodaysEvents(eventsForDay);
+        }
+      }
     }
-  }, [event, view, theDay]);
+  }, [theDay, eventMap]);
 
   useEffect(() => {
     if (times.length > 1) {
@@ -70,15 +72,6 @@ const DayView = ({ containerRef }) => {
     getTime();
     return () => clearInterval(interval);
   }, []);
-
-  const openRelatedEvent = (eventRefId) => {
-    const eventOfReminder =
-      events.find((event) => event.id === eventRefId) || null;
-
-    if (eventOfReminder !== null) {
-      setEvent(eventOfReminder[0]);
-    }
-  };
 
   const calcDayEventHeight = (start, end) => {
     if (!start || !end) {
@@ -211,18 +204,6 @@ const DayView = ({ containerRef }) => {
     setTimes([]);
   };
 
-  // const getColorReminder = (reminder) => {
-  //   if (reminder.eventRef) {
-  //     const eventAttached = events.filter((e) => e.id === reminder.eventRef)[0];
-  //     if (!eventAttached) {
-  //       return "bg-cyan-200";
-  //     }
-  //     return eventAttached.color;
-  //   } else {
-  //     return "bg-cyan-200";
-  //   }
-  // };
-
   return (
     <div className="py-20">
       {/* Timer Setter */}
@@ -304,12 +285,54 @@ const DayView = ({ containerRef }) => {
         {dateObj.toLocaleDateString() === theDay.toLocaleDateString() ? (
           <motion.div
             animate={{ top: `${height}px` }}
-            className="absolute right-0 z-[200] translate-y-[-50%]"
+            transition={{ type: "tween", ease: "linear", duration: 0.25 }}
+            className="absolute right-0 z-[200] translate-y-[-50%] pointer-events-none"
           >
-            <div className="w-[20px] h-[20px] rounded-full shadow-md bg-cyan-300 after:w-20 after:h-[2px] after:bg-black after:absolute after:top-[50%] after:z-[-1] after:left-[-350%]">
-              <p className="absolute px-1 shadow-md bg-white rounded-md left-[-375%] top-[-50%]">
+            <div className="relative flex items-center justify-end">
+              {/* Time label */}
+              <div
+                className={`
+            absolute right-8 top-1/2 -translate-y-1/2
+            px-2 py-1 rounded-2xl border shadow-sm text-[11px] font-semibold whitespace-nowrap
+            ${
+              preferences.darkMode
+                ? "bg-[#161616]/90 border-white/10 text-white/80"
+                : "bg-white/90 border-black/10 text-slate-700"
+            }
+            backdrop-blur-md
+          `}
+              >
                 {time}
-              </p>
+              </div>
+
+              {/* Line */}
+              <div
+                className={`
+            absolute right-3 top-1/2 -translate-y-1/2
+            h-[2px] w-20 rounded-full
+            ${preferences.darkMode ? "bg-cyan-300/40" : "bg-cyan-500/35"}
+          `}
+              />
+
+              {/* Dot */}
+              <div
+                className={`
+            relative h-5 w-5 rounded-full shadow-md
+            ${
+              preferences.darkMode
+                ? "bg-cyan-300 border border-cyan-100/30"
+                : "bg-cyan-400 border border-white"
+            }
+          `}
+              >
+                {/* Glow ring */}
+                <div
+                  className={`
+              absolute inset-0 rounded-full scale-[1.8]
+              ${preferences.darkMode ? "bg-cyan-300/20" : "bg-cyan-400/20"}
+            `}
+                />
+              </div>
             </div>
           </motion.div>
         ) : null}
@@ -349,72 +372,75 @@ const DayView = ({ containerRef }) => {
 
           {/* Events For The Day */}
           {todaysEvents.map((event) => (
-            <div
+            <EventCard
               key={event.id}
-              style={{
+              event={event}
+              styles={{
                 height: `${calcDayEventHeight(
                   new Date(event.start.startTime),
                   new Date(event.end.endTime),
                 )}px`,
                 top: fromTop(new Date(event.start.startTime)),
               }}
-              onClick={() => setEvent(event)}
-              className="absolute right-5 left-20 p-3 rounded-2xl shadow-lg bg-white/70 backdrop-blur-sm border border-gray-200 transition hover:scale-[1.02] hover:shadow-xl cursor-pointer flex"
-            >
-              {/* Colored accent bar */}
-              <div className={`w-2 rounded-l-2xl ${event.color}`}></div>
+            />
+            // <div
+            //   key={event.id}
+            //   style={{
+            //     height: `${calcDayEventHeight(
+            //       new Date(event.start.startTime),
+            //       new Date(event.end.endTime),
+            //     )}px`,
+            //     top: fromTop(new Date(event.start.startTime)),
+            //   }}
+            //   onClick={() => setEvent(event)}
+            //   className="absolute right-5 left-20 p-3 rounded-2xl shadow-lg bg-white/70 backdrop-blur-sm border border-gray-200 transition hover:scale-[1.02] hover:shadow-xl cursor-pointer flex"
+            // >
+            //   {/* Colored accent bar */}
+            //   <div className={`w-2 rounded-l-2xl ${event.color}`}></div>
 
-              {/* Content */}
-              <div className="flex-1 pl-3 flex flex-col justify-between">
-                {/* Header */}
-                <div className="flex justify-between items-center">
-                  <p className="font-semibold text-gray-800 truncate">
-                    {event.summary || event.title}
-                  </p>
-                  <div className="flex gap-2 text-gray-500 text-lg">
-                    {event.repeats?.repeat && (
-                      <FiRepeat className="hover:text-blue-500" />
-                    )}
-                    {event.reminders?.reminder && (
-                      <IoIosAlarm className="hover:text-red-500" />
-                    )}
-                    {event.location && (
-                      <MdLocationPin className="hover:text-green-500" />
-                    )}
-                    {event.title && (
-                      <MdEventNote className="hover:text-purple-500" />
-                    )}
-                  </div>
-                </div>
+            //   {/* Content */}
+            //   <div className="flex-1 pl-3 flex flex-col justify-between">
+            //     {/* Header */}
+            //     <div className="flex justify-between items-center">
+            //       <p className="font-semibold text-gray-800 truncate">
+            //         {event.summary || event.title}
+            //       </p>
+            //       <div className="flex gap-2 text-gray-500 text-lg">
+            //         {event.repeats?.repeat && (
+            //           <FiRepeat className="hover:text-blue-500" />
+            //         )}
+            //         {event.reminders?.reminder && (
+            //           <IoIosAlarm className="hover:text-red-500" />
+            //         )}
+            //         {event.location && (
+            //           <MdLocationPin className="hover:text-green-500" />
+            //         )}
+            //         {event.title && (
+            //           <MdEventNote className="hover:text-purple-500" />
+            //         )}
+            //       </div>
+            //     </div>
 
-                {/* Description */}
-                {event.description && (
-                  <div className="mt-2 text-sm bg-gray-50/60 rounded-lg px-3 py-2 whitespace-pre-wrap text-gray-700 leading-relaxed">
-                    {event.description}
-                  </div>
-                )}
-              </div>
-            </div>
+            //     {/* Description */}
+            //     {event.description && (
+            //       <div className="mt-2 text-sm bg-gray-50/60 rounded-lg px-3 py-2 whitespace-pre-wrap text-gray-700 leading-relaxed">
+            //         {event.description}
+            //       </div>
+            //     )}
+            //   </div>
+            // </div>
           ))}
 
           {/* Reminders for The Day */}
           {todaysReminders.map((reminder) => (
-            <motion.div
+            <Reminder
               key={reminder.id}
-              style={{
+              reminder={reminder}
+              styles={{
+                position: "abosulte",
                 top: fromTop(new Date(reminder.time)),
               }}
-              className={`${
-                new Date(reminder.time) < dateObj
-                  ? "border-l-4 border-rose-400"
-                  : new Date(reminder.time).toLocaleDateString() ===
-                      dateObj.toLocaleDateString()
-                    ? "border-l-4 border-amber-400"
-                    : "border-l-4 border-cyan-400"
-              } absolute left-20 p-4 my-3 rounded-2xl text-gray-900`}
-            >
-              <Reminder reminder={reminder} />
-            </motion.div>
+            />
           ))}
         </div>
       </div>

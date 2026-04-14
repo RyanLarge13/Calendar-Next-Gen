@@ -17,7 +17,7 @@ import {
   createAttachments,
   fetchAttachments,
 } from "../../utils/api.js";
-import { formatTime, tailwindBgToHex } from "../../utils/helpers.js";
+import { formatRelativeTime, tailwindBgToHex } from "../../utils/helpers.js";
 import GoogleMaps from "../Misc/GoogleMaps";
 import SuggestCities from "../Misc/SuggestCities.jsx";
 import Reminder from "../Reminders/Reminder.jsx";
@@ -500,7 +500,7 @@ const Event = () => {
               {/* Date */}
               <div className="p-3 rounded-xl shadow-sm border">
                 <p className="font-semibold">
-                  {formatTime(new Date(event.date))}
+                  {formatRelativeTime(new Date(event.date))}
                 </p>
               </div>
 

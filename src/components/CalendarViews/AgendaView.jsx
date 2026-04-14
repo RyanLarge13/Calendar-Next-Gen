@@ -9,7 +9,7 @@ import { weekDays } from "../../constants/dateAndTimeConstants.js";
 import DatesContext from "../../context/DatesContext.jsx";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
 import UserContext from "../../context/UserContext.jsx";
-import { formatDbText, formatTime } from "../../utils/helpers.js";
+import { formatDbText, formatRelativeTime } from "../../utils/helpers.js";
 
 const AgendaView = () => {
   const { view, setEvent } = useContext(InteractiveContext);
@@ -132,7 +132,7 @@ const AgendaView = () => {
                 {time}
               </p>
               <p className="text-semibold ml-5 mt-3">
-                In {formatTime(new Date(time))}
+                In {formatRelativeTime(new Date(time))}
               </p>
             </div>
             {selectedEvents.length > 0 ? (

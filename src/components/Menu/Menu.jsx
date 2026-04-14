@@ -5,7 +5,7 @@ import DatesContext from "../../context/DatesContext.jsx";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
 import UserContext from "../../context/UserContext.jsx";
 import { updateList } from "../../utils/api.js";
-import { formatDbText, formatTime } from "../../utils/helpers.js";
+import { formatDbText, formatRelativeTime } from "../../utils/helpers.js";
 import Lists from "../Lists/Lists.jsx";
 import MainMenu from "./MainMenu.jsx";
 import Reminders from "../Reminders/Reminders.jsx";
@@ -547,7 +547,9 @@ const Menu = () => {
                                                   : "text-slate-500"
                                               }`}
                                             >
-                                              {formatTime(new Date(event.date))}
+                                              {formatRelativeTime(
+                                                new Date(event.date),
+                                              )}
                                             </p>
                                             <p className="text-sm font-semibold mt-1 pr-10">
                                               {event.summary}

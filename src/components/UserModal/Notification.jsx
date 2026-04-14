@@ -7,7 +7,7 @@ import { RxDragHandleHorizontal } from "react-icons/rx";
 import InteractiveContext from "../../context/InteractiveContext";
 import UserContext from "../../context/UserContext";
 import { deleteNotification, markAsUnread } from "../../utils/api";
-import { formatTime } from "../../utils/helpers";
+import { formatRelativeTime } from "../../utils/helpers";
 // import mockNotifications from "../../constants/mockNotifications";
 
 const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
@@ -452,7 +452,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                                     year: "numeric",
                                   },
                                 )}{" "}
-                                • {formatTime(new Date(notif.time))}
+                                • {formatRelativeTime(new Date(notif.time))}
                               </p>
 
                               <p className="text-sm font-semibold mt-2 truncate">
