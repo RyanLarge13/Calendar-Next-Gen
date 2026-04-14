@@ -1,10 +1,78 @@
 import { useContext } from "react";
-import { isSameCalendarDay } from "../../../utils/helpers";
+import {
+  getAuthToken,
+  isPassedTime,
+  isSameCalendarDay,
+} from "../../../utils/helpers";
 import UserContext from "../../../context/UserContext";
 import { MdOutlineUpdate, MdSnooze } from "react-icons/md";
+import { API_SnoozeReminderAndNotification } from "../../../utils/api";
 
 const QuickPanel = ({ reminder }) => {
-  const { preferences } = useContext(UserContext);
+  const { preferences, setReminders, setNotifications } =
+    useContext(UserContext);
+
+  const isReminderPassed = isPassedTime(new Date(reminder.time), new Date());
+
+  const snoozeReminder = async (amount) => {
+    let timeBase = new Date(reminder.time);
+
+    if (isReminderPassed) {
+      timeBase.setHours(new Date().getHours());
+      timeBase.setMinutes(new Date().getMinutes() + amount);
+    } else {
+      timeBase.setHours(timeBase.getHours());
+      timeBase.setMinutes(timeBase.getMinutes() + amount);
+    }
+
+    const newTime = new Date(timeBase);
+
+    const newSnooze = {
+      when: new Date(),
+      howMuchTime: amount,
+    };
+
+    let globalSnoozes;
+
+    setReminders((prev) =>
+      prev.map((r) => {
+        if (r.id === reminder.id) {
+          const newSnoozes = {
+            ...r.snoozes,
+            count: r.snoozes.count + 1,
+            snoozes: [...r.snoozes.snoozes, newSnooze],
+          };
+
+          globalSnoozes = newSnoozes;
+
+          return {
+            ...r,
+            time: newTime.toString(),
+            snoozes: newSnoozes,
+          };
+        }
+        return r;
+      }),
+    );
+    setNotifications((prev) =>
+      prev.filter((n) => n.reminderRefId !== reminder.id),
+    );
+
+    try {
+      const token = getAuthToken();
+      await API_SnoozeReminderAndNotification(
+        reminder.id,
+        token,
+        newTime.toString(),
+        globalSnoozes,
+      );
+    } catch (err) {
+      console.log(
+        "Error updating reminder or notification on server to the new snoozed time",
+      );
+      console.log(err);
+    }
+  };
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-2">
@@ -41,6 +109,7 @@ const QuickPanel = ({ reminder }) => {
       ) : null}
 
       <button
+        onClick={() => snoozeReminder(5)}
         type="button"
         className={`
                 group rounded-2xl border shadow-sm px-3 py-3
@@ -71,6 +140,7 @@ const QuickPanel = ({ reminder }) => {
       </button>
 
       <button
+        onClick={() => snoozeReminder(10)}
         type="button"
         className={`
                 group rounded-2xl border shadow-sm px-3 py-3
@@ -101,6 +171,7 @@ const QuickPanel = ({ reminder }) => {
       </button>
 
       <button
+        onClick={() => snoozeReminder(15)}
         type="button"
         className={`
                 group rounded-2xl border shadow-sm px-3 py-3
@@ -131,6 +202,7 @@ const QuickPanel = ({ reminder }) => {
       </button>
 
       <button
+        onClick={() => snoozeReminder(30)}
         type="button"
         className={`
                 group rounded-2xl border shadow-sm px-3 py-3

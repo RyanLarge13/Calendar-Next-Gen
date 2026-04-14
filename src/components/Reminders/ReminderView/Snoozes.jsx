@@ -1,74 +1,12 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { BiAlarmSnooze } from "react-icons/bi";
 import UserContext from "../../../context/UserContext";
-import { getAuthToken, isPassedTime } from "../../../utils/helpers";
+import { isPassedTime } from "../../../utils/helpers";
 
 const Snoozes = ({ reminder }) => {
-  const { preferences, setReminders, setNotifications } =
-    useContext(UserContext);
+  const { preferences } = useContext(UserContext);
 
   const snoozeLength = reminder.snoozes?.count || 0;
-  const isReminderPassed = isPassedTime(new Date(reminder.time), new Date());
-
-  const snoozeReminder = async (amount) => {
-    let timeBase = new Date(reminder.time);
-
-    if (isReminderPassed) {
-      timeBase.setHours(new Date().getHours());
-      timeBase.setMinutes(new Date().getMinutes() + amount);
-    } else {
-      timeBase.setHours(timeBase.getHours());
-      timeBase.setMinutes(timeBase.getMinutes() + amount);
-    }
-
-    const newTime = new Date(timeBase);
-
-    const newSnooze = {
-      when: new Date(),
-      howMuchTime: amount,
-    };
-
-    let globalSnoozes;
-
-    setReminders((prev) =>
-      prev.map((r) => {
-        if (r.id === reminder.id) {
-          const newSnoozes = {
-            ...r.snoozes,
-            count: r.snoozes.count + 1,
-            snoozes: [...r.snoozes.snoozes, newSnooze],
-          };
-
-          globalSnoozes = newSnoozes;
-
-          return {
-            ...r,
-            time: newTime.toString(),
-            snoozes: newSnoozes,
-          };
-        }
-        return r;
-      }),
-    );
-    setNotifications((prev) =>
-      prev.filter((n) => n.reminderRefId !== reminder.id),
-    );
-
-    try {
-      const token = getAuthToken();
-      await API_SnoozeReminderAndNotification(
-        reminder.id,
-        token,
-        newTime.toString(),
-        globalSnoozes,
-      );
-    } catch (err) {
-      console.log(
-        "Error updating reminder or notification on server to the new snoozed time",
-      );
-      console.log(err);
-    }
-  };
 
   return (
     <div className="mt-3">
