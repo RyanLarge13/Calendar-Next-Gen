@@ -6,7 +6,10 @@ import DatesContext from "../../context/DatesContext.jsx";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
 import { AiOutlinePlusCircle } from "react-icons/ai";
 import { BsFillCalendarDayFill } from "react-icons/bs";
-import { tailwindBgToHex } from "../../utils/helpers.js";
+import {
+  setStateAndPushWindowState,
+  tailwindBgToHex,
+} from "../../utils/helpers.js";
 import { useModalActions } from "../../context/ContextHooks/ModalContext.jsx";
 
 const WeekView = () => {
@@ -200,7 +203,9 @@ const WeekView = () => {
                         : "bg-white border-black/10"
                     }
                   `}
-                      onClick={() => setEvent(weekEvent)}
+                      onClick={setStateAndPushWindowState(() =>
+                        setEvent(weekEvent),
+                      )}
                     >
                       <div
                         className={`w-[10px] absolute left-0 top-0 bottom-0 ${weekEvent.color}`}
@@ -279,7 +284,9 @@ const WeekView = () => {
                       absolute top-5 bottom-2 rounded-2xl shadow-lg cursor-pointer overflow-hidden
                       ${weekEvent.color}
                     `}
-                        onClick={() => setEvent(weekEvent)}
+                        onClick={setStateAndPushWindowState(() =>
+                          setEvent(weekEvent),
+                        )}
                       >
                         <div className="flex flex-col h-full px-3 py-2">
                           <span className="text-[10px] font-semibold opacity-90">

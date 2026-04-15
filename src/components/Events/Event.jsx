@@ -58,6 +58,18 @@ const Event = () => {
   };
 
   useEffect(() => {
+    const handlePopState = () => {
+      setEvent(null);
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []);
+
+  useEffect(() => {
     if (event) {
       setTitle(event.summary);
       setDescription(event.description);

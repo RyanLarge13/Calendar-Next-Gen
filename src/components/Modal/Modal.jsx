@@ -44,7 +44,7 @@ const Modal = () => {
   const modalRef = useRef(null);
 
   useEffect(() => {
-    const handlePopState = (e) => {
+    const handlePopState = () => {
       closeModal();
     };
 

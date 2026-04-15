@@ -13,10 +13,12 @@ import { CgOptions } from "react-icons/cg";
 import { MdViewAgenda } from "react-icons/md";
 import { TbSwitch3 } from "react-icons/tb";
 import InteractiveContext from "../../context/InteractiveContext";
+import UserContext from "../../context/UserContext";
 
 const Views = () => {
-  const { setView, setFilters, showLogin, menu, setMenu, preferences } =
+  const { setView, setFilters, showLogin, menu, setMenu } =
     useContext(InteractiveContext);
+  const { preferences } = useContext(UserContext);
 
   const [show, setShow] = useState(false);
 

@@ -12,7 +12,10 @@ import { weekDays } from "../../constants/dateAndTimeConstants";
 import DatesContext from "../../context/DatesContext";
 import InteractiveContext from "../../context/InteractiveContext";
 import UserContext from "../../context/UserContext";
-import { tailwindBgToHex } from "../../utils/helpers";
+import {
+  setStateAndPushWindowState,
+  tailwindBgToHex,
+} from "../../utils/helpers";
 import weatherCodeMap from "../../constants/weatherContants";
 import StickyBody from "../Stickies/StickyBody";
 import TaskItems from "../Tasks/TaskItems";
@@ -198,7 +201,9 @@ const Dashboard = ({ timeOfDay }) => {
                           : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-500 hover:text-cyan-600"
                       }
                     `}
-                        onClick={() => setEvent(event)}
+                        onClick={setStateAndPushWindowState(() =>
+                          setEvent(event),
+                        )}
                         aria-label="Open event"
                       >
                         <MdOutlineOpenInNew />

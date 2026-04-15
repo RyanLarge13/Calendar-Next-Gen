@@ -9,8 +9,11 @@ import {
 import { motion } from "framer-motion";
 import { BsAlarmFill, BsTrashFill } from "react-icons/bs";
 import { MdOpenInNew } from "react-icons/md";
-import { formatRelativeTime } from "../../utils/helpers.js";
-import { BiAlarmSnooze, BiCalendarEvent, BiFullscreen } from "react-icons/bi";
+import {
+  formatRelativeTime,
+  setStateAndPushWindowState,
+} from "../../utils/helpers.js";
+import { BiCalendarEvent, BiCheck, BiFullscreen } from "react-icons/bi";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
 import DatesContext from "../../context/DatesContext.jsx";
 import ReminderView from "./ReminderView/ReminderView.jsx";
@@ -135,7 +138,7 @@ const Reminder = ({
 
   const openRelatedEvent = (eventRefId) => {
     const eventOfReminder = events.filter((event) => event.id === eventRefId);
-    setEvent(eventOfReminder[0]);
+    setStateAndPushWindowState(() => setEvent(eventOfReminder[0]));
   };
 
   const addSelected = (id) => {
@@ -187,6 +190,11 @@ const Reminder = ({
         })
         .catch((err) => console.log(err));
     }
+  };
+
+  const openReminder = () => {
+    window.history.pushState({ locked: true }, "");
+    setReminderFullView(true);
   };
 
   return (
@@ -313,7 +321,7 @@ const Reminder = ({
                 {reminder.eventRefId ? (
                   <BiCalendarEvent className="text-lg" />
                 ) : (
-                  <BiAlarmSnooze className="text-lg" />
+                  <BiCheck className="text-lg" />
                 )}
               </button>
             )}
@@ -321,7 +329,7 @@ const Reminder = ({
             {/* Open Full View Button */}
             {showFullViewButton ? (
               <button
-                onClick={() => setReminderFullView((prev) => !prev)}
+                onClick={openReminder}
                 className={`
           grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition active:scale-95
           

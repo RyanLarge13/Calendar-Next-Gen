@@ -9,7 +9,10 @@ import DatesContext from "../../context/DatesContext";
 import InteractiveContext from "../../context/InteractiveContext";
 import UserContext from "../../context/UserContext";
 import Reminder from "../Reminders/Reminder";
-import { formatRelativeTime } from "../../utils/helpers";
+import {
+  formatRelativeTime,
+  setStateAndPushWindowState,
+} from "../../utils/helpers";
 import { useModalActions } from "../../context/ContextHooks/ModalContext";
 
 const PopUpMonthViewWindow = ({
@@ -95,7 +98,7 @@ const PopUpMonthViewWindow = ({
                 key={event.id}
                 onClick={(e) => {
                   e.stopPropagation();
-                  setEvent(event);
+                  setStateAndPushWindowState(() => setEvent(event));
                 }}
                 className="flex rounded-xl shadow-sm border transition hover:shadow-md cursor-pointer"
               >

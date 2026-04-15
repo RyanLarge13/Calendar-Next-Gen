@@ -20,6 +20,18 @@ const ReminderView = ({ reminder, setShowFullReminder }) => {
   const reminderStatus = getDueStatus(new Date(reminder.time));
 
   useEffect(() => {
+    const handlePopState = () => {
+      setShowFullReminder(false);
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []);
+
+  useEffect(() => {
     if (reminder.eventRefId) {
       const time = new Date(reminder.time);
       const key = `${time.getFullYear()}-${time.getMonth()}`;

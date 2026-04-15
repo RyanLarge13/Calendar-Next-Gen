@@ -7,6 +7,7 @@ import { weekDays } from "../../constants/dateAndTimeConstants";
 import DatesContext from "../../context/DatesContext";
 import InteractiveContext from "../../context/InteractiveContext";
 import UserContext from "../../context/UserContext";
+import { setStateAndPushWindowState } from "../../utils/helpers";
 
 const SideBar = () => {
   const { events, upcoming, preferences } = useContext(UserContext);
@@ -175,7 +176,7 @@ const SideBar = () => {
           upcoming.map((event) => (
             <div
               key={event.id}
-              onClick={() => setEvent(event)}
+              onClick={setStateAndPushWindowState(() => setEvent(event))}
               className={`${
                 preferences.darkMode ? "text-white" : "text-black"
               } p-3 rounded-xl shadow-lg my-5 relative hover:scale-[1.01] cursor-pointer duration-200 hover:shadow-xl will-change-transform pl-5`}

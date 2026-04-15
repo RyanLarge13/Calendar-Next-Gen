@@ -9,7 +9,11 @@ import { weekDays } from "../../constants/dateAndTimeConstants.js";
 import DatesContext from "../../context/DatesContext.jsx";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
 import UserContext from "../../context/UserContext.jsx";
-import { formatDbText, formatRelativeTime } from "../../utils/helpers.js";
+import {
+  formatDbText,
+  formatRelativeTime,
+  setStateAndPushWindowState,
+} from "../../utils/helpers.js";
 
 const AgendaView = () => {
   const { view, setEvent } = useContext(InteractiveContext);
@@ -30,13 +34,6 @@ const AgendaView = () => {
   const [selectedEvents, setSelectedEvents] = useState([]);
   const [timesForEvents, setTimesForEvents] = useState([]);
 
-  const handleDayClick = (index) => {
-    const dayString = `${month + 1}/${index - paddingDays + 1}/${year}`;
-    if (view === "month" || view === "agenda") {
-      setString(dayString);
-    }
-  };
-
   useEffect(() => {
     const dayEvents = events.filter(
       (evnt) =>
@@ -53,6 +50,13 @@ const AgendaView = () => {
     setTimesForEvents(timesSet);
     setSelectedEvents(dayEvents);
   }, [string]);
+
+  const handleDayClick = (index) => {
+    const dayString = `${month + 1}/${index - paddingDays + 1}/${year}`;
+    if (view === "month" || view === "agenda") {
+      setString(dayString);
+    }
+  };
 
   return (
     <div className="p-3">
@@ -147,7 +151,9 @@ const AgendaView = () => {
                     <div
                       key={event.id}
                       className={`p-2 pl-5 rounded-md my-3 bg-white relative shadow-md`}
-                      onClick={() => setEvent(event)}
+                      onClick={setStateAndPushWindowState(() =>
+                        setEvent(event),
+                      )}
                     >
                       <div
                         className={`${event.color} absolute left-0 top-0 bottom-0 w-2 rounded-md`}

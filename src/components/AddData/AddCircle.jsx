@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useContext, useEffect, useState } from "react";
 import { AiFillSchedule } from "react-icons/ai";
-import { BiCategoryAlt, BiTimer } from "react-icons/bi";
+import { BiCategoryAlt } from "react-icons/bi";
 import {
   BsAlarmFill,
   BsFillCalendar2EventFill,
@@ -20,11 +20,7 @@ import { IoIosAddCircle, IoMdTimer } from "react-icons/io";
 import DatesContext from "../../context/DatesContext";
 import InteractiveContext from "../../context/InteractiveContext";
 import UserContext from "../../context/UserContext";
-import {
-  useModalActions,
-  useModalState,
-} from "../../context/ContextHooks/ModalContext";
-import { MdTimer3 } from "react-icons/md";
+import { useModalActions } from "../../context/ContextHooks/ModalContext";
 
 export const AddCircle = () => {
   const {

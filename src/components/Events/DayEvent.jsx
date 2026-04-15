@@ -10,7 +10,11 @@ import {
 } from "react-icons/md";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
 import { updateStartAndEndTimeOnEvent } from "../../utils/api.js";
-import { formatDbText, tailwindBgToHex } from "../../utils/helpers.js";
+import {
+  formatDbText,
+  setStateAndPushWindowState,
+  tailwindBgToHex,
+} from "../../utils/helpers.js";
 import UserContext from "../../context/UserContext.jsx";
 
 const DayEvent = ({
@@ -90,7 +94,7 @@ const DayEvent = ({
       initial={{ opacity: 0, y: 4 }}
       whileInView={{ opacity: 1, y: 0 }}
       style={{ height: height, top: fromTop, ...styleOverrides }}
-      onTap={() => setEvent(dayEvent)}
+      onTap={setStateAndPushWindowState(() => setEvent(dayEvent))}
       className={`
     group absolute cursor-pointer right-3 z-[120]
     w-[min(72%,420px)]

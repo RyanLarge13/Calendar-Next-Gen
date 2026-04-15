@@ -677,3 +677,8 @@ export const isPassedTime = (timeDate, timeCheck) => {
 
   return t1 > t2;
 };
+
+export const setStateAndPushWindowState = (callback) => {
+  callback();
+  window.history.pushState({ locked: true }, "");
+};

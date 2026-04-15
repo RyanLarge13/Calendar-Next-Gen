@@ -14,7 +14,11 @@ import DatesContext from "../../context/DatesContext.jsx";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
 import UserContext from "../../context/UserContext.jsx";
 import { deleteEvent } from "../../utils/api.js";
-import { eventIsAllDay, tailwindBgToHex } from "../../utils/helpers.js";
+import {
+  eventIsAllDay,
+  setStateAndPushWindowState,
+  tailwindBgToHex,
+} from "../../utils/helpers.js";
 import { useModalState } from "../../context/ContextHooks/ModalContext.jsx";
 import weatherCodes from "../../constants/weatherContants.js";
 
@@ -356,7 +360,10 @@ const ModalHeader = () => {
               event.color
             } ${index === 0 && !showAllDayEvents ? "mt-0" : "mt-2"}`}
           >
-            <p onClick={() => setEvent(event)} className="cursor-pointer">
+            <p
+              onClick={setStateAndPushWindowState(() => setEvent(event))}
+              className="cursor-pointer"
+            >
               {event.summary}
             </p>
           </motion.div>

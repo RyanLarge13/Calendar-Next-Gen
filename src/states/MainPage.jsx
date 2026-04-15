@@ -12,6 +12,7 @@ import InteractiveContext from "../context/InteractiveContext";
 import UserContext from "../context/UserContext";
 import { useModalActions } from "../context/ContextHooks/ModalContext";
 import ReminderNotifications from "../components/Reminders/ReminderNotifications";
+import { setStateAndPushWindowState } from "../utils/helpers";
 
 const MainPage = () => {
   const {
@@ -55,7 +56,7 @@ const MainPage = () => {
         const e = events.find((ev) => ev.id === uuid);
 
         if (e) {
-          setEvent(e);
+          setStateAndPushWindowState(() => setEvent(e));
         }
       }
     }
