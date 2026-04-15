@@ -203,9 +203,9 @@ const WeekView = () => {
                         : "bg-white border-black/10"
                     }
                   `}
-                      onClick={setStateAndPushWindowState(() =>
-                        setEvent(weekEvent),
-                      )}
+                      onClick={() =>
+                        setStateAndPushWindowState(() => setEvent(weekEvent))
+                      }
                     >
                       <div
                         className={`w-[10px] absolute left-0 top-0 bottom-0 ${weekEvent.color}`}
@@ -284,9 +284,9 @@ const WeekView = () => {
                       absolute top-5 bottom-2 rounded-2xl shadow-lg cursor-pointer overflow-hidden
                       ${weekEvent.color}
                     `}
-                        onClick={setStateAndPushWindowState(() =>
-                          setEvent(weekEvent),
-                        )}
+                        onClick={() =>
+                          setStateAndPushWindowState(() => setEvent(weekEvent))
+                        }
                       >
                         <div className="flex flex-col h-full px-3 py-2">
                           <span className="text-[10px] font-semibold opacity-90">

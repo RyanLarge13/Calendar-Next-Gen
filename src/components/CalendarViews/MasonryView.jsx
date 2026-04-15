@@ -316,7 +316,9 @@ const MasonryView = ({ containerRef }) => {
                       )}px`,
                     }}
                     className="my-3 relative p-2 pl-4 whitespace-pre-wrap overflow-hidden rounded-xl border shadow-lg"
-                    onClick={setStateAndPushWindowState(() => setEvent(event))}
+                    onClick={() =>
+                      setStateAndPushWindowState(() => setEvent(event))
+                    }
                   >
                     <div
                       className={`w-2 rounded-l-xl absolute left-0 top-0 bottom-0 ${event.color}`}

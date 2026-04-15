@@ -201,9 +201,9 @@ const Dashboard = ({ timeOfDay }) => {
                           : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-500 hover:text-cyan-600"
                       }
                     `}
-                        onClick={setStateAndPushWindowState(() =>
-                          setEvent(event),
-                        )}
+                        onClick={() =>
+                          setStateAndPushWindowState(() => setEvent(event))
+                        }
                         aria-label="Open event"
                       >
                         <MdOutlineOpenInNew />

@@ -361,7 +361,7 @@ const ModalHeader = () => {
             } ${index === 0 && !showAllDayEvents ? "mt-0" : "mt-2"}`}
           >
             <p
-              onClick={setStateAndPushWindowState(() => setEvent(event))}
+              onClick={() => setStateAndPushWindowState(() => setEvent(event))}
               className="cursor-pointer"
             >
               {event.summary}

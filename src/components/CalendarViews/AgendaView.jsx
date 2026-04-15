@@ -151,9 +151,9 @@ const AgendaView = () => {
                     <div
                       key={event.id}
                       className={`p-2 pl-5 rounded-md my-3 bg-white relative shadow-md`}
-                      onClick={setStateAndPushWindowState(() =>
-                        setEvent(event),
-                      )}
+                      onClick={() =>
+                        setStateAndPushWindowState(() => setEvent(event))
+                      }
                     >
                       <div
                         className={`${event.color} absolute left-0 top-0 bottom-0 w-2 rounded-md`}

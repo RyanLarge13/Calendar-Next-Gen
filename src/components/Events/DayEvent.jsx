@@ -94,7 +94,7 @@ const DayEvent = ({
       initial={{ opacity: 0, y: 4 }}
       whileInView={{ opacity: 1, y: 0 }}
       style={{ height: height, top: fromTop, ...styleOverrides }}
-      onTap={setStateAndPushWindowState(() => setEvent(dayEvent))}
+      onTap={() => setStateAndPushWindowState(() => setEvent(dayEvent))}
       className={`
     group absolute cursor-pointer right-3 z-[120]
     w-[min(72%,420px)]
