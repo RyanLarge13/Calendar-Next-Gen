@@ -51,9 +51,11 @@ const DayView = ({ containerRef }) => {
         );
         if (eventsForDay.length > 0) {
           setTodaysEvents(eventsForDay);
+          return;
         }
       }
     }
+    setTodaysEvents([]);
   }, [theDay, eventMap]);
 
   useEffect(() => {
