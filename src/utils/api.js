@@ -206,10 +206,15 @@ export const API_SnoozeReminderAndNotification = (
   return res;
 };
 
-export const updateReminderSnoozeCount = (reminderId, newSnoozes, token) => {
+export const API_UpdateReminderSnoozeCount = (
+  reminderId,
+  newSnoozes,
+  newTime,
+  token,
+) => {
   const res = Axios.patch(
     `${productionUrl}/update/reminder/snooze`,
-    { reminderId, newSnoozes },
+    { reminderId, newSnoozes, newTime },
     {
       headers: { Authorization: `Bearer ${token}` },
     },

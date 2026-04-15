@@ -79,7 +79,7 @@ export const updateReminderNotes = async (req, res) => {
 
 export const updateReminderSnooze = async (req, res) => {
   const user = req.user;
-  const { reminderId, newSnoozes } = req.body;
+  const { reminderId, newSnoozes, newTime } = req.body;
 
   if (!user) {
     res
@@ -96,7 +96,7 @@ export const updateReminderSnooze = async (req, res) => {
   try {
     await prisma.reminder.update({
       where: { id: reminderId },
-      data: { snoozes: newSnoozes },
+      data: { snoozes: newSnoozes, time: newTime },
     });
 
     res.status(200).json({ message: "Successfully updated your reminder" });
@@ -276,12 +276,10 @@ export const updateReminderAndNotificationSnooze = async (req, res) => {
       },
     });
 
-    res
-      .status(200)
-      .json({
-        message:
-          "Updated notification and reminder alike, snoozing the reminder and notification by allocated time",
-      });
+    res.status(200).json({
+      message:
+        "Updated notification and reminder alike, snoozing the reminder and notification by allocated time",
+    });
   } catch (err) {
     console.log(
       "Error attempting to update the database with a new reminder and notification time under updateReminderAndNotificationSnooze",

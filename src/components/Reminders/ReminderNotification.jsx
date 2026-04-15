@@ -7,7 +7,7 @@ import {
   API_SnoozeNotification,
   markAsRead,
   updateReminderComplete,
-  updateReminderSnoozeCount,
+  API_UpdateReminderSnoozeCount,
 } from "../../utils/api";
 import { getAuthToken } from "../../utils/helpers";
 
@@ -106,28 +106,34 @@ const ReminderNotification = ({ notification, remindersVibrated }) => {
           (r) => r.id === notification.reminderRefId,
         );
 
-        if (reminder && reminder.snoozes) {
+        if (reminder) {
           const newSnooze = {
             when: new Date(),
             howMuchTime: snoozeMinutes,
           };
           const newSnoozes = {
-            count: reminder.snoozes.count + 1,
+            count: reminder.snoozes?.count || 0 + 1,
             snoozes: [...reminder.snoozes.snoozes, newSnooze],
           };
 
-          await updateReminderSnoozeCount(
-            notification.reminderRefId,
-            newSnoozes,
-            token,
-          );
           setReminders((prev) =>
             prev.map((r) => {
               if (r.id === notification.reminderRefId) {
-                return { ...r, snoozes: newSnoozes };
+                return {
+                  ...r,
+                  snoozes: newSnoozes,
+                  time: nDate.toString(),
+                };
               }
               return r;
             }),
+          );
+
+          await API_UpdateReminderSnoozeCount(
+            notification.reminderRefId,
+            newSnoozes,
+            nDate.toString(),
+            token,
           );
         }
       }
