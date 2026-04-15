@@ -201,7 +201,8 @@ const ModalHeader = () => {
       animate={{
         opacity: 1,
         transition: { opacity: { delay: 0.3 } },
-        width: event ? "99.5%" : windowWidth < 1024 ? "63.5%" : "29.5%",
+        // width: event ? "99.5%" : windowWidth < 1024 ? "63.5%" : "29.5%",
+        width: event ? "99.5%" : windowWidth < 1024 ? "98%" : "29.5%",
       }}
       className={`${
         preferences.darkMode ? "bg-[#222] text-white" : "bg-white text-black"

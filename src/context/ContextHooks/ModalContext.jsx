@@ -8,6 +8,7 @@ export const ModalProvider = ({ children }) => {
 
   const openModal = useCallback(() => {
     setOpen(true);
+    window.history.pushState({ locked: true }, "");
   }, []);
 
   const closeModal = useCallback(() => {

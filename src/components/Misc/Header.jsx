@@ -95,7 +95,10 @@ const Header = () => {
               className="flex justify-center items-center"
             >
               <BsFillArrowLeftCircleFill
-                onClick={() => changeDay("minus")}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  changeDay("minus");
+                }}
                 className="text-xl cursor-pointer"
               />
               <h1 className="mx-5">
@@ -106,7 +109,10 @@ const Header = () => {
                 })}
               </h1>
               <BsFillArrowRightCircleFill
-                onClick={() => changeDay("plus")}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  changeDay("plus");
+                }}
                 className="text-xl cursor-pointer"
               />
             </button>

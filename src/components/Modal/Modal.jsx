@@ -44,6 +44,18 @@ const Modal = () => {
   const modalRef = useRef(null);
 
   useEffect(() => {
+    const handlePopState = (e) => {
+      closeModal();
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []);
+
+  useEffect(() => {
     const remindersToday = reminders.filter(
       (reminder) =>
         new Date(reminder.time).toLocaleDateString() ===
@@ -167,7 +179,7 @@ const Modal = () => {
       animate={{ x: 0, opacity: 1 }}
       className={`${
         preferences.darkMode ? "bg-[#222] text-white" : "bg-white text-black"
-      } z-[600] rounded-md shadow-lg shadow-purple-200 fixed top-0 bottom-0 right-0 w-[65%] lg:w-[30%] overflow-y-auto scroll-smooth scrollbar-hide`}
+      } z-[600] rounded-md shadow-lg shadow-purple-200 fixed top-0 bottom-0 right-0 w-full lg:w-[30%] overflow-y-auto scroll-smooth scrollbar-hide`}
       ref={modalRef}
     >
       {/* Backdrop */}
@@ -256,21 +268,10 @@ const Modal = () => {
               const top = fromTop(new Date(r.time));
 
               return (
-                <motion.div
-                  key={r.id}
-                  style={{ top: `${top}px` }}
-                  className="min-w-[70%] absolute right-0 max-w-[70%]"
-                  // className={`${
-                  //   new Date(r.time) < dateObj
-                  //     ? "border-l-4 border-rose-400"
-                  //     : new Date(r.time).toLocaleDateString() ===
-                  //         dateObj.toLocaleDateString()
-                  //       ? "border-l-4 border-amber-400"
-                  //       : "border-l-4 border-cyan-400"
-                  // } min-w-[70%] absolute right-0 max-w-[70%] shadow-lg rounded-2xl text-gray-900`}
-                >
-                  <Reminder reminder={r} />
-                </motion.div>
+                <Reminder
+                  reminder={r}
+                  styles={{ top: top, maxWidth: "70%", right: 0, left: "26%" }}
+                />
               );
             })}
           </div>

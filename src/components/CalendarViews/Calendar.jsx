@@ -5,7 +5,7 @@ import DatesContext from "../../context/DatesContext";
 import InteractiveContext from "../../context/InteractiveContext";
 import UserContext from "../../context/UserContext";
 import AgendaView from "../CalendarViews/AgendaView";
-import DayView from "../CalendarViews/DayView";
+import DayView from "./DayView/DayView";
 import MasonryView from "../CalendarViews/MasonryView";
 import MonthView from "../CalendarViews/MonthView/MonthView";
 import WeekView from "../CalendarViews/WeekView";

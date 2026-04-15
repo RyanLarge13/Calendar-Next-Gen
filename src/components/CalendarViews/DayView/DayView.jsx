@@ -1,20 +1,16 @@
 import { useEffect, useRef, useState, useContext } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { staticTimes } from "../../../constants/dateAndTimeConstants.js";
-import { MdEventNote } from "react-icons/md";
-import { MdLocationPin } from "react-icons/md";
-import { FiRepeat } from "react-icons/fi";
-import { IoIosAlarm } from "react-icons/io";
 import DatesContext from "../../../context/DatesContext.jsx";
 import InteractiveContext from "../../../context/InteractiveContext.jsx";
 import UserContext from "../../../context/UserContext.jsx";
 import { createPortal } from "react-dom";
 import Reminder from "../../Reminders/Reminder.jsx";
 import { useModalActions } from "../../../context/ContextHooks/ModalContext.jsx";
-import EventCard from "../../Events/EventCard.jsx";
+import DayEvent from "../../Events/DayEvent.jsx";
 
 const DayView = ({ containerRef }) => {
-  const { setEvent, setAddEventWithStartEndTime, setType, setAddNewEvent } =
+  const { setAddEventWithStartEndTime, setType, setAddNewEvent } =
     useContext(InteractiveContext);
   const { theDay, dateObj } = useContext(DatesContext);
   const { preferences, eventMap, reminders } = useContext(UserContext);
@@ -215,18 +211,31 @@ const DayView = ({ containerRef }) => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 50 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
-                className={`fixed bottom-6 right-[5%] lg:right-20 z-50 w-[90%] max-w-md p-4 rounded-2xl shadow-lg border
-        ${
-          preferences.darkMode
-            ? "bg-[#1e1e1e]/90 border-gray-700 text-gray-100"
-            : "bg-white/90 backdrop-blur-md border-gray-200 text-gray-900"
-        }`}
+                className={`
+              fixed bottom-6 left-1/2 -translate-x-1/2 z-50
+              w-[92vw] max-w-md p-4 rounded-3xl shadow-2xl border
+              ${
+                preferences.darkMode
+                  ? "bg-[#161616]/90 border-white/10 text-white"
+                  : "bg-white/90 border-black/10 text-slate-900"
+              }
+              backdrop-blur-md
+            `}
               >
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-                  Create an event from
+                <p
+                  className={`text-[11px] font-semibold tracking-wide ${
+                    preferences.darkMode ? "text-white/50" : "text-slate-500"
+                  }`}
+                >
+                  Create Event
                 </p>
-                <p className="text-base font-semibold">
-                  <span className="text-cyan-600 dark:text-cyan-400">
+
+                <p className="mt-2 text-sm font-semibold leading-relaxed">
+                  <span
+                    className={
+                      preferences.darkMode ? "text-cyan-200" : "text-cyan-700"
+                    }
+                  >
                     {new Date(
                       `${theDay.toDateString()} ${findTime(times[0])}`,
                     ).toLocaleTimeString("en-US", {
@@ -235,7 +244,11 @@ const DayView = ({ containerRef }) => {
                     })}
                   </span>{" "}
                   –{" "}
-                  <span className="text-cyan-600 dark:text-cyan-400">
+                  <span
+                    className={
+                      preferences.darkMode ? "text-cyan-200" : "text-cyan-700"
+                    }
+                  >
                     {new Date(
                       `${theDay.toDateString()} ${findTime(
                         times[times.length - 1],
@@ -246,7 +259,11 @@ const DayView = ({ containerRef }) => {
                     })}
                   </span>{" "}
                   on{" "}
-                  <span className="text-amber-600 dark:text-amber-400">
+                  <span
+                    className={
+                      preferences.darkMode ? "text-amber-200" : "text-amber-700"
+                    }
+                  >
                     {new Date(theDay).toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
@@ -254,21 +271,23 @@ const DayView = ({ containerRef }) => {
                   </span>
                 </p>
 
-                {/* Buttons */}
                 <div className="flex justify-end gap-3 mt-4">
                   <button
                     onClick={() => createEvent()}
-                    className="px-4 py-2 rounded-xl font-medium shadow-sm 
-            bg-gradient-to-tr from-cyan-400 to-sky-500 text-white 
-            hover:scale-105 transition"
+                    className="px-4 py-2 rounded-2xl font-semibold shadow-sm bg-gradient-to-r from-cyan-500 to-cyan-400 text-white hover:shadow-md active:scale-[0.97] transition"
                   >
                     Yes, Create
                   </button>
                   <button
                     onClick={() => setTimes([])}
-                    className="px-4 py-2 rounded-xl font-medium shadow-sm 
-            bg-gradient-to-tr from-rose-400 to-pink-500 text-white 
-            hover:scale-105 transition"
+                    className={`
+                  px-4 py-2 rounded-2xl font-semibold shadow-sm border transition active:scale-[0.97]
+                  ${
+                    preferences.darkMode
+                      ? "bg-white/5 border-white/10 text-white/80 hover:bg-white/10"
+                      : "bg-black/[0.03] border-black/10 text-slate-700 hover:bg-black/[0.06]"
+                  }
+                `}
                   >
                     Cancel
                   </button>
@@ -280,66 +299,22 @@ const DayView = ({ containerRef }) => {
         : null}
 
       {/* Day View Container */}
-      <div ref={dayViewContainer} className="text-sm min-h-[800vh] relative">
-        {/* Timer */}
-        {dateObj.toLocaleDateString() === theDay.toLocaleDateString() ? (
-          <motion.div
-            animate={{ top: `${height}px` }}
-            transition={{ type: "tween", ease: "linear", duration: 0.25 }}
-            className="absolute right-0 z-[200] translate-y-[-50%] pointer-events-none"
+      <div
+        ref={dayViewContainer}
+        className={`
+      relative min-h-[800vh] rounded-3xl border shadow-sm overflow-hidden
+      ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-white border-black/10"}
+    `}
+      >
+        {/* Layout shell */}
+        <div className="grid grid-cols-[72px_1fr] min-h-[800vh]">
+          {/* Left time rail */}
+          <div
+            className={`
+          relative border-r
+          ${preferences.darkMode ? "border-white/10 bg-white/[0.03]" : "border-black/10 bg-black/[0.02]"}
+        `}
           >
-            <div className="relative flex items-center justify-end">
-              {/* Time label */}
-              <div
-                className={`
-            absolute right-8 top-1/2 -translate-y-1/2
-            px-2 py-1 rounded-2xl border shadow-sm text-[11px] font-semibold whitespace-nowrap
-            ${
-              preferences.darkMode
-                ? "bg-[#161616]/90 border-white/10 text-white/80"
-                : "bg-white/90 border-black/10 text-slate-700"
-            }
-            backdrop-blur-md
-          `}
-              >
-                {time}
-              </div>
-
-              {/* Line */}
-              <div
-                className={`
-            absolute right-3 top-1/2 -translate-y-1/2
-            h-[2px] w-20 rounded-full
-            ${preferences.darkMode ? "bg-cyan-300/40" : "bg-cyan-500/35"}
-          `}
-              />
-
-              {/* Dot */}
-              <div
-                className={`
-            relative h-5 w-5 rounded-full shadow-md
-            ${
-              preferences.darkMode
-                ? "bg-cyan-300 border border-cyan-100/30"
-                : "bg-cyan-400 border border-white"
-            }
-          `}
-              >
-                {/* Glow ring */}
-                <div
-                  className={`
-              absolute inset-0 rounded-full scale-[1.8]
-              ${preferences.darkMode ? "bg-cyan-300/20" : "bg-cyan-400/20"}
-            `}
-                />
-              </div>
-            </div>
-          </motion.div>
-        ) : null}
-
-        <div>
-          {/* Static Time Display On Side */}
-          <div className="">
             {staticTimes.map((staticTime, index) => (
               <motion.div
                 drag="x"
@@ -351,97 +326,143 @@ const DayView = ({ containerRef }) => {
                 animate={{
                   backgroundColor: `${
                     times.includes(staticTime.string.trim())
-                      ? "#67e8f9"
-                      : preferences.darkMode
-                        ? "#222"
-                        : "#fff"
+                      ? preferences.darkMode
+                        ? "rgba(34,211,238,0.18)"
+                        : "rgba(34,211,238,0.16)"
+                      : "transparent"
                   }`,
                 }}
-                className={`${index === 0 ? "border-b border-t" : "border-b"} ${
-                  times.includes(staticTime.string.trim())
-                    ? "text-black"
-                    : preferences.darkMode
-                      ? "text-white"
-                      : "text-black"
-                }`}
+                className={`
+              relative border-b px-2 pt-1
+              ${
+                preferences.darkMode
+                  ? "border-white/10 text-white/60"
+                  : "border-black/10 text-slate-500"
+              }
+            `}
               >
-                <p className="text-[11px]">{staticTime.string}</p>
+                <p className="text-[11px] font-semibold">{staticTime.string}</p>
               </motion.div>
             ))}
           </div>
 
-          {/* Events For The Day */}
-          {todaysEvents.map((event) => (
-            <EventCard
-              key={event.id}
-              event={event}
-              styles={{
-                height: `${calcDayEventHeight(
+          {/* Main timeline lane */}
+          <div className="relative min-w-0">
+            {/* Background time rows */}
+            {staticTimes.map((staticTime, index) => (
+              <div
+                key={index}
+                style={{ height: `${getHeight()}px` }}
+                className={`
+              relative border-b
+              ${
+                times.includes(staticTime.string.trim())
+                  ? preferences.darkMode
+                    ? "bg-cyan-500/10 border-white/10"
+                    : "bg-cyan-50/70 border-black/10"
+                  : preferences.darkMode
+                    ? "border-white/10"
+                    : "border-black/10"
+              }
+            `}
+              >
+                {/* subtle center guide */}
+                <div
+                  className={`absolute left-0 right-0 top-1/2 -translate-y-1/2 h-px ${
+                    preferences.darkMode ? "bg-white/[0.04]" : "bg-black/[0.04]"
+                  }`}
+                />
+              </div>
+            ))}
+
+            {/* Current time tracker */}
+            {dateObj.toLocaleDateString() === theDay.toLocaleDateString() ? (
+              <motion.div
+                animate={{ top: `${height}px` }}
+                transition={{ type: "tween", ease: "linear", duration: 0.25 }}
+                className="absolute inset-x-0 z-[200] translate-y-[-50%] pointer-events-none"
+              >
+                <div className="relative flex items-center">
+                  {/* line across timeline */}
+                  <div
+                    className={`
+                  absolute left-0 right-0 h-[2px]
+                  ${preferences.darkMode ? "bg-cyan-300/40" : "bg-cyan-500/35"}
+                `}
+                  />
+
+                  {/* time chip */}
+                  <div
+                    className={`
+                  absolute left-3 -top-4
+                  px-2 py-1 rounded-2xl border shadow-sm text-[11px] font-semibold whitespace-nowrap
+                  ${
+                    preferences.darkMode
+                      ? "bg-[#161616]/90 border-white/10 text-white/80"
+                      : "bg-white/90 border-black/10 text-slate-700"
+                  }
+                  backdrop-blur-md
+                `}
+                  >
+                    {time}
+                  </div>
+
+                  {/* dot */}
+                  <div className="absolute right-3">
+                    <div
+                      className={`
+                    relative h-5 w-5 rounded-full shadow-md
+                    ${
+                      preferences.darkMode
+                        ? "bg-cyan-300 border border-cyan-100/30"
+                        : "bg-cyan-400 border border-white"
+                    }
+                  `}
+                    >
+                      <div
+                        className={`
+                      absolute inset-0 rounded-full scale-[1.8]
+                      ${preferences.darkMode ? "bg-cyan-300/20" : "bg-cyan-400/20"}
+                    `}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ) : null}
+
+            {/* Event lane */}
+            {todaysEvents.map((event) => (
+              <DayEvent
+                key={event.id}
+                dayEvent={event}
+                setDayEvents={() => {}}
+                height={`${calcDayEventHeight(
                   new Date(event.start.startTime),
                   new Date(event.end.endTime),
-                )}px`,
-                top: fromTop(new Date(event.start.startTime)),
-              }}
-            />
-            // <div
-            //   key={event.id}
-            //   style={{
-            //     height: `${calcDayEventHeight(
-            //       new Date(event.start.startTime),
-            //       new Date(event.end.endTime),
-            //     )}px`,
-            //     top: fromTop(new Date(event.start.startTime)),
-            //   }}
-            //   onClick={() => setEvent(event)}
-            //   className="absolute right-5 left-20 p-3 rounded-2xl shadow-lg bg-white/70 backdrop-blur-sm border border-gray-200 transition hover:scale-[1.02] hover:shadow-xl cursor-pointer flex"
-            // >
-            //   {/* Colored accent bar */}
-            //   <div className={`w-2 rounded-l-2xl ${event.color}`}></div>
+                )}px`}
+                top={fromTop(new Date(event.start.startTime))}
+                thirtyMinuteHeight={0}
+                styleOverrides={{ left: 10 }}
+              />
+            ))}
 
-            //   {/* Content */}
-            //   <div className="flex-1 pl-3 flex flex-col justify-between">
-            //     {/* Header */}
-            //     <div className="flex justify-between items-center">
-            //       <p className="font-semibold text-gray-800 truncate">
-            //         {event.summary || event.title}
-            //       </p>
-            //       <div className="flex gap-2 text-gray-500 text-lg">
-            //         {event.repeats?.repeat && (
-            //           <FiRepeat className="hover:text-blue-500" />
-            //         )}
-            //         {event.reminders?.reminder && (
-            //           <IoIosAlarm className="hover:text-red-500" />
-            //         )}
-            //         {event.location && (
-            //           <MdLocationPin className="hover:text-green-500" />
-            //         )}
-            //         {event.title && (
-            //           <MdEventNote className="hover:text-purple-500" />
-            //         )}
-            //       </div>
-            //     </div>
-
-            //     {/* Description */}
-            //     {event.description && (
-            //       <div className="mt-2 text-sm bg-gray-50/60 rounded-lg px-3 py-2 whitespace-pre-wrap text-gray-700 leading-relaxed">
-            //         {event.description}
-            //       </div>
-            //     )}
-            //   </div>
-            // </div>
-          ))}
-
-          {/* Reminders for The Day */}
-          {todaysReminders.map((reminder) => (
-            <Reminder
-              key={reminder.id}
-              reminder={reminder}
-              styles={{
-                position: "abosulte",
-                top: fromTop(new Date(reminder.time)),
-              }}
-            />
-          ))}
+            {/* Reminder lane */}
+            {todaysReminders.map((reminder, i) => (
+              <Reminder
+                key={reminder.id}
+                reminder={reminder}
+                styles={{
+                  position: "absolute",
+                  top: `${fromTop(new Date(reminder.time))}px`,
+                  right: `${12 + (i % 2) * 12}px`,
+                  width: "min(280px, calc(100% - 24px))",
+                  zIndex: 120 + i,
+                  margin: 0,
+                }}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>
