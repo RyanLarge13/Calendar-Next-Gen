@@ -23,6 +23,7 @@ const Reminder = ({
   showOpenEvent = true,
   styles = {},
   showFullViewButton = true,
+  simpleView = false,
 }) => {
   const {
     reminders = [],
