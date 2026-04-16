@@ -203,7 +203,7 @@ const DayView = ({ containerRef }) => {
   };
 
   return (
-    <div className="py-20">
+    <div className="py-10">
       {/* Timer Setter */}
       {isSettingTime
         ? createPortal(
@@ -215,7 +215,7 @@ const DayView = ({ containerRef }) => {
                 transition={{ duration: 0.3, ease: "easeOut" }}
                 className={`
               fixed bottom-6 left-1/2 -translate-x-1/2 z-50
-              w-[92vw] max-w-md p-4 rounded-3xl shadow-2xl border
+              w-[92vw] max-w-md p-4 rounded-2xl shadow-2xl border
               ${
                 preferences.darkMode
                   ? "bg-[#161616]/90 border-white/10 text-white"

@@ -73,10 +73,24 @@ const QuickPanel = ({ reminder }) => {
     }
   };
 
+  const resetReminderForToday = async () => {
+    const reminderTime = new Date(reminder.time);
+    const todayTime = new Date();
+    todayTime.setHours(reminderTime.getHours());
+    todayTime.setMinutes(reminderTime.getMinutes());
+
+    try {
+    } catch (err) {
+      console.log("");
+      console.log(err);
+    }
+  };
+
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-2">
       {!isSameCalendarDay(new Date(reminder.time), new Date()) ? (
         <button
+          onClick={resetReminderForToday}
           type="button"
           className={`
                   group rounded-2xl border shadow-sm px-3 py-3

@@ -74,6 +74,7 @@ const AddKanban = () => {
           setType(null);
           setMenu(true);
           setShowCategory("kanban");
+          window.history.pushState({ locked: true }, "");
         })
         .catch((err) => console.log(err));
     }

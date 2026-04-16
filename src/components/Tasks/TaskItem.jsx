@@ -18,8 +18,8 @@ const TaskItem = ({
       className={`
     group
     rounded-3xl border shadow-sm
-    px-4 py-3
-    flex items-center justify-between gap-3
+    px-3 py-2
+    flex items-center justify-between gap-2
     transition-all duration-200
     hover:shadow-md active:scale-[0.995]
     ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/40" : "bg-white border-black/10 hover:bg-white/80"}
@@ -32,7 +32,7 @@ const TaskItem = ({
         {/* Checkbox */}
         <span
           className={`
-        grid place-items-center h-10 w-10 rounded-2xl border shadow-inner flex-shrink-0
+        grid place-items-center h-8 w-8 rounded-2xl border shadow-inner flex-shrink-0
         transition
         ${
           preferences.darkMode
@@ -92,7 +92,7 @@ const TaskItem = ({
         type="button"
         onClick={() => removeTaskItem(taskItem)}
         className={`
-      grid place-items-center h-10 w-10 rounded-2xl border shadow-sm flex-shrink-0
+      grid place-items-center h-8 w-8 rounded-2xl border shadow-sm flex-shrink-0
       transition active:scale-[0.97]
       ${
         preferences.darkMode

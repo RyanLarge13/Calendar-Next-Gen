@@ -87,6 +87,7 @@ const AddTask = () => {
         setUserTasks((prev) => [...prev, res.data.task]);
         setMenu(true);
         setShowCategory("task");
+        window.history.pushState({ locked: true }, "");
       })
       .catch((err) => {
         console.log(err);

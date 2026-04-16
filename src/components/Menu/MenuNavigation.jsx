@@ -65,11 +65,12 @@ const MenuNavigation = () => {
               <button
                 key={item.key}
                 type="button"
-                onClick={() =>
+                onClick={() => {
                   setShowCategory((prev) =>
                     prev === item.key ? null : item.key,
-                  )
-                }
+                  );
+                  window.history.pushState({ locked: true }, "");
+                }}
                 className={`
               group w-full
               rounded-2xl border px-2 py-3

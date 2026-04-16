@@ -181,7 +181,7 @@ const TaskItems = ({ task, styles = "" }) => {
       {/* Title + Progress */}
       <div
         className={`
-      rounded-3xl border shadow-sm p-4
+      rounded-3xl border shadow-sm p-3
       flex items-center justify-between gap-3
       ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-white border-black/10"}
     `}

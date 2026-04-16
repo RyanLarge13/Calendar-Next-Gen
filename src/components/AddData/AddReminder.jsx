@@ -257,6 +257,7 @@ const AddReminder = () => {
         setReminders(sortedReminders);
         setMenu(true);
         setShowCategory("reminder");
+        window.history.pushState({ locked: true }, "");
       })
       .catch((err) => console.log(err));
   };

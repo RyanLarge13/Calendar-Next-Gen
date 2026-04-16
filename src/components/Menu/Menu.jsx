@@ -19,8 +19,15 @@ import Switch from "../Misc/Switch.jsx";
 import Tasks from "../Tasks/Tasks";
 
 const Menu = () => {
-  const { menu, listUpdate, setListUpdate, showCategory, setMenu, setEvent } =
-    useContext(InteractiveContext);
+  const {
+    menu,
+    listUpdate,
+    setListUpdate,
+    showCategory,
+    setShowCategory,
+    setMenu,
+    setEvent,
+  } = useContext(InteractiveContext);
   const { lists, setLists, preferences, events } = useContext(UserContext);
   const { dateObj } = useContext(DatesContext);
 
@@ -37,6 +44,20 @@ const Menu = () => {
   const [taskSearch, setTaskSearch] = useState(false);
   const [taskSortOpt, setTaskSortOpt] = useState("");
   const [taskSearchTxt, setTaskSearchTxt] = useState("");
+
+  useEffect(() => {
+    const handleBack = () => {
+      if (showCategory !== null) {
+        setShowCategory(null);
+      }
+      if (showCategory === null) {
+        setMenu(false);
+      }
+    };
+
+    window.addEventListener("popstate", handleBack);
+    return () => window.removeEventListener("popstate", handleBack);
+  }, [showCategory]);
 
   useEffect(() => {
     if (listUpdate.length < 1) return;

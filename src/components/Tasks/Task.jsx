@@ -271,7 +271,7 @@ const Task = ({ task }) => {
       </div>
 
       {/* Body */}
-      <div className="p-4 pl-6">
+      <div className="p-3 pl-5">
         <div
           className={`
                   rounded-2xl border shadow-sm p-3

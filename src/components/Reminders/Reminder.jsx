@@ -13,7 +13,7 @@ import {
   formatRelativeTime,
   setStateAndPushWindowState,
 } from "../../utils/helpers.js";
-import { BiCalendarEvent, BiCheck, BiFullscreen } from "react-icons/bi";
+import { BiAlarm, BiCalendarEvent, BiFullscreen } from "react-icons/bi";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
 import DatesContext from "../../context/DatesContext.jsx";
 import ReminderView from "./ReminderView/ReminderView.jsx";
@@ -362,7 +362,7 @@ const Reminder = ({
                   {reminder.eventRefId ? (
                     <BiCalendarEvent className="text-sm" />
                   ) : (
-                    <BiCheck className="text-sm" />
+                    <BiAlarm className="text-sm" />
                   )}
                 </button>
               ) : null}
@@ -487,7 +487,7 @@ const Reminder = ({
                   </p>
                 ) : (
                   <div
-                    className={`mt-1 flex items-center gap-1 text-xs ${preferences.darkMode ? "text-white/55" : "text-slate-500"}`}
+                    className={`mt-1 w-full flex items-center gap-2 text-xs ${preferences.darkMode ? "text-white/55" : "text-slate-500"}`}
                   >
                     {new Date(reminder.time) < dateObj ? (
                       <p className="text-sm font-semibold text-rose-500">
@@ -533,7 +533,7 @@ const Reminder = ({
                 {reminder.eventRefId ? (
                   <BiCalendarEvent className="text-lg" />
                 ) : (
-                  <BiCheck className="text-lg" />
+                  <BiAlarm className="text-lg" />
                 )}
               </button>
             )}
