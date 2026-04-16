@@ -669,27 +669,7 @@ export const UserProvider = ({ children }) => {
       const notification = JSON.parse(event.data);
       setNotifications((prev) => [notification, ...prev]);
 
-      if (notification.type === "reminder") {
-        setReminderNotifications((prev) => [...prev, notification]);
-        return;
-      }
-      setSystemNotif({
-        show: true,
-        title: notification.notifData.title,
-        text: notification.notifData.notes,
-        color: "bg-purple-300",
-        hasCancel: true,
-        actions: [
-          {
-            text: "close",
-            func: () => setSystemNotif({ show: false }),
-          },
-          {
-            text: "mark as read",
-            func: () => markAsReadClient(notification.id),
-          },
-        ],
-      });
+      setReminderNotifications((prev) => [...prev, notification]);
     });
     serverSentSource.addEventListener("error", (error) => {
       console.error("SSE error:", error);

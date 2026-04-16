@@ -7,7 +7,7 @@ import DatesContext from "../../context/DatesContext";
 import InteractiveContext from "../../context/InteractiveContext";
 import UserContext from "../../context/UserContext";
 import { addReminder, createNotification } from "../../utils/api";
-import { makeDateTime } from "../../utils/helpers";
+import { isPassedTime, makeDateTime } from "../../utils/helpers";
 import TimeSetter from "../DatePickers/TimeSetter";
 import Toggle from "../Misc/Toggle";
 import { useModalActions } from "../../context/ContextHooks/ModalContext";
@@ -157,12 +157,19 @@ const AddReminder = () => {
     }
 
     if (eventForReminder) {
-      const timeOfEvent =
-        todaysEvents.events.find((e) => e.id === eventForReminder.id)
-          ?.startDate || null;
+      const eventFound =
+        todaysEvents.events.find((e) => e.id === eventForReminder.id) || null;
 
-      if (timeOfEvent !== null) {
-        if (new Date(timeOfEvent) < new Date(time ? time : getTime())) {
+      if (eventFound !== null) {
+        const timeToCheck = time ? time : getTime();
+        const eventDate = new Date(eventFound.startDate);
+        const eventTime = new Date(eventFound.start.startTime);
+
+        eventDate.setHours(eventTime.getHours());
+        eventDate.setMinutes(eventTime.getMinutes());
+
+        console.log(eventDate);
+        if (isPassedTime(new Date(timeToCheck), eventDate)) {
           const newError = {
             show: true,
             title: "Update Time",
@@ -178,6 +185,7 @@ const AddReminder = () => {
         }
       }
     }
+    return;
 
     const token = localStorage.getItem("authToken");
     const timeToAdd = time ? time : getTime();

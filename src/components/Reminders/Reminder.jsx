@@ -198,6 +198,217 @@ const Reminder = ({
     setReminderFullView(true);
   };
 
+  if (simpleView) {
+    return (
+      <>
+        <motion.div
+          key={reminder.id}
+          style={styles}
+          animate={
+            selected.includes(reminder.id)
+              ? {
+                  scale: 1.02,
+                  boxShadow: "0 18px 55px rgba(0,0,0,0.16)",
+                }
+              : {
+                  scale: 1,
+                  boxShadow: "0 10px 30px rgba(0,0,0,0.10)",
+                }
+          }
+          transition={{ type: "spring", stiffness: 220, damping: 18 }}
+          className={`
+          relative rounded-3xl border overflow-hidden
+          backdrop-blur-md
+          w-[min(210px,100%)] min-h-[96px]
+          ${preferences.darkMode ? "bg-[#161616]/88 border-white/10 text-white" : "bg-white/92 border-black/10 text-slate-900"}
+        `}
+          onPointerDown={() => startTime(reminder.id)}
+          onPointerUp={() => stopTime(reminder.id)}
+          onPointerCancel={() => clearTimeout(timeout.current)}
+        >
+          {/* Left status rail */}
+          <div
+            className={`
+            absolute left-0 top-0 bottom-0 w-[8px]
+            ${
+              reminder.completed
+                ? "bg-gradient-to-b from-lime-400 to-emerald-400"
+                : new Date(reminder.time) < dateObj
+                  ? "bg-gradient-to-b from-rose-400 to-pink-400"
+                  : new Date(reminder.time).toLocaleDateString() ===
+                      dateObj.toLocaleDateString()
+                    ? "bg-gradient-to-b from-amber-400 to-orange-300"
+                    : "bg-gradient-to-b from-cyan-400 to-sky-400"
+            }
+          `}
+          />
+
+          <div className="px-4 py-3 pl-5 h-full flex flex-col justify-between">
+            {/* Top row */}
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <p
+                  className={`text-[10px] font-semibold tracking-wide ${
+                    preferences.darkMode ? "text-white/50" : "text-slate-500"
+                  }`}
+                >
+                  {reminder.completed
+                    ? "Completed"
+                    : new Date(reminder.time) < dateObj
+                      ? "Overdue"
+                      : new Date(reminder.time).toLocaleDateString() ===
+                          dateObj.toLocaleDateString()
+                        ? "Today"
+                        : "Upcoming"}
+                </p>
+
+                <p className="mt-1 text-sm font-semibold leading-tight truncate">
+                  {reminderTitle || reminder.title || "Reminder"}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-1 flex-shrink-0">
+                {/* tiny status icon */}
+                <div
+                  className={`
+                  grid place-items-center h-7 w-7 rounded-2xl border shadow-sm
+                  ${
+                    preferences.darkMode
+                      ? "bg-white/5 border-white/10 text-white/65"
+                      : "bg-black/[0.03] border-black/10 text-slate-600"
+                  }
+                `}
+                >
+                  {reminder.eventRefId ? (
+                    <BiCalendarEvent className="text-sm" />
+                  ) : (
+                    <BsAlarmFill className="text-[12px]" />
+                  )}
+                </div>
+
+                {/* full view button must stay easy to click */}
+                {showFullViewButton ? (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openReminder();
+                    }}
+                    className={`
+                    grid place-items-center h-7 w-7 rounded-2xl border shadow-sm transition active:scale-95
+                    ${
+                      preferences.darkMode
+                        ? "bg-slate-500/20 border-slate-300/20 text-slate-100 hover:bg-slate-500/25"
+                        : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100"
+                    }
+                  `}
+                    aria-label="Open full reminder view"
+                    type="button"
+                  >
+                    <BiFullscreen className="text-sm" />
+                  </button>
+                ) : null}
+              </div>
+            </div>
+
+            {/* Bottom meta */}
+            <div className="mt-3 flex items-end justify-between gap-2">
+              <div className="min-w-0">
+                <p
+                  className={`text-[11px] font-semibold ${
+                    preferences.darkMode ? "text-white/70" : "text-slate-700"
+                  }`}
+                >
+                  {new Date(reminder.time).toLocaleTimeString("en-US", {
+                    hour: "numeric",
+                    minute: "2-digit",
+                  })}
+                </p>
+
+                <p
+                  className={`text-[10px] mt-0.5 truncate ${
+                    preferences.darkMode ? "text-white/45" : "text-slate-500"
+                  }`}
+                >
+                  {formatRelativeTime(new Date(reminder.time))}
+                </p>
+              </div>
+
+              {!selected.includes(reminder.id) ? (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleComplete({
+                      completed: !reminder.completed,
+                      reminderId: reminder.id,
+                    });
+                  }}
+                  className={`
+                  grid place-items-center h-8 w-8 rounded-2xl border shadow-sm transition active:scale-95 flex-shrink-0
+                  ${
+                    reminder.completed
+                      ? preferences.darkMode
+                        ? "bg-cyan-500/20 border-cyan-300/20 text-cyan-100 hover:bg-cyan-500/25"
+                        : "bg-cyan-50 border-cyan-200 text-cyan-700 hover:bg-cyan-100"
+                      : preferences.darkMode
+                        ? "bg-white/5 border-white/10 text-white/70 hover:bg-white/10"
+                        : "bg-black/[0.03] border-black/10 text-slate-600 hover:bg-black/[0.06]"
+                  }
+                `}
+                  aria-label={
+                    reminder.completed ? "Mark incomplete" : "Mark complete"
+                  }
+                  type="button"
+                >
+                  {reminder.eventRefId ? (
+                    <BiCalendarEvent className="text-sm" />
+                  ) : (
+                    <BiCheck className="text-sm" />
+                  )}
+                </button>
+              ) : null}
+            </div>
+          </div>
+
+          {/* Selected overlay tools */}
+          {selected.includes(reminder.id) && (
+            <motion.div
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="absolute top-2 right-2 flex items-center gap-1"
+            >
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                className={`
+                grid place-items-center h-8 w-8 rounded-2xl border shadow-sm transition
+                ${
+                  preferences.darkMode
+                    ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70 hover:text-rose-200"
+                    : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600 hover:text-rose-600"
+                }
+              `}
+                onPointerDown={(e) => {
+                  e.stopPropagation();
+                  deleteAReminder(reminder.id);
+                }}
+                aria-label="Delete reminder"
+                type="button"
+              >
+                <BsTrashFill className="text-xs" />
+              </motion.button>
+            </motion.div>
+          )}
+        </motion.div>
+
+        {reminderFullView ? (
+          <ReminderView
+            reminder={reminder}
+            setShowFullReminder={setReminderFullView}
+          />
+        ) : null}
+      </>
+    );
+  }
+
   return (
     <motion.div
       key={reminder.id}

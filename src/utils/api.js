@@ -372,7 +372,7 @@ export const addSubscriptionToUser = (sub, token) => {
 
 export const updateLastSeenOnDevice = (newSubs, token) => {
   const response = Axios.post(
-    `${productionUrl}/update/lastseen`,
+    `${productionUrl}/notif/lastseen`,
     { sub: JSON.stringify(newSubs) },
     {
       headers: {

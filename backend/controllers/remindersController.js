@@ -266,7 +266,7 @@ export const updateReminderAndNotificationSnooze = async (req, res) => {
         snoozes: newSnoozes,
       },
     });
-    await prisma.notification.update({
+    await prisma.notification.updateMany({
       where: { reminderRefId: reminderId },
       data: {
         sentNotification: false,
@@ -288,5 +288,39 @@ export const updateReminderAndNotificationSnooze = async (req, res) => {
     res
       .status(500)
       .json({ message: "Server errored attempting to snooze reminder" });
+  }
+};
+
+export const updateReminderTime = async (req, res) => {
+  const user = req.user;
+  const { newTime, reminderId } = req.body;
+
+  if (!user) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to update this reminder" });
+    return;
+  }
+
+  if (!reminderId || !newTime) {
+    res
+      .status(404)
+      .json({ message: "Please provide a reminder to update with a new time" });
+    return;
+  }
+
+  try {
+    await prisma.reminder.update({
+      where: { id: reminderId },
+      data: { time: newTime },
+    });
+
+    await prisma.notification.updateMany({
+      where: { reminderRefId: reminderId },
+      data: { time: newTime },
+    });
+  } catch (err) {
+    console.log("Error updating reminder time in database");
+    console.log(err);
   }
 };

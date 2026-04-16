@@ -38,9 +38,8 @@ const QuickPanel = ({ reminder }) => {
       prev.map((r) => {
         if (r.id === reminder.id) {
           const newSnoozes = {
-            ...r.snoozes,
-            count: r.snoozes.count + 1,
-            snoozes: [...r.snoozes.snoozes, newSnooze],
+            count: r.snoozes?.count || 0 + 1,
+            snoozes: [...(r.snoozes?.snoozes || []), newSnooze],
           };
 
           globalSnoozes = newSnoozes;

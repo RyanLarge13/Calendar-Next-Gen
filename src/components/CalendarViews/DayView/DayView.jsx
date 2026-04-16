@@ -462,6 +462,7 @@ const DayView = ({ containerRef }) => {
                   zIndex: 120 + i,
                   margin: 0,
                 }}
+                simpleView={true}
               />
             ))}
           </div>

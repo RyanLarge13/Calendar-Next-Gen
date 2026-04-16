@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { BiAlarmSnooze } from "react-icons/bi";
 import UserContext from "../../../context/UserContext";
-import { isPassedTime } from "../../../utils/helpers";
+import { formatRelativeTime, isPassedTime } from "../../../utils/helpers";
 
 const Snoozes = ({ reminder }) => {
   const { preferences } = useContext(UserContext);
@@ -51,7 +51,24 @@ const Snoozes = ({ reminder }) => {
           times
         </p>
         {reminder.snoozes?.snoozes
-          ? reminder.snoozes.snoozes.map((snooze) => <div></div>)
+          ? reminder.snoozes.snoozes.map((snooze, index) => (
+              <div key={index} className="text-semibold text-sm p-2">
+                <div>
+                  <p>
+                    When:{" "}
+                    {new Date(snooze.when).toLocaleTimeString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                      hour: "numeric",
+                      minute: "numeric",
+                    })}
+                  </p>
+                  <p>{formatRelativeTime(snooze.when)}</p>
+                </div>
+                <div>For {snooze.howMuchTime} minutes</div>
+              </div>
+            ))
           : null}
       </div>
     </div>

@@ -10,13 +10,13 @@ import {
 import { API_UpdateReminderTime } from "../../../utils/api";
 
 const ChangeDateAndTime = ({ reminder }) => {
-  const { preferences } = useContext(UserContext);
+  const { preferences, setReminders, setNotifications } =
+    useContext(UserContext);
 
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [tempDateStr, setTempDateStr] = useState(
     new Date(reminder.time).toLocaleDateString(),
   );
-  const [warningState, setWarningState] = useState(0);
 
   const saveNewReminderDate = async (newDate) => {
     const { hour, minutes, meridiem } = newDate;
@@ -28,25 +28,59 @@ const ChangeDateAndTime = ({ reminder }) => {
     const isPassed = isPassedTime(new Date(newReminderDate), new Date());
 
     if (isPassed) {
-      if (warningState < 1) {
-        // Call notification
-        return;
-      }
-
-      setWarningState((prev) => prev + 1);
+      // Call notification
+      const newNotif = {
+        show: true,
+        title: "Past Time",
+        text: "The time you are trying to update the reminder to has already passed, are you sure you want to do this?",
+        color: "bg-red-300",
+        hasCancel: true,
+        actions: [
+          {
+            text: "close",
+            func: () => setSystemNotif({ show: false }),
+          },
+          { text: "yes", func: async () => await continueRequest() },
+        ],
+      };
+      setSystemNotif(newNotif);
     }
 
-    try {
-      const token = getAuthToken();
-      await API_UpdateReminderTime(newReminderDate, reminder.id, token);
-
-      // Update state reminder and notification
-    } catch (err) {
-      console.log(
-        "Error updating reminder time on the server when setting a new time for reminder in ReminderView",
+    const continueRequest = async () => {
+      setShowTimePicker(false);
+      setSystemNotif({ show: false });
+      setReminders((prev) =>
+        prev.map((r) => {
+          if (r.id === reminder.id) {
+            return { ...r, time: newReminderDate.toString() };
+          }
+          return r;
+        }),
       );
-      console.log(err);
-    }
+
+      setNotifications((prev) =>
+        prev.map((n) => {
+          if (n.reminderRefId === reminder.id) {
+            return { ...n, time: newReminderDate.toString() };
+          }
+          return n;
+        }),
+      );
+
+      try {
+        const token = getAuthToken();
+        await API_UpdateReminderTime(
+          newReminderDate.toString(),
+          reminder.id,
+          token,
+        );
+      } catch (err) {
+        console.log(
+          "Error updating reminder time on the server when setting a new time for reminder in ReminderView",
+        );
+        console.log(err);
+      }
+    };
   };
 
   return (
