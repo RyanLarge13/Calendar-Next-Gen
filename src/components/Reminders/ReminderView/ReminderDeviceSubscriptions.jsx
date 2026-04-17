@@ -1,16 +1,13 @@
 import { useContext } from "react";
 import UserContext from "../../../context/UserContext";
 import NotificationSubscription from "../../Notifications/NotificationSubscription";
-import { isPassedTime } from "../../../utils/helpers";
+import { isPassed } from "../../../utils/helpers";
 import { MdCheck, MdInfo } from "react-icons/md";
 
 const ReminderDeviceSubscriptions = ({ reminder }) => {
   const { preferences, notifSubs, setReminders } = useContext(UserContext);
 
-  const reminderNotPassedTime = isPassedTime(
-    new Date(reminder.time),
-    new Date(),
-  );
+  const reminderNotPassedTime = isPassed(new Date(reminder.time), new Date());
 
   const ignoredDevices = reminder.ignoreDevices || [];
 

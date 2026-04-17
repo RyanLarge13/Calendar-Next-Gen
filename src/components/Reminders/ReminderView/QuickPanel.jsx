@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import {
   getAuthToken,
-  isPassedTime,
+  isPassed,
   isSameCalendarDay,
 } from "../../../utils/helpers";
 import UserContext from "../../../context/UserContext";
@@ -12,10 +12,7 @@ const QuickPanel = ({ reminder }) => {
   const { preferences, setReminders, setNotifications } =
     useContext(UserContext);
 
-  const reminderNotPassedTime = isPassedTime(
-    new Date(reminder.time),
-    new Date(),
-  );
+  const reminderNotPassedTime = isPassed(new Date(reminder.time), new Date());
 
   const snoozeReminder = async (amount, resettingToday = false) => {
     let dateRef;

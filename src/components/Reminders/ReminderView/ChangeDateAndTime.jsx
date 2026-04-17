@@ -2,11 +2,7 @@ import { useContext, useState } from "react";
 import UserContext from "../../../context/UserContext";
 import TimeSetter from "../../DatePickers/TimeSetter";
 import Portal from "../../Misc/Portal";
-import {
-  getAuthToken,
-  isPassedTime,
-  makeDateTime,
-} from "../../../utils/helpers";
+import { getAuthToken, isPassed, makeDateTime } from "../../../utils/helpers";
 import { API_UpdateReminderTime } from "../../../utils/api";
 
 const ChangeDateAndTime = ({ reminder }) => {
@@ -25,7 +21,7 @@ const ChangeDateAndTime = ({ reminder }) => {
 
     // Make sure the user did not select a time that is previous. Still allow but warn
 
-    const isPassed = isPassedTime(new Date(newReminderDate), new Date());
+    const isPassed = isPassed(new Date(newReminderDate), new Date());
 
     if (isPassed) {
       // Call notification

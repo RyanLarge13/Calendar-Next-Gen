@@ -7,7 +7,7 @@ import DatesContext from "../../context/DatesContext";
 import InteractiveContext from "../../context/InteractiveContext";
 import UserContext from "../../context/UserContext";
 import { addReminder, createNotification } from "../../utils/api";
-import { isPassedTime, makeDateTime } from "../../utils/helpers";
+import { isPassed, makeDateTime } from "../../utils/helpers";
 import TimeSetter from "../DatePickers/TimeSetter";
 import Toggle from "../Misc/Toggle";
 import { useModalActions } from "../../context/ContextHooks/ModalContext";
@@ -169,7 +169,7 @@ const AddReminder = () => {
         eventDate.setMinutes(eventTime.getMinutes());
 
         console.log(eventDate);
-        if (isPassedTime(new Date(timeToCheck), eventDate)) {
+        if (isPassed(new Date(timeToCheck), eventDate)) {
           const newError = {
             show: true,
             title: "Update Time",
