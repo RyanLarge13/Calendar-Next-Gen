@@ -30,7 +30,7 @@ const QuickPanel = ({ reminder }) => {
     dateRef.setMinutes(timeRef.getMinutes() + amount);
     dateRef.setHours(timeRef.getHours());
 
-    const newTime = new Date(timeBase);
+    const newTime = new Date(dateRef);
 
     const newSnooze = {
       when: new Date(),
