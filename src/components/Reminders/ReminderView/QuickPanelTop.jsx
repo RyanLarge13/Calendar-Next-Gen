@@ -1,11 +1,14 @@
 import { useContext } from "react";
 import UserContext from "../../../context/UserContext";
 import { MdDeleteSweep } from "react-icons/md";
-import { BiCheckCircle, BiCircle, BiPause, BiRepeat } from "react-icons/bi";
 import {
-  API_PauseAllRemindersInRepeatingGroup,
-  deleteReminder,
-} from "../../../utils/api";
+  BiCheckCircle,
+  BiCircle,
+  BiPause,
+  BiPlay,
+  BiRepeat,
+} from "react-icons/bi";
+import { API_ToggleReminderPaused, deleteReminder } from "../../../utils/api";
 import { getAuthToken } from "../../../utils/helpers";
 
 const QuickPanelTop = ({ reminder }) => {
@@ -26,7 +29,7 @@ const QuickPanelTop = ({ reminder }) => {
     );
 
     try {
-      const token = localStorage.getItem("authToken");
+      const token = getAuthToken();
       await updateReminderComplete(
         { reminderId: reminder.id, completed: complete },
         token,
@@ -41,6 +44,7 @@ const QuickPanelTop = ({ reminder }) => {
     setReminders((prev) => prev.filter((r) => r.id !== reminder.id));
 
     try {
+      const token = getAuthToken();
       await deleteReminder(user.username, reminder.id, token);
     } catch (err) {
       console.log("Error attempting to delete reminder");
@@ -50,9 +54,27 @@ const QuickPanelTop = ({ reminder }) => {
 
   const deleteAllRepeatingReminders = async () => {};
 
-  const pauseAllReminders = async () => {};
+  const togglePauseReminder = async () => {
+    setReminders((prev) =>
+      prev.map((r) => {
+        if (r.id === reminder.id) {
+          return {
+            ...r,
+            paused: !r.paused,
+          };
+        }
+        return r;
+      }),
+    );
 
-  const unpauseReminder = async () => {};
+    try {
+      const token = getAuthToken();
+      await API_ToggleReminderPaused(reminder.id, !reminder.paused, token);
+    } catch (err) {
+      console.log("Error setting reminder to paused on the server");
+      console.log(err);
+    }
+  };
 
   return (
     <div
@@ -140,41 +162,30 @@ const QuickPanelTop = ({ reminder }) => {
           Delete All Reminders <MdDeleteSweep className="text-lg" />
         </button>
       ) : null}
-      {reminder.paused ? (
-        <button
-          onClick={unpauseReminder}
-          className={`
-              px-3 py-1.5 flex justify-start items-center text-center gap-x-2 rounded-2xl border shadow-sm text-[11px] font-semibold
-              ${
-                preferences.darkMode
-                  ? "bg-amber-500/15 border-amber-300/20 text-amber-100"
-                  : "bg-amber-50 border-amber-200 text-amber-700"
-              }
-            `}
-        >
-          {reminder.repeats?.repeat
-            ? "Unpause All Reminders"
-            : "Unpause This Reminder"}{" "}
+      <button
+        onClick={togglePauseReminder}
+        className={`
+          px-3 py-1.5 flex justify-start items-center text-center gap-x-2 rounded-2xl border shadow-sm text-[11px] font-semibold
+          ${
+            preferences.darkMode
+              ? "bg-amber-500/15 border-amber-300/20 text-amber-100"
+              : "bg-amber-50 border-amber-200 text-amber-700"
+          }
+        `}
+      >
+        {reminder.repeats?.repeat
+          ? reminder.paused
+            ? "Unpause Reminders"
+            : "Pause Reminders"
+          : reminder.paused
+            ? "Unpause Reminder"
+            : "Pause Reminder"}{" "}
+        {reminder.paused ? (
+          <BiPlay className="text-lg" />
+        ) : (
           <BiPause className="text-lg" />
-        </button>
-      ) : (
-        <button
-          onClick={pauseAllReminders}
-          className={`
-              px-3 py-1.5 flex justify-start items-center text-center gap-x-2 rounded-2xl border shadow-sm text-[11px] font-semibold
-              ${
-                preferences.darkMode
-                  ? "bg-amber-500/15 border-amber-300/20 text-amber-100"
-                  : "bg-amber-50 border-amber-200 text-amber-700"
-              }
-            `}
-        >
-          {reminder.repeats?.repeat
-            ? "Pause All Reminders"
-            : "Pause This Reminder"}{" "}
-          <BiPause className="text-lg" />
-        </button>
-      )}
+        )}
+      </button>
     </div>
   );
 };

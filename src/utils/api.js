@@ -178,11 +178,11 @@ export const API_UpdateEventLocation = (eventId, location, token) => {
   return res;
 };
 
-// Reminderss
-export const API_PauseAllRemindersInRepeatingGroup = (reminderId, token) => {
+// Reminders
+export const API_ToggleReminderPaused = (reminderId, toggle, token) => {
   const res = Axios.patch(
-    `${productionUrl}/update/reminder/pause/all`,
-    { reminderId },
+    `${productionUrl}/update/reminder/pause`,
+    { reminderId, toggle },
     {
       headers: { Authorization: `Bearer ${token}` },
     },

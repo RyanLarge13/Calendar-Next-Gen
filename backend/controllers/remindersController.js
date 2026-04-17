@@ -327,9 +327,9 @@ export const updateReminderTime = async (req, res) => {
   }
 };
 
-export const pauseAllRemindersInRepeatingGroup = async (req, res) => {
+export const togglePauseReminder = async (req, res) => {
   const user = req.user;
-  const { reminderId } = req.body;
+  const { reminderId, toggle } = req.body;
 
   if (!user) {
     res
@@ -338,7 +338,7 @@ export const pauseAllRemindersInRepeatingGroup = async (req, res) => {
     return;
   }
 
-  if (!reminderId) {
+  if (!reminderId || !toggle) {
     res.status(404).json({
       message: "Please provide a reminder to update with a new time",
     });
@@ -348,7 +348,7 @@ export const pauseAllRemindersInRepeatingGroup = async (req, res) => {
   try {
     await prisma.reminder.update({
       where: { id: reminderId },
-      data: { paused: true },
+      data: { paused: toggle },
     });
 
     res.status(200).json({ message: "Reminder successfully paused" });

@@ -12,7 +12,7 @@ import {
   updateReminderSnooze,
   updateReminderAndNotificationSnooze,
   updateReminderTime,
-  pauseAllRemindersInRepeatingGroup,
+  togglePauseReminder,
 } from "../controllers/remindersController.js";
 
 const reminderRouter = express.Router();
@@ -25,11 +25,7 @@ reminderRouter.patch("/update/reminder/notes", auth, updateReminderNotes);
 reminderRouter.patch("/update/reminder/title", auth, updateReminderTitle);
 reminderRouter.patch("/update/reminder/snooze", auth, updateReminderSnooze);
 reminderRouter.patch("/update/reminder/time", auth, updateReminderTime);
-reminderRouter.patch(
-  "/update/reminder/pause/all",
-  auth,
-  pauseAllRemindersInRepeatingGroup,
-);
+reminderRouter.patch("/update/reminder/pause", auth, togglePauseReminder);
 reminderRouter.patch(
   "/update/reminder/notification/snooze",
   auth,
