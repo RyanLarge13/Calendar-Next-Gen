@@ -178,7 +178,18 @@ export const API_UpdateEventLocation = (eventId, location, token) => {
   return res;
 };
 
-// Reminders
+// Reminderss
+export const API_PauseAllRemindersInRepeatingGroup = (reminderId, token) => {
+  const res = Axios.patch(
+    `${productionUrl}/update/reminder/pause/all`,
+    { reminderId },
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    },
+  );
+  return res;
+};
+
 export const API_UpdateReminderTime = (newTime, reminderId, token) => {
   const res = Axios.patch(
     `${productionUrl}/update/reminder/time`,

@@ -2,18 +2,22 @@ import { useContext } from "react";
 import UserContext from "../../../context/UserContext";
 import { MdDeleteSweep } from "react-icons/md";
 import { BiCheckCircle, BiCircle, BiPause, BiRepeat } from "react-icons/bi";
-import { deleteReminder } from "../../../utils/api";
+import {
+  API_PauseAllRemindersInRepeatingGroup,
+  deleteReminder,
+} from "../../../utils/api";
+import { getAuthToken } from "../../../utils/helpers";
 
 const QuickPanelTop = ({ reminder }) => {
   const { preferences, setReminders, user } = useContext(UserContext);
 
-  const completeReminder = async () => {
+  const toggleComplete = async (complete) => {
     setReminders((prev) =>
       prev.map((r) => {
         if (r.id === reminder.id) {
           return {
             ...r,
-            completed: true,
+            completed: complete,
           };
         } else {
           return r;
@@ -24,7 +28,7 @@ const QuickPanelTop = ({ reminder }) => {
     try {
       const token = localStorage.getItem("authToken");
       await updateReminderComplete(
-        { reminderId: reminder.id, completed: true },
+        { reminderId: reminder.id, completed: complete },
         token,
       );
     } catch (err) {
@@ -44,6 +48,12 @@ const QuickPanelTop = ({ reminder }) => {
     }
   };
 
+  const deleteAllRepeatingReminders = async () => {};
+
+  const pauseAllReminders = async () => {};
+
+  const unpauseReminder = async () => {};
+
   return (
     <div
       className={`mb-4 flex flex-wrap gap-2 
@@ -58,7 +68,7 @@ const QuickPanelTop = ({ reminder }) => {
     >
       {!reminder.completed ? (
         <button
-          onClick={completeReminder}
+          onClick={() => toggleComplete(true)}
           className={`
               px-3 py-1.5 flex justify-start items-center text-center gap-x-2 rounded-2xl border shadow-sm text-[11px] font-semibold
               ${
@@ -72,7 +82,7 @@ const QuickPanelTop = ({ reminder }) => {
         </button>
       ) : (
         <button
-          onClick={() => {}}
+          onClick={() => toggleComplete(false)}
           className={`
               px-3 py-1.5 flex justify-start items-center text-center gap-x-2 rounded-2xl border shadow-sm text-[11px] font-semibold
               ${
@@ -117,7 +127,7 @@ const QuickPanelTop = ({ reminder }) => {
       {/* If repeating */}
       {reminder.repeats?.repeat ? (
         <button
-          onClick={() => {}}
+          onClick={deleteAllRepeatingReminders}
           className={`
               px-3 py-1.5 flex justify-start items-center text-center gap-x-2 rounded-2xl border shadow-sm text-[11px] font-semibold
               ${
@@ -130,9 +140,9 @@ const QuickPanelTop = ({ reminder }) => {
           Delete All Reminders <MdDeleteSweep className="text-lg" />
         </button>
       ) : null}
-      {reminder.repeats?.repeat ? (
+      {reminder.paused ? (
         <button
-          onClick={() => {}}
+          onClick={unpauseReminder}
           className={`
               px-3 py-1.5 flex justify-start items-center text-center gap-x-2 rounded-2xl border shadow-sm text-[11px] font-semibold
               ${
@@ -142,9 +152,29 @@ const QuickPanelTop = ({ reminder }) => {
               }
             `}
         >
-          Pause Reminders <BiPause className="text-lg" />
+          {reminder.repeats?.repeat
+            ? "Unpause All Reminders"
+            : "Unpause This Reminder"}{" "}
+          <BiPause className="text-lg" />
         </button>
-      ) : null}
+      ) : (
+        <button
+          onClick={pauseAllReminders}
+          className={`
+              px-3 py-1.5 flex justify-start items-center text-center gap-x-2 rounded-2xl border shadow-sm text-[11px] font-semibold
+              ${
+                preferences.darkMode
+                  ? "bg-amber-500/15 border-amber-300/20 text-amber-100"
+                  : "bg-amber-50 border-amber-200 text-amber-700"
+              }
+            `}
+        >
+          {reminder.repeats?.repeat
+            ? "Pause All Reminders"
+            : "Pause This Reminder"}{" "}
+          <BiPause className="text-lg" />
+        </button>
+      )}
     </div>
   );
 };

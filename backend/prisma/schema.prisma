@@ -137,6 +137,7 @@ title String
 notes String
 time String
 snoozes Json?
+paused Boolean @default(false)
 // Snoozes look like 
 // {count: Number, snoozes: [{when: date times, howMuchTime: Number minutes}]}
 ignoreDates String[]

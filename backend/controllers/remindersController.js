@@ -319,8 +319,41 @@ export const updateReminderTime = async (req, res) => {
       where: { reminderRefId: reminderId },
       data: { time: newTime },
     });
+
+    res.status(200).json({ message: "Reminders time was updated" });
   } catch (err) {
     console.log("Error updating reminder time in database");
+    console.log(err);
+  }
+};
+
+export const pauseAllRemindersInRepeatingGroup = async (req, res) => {
+  const user = req.user;
+  const { reminderId } = req.body;
+
+  if (!user) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to update this reminder" });
+    return;
+  }
+
+  if (!reminderId) {
+    res.status(404).json({
+      message: "Please provide a reminder to update with a new time",
+    });
+    return;
+  }
+
+  try {
+    await prisma.reminder.update({
+      where: { id: reminderId },
+      data: { paused: true },
+    });
+
+    res.status(200).json({ message: "Reminder successfully paused" });
+  } catch (err) {
+    console.log("Error trying to pause all reminders");
     console.log(err);
   }
 };
