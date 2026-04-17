@@ -54,21 +54,21 @@ const Reminder = ({
       return;
     }
 
+    setReminders((prev) =>
+      prev.map((r) => {
+        if (r.id === reminder.id) {
+          return { ...r, notes: reminderNote };
+        } else {
+          return r;
+        }
+      }),
+    );
+
     try {
       const token = localStorage.getItem("authToken");
       await updateReminderNotes(reminder.id, reminderNote, token);
 
       setOriginalReminderNote(reminderNote);
-
-      setReminders((prev) =>
-        prev.map((r) => {
-          if (r.id === reminder.id) {
-            return { ...r, notes: reminderNote };
-          } else {
-            return r;
-          }
-        }),
-      );
     } catch (err) {
       console.log("Error trying to update reminder note");
       console.log(err);
@@ -80,19 +80,19 @@ const Reminder = ({
       return;
     }
 
+    setReminders((prev) => {
+      prev.map((r) => {
+        if (r.id === reminder.id) {
+          return { ...r, title: reminderTitle };
+        } else {
+          return r;
+        }
+      });
+    });
+
     try {
       const token = localStorage.getItem("authToken");
       await updateReminderTitle(reminder.id, reminderTitle, token);
-
-      setReminders((prev) => {
-        prev.map((r) => {
-          if (r.id === reminder.id) {
-            return { ...r, title: reminderTitle };
-          } else {
-            return r;
-          }
-        });
-      });
     } catch (err) {
       console.log("Error trying to update reminder title");
       console.log(err);

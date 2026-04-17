@@ -6,7 +6,7 @@ import { getAuthToken, isPassed, makeDateTime } from "../../../utils/helpers";
 import { API_UpdateReminderTime } from "../../../utils/api";
 
 const ChangeDateAndTime = ({ reminder }) => {
-  const { preferences, setReminders, setNotifications } =
+  const { preferences, setReminders, setNotifications, setSystemNotif } =
     useContext(UserContext);
 
   const [showTimePicker, setShowTimePicker] = useState(false);
@@ -21,29 +21,8 @@ const ChangeDateAndTime = ({ reminder }) => {
 
     // Make sure the user did not select a time that is previous. Still allow but warn
 
-    const isPassed = isPassed(new Date(newReminderDate), new Date());
+    const isReminderPassed = isPassed(new Date(), new Date(newReminderDate));
 
-    if (isPassed) {
-      // Call notification
-      const newNotif = {
-        show: true,
-        title: "Past Time",
-        text: "The time you are trying to update the reminder to has already passed, are you sure you want to do this?",
-        color: "bg-red-300",
-        hasCancel: true,
-        actions: [
-          {
-            text: "close",
-            func: () => setSystemNotif({ show: false }),
-          },
-          { text: "yes", func: async () => await continueRequest() },
-        ],
-      };
-      setSystemNotif(newNotif);
-      return;
-    }
-
-    continueRequest();
     const continueRequest = async () => {
       setShowTimePicker(false);
       setSystemNotif({ show: false });
@@ -79,6 +58,28 @@ const ChangeDateAndTime = ({ reminder }) => {
         console.log(err);
       }
     };
+
+    if (isReminderPassed) {
+      // Call notification
+      const newNotif = {
+        show: true,
+        title: "Past Time",
+        text: "The time you are trying to update the reminder to has already passed, are you sure you want to do this?",
+        color: "bg-red-300",
+        hasCancel: true,
+        actions: [
+          {
+            text: "close",
+            func: () => setSystemNotif({ show: false }),
+          },
+          { text: "yes", func: async () => await continueRequest() },
+        ],
+      };
+      setSystemNotif(newNotif);
+      return;
+    }
+
+    continueRequest();
   };
 
   return (

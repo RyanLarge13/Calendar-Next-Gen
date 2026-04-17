@@ -701,7 +701,12 @@ const AddReminder = () => {
                   onClick={() => addDeviceToDoNotNotify(ns)}
                   className={`${deviceSelected(ns)}`}
                 >
-                  <NotificationSubscription key={index} ns={ns} hasSub={true} />
+                  <NotificationSubscription
+                    key={index}
+                    ns={ns}
+                    hasSub={true}
+                    simpleView={true}
+                  />
                 </button>
               ))
             : null}

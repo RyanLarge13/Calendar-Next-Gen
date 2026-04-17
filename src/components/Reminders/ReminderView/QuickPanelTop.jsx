@@ -8,7 +8,11 @@ import {
   BiPlay,
   BiRepeat,
 } from "react-icons/bi";
-import { API_ToggleReminderPaused, deleteReminder } from "../../../utils/api";
+import {
+  API_ToggleReminderPaused,
+  deleteReminder,
+  updateReminderComplete,
+} from "../../../utils/api";
 import { getAuthToken } from "../../../utils/helpers";
 
 const QuickPanelTop = ({ reminder }) => {
