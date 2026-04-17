@@ -40,8 +40,10 @@ const ChangeDateAndTime = ({ reminder }) => {
         ],
       };
       setSystemNotif(newNotif);
+      return;
     }
 
+    continueRequest();
     const continueRequest = async () => {
       setShowTimePicker(false);
       setSystemNotif({ show: false });
