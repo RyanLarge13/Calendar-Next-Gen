@@ -2,9 +2,47 @@ import { useContext } from "react";
 import UserContext from "../../../context/UserContext";
 import { MdDeleteSweep } from "react-icons/md";
 import { BiCheckCircle, BiCircle, BiPause, BiRepeat } from "react-icons/bi";
+import { deleteReminder } from "../../../utils/api";
 
 const QuickPanelTop = ({ reminder }) => {
-  const { preferences } = useContext(UserContext);
+  const { preferences, setReminders, user } = useContext(UserContext);
+
+  const completeReminder = async () => {
+    setReminders((prev) =>
+      prev.map((r) => {
+        if (r.id === reminder.id) {
+          return {
+            ...r,
+            completed: true,
+          };
+        } else {
+          return r;
+        }
+      }),
+    );
+
+    try {
+      const token = localStorage.getItem("authToken");
+      await updateReminderComplete(
+        { reminderId: reminder.id, completed: true },
+        token,
+      );
+    } catch (err) {
+      console.log("Error trying to mark reminder as complete");
+      console.log(err);
+    }
+  };
+
+  const deleteThisReminder = async () => {
+    setReminders((prev) => prev.filter((r) => r.id !== reminder.id));
+
+    try {
+      await deleteReminder(user.username, reminder.id, token);
+    } catch (err) {
+      console.log("Error attempting to delete reminder");
+      console.log(err);
+    }
+  };
 
   return (
     <div
@@ -20,7 +58,7 @@ const QuickPanelTop = ({ reminder }) => {
     >
       {!reminder.completed ? (
         <button
-          onClick={() => {}}
+          onClick={completeReminder}
           className={`
               px-3 py-1.5 flex justify-start items-center text-center gap-x-2 rounded-2xl border shadow-sm text-[11px] font-semibold
               ${
@@ -48,7 +86,7 @@ const QuickPanelTop = ({ reminder }) => {
         </button>
       )}
       <button
-        onClick={() => {}}
+        onClick={deleteThisReminder}
         className={`
               px-3 py-1.5 flex justify-start items-center text-center gap-x-2 rounded-2xl border shadow-sm text-[11px] font-semibold
               ${

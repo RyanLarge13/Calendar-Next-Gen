@@ -12,18 +12,23 @@ const QuickPanel = ({ reminder }) => {
   const { preferences, setReminders, setNotifications } =
     useContext(UserContext);
 
-  const isReminderPassed = isPassedTime(new Date(reminder.time), new Date());
+  const reminderNotPassedTime = isPassedTime(
+    new Date(reminder.time),
+    new Date(),
+  );
 
-  const snoozeReminder = async (amount) => {
-    let timeBase = new Date(reminder.time);
+  const snoozeReminder = async (amount, resettingToday = false) => {
+    let dateRef;
+    const timeRef = new Date(reminder.time);
 
-    if (isReminderPassed) {
-      timeBase.setHours(new Date().getHours());
-      timeBase.setMinutes(new Date().getMinutes() + amount);
+    if (resettingToday) {
+      dateRef = new Date();
     } else {
-      timeBase.setHours(timeBase.getHours());
-      timeBase.setMinutes(timeBase.getMinutes() + amount);
+      dateRef = new Date(reminder.time);
     }
+
+    dateRef.setMinutes(timeRef.getMinutes() + amount);
+    dateRef.setHours(timeRef.getHours());
 
     const newTime = new Date(timeBase);
 
@@ -73,24 +78,11 @@ const QuickPanel = ({ reminder }) => {
     }
   };
 
-  const resetReminderForToday = async () => {
-    const reminderTime = new Date(reminder.time);
-    const todayTime = new Date();
-    todayTime.setHours(reminderTime.getHours());
-    todayTime.setMinutes(reminderTime.getMinutes());
-
-    try {
-    } catch (err) {
-      console.log("");
-      console.log(err);
-    }
-  };
-
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-2">
       {!isSameCalendarDay(new Date(reminder.time), new Date()) ? (
         <button
-          onClick={resetReminderForToday}
+          onClick={() => snoozeReminder(0, true)}
           type="button"
           className={`
                   group rounded-2xl border shadow-sm px-3 py-3
@@ -121,10 +113,12 @@ const QuickPanel = ({ reminder }) => {
         </button>
       ) : null}
 
-      <button
-        onClick={() => snoozeReminder(5)}
-        type="button"
-        className={`
+      {reminderNotPassedTime ? (
+        <>
+          <button
+            onClick={() => snoozeReminder(5)}
+            type="button"
+            className={`
                 group rounded-2xl border shadow-sm px-3 py-3
                 flex flex-col items-center justify-center gap-2
                 transition active:scale-[0.97]
@@ -134,9 +128,9 @@ const QuickPanel = ({ reminder }) => {
                     : "bg-white border-black/10 hover:bg-black/[0.02] text-slate-800"
                 }
               `}
-      >
-        <div
-          className={`
+          >
+            <div
+              className={`
                   grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition
                   ${
                     preferences.darkMode
@@ -144,18 +138,18 @@ const QuickPanel = ({ reminder }) => {
                       : "bg-orange-50 border-orange-200 text-orange-700 group-hover:bg-orange-100"
                   }
                 `}
-        >
-          <MdSnooze className="text-lg" />
-        </div>
-        <p className="text-[11px] font-semibold text-center leading-tight">
-          Snooze 5
-        </p>
-      </button>
+            >
+              <MdSnooze className="text-lg" />
+            </div>
+            <p className="text-[11px] font-semibold text-center leading-tight">
+              Snooze 5
+            </p>
+          </button>
 
-      <button
-        onClick={() => snoozeReminder(10)}
-        type="button"
-        className={`
+          <button
+            onClick={() => snoozeReminder(10)}
+            type="button"
+            className={`
                 group rounded-2xl border shadow-sm px-3 py-3
                 flex flex-col items-center justify-center gap-2
                 transition active:scale-[0.97]
@@ -165,9 +159,9 @@ const QuickPanel = ({ reminder }) => {
                     : "bg-white border-black/10 hover:bg-black/[0.02] text-slate-800"
                 }
               `}
-      >
-        <div
-          className={`
+          >
+            <div
+              className={`
                   grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition
                   ${
                     preferences.darkMode
@@ -175,18 +169,18 @@ const QuickPanel = ({ reminder }) => {
                       : "bg-indigo-50 border-indigo-200 text-indigo-700 group-hover:bg-indigo-100"
                   }
                 `}
-        >
-          <MdSnooze className="text-lg" />
-        </div>
-        <p className="text-[11px] font-semibold text-center leading-tight">
-          Snooze 10
-        </p>
-      </button>
+            >
+              <MdSnooze className="text-lg" />
+            </div>
+            <p className="text-[11px] font-semibold text-center leading-tight">
+              Snooze 10
+            </p>
+          </button>
 
-      <button
-        onClick={() => snoozeReminder(15)}
-        type="button"
-        className={`
+          <button
+            onClick={() => snoozeReminder(15)}
+            type="button"
+            className={`
                 group rounded-2xl border shadow-sm px-3 py-3
                 flex flex-col items-center justify-center gap-2
                 transition active:scale-[0.97]
@@ -196,9 +190,9 @@ const QuickPanel = ({ reminder }) => {
                     : "bg-white border-black/10 hover:bg-black/[0.02] text-slate-800"
                 }
               `}
-      >
-        <div
-          className={`
+          >
+            <div
+              className={`
                   grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition
                   ${
                     preferences.darkMode
@@ -206,18 +200,18 @@ const QuickPanel = ({ reminder }) => {
                       : "bg-amber-50 border-amber-200 text-amber-700 group-hover:bg-amber-100"
                   }
                 `}
-        >
-          <MdSnooze className="text-lg" />
-        </div>
-        <p className="text-[11px] font-semibold text-center leading-tight">
-          Snooze 15
-        </p>
-      </button>
+            >
+              <MdSnooze className="text-lg" />
+            </div>
+            <p className="text-[11px] font-semibold text-center leading-tight">
+              Snooze 15
+            </p>
+          </button>
 
-      <button
-        onClick={() => snoozeReminder(30)}
-        type="button"
-        className={`
+          <button
+            onClick={() => snoozeReminder(30)}
+            type="button"
+            className={`
                 group rounded-2xl border shadow-sm px-3 py-3
                 flex flex-col items-center justify-center gap-2
                 transition active:scale-[0.97]
@@ -227,9 +221,9 @@ const QuickPanel = ({ reminder }) => {
                     : "bg-white border-black/10 hover:bg-black/[0.02] text-slate-800"
                 }
               `}
-      >
-        <div
-          className={`
+          >
+            <div
+              className={`
                   grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition
                   ${
                     preferences.darkMode
@@ -237,13 +231,15 @@ const QuickPanel = ({ reminder }) => {
                       : "bg-emerald-50 border-emerald-200 text-emerald-700 group-hover:bg-emerald-100"
                   }
                 `}
-        >
-          <MdSnooze className="text-lg" />
-        </div>
-        <p className="text-[11px] font-semibold text-center leading-tight">
-          Snooze 30
-        </p>
-      </button>
+            >
+              <MdSnooze className="text-lg" />
+            </div>
+            <p className="text-[11px] font-semibold text-center leading-tight">
+              Snooze 30
+            </p>
+          </button>
+        </>
+      ) : null}
     </div>
   );
 };

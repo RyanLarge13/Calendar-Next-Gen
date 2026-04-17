@@ -64,6 +64,7 @@ const Header = () => {
             onClick={() => {
               setShowLogin(false);
               setMenu(true);
+              window.history.pushState({ locked: true }, "");
             }}
           >
             <RiMenuUnfoldFill />

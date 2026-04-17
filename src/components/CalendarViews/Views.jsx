@@ -14,6 +14,7 @@ import { MdViewAgenda } from "react-icons/md";
 import { TbSwitch3 } from "react-icons/tb";
 import InteractiveContext from "../../context/InteractiveContext";
 import UserContext from "../../context/UserContext";
+import { useModalState } from "../../context/ContextHooks/ModalContext";
 
 const Views = () => {
   const { setView, setFilters, showLogin, menu, setMenu } =
@@ -21,12 +22,21 @@ const Views = () => {
   const { preferences } = useContext(UserContext);
 
   const [show, setShow] = useState(false);
+  const [invisible, setInvisible] = useState(false);
+
+  const open = useModalState();
 
   useEffect(() => {
     if (showLogin) {
       setShow(false);
     }
-  }, [showLogin]);
+    if (open) {
+      setInvisible(true);
+    }
+    if (!open && invisible) {
+      setInvisible(false);
+    }
+  }, [showLogin, open]);
 
   const updateViewPreferences = (viewType) => {
     try {
@@ -40,27 +50,29 @@ const Views = () => {
 
   return (
     <>
-      {menu ? (
-        <div
-          onClick={() => setMenu(false)}
-          className="fixed cursor-pointer bottom-5 left-5 z-[700] p-3 rounded-full flex justify-center items-center bg-gradient-to-tr from-cyan-200 to-cyan-100 shadow-md"
-        >
-          <div>
-            <BsFillCalendar2EventFill className="text-md" />
+      {!invisible ? (
+        menu ? (
+          <div
+            onClick={() => setMenu(false)}
+            className="fixed cursor-pointer bottom-5 left-5 z-[700] p-3 rounded-full flex justify-center items-center bg-gradient-to-tr from-cyan-200 to-cyan-100 shadow-md"
+          >
+            <div>
+              <BsFillCalendar2EventFill className="text-md" />
+            </div>
           </div>
-        </div>
-      ) : (
-        <div
-          onClick={() => setShow((prev) => !prev)}
-          className={`fixed cursor-pointer bottom-5 left-5 z-[700] ${
-            showLogin
-              ? "opacity-0 pointer-events-none"
-              : "opacity-100 pointer-events-auto"
-          } p-3 rounded-full flex justify-center items-center bg-gradient-to-tr from-cyan-200 to-cyan-100 shadow-lg`}
-        >
-          {show ? <BsXCircleFill /> : <BsColumnsGap />}
-        </div>
-      )}
+        ) : (
+          <div
+            onClick={() => setShow((prev) => !prev)}
+            className={`fixed cursor-pointer bottom-5 left-5 z-[700] ${
+              showLogin
+                ? "opacity-0 pointer-events-none"
+                : "opacity-100 pointer-events-auto"
+            } p-3 rounded-full flex justify-center items-center bg-gradient-to-tr from-cyan-200 to-cyan-100 shadow-lg`}
+          >
+            {show ? <BsXCircleFill /> : <BsColumnsGap />}
+          </div>
+        )
+      ) : null}
       <motion.div
         initial={{ opacity: 0 }}
         animate={

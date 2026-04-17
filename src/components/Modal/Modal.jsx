@@ -220,7 +220,7 @@ const Modal = () => {
       ) : (
         <>
           <div
-            className="absolute inset-0 pl-2 h-[800vh]"
+            className="absolute inset-0 p-4 h-[800vh]"
             ref={staticTimesContainerRef}
           >
             {staticTimes.map((timeObj, index) => (

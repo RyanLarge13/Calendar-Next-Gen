@@ -284,7 +284,7 @@ const Task = ({ task }) => {
         >
           <TaskItems
             task={task}
-            styles={"max-h-80 overflow-y-auto scrollbar-hide"}
+            styles={"max-h-[40vh] overflow-y-auto scrollbar-hide"}
           />
         </div>
       </div>

@@ -185,7 +185,6 @@ const AddReminder = () => {
         }
       }
     }
-    return;
 
     const token = localStorage.getItem("authToken");
     const timeToAdd = time ? time : getTime();

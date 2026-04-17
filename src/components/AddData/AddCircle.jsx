@@ -35,7 +35,7 @@ export const AddCircle = () => {
   const { setString, string, dateObj } = useContext(DatesContext);
   const { setSystemNotif } = useContext(UserContext);
   const { openModal } = useModalActions();
-  // const { open } = useModalState();
+  // const open = useModalState();
 
   const [show, setShow] = useState(false);
   const [showMenuBtns, setShowMenuBtns] = useState(false);
