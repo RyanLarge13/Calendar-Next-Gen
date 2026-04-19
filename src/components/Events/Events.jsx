@@ -8,7 +8,7 @@ const Events = () => {
 
   useEffect(() => {
     const now = new Date();
-    const currentMonthKey = `${now.getFullYear()}-${new.getMonth()}`;
+    const currentMonthKey = `${now.getFullYear()}-${now.getMonth()}`;
 
     const eventsForTheMonth = eventMap.get(currentMonthKey)?.events || [];
 
