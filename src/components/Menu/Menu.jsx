@@ -17,6 +17,7 @@ import Kanbans from "../Kanban/Kanbans.jsx";
 import StaticStickies from "../Stickies/StaticStickies.jsx";
 import Switch from "../Misc/Switch.jsx";
 import Tasks from "../Tasks/Tasks";
+import Events from "../Events/Events.jsx";
 
 const Menu = () => {
   const {
@@ -493,125 +494,16 @@ const Menu = () => {
                       )}
 
                       {/* EVENTS (we'll style this card list next, but wrapper improved now) */}
-                      {showCategory === "event" && (
+                      {showCategory === "event" ? (
                         <motion.div
                           initial={{ x: "-6%", opacity: 0 }}
                           exit={{ x: "-6%", opacity: 0 }}
                           animate={{ x: 0, opacity: 1 }}
                           className="px-3 sm:px-6"
                         >
-                          <div className="mx-auto max-w-6xl">
-                            {events.length > 0 ? (
-                              <div className="mt-4 relative">
-                                {/* Timeline rail (desktop only) */}
-                                <div
-                                  className={`
-            hidden lg:block absolute left-6 top-0 bottom-0 w-px
-            ${preferences.darkMode ? "bg-white/10" : "bg-black/10"}
-          `}
-                                />
-
-                                <div className="space-y-4">
-                                  {[...events]
-                                    .sort(
-                                      (a, b) =>
-                                        new Date(a.date) - new Date(b.date),
-                                    )
-                                    .map((event) => (
-                                      <div
-                                        key={event.id}
-                                        className="lg:pl-12 relative"
-                                      >
-                                        {/* Timeline dot */}
-                                        <div
-                                          className={`
-                    hidden lg:block absolute left-[18px] top-6 h-4 w-4 rounded-full
-                    ${
-                      preferences.darkMode
-                        ? "bg-white/10 border-white/10"
-                        : "bg-white border-black/10"
-                    }
-                    border
-                  `}
-                                        />
-
-                                        <div
-                                          className={`
-                    relative rounded-3xl border shadow-sm overflow-hidden
-                    ${
-                      preferences.darkMode
-                        ? "bg-white/5 border-white/10"
-                        : "bg-white border-black/10"
-                    }
-                  `}
-                                        >
-                                          <div
-                                            className={`${event.color} absolute left-0 top-0 bottom-0 w-2`}
-                                          />
-
-                                          <button
-                                            className={`
-                      absolute top-3 right-3 grid place-items-center h-9 w-9 rounded-2xl border shadow-sm transition active:scale-95
-                      ${
-                        preferences.darkMode
-                          ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/60 hover:text-cyan-200"
-                          : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-500 hover:text-cyan-600"
-                      }
-                    `}
-                                            onClick={setStateAndPushWindowState(
-                                              () => setEvent(event),
-                                            )}
-                                            aria-label="Open event"
-                                          >
-                                            <MdOutlineOpenInNew />
-                                          </button>
-
-                                          <div className="px-5 py-4">
-                                            <p
-                                              className={`text-xs font-semibold ${
-                                                preferences.darkMode
-                                                  ? "text-white/60"
-                                                  : "text-slate-500"
-                                              }`}
-                                            >
-                                              {formatRelativeTime(
-                                                new Date(event.date),
-                                              )}
-                                            </p>
-                                            <p className="text-sm font-semibold mt-1 pr-10">
-                                              {event.summary}
-                                            </p>
-
-                                            <div className="mt-3 space-y-1">
-                                              {formatDbText(
-                                                event.description || "",
-                                              ).map((text, index) => (
-                                                <p
-                                                  key={index}
-                                                  className={`text-xs font-semibold ${
-                                                    preferences.darkMode
-                                                      ? "text-white/70"
-                                                      : "text-slate-600"
-                                                  }`}
-                                                >
-                                                  {text}
-                                                </p>
-                                              ))}
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    ))}
-                                </div>
-                              </div>
-                            ) : (
-                              <div className="py-12 grid place-items-center">
-                                {/* keep your empty state as-is for now */}
-                              </div>
-                            )}
-                          </div>
+                          <Events />
                         </motion.div>
-                      )}
+                      ) : null}
                     </div>
                   )}
                 </div>
