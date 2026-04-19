@@ -12,7 +12,7 @@ const ReminderDeviceSubscriptions = ({ reminder }) => {
 
   const ignoredDevices = reminder.ignoreDevices || [];
 
-  const toggleNotification = (isIgnored, endpoint) => {
+  const toggleNotification = async (isIgnored, endpoint) => {
     setReminders((prev) =>
       prev.map((r) => {
         if (r.id === reminder.id) {
@@ -30,16 +30,23 @@ const ReminderDeviceSubscriptions = ({ reminder }) => {
 
     try {
       const token = getAuthToken();
-      const newIgnoredDevices = reminder.ignoreDevices.filter((e) => e !== endpoint);
+      const newIgnoredDevices = reminder.ignoreDevices.filter(
+        (e) => e !== endpoint,
+      );
 
-      if (!isIgnored
-      ) {
+      if (!isIgnored) {
         newIgnoredDevices.push(endpoint);
       }
 
-      await API_UpdateReminderAndNotificationIgnore(newIgnoredDevices, reminder.id, token);
+      await API_UpdateReminderAndNotificationIgnore(
+        newIgnoredDevices,
+        reminder.id,
+        token,
+      );
     } catch (err) {
-      console.log("Error attempting to remove this device of being notified from this reminder");
+      console.log(
+        "Error attempting to remove this device of being notified from this reminder",
+      );
       console.log(err);
     }
   };
