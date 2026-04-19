@@ -200,6 +200,7 @@ title String @default("Title")
 date String
 color String
 tasks Json
+dueDate DateTime?
 completed Boolean
 completedDate String?
 updatedAt DateTime @updatedAt @default(now())

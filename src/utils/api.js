@@ -295,6 +295,19 @@ export const updateEvent = (event, token) => {
 };
 
 //Reminder api's
+export const API_UpdateReminderAndNotificationIgnore = (
+  newDevices,
+  reminderId,
+  token,
+) => {
+  const res = Axios.patch(
+    `${productionUrl}/update/reminder/notification/ignore`,
+    { reminderId, newDevices },
+    { headers: { Authorization: `Bearer ${token}` } },
+  );
+  return res;
+};
+
 export const getReminders = (username, token) => {
   const res = Axios.get(`${productionUrl}/${username}/reminders`, {
     headers: {

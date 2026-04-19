@@ -357,3 +357,39 @@ export const togglePauseReminder = async (req, res) => {
     console.log(err);
   }
 };
+
+export const updateReminderAndNotificationIgnore = async (req, res) => {
+  const user = req.user;
+  const { reminderId, newDevices } = req.body;
+
+  if (!user) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to update this reminder" });
+    return;
+  }
+
+  if (!reminderId || !newDevices) {
+    res.status(404).json({
+      message: "Please provide a reminder to update with a new time",
+    });
+    return;
+  }
+
+  try {
+    await prisma.reminders.update({
+      where: { id: reminderId },
+      data: { ignoreDevices: newDevices },
+    });
+
+    await prisma.notification.updateMany({
+      where: { reminderRefId: reminderId },
+      data: { deviceExceptions: newDevices },
+    });
+
+    return res.status(200).json({ message: "Reminder updated" });
+  } catch (err) {
+    console.log("Error attempting to update ignore devices for reminder");
+    console.log(err);
+  }
+};

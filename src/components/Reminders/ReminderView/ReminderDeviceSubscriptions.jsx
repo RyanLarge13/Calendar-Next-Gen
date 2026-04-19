@@ -1,8 +1,9 @@
 import { useContext } from "react";
 import UserContext from "../../../context/UserContext";
 import NotificationSubscription from "../../Notifications/NotificationSubscription";
-import { isPassed } from "../../../utils/helpers";
+import { getAuthToken, isPassed } from "../../../utils/helpers";
 import { MdCheck, MdInfo } from "react-icons/md";
+import { API_UpdateReminderAndNotificationIgnore } from "../../../utils/api";
 
 const ReminderDeviceSubscriptions = ({ reminder }) => {
   const { preferences, notifSubs, setReminders } = useContext(UserContext);
@@ -27,7 +28,20 @@ const ReminderDeviceSubscriptions = ({ reminder }) => {
       }),
     );
 
-    // Call Server
+    try {
+      const token = getAuthToken();
+      const newIgnoredDevices = reminder.ignoreDevices.filter((e) => e !== endpoint);
+
+      if (!isIgnored
+      ) {
+        newIgnoredDevices.push(endpoint);
+      }
+
+      await API_UpdateReminderAndNotificationIgnore(newIgnoredDevices, reminder.id, token);
+    } catch (err) {
+      console.log("Error attempting to remove this device of being notified from this reminder");
+      console.log(err);
+    }
   };
 
   return (
