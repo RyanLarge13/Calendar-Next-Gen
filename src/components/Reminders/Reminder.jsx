@@ -287,7 +287,7 @@ const Reminder = ({
                 </div>
 
                 {/* full view button must stay easy to click */}
-                {showFullViewButton ? (
+                {showFullViewButton && !selected.includes(reminder.id) ? (
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -428,7 +428,8 @@ const Reminder = ({
       className={`
     relative my-4 rounded-3xl border overflow-hidden
     backdrop-blur-md
-    ${preferences.darkMode ? "bg-white/5 border-white/10 text-white" : "bg-white/85 border-black/10 text-slate-900"}
+    ${selected.includes(reminder.id) ? "border-red-300" : preferences.darkMode ? "border-black/10" : "border-white/10"}
+    ${preferences.darkMode ? "bg-white/5 text-white" : "bg-white/85 text-slate-900"}
    `}
       onPointerDown={() => startTime(reminder.id)}
       onPointerUp={() => stopTime(reminder.id)}
@@ -539,7 +540,7 @@ const Reminder = ({
             )}
 
             {/* Open Full View Button */}
-            {showFullViewButton ? (
+            {showFullViewButton && !selected.includes(reminder.id) ? (
               <button
                 onClick={openReminder}
                 className={`
@@ -624,12 +625,12 @@ const Reminder = ({
         <motion.div
           initial={{ opacity: 0, y: -6 }}
           animate={{ opacity: 1, y: 0 }}
-          className="absolute top-3 right-3 flex items-center gap-2"
+          className="absolute top-4 right-5 flex items-center gap-2"
         >
           <motion.button
             whileTap={{ scale: 0.95 }}
             className={`
-          grid place-items-center h-9 w-9 rounded-2xl border shadow-sm transition
+          grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition
           ${
             preferences.darkMode
               ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70 hover:text-rose-200"
