@@ -5,31 +5,76 @@ import { BiCalendarWeek, BiCustomize, BiTimer } from "react-icons/bi";
 import { MdSaveAlt, MdTimelapse } from "react-icons/md";
 import Portal from "../../Misc/Portal";
 import TimeSetter from "../../DatePickers/TimeSetter";
+import { addReminder, createNotification } from "../../../utils/api";
+import { getAuthToken } from "../../../utils/helpers";
 
-const FollowUpReminder = ({ originalTitle, originalDesc, reminderTime }) => {
-  const { preferences } = useContext(UserContext);
+const FollowUpReminder = ({ reminder }) => {
+  const { preferences, setReminders, setNotifications, user } =
+    useContext(UserContext);
 
-  const [title, setTitle] = useState(originalTitle);
-  const [desc, setDesc] = useState(originalDesc);
-  const [newTime, setNewTime] = useState(new Date(reminderTime));
+  const [title, setTitle] = useState(reminder.title);
+  const [desc, setDesc] = useState(reminder.notes);
   const [pickTime, setPickTime] = useState(false);
-  const [newDate, setNewDate] = useState(null);
+  const [baseDate, setBaseDate] = useState(reminder.time);
 
-  const saveNewTime = (timeData) => {
-    const { hour, minutes } = timeData;
-    const newestDate = newDate ? new Date(newDate) : new Date(newTime);
+  const changeDate = (newDate) => {
+    const newestDate = new Date(newDate);
 
-    newestDate.setHours(hour);
-    newestDate.setMinutes(minutes);
+    newestDate.setHours(baseDate.getHours());
+    newestDate.setMinutes(baseDate.getMinutes());
 
-    setNewTime(newestDate);
-
-    setPickTime(false);
+    setBaseDate(newDate);
   };
 
-  const saveFollowUp = () => {
-    // Save new reminder to server
-    // Update state
+  const createOfficialTime = (timeData) => {
+    const { hour, minutes } = timeData;
+
+    const updatedDate = new Date(baseDate);
+
+    updatedDate.setHours(hour);
+    updatedDate.setMinutes(minutes);
+
+    setBaseDate(updatedDate);
+  };
+
+  const saveFollowUp = async () => {
+    const newReminder = {
+      ...reminder,
+      title,
+      notes: desc,
+      time: baseDate.toString(),
+    };
+
+    const newNotification = {
+      type: "reminder",
+      time: baseDate.toString(),
+      read: false,
+      readTime: "",
+      notifData: {
+        eventRefIId: reminder.eventRefId,
+        time: baseDate.toString(),
+        notes: desc,
+        title,
+        userId: user.id,
+      },
+      userId: user.id,
+      sentNotification: false,
+      sentWebPush: false,
+      deviceExceptions: reminder.ignoreDevices || [],
+    };
+
+    setReminders((prev) => [...prev, newReminder]);
+
+    try {
+      const token = getAuthToken();
+      await addReminder(newReminder, token);
+      await createNotification(newNotification, token);
+    } catch (err) {
+      console.log(
+        "Error adding new follow up reminder and or creating new follow up notification or pulling token",
+      );
+      console.log(err);
+    }
   };
 
   return (
@@ -111,8 +156,12 @@ const FollowUpReminder = ({ originalTitle, originalDesc, reminderTime }) => {
                 }
               `}
       >
-        {/* If not repeating */}
         <button
+          onClick={() => {
+            const next = new Date(baseDate);
+            next.setDate(next.getDate() + 1);
+            changeDate(next);
+          }}
           className={`
                     px-3 py-1.5 flex justify-start items-center text-center gap-x-2 rounded-2xl border shadow-sm text-[11px] font-semibold
                     ${
@@ -124,8 +173,12 @@ const FollowUpReminder = ({ originalTitle, originalDesc, reminderTime }) => {
         >
           Tomorrow <BsCalendarDay className="text-lg" />
         </button>
-        {/* If repeating */}
         <button
+          onClick={() => {
+            const next = new Date(baseDate);
+            next.setDate(next.getDate() + 7);
+            changeDate(next);
+          }}
           className={`
                     px-3 py-1.5 flex justify-start items-center text-center gap-x-2 rounded-2xl border shadow-sm text-[11px] font-semibold
                     ${
@@ -138,6 +191,23 @@ const FollowUpReminder = ({ originalTitle, originalDesc, reminderTime }) => {
           Next Week <BiCalendarWeek className="text-lg" />
         </button>
         <button
+          onClick={() => {
+            const next = new Date(baseDate);
+
+            const day = next.getDate();
+            next.setDate(1); // prevent overflow
+            next.setMonth(next.getMonth() + 1);
+
+            // clamp to last day of new month
+            const lastDay = new Date(
+              next.getFullYear(),
+              next.getMonth() + 1,
+              0,
+            ).getDate();
+            next.setDate(Math.min(day, lastDay));
+
+            changeDate(next);
+          }}
           className={`
                     px-3 py-1.5 flex justify-start items-center text-center gap-x-2 rounded-2xl border shadow-sm text-[11px] font-semibold
                     ${
@@ -166,9 +236,9 @@ const FollowUpReminder = ({ originalTitle, originalDesc, reminderTime }) => {
       {pickTime ? (
         <Portal>
           <TimeSetter
-            saveData={saveNewTime}
+            saveData={createOfficialTime}
             cancelTimeSetter={() => setPickTime(false)}
-            dateChangerCallback={(newDateStr) => setNewDate(newDateStr)}
+            dateChangerCallback={(newDateStr) => changeDate(newDateStr)}
           />
         </Portal>
       ) : null}

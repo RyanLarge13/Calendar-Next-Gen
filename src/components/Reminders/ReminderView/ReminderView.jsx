@@ -233,11 +233,14 @@ const ReminderView = ({ reminder, setShowFullReminder }) => {
                   {/* your quick actions section goes here */}
                   <QuickPanel reminder={reminder} />
                 </div>
-                <FollowUpReminder
-                  originalTitle={reminder.title}
-                  originalDesc={reminder.notes}
-                  reminderTime={new Date(reminder.time)}
-                />
+                {!reminder.repeat ? (
+                  <FollowUpReminder
+                    reminder={reminder}
+                    originalTitle={reminder.title}
+                    originalDesc={reminder.notes}
+                    reminderTime={new Date(reminder.time)}
+                  />
+                ) : null}
 
                 {/* Repeating Reminders */}
                 {reminder.repeat?.repeats ? (
