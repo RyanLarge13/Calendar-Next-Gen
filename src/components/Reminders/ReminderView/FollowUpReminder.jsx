@@ -17,7 +17,7 @@ const FollowUpReminder = ({ reminder }) => {
   const [pickTime, setPickTime] = useState(false);
   const [baseDate, setBaseDate] = useState(reminder.time);
 
-  const changeDate = (newDate) => {
+  const changeDate = newDate => {
     const newestDate = new Date(newDate);
 
     newestDate.setHours(baseDate.getHours());
@@ -26,7 +26,7 @@ const FollowUpReminder = ({ reminder }) => {
     setBaseDate(newDate);
   };
 
-  const createOfficialTime = (timeData) => {
+  const createOfficialTime = timeData => {
     const { hour, minutes } = timeData;
 
     const updatedDate = new Date(baseDate);
@@ -42,7 +42,7 @@ const FollowUpReminder = ({ reminder }) => {
       ...reminder,
       title,
       notes: desc,
-      time: baseDate.toString(),
+      time: baseDate.toString()
     };
 
     const newNotification = {
@@ -55,15 +55,15 @@ const FollowUpReminder = ({ reminder }) => {
         time: baseDate.toString(),
         notes: desc,
         title,
-        userId: user.id,
+        userId: user.id
       },
       userId: user.id,
       sentNotification: false,
       sentWebPush: false,
-      deviceExceptions: reminder.ignoreDevices || [],
+      deviceExceptions: reminder.ignoreDevices || []
     };
 
-    setReminders((prev) => [...prev, newReminder]);
+    setReminders(prev => [...prev, newReminder]);
 
     try {
       const token = getAuthToken();
@@ -71,7 +71,7 @@ const FollowUpReminder = ({ reminder }) => {
       await createNotification(newNotification, token);
     } catch (err) {
       console.log(
-        "Error adding new follow up reminder and or creating new follow up notification or pulling token",
+        "Error adding new follow up reminder and or creating new follow up notification or pulling token"
       );
       console.log(err);
     }
@@ -121,9 +121,9 @@ const FollowUpReminder = ({ reminder }) => {
               : "bg-black/[0.03] border-black/10 placeholder:text-slate-400 text-slate-900 focus:bg-black/[0.05]"
           }
         `}
-          placeholder={originalTitle}
+          placeholder={title}
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          onChange={e => setTitle(e.target.value)}
         />
       </div>
       {/* Notes field */}
@@ -139,9 +139,9 @@ const FollowUpReminder = ({ reminder }) => {
               : "bg-black/[0.03] border-black/10 placeholder:text-slate-400 text-slate-700 focus:bg-black/[0.05]"
           }
         `}
-          placeholder={originalDesc}
+          placeholder={desc}
           value={desc}
-          onChange={(e) => setDesc(e.target.value)}
+          onChange={e => setDesc(e.target.value)}
         />
       </div>
       {/* Quick action buttons for saving follow up */}
@@ -202,7 +202,7 @@ const FollowUpReminder = ({ reminder }) => {
             const lastDay = new Date(
               next.getFullYear(),
               next.getMonth() + 1,
-              0,
+              0
             ).getDate();
             next.setDate(Math.min(day, lastDay));
 
@@ -238,7 +238,7 @@ const FollowUpReminder = ({ reminder }) => {
           <TimeSetter
             saveData={createOfficialTime}
             cancelTimeSetter={() => setPickTime(false)}
-            dateChangerCallback={(newDateStr) => changeDate(newDateStr)}
+            dateChangerCallback={newDateStr => changeDate(newDateStr)}
           />
         </Portal>
       ) : null}
@@ -259,7 +259,7 @@ const FollowUpReminder = ({ reminder }) => {
           day: "numeric",
           year: "numeric",
           hour: "numeric",
-          minute: "numeric",
+          minute: "numeric"
         })}{" "}
         <MdSaveAlt className="text-lg" />
       </button>
