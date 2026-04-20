@@ -202,7 +202,7 @@ const AddReminder = () => {
       read: false,
       readTime: "",
       notifData: {
-        eventRefIId: eventForReminder?.id || null,
+        eventRefId: eventForReminder?.id || null,
         time,
         notes,
         title,
