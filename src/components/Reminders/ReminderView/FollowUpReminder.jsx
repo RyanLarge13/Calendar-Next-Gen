@@ -15,7 +15,7 @@ const FollowUpReminder = ({ reminder }) => {
   const [title, setTitle] = useState(reminder.title);
   const [desc, setDesc] = useState(reminder.notes);
   const [pickTime, setPickTime] = useState(false);
-  const [baseDate, setBaseDate] = useState(reminder.time);
+  const [baseDate, setBaseDate] = useState(new Date(reminder.time));
 
   const changeDate = (newDate) => {
     const newestDate = new Date(newDate);

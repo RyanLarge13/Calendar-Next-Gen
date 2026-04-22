@@ -238,7 +238,7 @@ const ReminderView = ({ reminder, setShowFullReminder }) => {
                     reminder={reminder}
                     originalTitle={reminder.title}
                     originalDesc={reminder.notes}
-                    reminderTime={new Date(reminder.time)}
+                    reminderTime={reminder.time}
                   />
                 ) : null}
 

@@ -86,7 +86,7 @@ const ReminderDeviceSubscriptions = ({ reminder }) => {
               const sub = JSON.parse(subStr);
 
               const isIgnored = ignoredDevices.includes(sub.endpoint);
-              const canToggleNotification = reminderNotPassedTime;
+              const canToggleNotification = !reminderNotPassedTime;
               const showIgnoredStatus = isIgnored && !reminderNotPassedTime;
 
               return (
