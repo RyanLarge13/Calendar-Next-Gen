@@ -529,7 +529,7 @@ export const deleteNotification = (token, id) => {
 // List apis
 export const API_UpdateListItems = (listId, newItems, token) => {
   const res = Axios.patch(
-    `${productionUrl}/new/list/item`,
+    `${productionUrl}/update/list/item`,
     { listId, newItems },
     {
       headers: {

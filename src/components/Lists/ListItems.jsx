@@ -13,9 +13,70 @@ import UserContext from "../../context/UserContext.jsx";
 import { getAuthToken } from "../../utils/helpers.js";
 import { API_UpdateListItems } from "../../utils/api.js";
 
-const ListItems = ({ listId, items }) => {
+const ListItems = ({ addItems, listId, items }) => {
   const { setSystemNotif, preferences, setLists } = useContext(UserContext);
+
   const [newItemText, setNewItemText] = useState("");
+  const [indexes, setIndexes] = useState([]);
+
+  useEffect(() => {
+    const sorted = [...(items || [])].sort(
+      (a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0),
+    );
+
+    setIndexes(sorted);
+  }, [items]);
+
+  const saveItemsOrder = async (itemsToSave = indexes) => {
+    const normalizedItems = itemsToSave.map((item, index) => ({
+      ...item,
+      orderIndex: index + 1,
+    }));
+
+    setLists((prev) =>
+      prev.map((l) => {
+        if (l.id === listId) {
+          return { ...l, items: normalizedItems };
+        }
+
+        return l;
+      }),
+    );
+
+    try {
+      const token = getAuthToken();
+      await API_UpdateListItems(listId, normalizedItems, token);
+    } catch (err) {
+      console.log("Error updating list item order");
+      console.log(err);
+    }
+  };
+
+  const updateOrderIndexes = (newOrder) => {
+    updateAndSaveItems(newOrder);
+  };
+
+  const sortItems = (type) => {
+    const sorted = [...indexes];
+
+    if (type === "az") {
+      sorted.sort((a, b) => a.text.localeCompare(b.text));
+    }
+
+    if (type === "za") {
+      sorted.sort((a, b) => b.text.localeCompare(a.text));
+    }
+
+    if (type === "largest") {
+      sorted.sort((a, b) => b.text.length - a.text.length);
+    }
+
+    if (type === "smallest") {
+      sorted.sort((a, b) => a.text.length - b.text.length);
+    }
+
+    updateAndSaveItems(sorted);
+  };
 
   const removeItem = async (itemId) => {
     const newItems = items.filter((i) => i.id !== itemId);
@@ -39,7 +100,7 @@ const ListItems = ({ listId, items }) => {
     }
   };
 
-  const addNewItem = () => {
+  const addNewItem = async () => {
     if (!newItemText) {
       const newNotif = {
         show: true,
@@ -62,7 +123,7 @@ const ListItems = ({ listId, items }) => {
     };
 
     const newItems = [...items, newItem];
-    
+
     setNewItemText("");
 
     setLists((prev) =>
@@ -78,7 +139,7 @@ const ListItems = ({ listId, items }) => {
       const token = getAuthToken();
       await API_UpdateListItems(listId, newItems, token);
     } catch (err) {
-      console.log("Error adding new list item to list")
+      console.log("Error adding new list item to list");
       console.log(err);
     }
   };
@@ -102,15 +163,7 @@ const ListItems = ({ listId, items }) => {
         </p>
 
         <button
-          className={`
-        h-10 w-10 grid place-items-center rounded-2xl border shadow-sm transition
-        hover:shadow-md active:scale-[0.97]
-        ${
-          preferences.darkMode
-            ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70"
-            : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600"
-        }
-      `}
+          onClick={() => sortItems("az")}
           aria-label="Sort A to Z"
           title="A → Z"
         >
@@ -118,35 +171,15 @@ const ListItems = ({ listId, items }) => {
         </button>
 
         <button
-          className={`
-        h-10 w-10 grid place-items-center rounded-2xl border shadow-sm transition
-        hover:shadow-md active:scale-[0.97]
-        ${
-          preferences.darkMode
-            ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70"
-            : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600"
-        }
-      `}
+          onClick={() => sortItems("za")}
           aria-label="Sort Z to A"
           title="Z → A"
         >
           <FaSortAlphaDownAlt />
         </button>
 
-        <div
-          className={`h-6 w-px ${preferences.darkMode ? "bg-white/10" : "bg-black/10"}`}
-        />
-
         <button
-          className={`
-        h-10 w-10 grid place-items-center rounded-2xl border shadow-sm transition
-        hover:shadow-md active:scale-[0.97]
-        ${
-          preferences.darkMode
-            ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70"
-            : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600"
-        }
-      `}
+          onClick={() => sortItems("largest")}
           aria-label="Sort by largest first"
           title="Largest first"
         >
@@ -154,15 +187,7 @@ const ListItems = ({ listId, items }) => {
         </button>
 
         <button
-          className={`
-        h-10 w-10 grid place-items-center rounded-2xl border shadow-sm transition
-        hover:shadow-md active:scale-[0.97]
-        ${
-          preferences.darkMode
-            ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70"
-            : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600"
-        }
-      `}
+          onClick={() => sortItems("smallest")}
           aria-label="Sort by smallest first"
           title="Smallest first"
         >
@@ -174,7 +199,7 @@ const ListItems = ({ listId, items }) => {
       </div>
 
       {/* Add item row */}
-      {addItems.includes(listId) && (
+      {addItems ? (
         <div
           className={`
         rounded-3xl border shadow-sm p-3
@@ -224,38 +249,45 @@ const ListItems = ({ listId, items }) => {
             <AiFillPlusCircle className="text-2xl" />
           </button>
         </div>
-      )}
+      ) : null}
 
       {/* List */}
       <Reorder.Group
         axis="y"
         values={indexes}
-        onReorder={updateOrderIndexes}
+        onReorder={setIndexes}
         className={`
-      max-h-[700px] pt-3 overflow-y-auto scrollbar-hide pr-1
-      space-y-2
-    `}
+          max-h-[700px] pt-3 overflow-y-auto scrollbar-hide pr-1
+        `}
       >
         {indexes?.map((listItem, index) => (
           <Reorder.Item
             key={listItem.id}
             value={listItem}
+            onDragEnd={() => saveItemsOrder(indexes)}
+            layout
+            transition={{
+              layout: {
+                duration: 0.18,
+                ease: "easeOut",
+              },
+            }}
             whileDrag={{
-              scale: 1.02,
-              cursor: "grabbing",
+              scale: 1.015,
+              zIndex: 50,
             }}
             className={`
-          relative cursor-grab select-none
-          rounded-3xl border shadow-sm
-          px-4 py-4
-          flex items-center justify-between gap-3
-          transition
-          ${
-            preferences.darkMode
-              ? "bg-white/5 border-white/10 hover:bg-white/7"
-              : "bg-white border-black/10 hover:bg-black/[0.02]"
-          }
-        `}
+              relative cursor-grab select-none mb-2
+              rounded-3xl border shadow-sm
+              px-4 py-4
+              flex items-center justify-between gap-3
+              transition-colors
+              ${
+                preferences.darkMode
+                  ? "bg-white/5 border-white/10 hover:bg-white/7"
+                  : "bg-white border-black/10 hover:bg-black/[0.02]"
+              }
+            `}
           >
             {/* Index badge */}
             <div

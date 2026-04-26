@@ -4,7 +4,6 @@ import { MdOutlineOpenInNew } from "react-icons/md";
 import DatesContext from "../../context/DatesContext.jsx";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
 import UserContext from "../../context/UserContext.jsx";
-import { updateList } from "../../utils/api.js";
 import {
   formatDbText,
   formatRelativeTime,

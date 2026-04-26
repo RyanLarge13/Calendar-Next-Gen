@@ -177,7 +177,7 @@ const List = ({ list }) => {
 
       {/* Body */}
       <div className="p-2">
-        <ListItems listId={list.id} items={list.items} />
+        <ListItems addItems={addItems} listId={list.id} items={list.items} />
       </div>
     </div>
   );
