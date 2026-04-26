@@ -11,7 +11,6 @@ export const InteractiveProvider = ({ children }) => {
   const [view, setView] = useState(getPreferences().view);
   const [addNewEvent, setAddNewEvent] = useState(false);
   const [type, setType] = useState(null);
-  const [listUpdate, setListUpdate] = useState([]);
   const [event, setEvent] = useState(null);
   const [showCategory, setShowCategory] = useState(null);
   const [mainView, setMainView] = useState("calendar");
@@ -32,7 +31,6 @@ export const InteractiveProvider = ({ children }) => {
         addNewEvent,
         type,
         showNotifs,
-        listUpdate,
         event,
         filters,
         showDatePicker,
@@ -49,7 +47,6 @@ export const InteractiveProvider = ({ children }) => {
         setShowCategory,
         setFilters,
         setEvent,
-        setListUpdate,
         setShowNotifs,
         setType,
         setAddNewEvent,

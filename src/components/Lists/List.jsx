@@ -12,7 +12,7 @@ const List = ({ list }) => {
 
   const [title, setTitle] = useState(list.title);
   const [titleUpdate, setTitleUpdate] = useState(list.title);
-  const [addItems, setAddItems] = useState([]);
+  const [addItems, setAddItems] = useState(false);
 
   const updateTitleOnList = async (e) => {
     e.preventDefault();
@@ -32,10 +32,10 @@ const List = ({ list }) => {
     }
   };
 
-  const copyAsPlainText = async (items) => {
+  const copyAsPlainText = async () => {
     let listString = "";
-    for (let i = 0; i < items.length; i++) {
-      listString += `${i + 1}. ${items[i].text.trim()}\n\n`;
+    for (let i = 0; i < list.items.length; i++) {
+      listString += `${i + 1}. ${list.items[i].text.trim()}\n\n`;
     }
     await navigator.clipboard.writeText(listString);
   };
@@ -54,17 +54,35 @@ const List = ({ list }) => {
     }
   };
 
+  const confirmDeleteEntireList = () => {
+    const newNotif = {
+      show: true,
+      title: "Delete List",
+      text: `Are you sure you want to delete this list ${list.title}?`,
+      color: "bg-red-300",
+      hasCancel: true,
+      actions: [
+        {
+          text: "cancel",
+          func: () => setSystemNotif({ show: false }),
+        },
+        {
+          text: "delete",
+          func: () => deleteEntireList(list.id),
+        },
+      ],
+    };
+    setSystemNotif(newNotif);
+  };
+
   return (
     <div
-      key={list.id}
-      value={list}
-      drag
       className={`
-                relative list-none overflow-hidden
-                rounded-3xl border shadow-sm transition-all
-                ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/7" : "bg-white border-black/10 hover:bg-black/[0.02]"}
-                my-4 ml-0 mr-6 md:mr-4
-              `}
+        relative list-none overflow-hidden
+        rounded-3xl border shadow-sm transition-all
+        ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/7" : "bg-white border-black/10 hover:bg-black/[0.02]"}
+        my-4 ml-0 mr-6 md:mr-4
+      `}
     >
       {/* Accent strip */}
       <div className={`${list.color} absolute left-0 top-0 bottom-0 w-2`} />
@@ -72,17 +90,17 @@ const List = ({ list }) => {
       {/* Header */}
       <div
         className={`
-                  px-4 py-3 pl-6
-                  border-b
-                  ${preferences.darkMode ? "border-white/10" : "border-black/10"}
-                `}
+          px-4 py-3 pl-6
+          border-b
+          ${preferences.darkMode ? "border-white/10" : "border-black/10"}
+        `}
       >
         <form onSubmit={updateTitleOnList} className="w-full min-w-0 my-2">
           <input
             className={`
-                        w-full bg-transparent outline-none font-semibold text-sm
-                        ${preferences.darkMode ? "text-white placeholder:text-white/40" : "text-slate-900 placeholder:text-slate-500"}
-                      `}
+              w-full bg-transparent outline-none font-semibold text-sm
+              ${preferences.darkMode ? "text-white placeholder:text-white/40" : "text-slate-900 placeholder:text-slate-500"}
+            `}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Add your title..."
@@ -95,24 +113,24 @@ const List = ({ list }) => {
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={() => copyAsPlainText(list.items)}
+              onClick={copyAsPlainText}
               className={`
-                        grid place-items-center h-9 w-9 rounded-2xl border shadow-sm transition active:scale-95
-                        ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70" : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600"}
-                      `}
+                grid place-items-center h-9 w-9 rounded-2xl border shadow-sm transition active:scale-95
+                ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70" : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600"}
+              `}
               aria-label="Copy list"
             >
               <RiFileCopy2Line />
             </button>
 
-            {!addItems.includes(list.id) ? (
+            {!addItems ? (
               <button
                 type="button"
-                onClick={() => setAddItems((prev) => [...prev, list.id])}
+                onClick={() => setAddItems(true)}
                 className={`
-                          grid place-items-center h-9 w-9 rounded-2xl border shadow-sm transition active:scale-95
-                          ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70 hover:text-emerald-200" : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600 hover:text-emerald-600"}
-                        `}
+                  grid place-items-center h-9 w-9 rounded-2xl border shadow-sm transition active:scale-95
+                  ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70 hover:text-emerald-200" : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600 hover:text-emerald-600"}
+                `}
                 aria-label="Add items"
               >
                 <BiListPlus className="text-lg" />
@@ -120,14 +138,11 @@ const List = ({ list }) => {
             ) : (
               <button
                 type="button"
-                onClick={() => {
-                  const newIds = addItems.filter((i) => i !== list.id);
-                  setAddItems(newIds);
-                }}
+                onClick={() => setAddItems(false)}
                 className={`
-                          grid place-items-center h-9 w-9 rounded-2xl border shadow-sm transition active:scale-95
-                          ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70 hover:text-amber-200" : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600 hover:text-amber-600"}
-                        `}
+                  grid place-items-center h-9 w-9 rounded-2xl border shadow-sm transition active:scale-95
+                  ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70 hover:text-amber-200" : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600 hover:text-amber-600"}
+                `}
                 aria-label="Close add items"
               >
                 <BiListMinus className="text-lg" />
@@ -137,9 +152,9 @@ const List = ({ list }) => {
             <button
               type="button"
               className={`
-                        grid place-items-center h-9 w-9 rounded-2xl border shadow-sm transition active:scale-95
-                        ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70" : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600"}
-                      `}
+                grid place-items-center h-9 w-9 rounded-2xl border shadow-sm transition active:scale-95
+                ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70" : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600"}
+              `}
               aria-label="Share"
             >
               <BsFillShareFill />
@@ -147,30 +162,11 @@ const List = ({ list }) => {
 
             <button
               type="button"
-              onClick={() => {
-                const newNotif = {
-                  show: true,
-                  title: "Delete List",
-                  text: `Are you sure you want to delete this list ${list.title}?`,
-                  color: "bg-red-300",
-                  hasCancel: true,
-                  actions: [
-                    {
-                      text: "cancel",
-                      func: () => setSystemNotif({ show: false }),
-                    },
-                    {
-                      text: "delete",
-                      func: () => deleteEntireList(list.id),
-                    },
-                  ],
-                };
-                setSystemNotif(newNotif);
-              }}
+              onClick={confirmDeleteEntireList}
               className={`
-                        grid place-items-center h-9 w-9 rounded-2xl border shadow-sm transition active:scale-95
-                        ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/60 hover:text-rose-300" : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-500 hover:text-rose-500"}
-                      `}
+                grid place-items-center h-9 w-9 rounded-2xl border shadow-sm transition active:scale-95
+                ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/60 hover:text-rose-300" : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-500 hover:text-rose-500"}
+              `}
               aria-label="Delete"
             >
               <BsFillTrashFill />
@@ -181,7 +177,7 @@ const List = ({ list }) => {
 
       {/* Body */}
       <div className="p-2">
-        <ListItems addItems={addItems} listId={list.id} items={list?.items} />
+        <ListItems listId={list.id} items={list.items} />
       </div>
     </div>
   );

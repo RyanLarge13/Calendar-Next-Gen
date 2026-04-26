@@ -527,6 +527,19 @@ export const deleteNotification = (token, id) => {
 };
 
 // List apis
+export const API_UpdateListItems = (listId, newItems, token) => {
+  const res = Axios.patch(
+    `${productionUrl}/new/list/item`,
+    { listId, newItems },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+  return res;
+};
+
 export const getAllLists = (token, username) => {
   const res = Axios.get(`${productionUrl}/${username}/lists`, {
     headers: {
@@ -554,21 +567,6 @@ export const updateListTitle = (listId, newTitle, token) => {
     `${productionUrl}/update/list/title`,
     { listId, newTitle },
     { headers: { Authorization: `Bearer ${token}` } },
-  );
-  return res;
-};
-
-export const updateList = (token, listUpdate) => {
-  const res = Axios.patch(
-    `${productionUrl}/update/lists`,
-    {
-      listUpdate,
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    },
   );
   return res;
 };

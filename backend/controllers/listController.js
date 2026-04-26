@@ -106,3 +106,35 @@ export const deleteList = async (req, res) => {
     res.status(401).json({ message: "Failure deleting list" });
   }
 };
+
+export const updateListItems = async (req, res) => {
+  const user = req.user;
+  const { listId, newItems } = req.body;
+
+  if (!user) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to make this request" });
+    return;
+  }
+
+  if (!listId || !newItems) {
+    res
+      .status(404)
+      .json({ message: "Bad request, missing values when updating" });
+    return;
+  }
+
+  try {
+    await prisma.list.update({
+      where: { id: listId },
+      data: { items: newItems },
+    });
+
+    res.status(200).json({ message: "Successfully updated list items" });
+  } catch (err) {
+    console.log("Error updating list items");
+    console.log(err);
+    res.status(500).json({ message: `Server error updating list items` });
+  }
+};

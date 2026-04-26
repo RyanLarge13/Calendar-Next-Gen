@@ -8,6 +8,7 @@ import {
   updateList,
   deleteList,
   updateListTitle,
+  updateListItems,
 } from "../controllers/listController.js";
 
 const listRouter = express.Router();
@@ -15,12 +16,13 @@ const listRouter = express.Router();
 listRouter.get("/:username/lists", auth, getLists);
 listRouter.post("/new/list/:username", auth, addNewList);
 listRouter.patch("/update/lists", auth, updateList);
+listRouter.patch("/update/list/item", auth, updateListItems);
 listRouter.patch("/update/list/title", auth, updateListTitle);
 listRouter.delete(
   "/delete/list/:listId",
   auth,
   authorizeDelete("listId", prisma.list),
-  deleteList
+  deleteList,
 );
 
 export default listRouter;

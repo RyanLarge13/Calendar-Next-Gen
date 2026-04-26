@@ -20,15 +20,8 @@ import Tasks from "../Tasks/Tasks";
 import Events from "../Events/Events.jsx";
 
 const Menu = () => {
-  const {
-    menu,
-    listUpdate,
-    setListUpdate,
-    showCategory,
-    setShowCategory,
-    setMenu,
-    setEvent,
-  } = useContext(InteractiveContext);
+  const { menu, showCategory, setShowCategory, setMenu, setEvent } =
+    useContext(InteractiveContext);
   const { lists, setLists, preferences, events } = useContext(UserContext);
   const { dateObj } = useContext(DatesContext);
 
@@ -61,31 +54,6 @@ const Menu = () => {
   }, [showCategory]);
 
   useEffect(() => {
-    if (listUpdate.length < 1) return;
-    if (listUpdate.length > 0) {
-      const token = localStorage.getItem("authToken");
-      updateClientLists();
-      updateList(token, listUpdate)
-        .then(() => {
-          setListUpdate([]);
-        })
-        .catch((err) => {
-          console.log(err);
-          const lastUpdatedId = listUpdate[listUpdate.length - 1].listId;
-          const listIndex = lists.findIndex(
-            (list) => list.id === lastUpdatedId,
-          );
-          if (listIndex !== -1) {
-            const updatedLists = [...lists];
-            const movedList = updatedLists.splice(listIndex, 1)[0];
-            updatedLists.unshift(movedList);
-            setLists(updatedLists);
-          }
-        });
-    }
-  }, [menu, showCategory]);
-
-  useEffect(() => {
     const hours = dateObj.getHours();
     if (hours < 12) {
       setTimeOfDay("Good Morning");
@@ -100,19 +68,6 @@ const Menu = () => {
       setTimeOfDay("Goodnight");
     }
   }, []);
-
-  const updateClientLists = () => {
-    const updatedLists = lists.map((list) => {
-      const foundUpdate = listUpdate.find(
-        (update) => update.listId === list.id,
-      );
-      if (foundUpdate) {
-        return { ...list, items: foundUpdate.listItems };
-      }
-      return list;
-    });
-    setLists(updatedLists);
-  };
 
   return (
     <AnimatePresence>

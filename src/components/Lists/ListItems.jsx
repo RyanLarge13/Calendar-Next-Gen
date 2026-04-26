@@ -10,53 +10,32 @@ import {
 } from "react-icons/fa";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
 import UserContext from "../../context/UserContext.jsx";
+import { getAuthToken } from "../../utils/helpers.js";
+import { API_UpdateListItems } from "../../utils/api.js";
 
-const ListItems = ({ addItems, listId, items }) => {
-  const { listUpdate, setListUpdate } = useContext(InteractiveContext);
-  const { setSystemNotif, preferences } = useContext(UserContext);
-  const [indexes, setIndexes] = useState(items);
+const ListItems = ({ listId, items }) => {
+  const { setSystemNotif, preferences, setLists } = useContext(UserContext);
   const [newItemText, setNewItemText] = useState("");
-  const [sortOrder, setSortOrder] = useState(1);
 
-  useEffect(() => {
-    const itemsCopy = [...items];
-    if (sortOrder === 1) {
-      const newSort = itemsCopy.sort((a, b) => a.orderIndex - b.orderIndex);
-      setIndexes(newSort);
-    }
-    if (sortOrder === 2) {
-      const newSort = itemsCopy.sort((a, b) =>
-        a.text.toLowerCase() > b.text.toLowerCase() ? 1 : -1,
-      );
-      setIndexes(newSort);
-    }
-    if (sortOrder === 3) {
-      const newSort = itemsCopy.sort((a, b) =>
-        b.text.toLowerCase() > a.text.toLowerCase() ? 1 : -1,
-      );
-      setIndexes(newSort);
-    }
-    if (sortOrder === 4) {
-      const newSort = itemsCopy
-        .sort((a, b) => a.orderIndex - b.orderIndex)
-        .reverse();
-      setIndexes(newSort);
-    }
-  }, [sortOrder]);
+  const removeItem = async (itemId) => {
+    const newItems = items.filter((i) => i.id !== itemId);
 
-  const removeItem = (item) => {
-    const newList = indexes.filter((i) => i.id !== item.id);
-    setIndexes(newList);
-    const contains = listUpdate.find((li) => li.listId === listId);
-    if (contains) {
-      listUpdate[listUpdate.indexOf(contains)].listItems = newList;
-    }
-    if (!contains) {
-      const newObj = {
-        listId: listId,
-        listItems: newList,
-      };
-      setListUpdate((prev) => [...prev, newObj]);
+    setLists((prev) =>
+      prev.map((l) => {
+        if (l.id === listId) {
+          return { ...l, items: newItems };
+        }
+        return l;
+      }),
+    );
+
+    try {
+      const token = getAuthToken();
+
+      await API_UpdateListItems(listId, newItems, token);
+    } catch (err) {
+      console.log("Error updating list texts");
+      console.log(err);
     }
   };
 
@@ -72,48 +51,36 @@ const ListItems = ({ addItems, listId, items }) => {
           { text: "close", func: () => setSystemNotif({ show: false }) },
         ],
       };
-      return setSystemNotif(newNotif);
+      setSystemNotif(newNotif);
+      return;
     }
-    if (newItemText) {
-      const newItem = {
-        id: uuidv4(),
-        text: newItemText,
-        orderIndex: items.length + 1,
-        complete: false,
-      };
-      const newList = [...indexes, newItem];
-      setIndexes(newList);
-      const contains = listUpdate.find((li) => li.listId === listId);
-      if (contains) {
-        listUpdate[listUpdate.indexOf(contains)].listItems = newList;
-      }
-      if (!contains) {
-        const newObj = {
-          listId: listId,
-          listItems: [...items, newItem],
-        };
-        setListUpdate((prev) => [...prev, newObj]);
-      }
-    }
-    setNewItemText("");
-  };
+    const newItem = {
+      id: uuidv4(),
+      text: newItemText,
+      orderIndex: items.length + 1,
+      complete: false,
+    };
 
-  const updateOrderIndexes = (newIndexes) => {
-    setIndexes(newIndexes);
-    // Update the orderIndex values of the items based on the new indexes
-    const updatedItems = newIndexes.map((item, newIndex) => ({
-      ...item,
-      orderIndex: newIndex + 1,
-    }));
-    // Check if the listId exists in the listUpdate array
-    const containsListId = listUpdate.some((list) => list.listId === listId);
-    // Update the listUpdate context with the new reordered list
-    const updatedListUpdate = containsListId
-      ? listUpdate.map((list) =>
-          list.listId === listId ? { ...list, listItems: updatedItems } : list,
-        )
-      : [...listUpdate, { listId, listItems: updatedItems }];
-    setListUpdate(updatedListUpdate);
+    const newItems = [...items, newItem];
+    
+    setNewItemText("");
+
+    setLists((prev) =>
+      prev.map((l) => {
+        if (l.id === listId) {
+          return { ...l, items: newItems };
+        }
+        return l;
+      }),
+    );
+
+    try {
+      const token = getAuthToken();
+      await API_UpdateListItems(listId, newItems, token);
+    } catch (err) {
+      console.log("Error adding new list item to list")
+      console.log(err);
+    }
   };
 
   return (
@@ -135,7 +102,6 @@ const ListItems = ({ addItems, listId, items }) => {
         </p>
 
         <button
-          onClick={() => setSortOrder(2)}
           className={`
         h-10 w-10 grid place-items-center rounded-2xl border shadow-sm transition
         hover:shadow-md active:scale-[0.97]
@@ -152,7 +118,6 @@ const ListItems = ({ addItems, listId, items }) => {
         </button>
 
         <button
-          onClick={() => setSortOrder(3)}
           className={`
         h-10 w-10 grid place-items-center rounded-2xl border shadow-sm transition
         hover:shadow-md active:scale-[0.97]
@@ -173,7 +138,6 @@ const ListItems = ({ addItems, listId, items }) => {
         />
 
         <button
-          onClick={() => setSortOrder(1)}
           className={`
         h-10 w-10 grid place-items-center rounded-2xl border shadow-sm transition
         hover:shadow-md active:scale-[0.97]
@@ -190,7 +154,6 @@ const ListItems = ({ addItems, listId, items }) => {
         </button>
 
         <button
-          onClick={() => setSortOrder(4)}
           className={`
         h-10 w-10 grid place-items-center rounded-2xl border shadow-sm transition
         hover:shadow-md active:scale-[0.97]
