@@ -103,11 +103,9 @@ export const updateStickyView = async (req, res) => {
     data: { viewState: newView },
   });
   if (!newUpdatedSticky) {
-    return res
-      .status(500)
-      .json({
-        message: "We ran into a problem on our server. Please try again later",
-      });
+    return res.status(500).json({
+      message: "We ran into a problem on our server. Please try again later",
+    });
   }
   return res.status(200).json({ message: "Sticky view successfully updated" });
 };
@@ -140,5 +138,39 @@ export const deleteSticky = async (req, res) => {
       message:
         "I am terribly sorry, something went wrong on the server, please try to delete your sticky again",
     });
+  }
+};
+
+export const updateStickyPin = async (req, res) => {
+  const user = req.user;
+
+  const { stickyId, newPin } = req.body;
+
+  if (!user) {
+    res
+      .status(401)
+      .json({ message: "Please log back in to update your sticky note" });
+    return;
+  }
+
+  if (!stickyId) {
+    res.status(404).json({
+      message: "Please refer to an ID that is valid to your sticky note",
+    });
+    return;
+  }
+
+  try {
+    await prisma.sticky.update({
+      where: { id: stickyId },
+      data: { pin: newPin },
+    });
+
+    res
+      .status(200)
+      .json({ message: "Successfully updating the pin on your sticky note" });
+  } catch (err) {
+    console.log("Error updating sticky note pin on the server");
+    console.log(err);
   }
 };

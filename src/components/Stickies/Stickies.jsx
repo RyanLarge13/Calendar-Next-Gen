@@ -8,9 +8,10 @@ const Stickies = () => {
 
   return (
     <AnimatePresence>
-      {stickies.map((sticky, index) => (
-        <Sticky key={sticky.id} sticky={sticky} index={index} />
-      ))}
+      {stickies.map((sticky, index) => {
+        if (sticky.pin)
+          <Sticky key={sticky.id} sticky={sticky} index={index} />;
+      })}
     </AnimatePresence>
   );
 };

@@ -48,31 +48,56 @@ const Views = () => {
     }
   };
 
+  const baseFab = `
+  fixed z-[700] left-5 bottom-5
+  flex items-center justify-center
+  rounded-full cursor-pointer
+  border backdrop-blur-md
+  shadow-lg shadow-black/10
+  transition-all duration-200 ease-out
+  hover:scale-110 active:scale-95
+`;
+
+  const mainFab = `
+  ${baseFab}
+  p-3
+  text-slate-900
+  bg-gradient-to-tr from-cyan-300 via-sky-200 to-cyan-100
+  border-white/40
+`;
+
+  const menuFab = (gradient) => `
+  ${baseFab}
+  p-3 text-sm
+  ${gradient}
+  border-white/40
+  text-slate-900
+`;
+
   return (
     <>
       {!invisible ? (
         menu ? (
-          <div
-            onClick={() => setMenu(false)}
-            className="fixed cursor-pointer bottom-5 left-5 z-[700] p-3 rounded-full flex justify-center items-center bg-gradient-to-tr from-cyan-200 to-cyan-100 shadow-md"
-          >
-            <div>
-              <BsFillCalendar2EventFill className="text-md" />
-            </div>
+          <div onClick={() => setMenu(false)} className={mainFab}>
+            <BsFillCalendar2EventFill className="text-md" />
           </div>
         ) : (
           <div
             onClick={() => setShow((prev) => !prev)}
-            className={`fixed cursor-pointer bottom-5 left-5 z-[700] ${
-              showLogin
-                ? "opacity-0 pointer-events-none"
-                : "opacity-100 pointer-events-auto"
-            } p-3 rounded-full flex justify-center items-center bg-gradient-to-tr from-cyan-200 to-cyan-100 shadow-lg`}
+            className={`
+          ${mainFab}
+          ${
+            showLogin
+              ? "opacity-0 pointer-events-none"
+              : "opacity-100 pointer-events-auto"
+          }
+        `}
           >
             {show ? <BsXCircleFill /> : <BsColumnsGap />}
           </div>
         )
       ) : null}
+
       <motion.div
         initial={{ opacity: 0 }}
         animate={
@@ -80,7 +105,9 @@ const Views = () => {
             ? { x: 130, y: 5, scale: 1.25, opacity: 1 }
             : { x: 0, y: 0, scale: 0 }
         }
-        className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] left-5 bottom-5 bg-gradient-to-r from-pink-300 to-violet-200 shadow-md`}
+        className={menuFab(
+          "bg-gradient-to-tr from-fuchsia-400 via-pink-300 to-violet-200",
+        )}
         onClick={() => {
           setShow(false);
           setView("agenda");
@@ -89,6 +116,7 @@ const Views = () => {
       >
         <MdViewAgenda />
       </motion.div>
+
       <motion.div
         initial={{ opacity: 0 }}
         animate={
@@ -102,7 +130,9 @@ const Views = () => {
               }
             : { x: 0, y: 0, scale: 0 }
         }
-        className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] left-5 bottom-5 bg-gradient-to-r from-lime-300 to-emerald-200 shadow-md`}
+        className={menuFab(
+          "bg-gradient-to-tr from-lime-300 via-emerald-300 to-green-200",
+        )}
         onClick={() => {
           setShow(false);
           setView("day");
@@ -111,6 +141,7 @@ const Views = () => {
       >
         <BsFillCalendarDayFill />
       </motion.div>
+
       <motion.div
         initial={{ opacity: 0 }}
         animate={
@@ -124,7 +155,9 @@ const Views = () => {
               }
             : { x: 0, y: 0, scale: 0 }
         }
-        className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] left-5 bottom-5 bg-gradient-to-r from-red-300 to-rose-200 shadow-md`}
+        className={menuFab(
+          "bg-gradient-to-tr from-rose-400 via-pink-300 to-red-200",
+        )}
         onClick={() => {
           setShow(false);
           setView("month");
@@ -133,6 +166,7 @@ const Views = () => {
       >
         <BsFillCalendarMonthFill />
       </motion.div>
+
       <motion.div
         initial={{ opacity: 0 }}
         animate={
@@ -146,7 +180,9 @@ const Views = () => {
               }
             : { x: 0, y: 0, scale: 0 }
         }
-        className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] left-5 bottom-5 bg-gradient-to-r from-cyan-300 to-sky-200 shadow-md`}
+        className={menuFab(
+          "bg-gradient-to-tr from-cyan-300 via-sky-300 to-blue-200",
+        )}
         onClick={() => {
           setShow(false);
           setView("masonry");
@@ -155,6 +191,7 @@ const Views = () => {
       >
         <BsColumnsGap />
       </motion.div>
+
       <motion.div
         initial={{ opacity: 0 }}
         animate={
@@ -168,7 +205,9 @@ const Views = () => {
               }
             : { x: 0, y: 0, scale: 0 }
         }
-        className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] left-5 bottom-5 bg-gradient-to-r from-orange-300 to-yellow-200 shadow-md`}
+        className={menuFab(
+          "bg-gradient-to-tr from-amber-300 via-orange-300 to-yellow-200",
+        )}
         onClick={() => {
           setShow(false);
           setView("week");
@@ -177,6 +216,7 @@ const Views = () => {
       >
         <BsFillCalendarWeekFill />
       </motion.div>
+
       <motion.div
         initial={{ opacity: 0 }}
         animate={
@@ -190,7 +230,9 @@ const Views = () => {
               }
             : { x: 0, y: 0, scale: 0 }
         }
-        className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] left-5 bottom-5 bg-gradient-to-r from-indigo-300 to-purple-200 shadow-md`}
+        className={menuFab(
+          "bg-gradient-to-tr from-indigo-400 via-purple-300 to-violet-200",
+        )}
         onClick={() => {
           setShow(false);
           setFilters("search");
@@ -198,6 +240,7 @@ const Views = () => {
       >
         <BsSearch />
       </motion.div>
+
       <motion.div
         initial={{ opacity: 0 }}
         animate={
@@ -211,7 +254,9 @@ const Views = () => {
               }
             : { x: 0, y: 0, scale: 0 }
         }
-        className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] left-5 bottom-5 bg-gradient-to-r from-white to-slate-200 shadow-md`}
+        className={menuFab(
+          "bg-gradient-to-tr from-white via-slate-100 to-slate-200",
+        )}
         onClick={() => {
           setShow(false);
           setView("week");
@@ -219,6 +264,7 @@ const Views = () => {
       >
         <CgOptions />
       </motion.div>
+
       <motion.div
         initial={{ opacity: 0 }}
         animate={
@@ -232,7 +278,9 @@ const Views = () => {
               }
             : { x: 0, y: 0, scale: 0 }
         }
-        className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] left-5 bottom-5 bg-gradient-to-r from-teal-300 to-purple-200 shadow-md`}
+        className={menuFab(
+          "bg-gradient-to-tr from-teal-300 via-cyan-300 to-purple-200",
+        )}
         onClick={() => {
           setShow(false);
           setView("week");

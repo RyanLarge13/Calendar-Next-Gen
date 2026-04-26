@@ -7,6 +7,7 @@ import {
   getAllStickies,
   deleteSticky,
   updateSticky,
+  updateStickyPin,
   updateStickyView,
 } from "../controllers/stickiesController.js";
 
@@ -15,12 +16,13 @@ const stickiesRouter = express.Router();
 stickiesRouter.get("/user/stickies", auth, getAllStickies);
 stickiesRouter.put("/update/sticky", auth, updateSticky);
 stickiesRouter.put("/update/sticky/view", auth, updateStickyView);
+stickiesRouter.patch("/update/sticky/pin", auth, updateStickyPin);
 stickiesRouter.post("/add/sticky", auth, addNewSticky);
 stickiesRouter.delete(
   "/delete/sticky/:stickyId",
   auth,
   authorizeDelete("stickyId", prisma.sticky),
-  deleteSticky
+  deleteSticky,
 );
 
 export default stickiesRouter;

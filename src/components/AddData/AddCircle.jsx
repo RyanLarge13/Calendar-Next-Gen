@@ -85,16 +85,43 @@ export const AddCircle = () => {
     setSystemNotif(newNotif);
   };
 
+  const baseFab = `
+  fixed z-[700] right-5 bottom-5
+  flex items-center justify-center
+  rounded-full cursor-pointer
+  border backdrop-blur-md
+  shadow-lg shadow-black/10
+  transition-all duration-200 ease-out
+  hover:scale-110 active:scale-95
+`;
+
+  const mainFab = `
+  ${baseFab}
+  w-[44px] h-[44px] p-3
+  text-slate-900
+  bg-gradient-to-tr from-cyan-300 via-sky-200 to-cyan-100
+  border-white/40
+`;
+
+  const menuFab = (gradient) => `
+  ${baseFab}
+  p-3 text-sm
+  ${gradient}
+  border-white/40
+  text-slate-900
+`;
+
   return (
     <>
       {menu ? (
         <>
           <div
             onClick={() => setShowMenuBtns((prev) => !prev)}
-            className="fixed w-[40px] h-[40px] z-[700] p-3 rounded-full cursor-pointer flex justify-center items-center bg-gradient-to-tr right-5 bottom-5 from-cyan-200 to-cyan-100 shadow-md"
+            className={mainFab}
           >
             <BiCategoryAlt />
           </div>
+
           <motion.div
             onClick={() => openModalAndSetType(showCategory)}
             initial={{ opacity: 0 }}
@@ -103,10 +130,13 @@ export const AddCircle = () => {
                 ? { x: -75, y: -45, scale: 1.25, opacity: 1 }
                 : { x: 0, y: 0, scale: 0 }
             }
-            className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] right-5 bottom-5 bg-gradient-to-r from-green-300 to-lime-200 shadow-lg`}
+            className={menuFab(
+              "bg-gradient-to-tr from-emerald-300 via-lime-200 to-green-100",
+            )}
           >
             <IoIosAddCircle />
           </motion.div>
+
           <motion.div
             onClick={() => prepareDelete(showCategory)}
             initial={{ opacity: 0 }}
@@ -115,10 +145,13 @@ export const AddCircle = () => {
                 ? { x: -40, y: -90, scale: 1.25, opacity: 1 }
                 : { x: 0, y: 0, scale: 0 }
             }
-            className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] right-5 bottom-5 bg-gradient-to-r from-red-300 to-rose-200 shadow-md`}
+            className={menuFab(
+              "bg-gradient-to-tr from-rose-400 via-pink-300 to-red-200",
+            )}
           >
             <BsFillTrashFill />
           </motion.div>
+
           <motion.div
             onClick={() => {}}
             initial={{ opacity: 0 }}
@@ -127,10 +160,13 @@ export const AddCircle = () => {
                 ? { x: 5, y: -120, scale: 1.25, opacity: 1 }
                 : { x: 0, y: 0, scale: 0 }
             }
-            className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] right-5 bottom-5 bg-gradient-to-r from-blue-300 to-sky-200 shadow-md`}
+            className={menuFab(
+              "bg-gradient-to-tr from-sky-400 via-blue-300 to-cyan-200",
+            )}
           >
             <BsFillShareFill />
           </motion.div>
+
           <motion.div
             onClick={() => {}}
             initial={{ opacity: 0 }}
@@ -139,7 +175,9 @@ export const AddCircle = () => {
                 ? { x: -90, y: 5, scale: 1.25, opacity: 1 }
                 : { x: 0, y: 0, scale: 0 }
             }
-            className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] right-5 bottom-5 bg-gradient-to-r from-pink-300 to-violet-200 shadow-md`}
+            className={menuFab(
+              "bg-gradient-to-tr from-fuchsia-400 via-pink-300 to-violet-200",
+            )}
           >
             <BsSearch />
           </motion.div>
@@ -147,15 +185,19 @@ export const AddCircle = () => {
       ) : (
         <motion.div
           onClick={() => setShow((prev) => !prev)}
-          className={`fixed w-[40px] h-[40px] z-[700] ${
-            showLogin || type !== null
-              ? "opacity-0 pointer-events-none"
-              : "opacity-100 pointer-events-auto"
-          } p-3 rounded-full cursor-pointer flex justify-center items-center bg-gradient-to-tr right-5 bottom-5 from-cyan-200 to-cyan-100 shadow-md`}
+          className={`
+        ${mainFab}
+        ${
+          showLogin || type !== null
+            ? "opacity-0 pointer-events-none"
+            : "opacity-100 pointer-events-auto"
+        }
+      `}
         >
           {show ? <BsXCircleFill /> : <BsFillCalendarPlusFill />}
         </motion.div>
       )}
+
       <motion.div
         onClick={() => openModalAndSetType("task")}
         initial={{ opacity: 0 }}
@@ -164,10 +206,13 @@ export const AddCircle = () => {
             ? { x: -130, y: 5, scale: 1.25, opacity: 1 }
             : { x: 0, y: 0, scale: 0 }
         }
-        className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] right-5 bottom-5 bg-gradient-to-r from-pink-300 to-violet-200 shadow-md`}
+        className={menuFab(
+          "bg-gradient-to-tr from-fuchsia-400 via-pink-300 to-violet-200",
+        )}
       >
         <BsListTask />
       </motion.div>
+
       <motion.div
         onClick={() => openModalAndSetType("kanban")}
         initial={{ opacity: 0 }}
@@ -182,10 +227,13 @@ export const AddCircle = () => {
               }
             : { x: 0, y: 0, scale: 0 }
         }
-        className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] right-5 bottom-5 bg-gradient-to-r from-lime-300 to-emerald-200 shadow-md`}
+        className={menuFab(
+          "bg-gradient-to-tr from-lime-300 via-emerald-300 to-green-200",
+        )}
       >
         <BsFillClipboardDataFill />
       </motion.div>
+
       <motion.div
         onClick={() => openModalAndSetType("reminder")}
         initial={{ opacity: 0 }}
@@ -200,10 +248,13 @@ export const AddCircle = () => {
               }
             : { x: 0, y: 0, scale: 0 }
         }
-        className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] right-5 bottom-5 bg-gradient-to-r from-red-300 to-rose-200 shadow-md`}
+        className={menuFab(
+          "bg-gradient-to-tr from-rose-400 via-pink-300 to-red-200",
+        )}
       >
         <BsAlarmFill />
       </motion.div>
+
       <motion.div
         onClick={() => openModalAndSetType("todo-list")}
         initial={{ opacity: 0 }}
@@ -218,10 +269,13 @@ export const AddCircle = () => {
               }
             : { x: 0, y: 0, scale: 0 }
         }
-        className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] right-5 bottom-5 bg-gradient-to-r from-cyan-300 to-sky-200 shadow-md`}
+        className={menuFab(
+          "bg-gradient-to-tr from-cyan-300 via-sky-300 to-blue-200",
+        )}
       >
         <BsListCheck />
       </motion.div>
+
       <motion.div
         onClick={() => openModalAndSetType("event")}
         initial={{ opacity: 0 }}
@@ -236,10 +290,13 @@ export const AddCircle = () => {
               }
             : { x: 0, y: 0, scale: 0 }
         }
-        className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] right-5 bottom-5 bg-gradient-to-r from-orange-300 to-yellow-200 shadow-md`}
+        className={menuFab(
+          "bg-gradient-to-tr from-amber-300 via-orange-300 to-yellow-200",
+        )}
       >
         <BsFillCalendar2EventFill />
       </motion.div>
+
       <motion.div
         initial={{ opacity: 0 }}
         animate={
@@ -253,13 +310,14 @@ export const AddCircle = () => {
               }
             : { x: 0, y: 0, scale: 0 }
         }
-        className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] right-5 bottom-5 bg-gradient-to-r from-indigo-300 to-purple-200 shadow-md`}
-        onClick={() => {
-          setShow(false);
-        }}
+        className={menuFab(
+          "bg-gradient-to-tr from-indigo-400 via-purple-300 to-violet-200",
+        )}
+        onClick={() => setShow(false)}
       >
         <AiFillSchedule />
       </motion.div>
+
       <motion.div
         onClick={() => openModalAndSetType("stickynote")}
         initial={{ opacity: 0 }}
@@ -274,10 +332,13 @@ export const AddCircle = () => {
               }
             : { x: 0, y: 0, scale: 0 }
         }
-        className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] right-5 bottom-5 bg-gradient-to-r from-white to-slate-200 shadow-md`}
+        className={menuFab(
+          "bg-gradient-to-tr from-white via-slate-100 to-slate-200",
+        )}
       >
         <FaStickyNote />
       </motion.div>
+
       <motion.div
         initial={{ opacity: 0 }}
         animate={
@@ -291,13 +352,14 @@ export const AddCircle = () => {
               }
             : { x: 0, y: 0, scale: 0 }
         }
-        className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] right-5 bottom-5 bg-gradient-to-r from-teal-300 to-purple-200 shadow-md`}
-        onClick={() => {
-          setShow(false);
-        }}
+        className={menuFab(
+          "bg-gradient-to-tr from-teal-300 via-cyan-300 to-purple-200",
+        )}
+        onClick={() => setShow(false)}
       >
         <HiUserGroup />
       </motion.div>
+
       <motion.div
         onClick={() => openModalAndSetType("timer")}
         initial={{ opacity: 0 }}
@@ -312,7 +374,9 @@ export const AddCircle = () => {
               }
             : { x: 0, y: 0, scale: 0 }
         }
-        className={`p-3 text-xs cursor-pointer rounded-full fixed z-[700] right-5 bottom-5 bg-gradient-to-r from-yellow-100 to-pink-200 shadow-md`}
+        className={menuFab(
+          "bg-gradient-to-tr from-yellow-200 via-amber-200 to-pink-200",
+        )}
       >
         <IoMdTimer />
       </motion.div>

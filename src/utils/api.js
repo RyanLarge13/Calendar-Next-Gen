@@ -708,6 +708,15 @@ export const deleteKanbanBoard = (kanabanId, token) => {
 
 // Stickies
 
+export const API_UpdateStickyPin = (newPin, stickyId, token) => {
+  const res = Axios.patch(
+    `${productionUrl}/update/sticky/pin`,
+    { stickyId, newPin },
+    { headers: { Authorization: `Bearer ${token}` } },
+  );
+  return res;
+};
+
 export const addNewSticky = (token, sticky) => {
   const res = Axios.post(
     `${productionUrl}/add/sticky`,

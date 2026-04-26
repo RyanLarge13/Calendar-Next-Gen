@@ -1,11 +1,11 @@
 import { useContext } from "react";
-import { BiListPlus, BiShareAlt, BiTrash } from "react-icons/bi";
+import { BiListPlus, BiPin, BiShareAlt, BiTrash } from "react-icons/bi";
 import { IoIosAddCircle } from "react-icons/io";
 import Masonry from "react-masonry-css";
 import UserContext from "../../context/UserContext.jsx";
-import { tailwindBgToHex } from "../../utils/helpers.js";
+import { getAuthToken, tailwindBgToHex } from "../../utils/helpers.js";
 import StickyBody from "./StickyBody.jsx";
-import { deleteStickyNote } from "../../utils/api.js";
+import { API_UpdateStickyPin, deleteStickyNote } from "../../utils/api.js";
 
 const StaticStickies = () => {
   const { stickies, preferences, setStickies, setSystemNotif } =
@@ -64,6 +64,31 @@ const StaticStickies = () => {
         .catch((err) => {
           console.log(err);
         });
+    }
+  };
+
+  const togglePin = async (newPin, stickyId) => {
+    const oldStickies = stickies;
+
+    setStickies((prev) =>
+      prev.map((s) => {
+        if (s.id === stickyId) {
+          return {
+            ...s,
+            pin: newPin,
+          };
+        }
+        return s;
+      }),
+    );
+
+    try {
+      const token = getAuthToken();
+      await API_UpdateStickyPin(newPin, stickyId, token);
+    } catch (err) {
+      setStickies(oldStickies);
+      console.log("Error updating sticky pin value on server");
+      console.log(err);
     }
   };
 
@@ -129,6 +154,17 @@ const StaticStickies = () => {
                       `}
                     >
                       <BiShareAlt />
+                    </button>
+                    <button
+                      onClick={() => togglePin(!sticky.pin, sticky.id)}
+                      className={`
+                        grid place-items-center h-9 w-9 rounded-2xl border shadow-sm transition active:scale-95
+                        ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70" : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600"}
+                      `}
+                    >
+                      <BiPin
+                        className={`${sticky.pin ? "text-cyan-800" : ""} duration-200`}
+                      />
                     </button>
                   </div>
                 </div>

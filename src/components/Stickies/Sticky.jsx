@@ -16,8 +16,7 @@ import { tailwindBgToHex } from "../../utils/helpers.js";
 import StickyBody from "./StickyBody.jsx";
 
 const Sticky = ({ sticky, index }) => {
-  const { setSystemNotif, setStickies, stickies, preferences } =
-    useContext(UserContext);
+  const { setSystemNotif, setStickies, preferences } = useContext(UserContext);
   const { event } = useContext(InteractiveContext);
 
   const initialView = sticky.viewState ?? "minimized";
@@ -110,8 +109,7 @@ const Sticky = ({ sticky, index }) => {
     if (token) {
       deleteStickyNote(token, stickyId)
         .then((res) => {
-          const newStickies = stickies.filter((item) => item.id !== stickyId);
-          setStickies(newStickies);
+          setStickies((prev) => prev.filter((item) => item.id !== stickyId));
           const newSuccess = {
             show: true,
             title: "Deleted Sticky",
