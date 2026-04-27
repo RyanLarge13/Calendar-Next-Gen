@@ -10,9 +10,11 @@ import {
 import { tailwindBgToHex } from "../../utils/helpers.js";
 import { useContext } from "react";
 import UserContext from "../../context/UserContext";
+import InteractiveContext from "../../context/InteractiveContext.jsx";
 
 const EventCard = ({ event, styles = {} }) => {
   const { preferences } = useContext(UserContext);
+  const { setEvent } = useContext(InteractiveContext);
 
   return (
     <motion.div
@@ -20,6 +22,7 @@ const EventCard = ({ event, styles = {} }) => {
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
       style={styles}
+      onClick={() => setEvent(event)}
       className={`
         group relative mt-5 rounded-3xl border shadow-sm overflow-hidden
         transition-all duration-200 cursor-pointer
@@ -50,8 +53,7 @@ const EventCard = ({ event, styles = {} }) => {
             </p>
 
             <h3
-              style={{ color: tailwindBgToHex(event.color) }}
-              className="mt-1 text-sm font-bold leading-tight truncate"
+              className={`mt-1 text-sm font-bold leading-tight truncate ${preferences.darkMode ? "text-white/70" : "text-white/10"}`}
             >
               {event.summary}
             </h3>
