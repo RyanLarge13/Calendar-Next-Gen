@@ -1,6 +1,6 @@
 import Compressor from "compressorjs";
 import { AnimatePresence, motion, useDragControls } from "framer-motion";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { AiFillCloseCircle } from "react-icons/ai";
 import { FaExternalLinkAlt, FaImage, FaTrash } from "react-icons/fa";
 import { FiMaximize, FiMinimize, FiRepeat } from "react-icons/fi";
@@ -48,6 +48,8 @@ const Event = () => {
     location: event?.location || "",
   });
 
+  const backspaceRef = useRef(false);
+
   const controls = useDragControls();
 
   const breakpointColumnsObj = {
@@ -58,16 +60,21 @@ const Event = () => {
   };
 
   useEffect(() => {
+    if (backspaceRef.current === true) {
+      return;
+    }
+
     const handlePopState = () => {
+      backspaceRef.current = false;
       setEvent(null);
     };
 
+    backspaceRef.current = true;
     window.addEventListener("popstate", handlePopState);
-
     return () => {
       window.removeEventListener("popstate", handlePopState);
     };
-  }, []);
+  }, [event]);
 
   useEffect(() => {
     if (event) {

@@ -38,16 +38,24 @@ const Menu = () => {
   const [taskSortOpt, setTaskSortOpt] = useState("");
   const [taskSearchTxt, setTaskSearchTxt] = useState("");
 
+  const backspaceRef = useRef(false);
+
   useEffect(() => {
+    if (backspaceRef.current === true) {
+      return;
+    }
+
     const handleBack = () => {
       if (showCategory !== null) {
         setShowCategory(null);
       }
       if (showCategory === null) {
+        backspaceRef.current = false;
         setMenu(false);
       }
     };
 
+    backspaceRef.current = true;
     window.addEventListener("popstate", handleBack);
     return () => window.removeEventListener("popstate", handleBack);
   }, [showCategory]);

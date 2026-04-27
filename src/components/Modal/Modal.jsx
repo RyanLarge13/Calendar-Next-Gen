@@ -42,14 +42,20 @@ const Modal = () => {
 
   const staticTimesContainerRef = useRef(null);
   const modalRef = useRef(null);
+  const backspaceRef = useRef(false);
 
   useEffect(() => {
+    if (backspaceRef.current === true) {
+      return;
+    }
+
     const handlePopState = () => {
+      backspaceRef.current = false;
       closeModal();
     };
 
+    backspaceRef.current = true;
     window.addEventListener("popstate", handlePopState);
-
     return () => {
       window.removeEventListener("popstate", handlePopState);
     };
