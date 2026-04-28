@@ -134,7 +134,7 @@ const Task = ({ task }) => {
   };
 
   const clearAllTasksComplete = async () => {
-    const newTasks = task.tasks.filter((t) => t.complete === true) || [];
+    const newTasks = task.tasks.filter((t) => t.complete === false) || [];
 
     const update = {
       taskId: task.id,

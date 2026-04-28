@@ -204,11 +204,11 @@ const TaskItems = ({ task, styles = "" }) => {
 
         <div
           className={`
-        flex-shrink-0
-        px-3 py-1.5 rounded-2xl border shadow-sm
-        text-[11px] font-semibold
-        ${preferences.darkMode ? "bg-white/5 border-white/10 text-white/70" : "bg-black/[0.03] border-black/10 text-slate-600"}
-      `}
+            flex-shrink-0
+            px-3 py-1.5 rounded-2xl border shadow-sm
+            text-[11px] font-semibold ${itemsCopy.filter((tsk) => tsk.complete).length === itemsCopy.length ? "border-emerald-800 bg-emerald-950" : ""}
+            ${preferences.darkMode ? "bg-white/5 border-white/10 text-white/70" : "bg-black/[0.03] border-black/10 text-slate-600"}
+          `}
           title="Completed / Total"
         >
           {itemsCopy.filter((tsk) => tsk.complete).length}/{itemsCopy.length}
@@ -309,7 +309,7 @@ const TaskItems = ({ task, styles = "" }) => {
       {/* New Item Input */}
       <div
         className={`
-      rounded-3xl border shadow-sm p-3
+      rounded-3xl border shadow-sm p-2
       flex items-center gap-3
       ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-white border-black/10"}
     `}
@@ -343,7 +343,7 @@ const TaskItems = ({ task, styles = "" }) => {
           type="button"
           onClick={() => addNewTaskItem()}
           className={`
-        h-12 w-12 grid place-items-center rounded-2xl border shadow-sm transition
+        h-10 w-10 grid place-items-center rounded-2xl border shadow-sm transition
         hover:shadow-md active:scale-[0.97]
         ${
           preferences.darkMode
@@ -353,7 +353,7 @@ const TaskItems = ({ task, styles = "" }) => {
       `}
           aria-label="Add item"
         >
-          <AiFillPlusCircle className="text-2xl" />
+          <AiFillPlusCircle className="text-xl" />
         </button>
       </div>
 

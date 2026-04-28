@@ -82,7 +82,9 @@ const TaskItem = ({
               preferences.darkMode ? "text-white/45" : "text-slate-500"
             }`}
           >
-            {taskItem.complete ? "Completed" : "Tap to edit • Enter to save"}
+            {taskItem.complete
+              ? `Completed • ${new Date(taskItem.completedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`
+              : "Tap to edit • Enter to save"}
           </p>
         </div>
       </label>
