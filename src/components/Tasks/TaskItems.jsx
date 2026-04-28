@@ -18,8 +18,36 @@ const TaskItems = ({ task, styles = "" }) => {
   const [newTaskText, setNewTaskText] = useState("");
   const [newTitle, setNewTitle] = useState(task.title);
   const [titleTracker, setTitleTracker] = useState(task.title);
+  const [sortOrder, setSortOrder] = useState(1);
 
   const taskItemInputRef = useRef(null);
+
+  // Sorted state
+  const sortedItems = [...itemsCopy].sort((a, b) => {
+    if (sortOrder === 0) return 0;
+
+    // incomplete first, completed last
+    if (sortOrder === 1) {
+      return Number(a.complete) - Number(b.complete);
+    }
+
+    // A → Z
+    if (sortOrder === 2) {
+      return (a.text || "").localeCompare(b.text || "");
+    }
+
+    // Z → A
+    if (sortOrder === 3) {
+      return (b.text || "").localeCompare(a.text || "");
+    }
+
+    // completed first, incomplete last
+    if (sortOrder === 4) {
+      return Number(b.complete) - Number(a.complete);
+    }
+
+    return 0;
+  });
 
   useEffect(() => {
     setItemsCopy(task.tasks);
@@ -111,7 +139,7 @@ const TaskItems = ({ task, styles = "" }) => {
         prev.map((t) => (t.id === task.id ? { ...t, tasks: newTasks } : t)),
       );
 
-      setItemsCopy(newItems);
+      setItemsCopy(newTasks);
     } catch (err) {
       console.log("Error updating task items when removing a task");
       console.log(err);
@@ -359,7 +387,7 @@ const TaskItems = ({ task, styles = "" }) => {
 
       {/* Task Items */}
       <div className={`space-y-2 pb-1 ${styles}`}>
-        {itemsCopy.map((taskItem) => (
+        {sortedItems.map((taskItem) => (
           <TaskItem
             key={taskItem.id}
             taskItem={taskItem}
