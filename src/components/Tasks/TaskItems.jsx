@@ -18,7 +18,9 @@ const TaskItems = ({ task, styles = "" }) => {
   const [newTaskText, setNewTaskText] = useState("");
   const [newTitle, setNewTitle] = useState(task.title);
   const [titleTracker, setTitleTracker] = useState(task.title);
-  const [sortOrder, setSortOrder] = useState(1);
+  const [sortOrder, setSortOrder] = useState(
+    preferences.tasks?.[task.id]?.sortOrder || 1,
+  );
 
   const taskItemInputRef = useRef(null);
 
