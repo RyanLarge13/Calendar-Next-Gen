@@ -1,7 +1,7 @@
 import { ReactElement } from "react";
 
 export type Preferences = {
-  darkMode: string;
+  darkMode: boolean;
   view: string;
   doNotDisturb: boolean;
   lockApp: boolean;

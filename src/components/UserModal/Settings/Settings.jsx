@@ -7,6 +7,9 @@ import UserContext from "../../../context/UserContext";
 import Portal from "../../Misc/Portal";
 import Switch from "../../Misc/Switch";
 import NotificationSubscriptions from "./NotificationSubscriptions";
+import SettingsSection from "./SettingsSection";
+import SelectPill from "./SelectPill";
+import SettingRow from "./SettingRow";
 
 const Settings = ({ setOption }) => {
   const { preferences, setPreferences } = useContext(UserContext);
@@ -142,7 +145,7 @@ const Settings = ({ setOption }) => {
         <div
           className={`px-5 pb-[250px] pt-5 overflow-y-auto max-h-screen scrollbar-hide ${preferences.darkMode ? "bg-black/[0.03]" : " bg-white/80"}`}
         >
-          <div className="mx-auto w-full max-w-xl space-y-4">
+          <div className="mx-auto w-full max-w-xl space-y-4 mb-10">
             {/* Section Card */}
             <div
               className={`
@@ -212,22 +215,251 @@ const Settings = ({ setOption }) => {
               </div>
             </div>
 
-            {/* Future sections placeholder */}
-            <div
-              className={`
-                rounded-3xl border shadow-sm p-4
-                ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-white border-black/10"}
-              `}
+            {/* App behavior */}
+            <SettingsSection
+              title="App Behavior"
+              description="Control the default view and app-level behavior."
+              badge={preferences.view || "Calendar"}
+              preferences={preferences}
             >
-              <p className="text-sm font-semibold">Coming soon</p>
-              <p
-                className={`text-xs mt-1 ${
-                  preferences.darkMode ? "text-white/55" : "text-slate-500"
-                }`}
+              <SettingRow
+                title="Default View"
+                description="Choose what opens first."
+                preferences={preferences}
               >
-                Notifications, privacy, account, integrations, and more.
-              </p>
-            </div>
+                <SelectPill
+                  value={preferences.view || "Month"}
+                  options={["Month", "Week", "Day", "Agenda"]}
+                  preferences={preferences}
+                  onChange={(value) => {
+                    console.log("TODO: update preferences.view", value);
+                  }}
+                />
+              </SettingRow>
+
+              <Switch
+                title="Do Not Disturb"
+                styles={`
+      rounded-3xl border shadow-sm px-3 py-3
+      ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-black/[0.02] border-black/10"}
+    `}
+                value={preferences.doNotDisturb}
+                toggle={(value) => {
+                  console.log("TODO: update preferences.doNotDisturb", value);
+                }}
+              />
+
+              <Switch
+                title="Lock App"
+                styles={`
+      rounded-3xl border shadow-sm px-3 py-3
+      ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-black/[0.02] border-black/10"}
+    `}
+                value={preferences.lockApp}
+                toggle={(value) => {
+                  console.log("TODO: update preferences.lockApp", value);
+                }}
+              />
+            </SettingsSection>
+
+            {/* Main Menu */}
+            <SettingsSection
+              title="Main Menu"
+              description="Choose what appears on the main menu."
+              badge={
+                preferences.mainMenuPage?.defaultPageOpening || "Dashboard"
+              }
+              preferences={preferences}
+            >
+              <SettingRow
+                title="Default Opening"
+                description="The first page shown in the menu."
+                preferences={preferences}
+              >
+                <SelectPill
+                  value={
+                    preferences.mainMenuPage?.defaultPageOpening || "Dashboard"
+                  }
+                  options={["Dashboard", "Events", "Tasks", "Reminders"]}
+                  preferences={preferences}
+                  onChange={(value) => {
+                    console.log(
+                      "TODO: update mainMenuPage.defaultPageOpening",
+                      value,
+                    );
+                  }}
+                />
+              </SettingRow>
+
+              {[
+                ["showEvents", "Events"],
+                ["showWeather", "Weather"],
+                ["showReminders", "Reminders"],
+                ["showTasks", "Tasks"],
+                ["showNotes", "Notes"],
+                ["showKanban", "Kanban"],
+                ["showAppointments", "Appointments"],
+                ["showLists", "Lists"],
+              ].map(([key, label]) => (
+                <Switch
+                  key={key}
+                  title={label}
+                  styles={`
+        rounded-3xl border shadow-sm px-3 py-3
+        ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-black/[0.02] border-black/10"}
+      `}
+                  value={preferences.mainMenuPage?.[key]}
+                  toggle={(value) => {
+                    console.log(`TODO: update mainMenuPage.${key}`, value);
+                  }}
+                />
+              ))}
+            </SettingsSection>
+
+            {/* Sidebar */}
+            <SettingsSection
+              title="Sidebar"
+              description="Manage sidebar visibility and shortcuts."
+              badge={preferences.showSidebar?.on ? "On" : "Off"}
+              preferences={preferences}
+            >
+              <Switch
+                title="Show Sidebar"
+                styles={`
+      rounded-3xl border shadow-sm px-3 py-3
+      ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-black/[0.02] border-black/10"}
+    `}
+                value={preferences.showSidebar?.on}
+                toggle={(value) => {
+                  console.log("TODO: update showSidebar.on", value);
+                }}
+              />
+
+              <Switch
+                title="Sidebar Events"
+                styles={`
+      rounded-3xl border shadow-sm px-3 py-3
+      ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-black/[0.02] border-black/10"}
+    `}
+                value={preferences.showSidebar?.showEvents}
+                toggle={(value) => {
+                  console.log("TODO: update showSidebar.showEvents", value);
+                }}
+              />
+
+              <Switch
+                title="Sidebar Reminders"
+                styles={`
+      rounded-3xl border shadow-sm px-3 py-3
+      ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-black/[0.02] border-black/10"}
+    `}
+                value={preferences.showSidebar?.showReminders}
+                toggle={(value) => {
+                  console.log("TODO: update showSidebar.showReminders", value);
+                }}
+              />
+            </SettingsSection>
+
+            {/* Events */}
+            <SettingsSection
+              title="Events"
+              description="Control event filtering and sorting."
+              badge={preferences.events?.sort || "Default"}
+              preferences={preferences}
+            >
+              <SettingRow
+                title="Filter"
+                description="Which events to show."
+                preferences={preferences}
+              >
+                <SelectPill
+                  value={preferences.events?.filter || "All"}
+                  options={["All", "Upcoming", "Past", "Repeating"]}
+                  preferences={preferences}
+                  onChange={(value) => {
+                    console.log("TODO: update events.filter", value);
+                  }}
+                />
+              </SettingRow>
+
+              <SettingRow
+                title="Sort"
+                description="How events are ordered."
+                preferences={preferences}
+              >
+                <SelectPill
+                  value={preferences.events?.sort || "Newest"}
+                  options={["Newest", "Oldest", "A-Z", "Custom"]}
+                  preferences={preferences}
+                  onChange={(value) => {
+                    console.log("TODO: update events.sort", value);
+                  }}
+                />
+              </SettingRow>
+            </SettingsSection>
+
+            {/* Reminders */}
+            <SettingsSection
+              title="Reminders"
+              description="Manage grouping for complete and incomplete reminders."
+              preferences={preferences}
+            >
+              <SettingRow
+                title="Incomplete Grouping"
+                description="Group active reminders by."
+                preferences={preferences}
+              >
+                <SelectPill
+                  value={preferences.reminders?.incomplete?.groupType || "Date"}
+                  options={["Date", "Priority", "List", "None"]}
+                  preferences={preferences}
+                  onChange={(value) => {
+                    console.log(
+                      "TODO: update reminders.incomplete.groupType",
+                      value,
+                    );
+                  }}
+                />
+              </SettingRow>
+
+              <SettingRow
+                title="Complete Grouping"
+                description="Group finished reminders by."
+                preferences={preferences}
+              >
+                <SelectPill
+                  value={preferences.reminders?.complete?.groupType || "Date"}
+                  options={["Date", "Priority", "List", "None"]}
+                  preferences={preferences}
+                  onChange={(value) => {
+                    console.log(
+                      "TODO: update reminders.complete.groupType",
+                      value,
+                    );
+                  }}
+                />
+              </SettingRow>
+            </SettingsSection>
+
+            {/* Stickies */}
+            <SettingsSection
+              title="Stickies"
+              description="Quick-note behavior."
+              badge={preferences.stickies?.autoSave ? "Auto" : "Manual"}
+              preferences={preferences}
+            >
+              <Switch
+                title="Auto Save"
+                styles={`
+      rounded-3xl border shadow-sm px-3 py-3
+      ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-black/[0.02] border-black/10"}
+    `}
+                value={preferences.stickies?.autoSave}
+                toggle={(value) => {
+                  console.log("TODO: update stickies.autoSave", value);
+                }}
+              />
+            </SettingsSection>
 
             <p
               className={`text-[11px] font-semibold ${
