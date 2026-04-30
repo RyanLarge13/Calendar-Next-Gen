@@ -61,7 +61,7 @@ const Events = () => {
       events = events.filter((event) => {
         const title = event?.title || event?.name || "";
         const description = event?.description || "";
-        const location = event?.location || "";
+        const location = event?.location?.string || "";
 
         return (
           title.toLowerCase().includes(q) ||

@@ -13,7 +13,6 @@ export const InteractiveProvider = ({ children }) => {
   const [type, setType] = useState(null);
   const [event, setEvent] = useState(null);
   const [showCategory, setShowCategory] = useState(null);
-  const [mainView, setMainView] = useState("calendar");
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showFullDatePicker, setShowFullDatePicker] = useState(false);
   const [hideMenuNav, setHideMenuNav] = useState(true);
@@ -35,7 +34,6 @@ export const InteractiveProvider = ({ children }) => {
         filters,
         showDatePicker,
         showCategory,
-        mainView,
         showFullDatePicker,
         hideMenuNav,
         addEventWithStartEndTime,
@@ -43,7 +41,6 @@ export const InteractiveProvider = ({ children }) => {
         setHideMenuNav,
         setShowFullDatePicker,
         setShowDatePicker,
-        setMainView,
         setShowCategory,
         setFilters,
         setEvent,
