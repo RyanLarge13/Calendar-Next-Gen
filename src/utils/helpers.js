@@ -686,3 +686,24 @@ export const setStateAndPushWindowState = (callback) => {
 export const isPassed = (timeDate, timeCheck) => {
   return timeDate.getTime() > timeCheck.getTime();
 };
+
+export const getTimers = () => {
+  try {
+    const timersStr = localStorage.getItem("timers");
+
+    if (!timersStr) {
+      return [];
+    }
+
+    const timers = JSON.parse(timersStr);
+
+    if (Array.isArray(timers)) {
+      throw new Error("Timers are not stored as an array");
+    }
+
+    return timers;
+  } catch (err) {
+    console.log("Error fetching or parsing timers from localStorage");
+    console.log(err);
+  }
+};

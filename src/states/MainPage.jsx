@@ -13,6 +13,7 @@ import UserContext from "../context/UserContext";
 import { useModalActions } from "../context/ContextHooks/ModalContext";
 import ReminderNotifications from "../components/Reminders/ReminderNotifications";
 import { setStateAndPushWindowState } from "../utils/helpers";
+import Timers from "../components/Timers/Timers";
 
 const MainPage = () => {
   const {
@@ -83,6 +84,7 @@ const MainPage = () => {
       </div>
       <AddCircle />
       <Views />
+      <Timers />
       <Outlet />
     </main>
   );

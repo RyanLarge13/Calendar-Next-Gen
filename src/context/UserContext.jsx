@@ -19,7 +19,12 @@ import {
 } from "../utils/api";
 import QRCode from "qrcode-generator";
 import IndexedDBManager from "../utils/indexDBApi";
-import { getAuthToken, H_FetchWeather, parseNotifSubs } from "../utils/helpers";
+import {
+  getAuthToken,
+  getTimers,
+  H_FetchWeather,
+  parseNotifSubs,
+} from "../utils/helpers";
 
 const UserContext = createContext({});
 
@@ -51,6 +56,20 @@ export const UserProvider = ({ children }) => {
   const [qrCodeUrl, setQrCodeUrl] = useState(null);
   const [eventMap, setEventMap] = useState(new Map());
   const [eventMapDays, setEventMapDays] = useState(new Map());
+  // const [timers, setTimers] = useState(getTimers() || []);
+  const [timers, setTimers] = useState([
+    {
+      startTime: new Date().toString(),
+      endTime: new Date(
+        new Date().setMinutes(new Date().getMinutes() + 10),
+      ).toString(),
+      howLongMS: 600000,
+      pauseCount: 0,
+      pinned: true,
+      id: "1",
+    },
+  ]);
+
   const [location, setLocation] = useState({
     city: "",
     state: "",
@@ -752,6 +771,8 @@ export const UserProvider = ({ children }) => {
         notifSubs,
         localDB,
         reminderNotifications,
+        timers,
+        setTimers,
         setReminderNotifications,
         setNotifSubs,
         setWeatherData,
