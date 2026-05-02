@@ -1,6 +1,6 @@
 import { ReactElement } from "react";
 
-export type Preferences = {
+export type PreferencesType = {
   darkMode: boolean;
   view: string;
   doNotDisturb: boolean;

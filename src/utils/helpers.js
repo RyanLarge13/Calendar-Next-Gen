@@ -707,3 +707,28 @@ export const getTimers = () => {
     console.log(err);
   }
 };
+
+export const removeTimerFromStorage = (id) => {
+  try {
+    const timersStr = localStorage.getItem("timers");
+
+    if (!timersStr) {
+      return;
+    }
+
+    const timers = JSON.parse(timersStr);
+
+    if (Array.isArray(timers)) {
+      throw new Error("Timers are not stored as an array");
+    }
+
+    const newTimers = timers.filter((t) => t.id !== id) || [];
+
+    const newTimersStr = JSON.stringify(newTimers);
+
+    localStorage.setItem("timers", newTimersStr);
+  } catch (err) {
+    console.log("Error removing timer from storage");
+    console.log(err);
+  }
+};
