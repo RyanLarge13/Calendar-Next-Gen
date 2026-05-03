@@ -15,6 +15,7 @@ import { PreferencesType } from "../../types/preferences";
 import {
   getNewTimes,
   removeTimerFromStorage,
+  togglePinInStorage,
   toggleTimerPaused,
 } from "../../utils/helpers";
 
@@ -101,7 +102,21 @@ const Timer = ({ timer }: { timer: TimerType }) => {
     toggleTimerPaused(timer);
   };
 
-  const handleUnpin = () => {};
+  const handleUnpin = () => {
+    setTimers((prev: TimerType[]) =>
+      prev.map((t: TimerType) => {
+        if (t.id === timer.id) {
+          return {
+            ...t,
+            pinned: false,
+          };
+        }
+        return t;
+      }),
+    );
+
+    togglePinInStorage(timer.id, timer.pinned);
+  };
 
   const handleTimerCancel = () => {
     setTimers((prev) => prev.filter((t) => t.id !== timer.id));

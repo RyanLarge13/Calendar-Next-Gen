@@ -801,3 +801,26 @@ export const toggleTimerPaused = (timer) => {
     console.log(err);
   }
 };
+
+export const togglePinInStorage = (id, currentPin) => {
+  try {
+    const currentTimers = getTimers();
+
+    const newTimers = currentTimers.map((t) => {
+      if (t.id === id) {
+        return {
+          ...t,
+          pinned: !currentPin,
+        };
+      }
+      return t;
+    });
+
+    const newTimerStr = JSON.stringify(newTimers);
+
+    localStorage.setItem("timers", newTimerStr);
+  } catch (err) {
+    console.log("Error toggling timer pin in localStorage");
+    console.log(err);
+  }
+};

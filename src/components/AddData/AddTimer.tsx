@@ -55,13 +55,17 @@ const AddTimer = () => {
 
     addTimerToStorage(newTimer);
 
-    setAddNewEvent(false);
-    setType(null);
-    closeModal();
+    closeUI();
   };
 
   const clearTimer = () => {
     setSelectedMinutes(0);
+  };
+
+  const closeUI = () => {
+    setAddNewEvent(false);
+    setType(null);
+    closeModal();
   };
 
   return (
@@ -392,6 +396,18 @@ const AddTimer = () => {
             >
               <BiPlay className="text-lg" />
               Start Timer
+            </button>
+            <button
+              onClick={closeUI}
+              type="button"
+              className={`
+                flex items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold text-white shadow-md transition
+                hover:shadow-lg active:scale-[0.97]
+                bg-gradient-to-r from-rose-500 to-rose-400 hover:from-rose-400 hover:to-rose-500
+              `}
+            >
+              <BiPlay className="text-lg" />
+              Close Modal
             </button>
           </div>
 
