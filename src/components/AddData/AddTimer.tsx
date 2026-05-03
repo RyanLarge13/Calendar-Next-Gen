@@ -6,14 +6,22 @@ import { PreferencesType } from "../../types/preferences";
 import { TimerType } from "../../types/timers";
 import { v4 as uuidv4 } from "uuid";
 import { addTimerToStorage } from "../../utils/helpers";
+import InteractiveContext from "../../context/InteractiveContext";
+import { useModalActions } from "../../context/ContextHooks/ModalContext";
 
 const AddTimer = () => {
   const { preferences, setTimers } = useContext(UserContext) as {
     preferences: PreferencesType;
     setTimers: Dispatch<SetStateAction<TimerType[]>>;
   };
+  const { setAddNewEvent, setType } = useContext(InteractiveContext) as {
+    setAddNewEvent: Dispatch<SetStateAction<boolean>>;
+    setType: Dispatch<SetStateAction<boolean>>;
+  };
 
   const [selectedMinutes, setSelectedMinutes] = useState(0);
+
+  const { closeModal } = useModalActions();
 
   // placeholders only
   const quickTimes = [5, 10, 15, 25, 30, 45, 60];
@@ -47,6 +55,10 @@ const AddTimer = () => {
     setTimers((prev) => [...prev, newTimer]);
 
     addTimerToStorage(newTimer);
+
+    setAddNewEvent(false);
+    setType(null);
+    closeModal();
   };
 
   const clearTimer = () => {
