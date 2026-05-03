@@ -90,10 +90,9 @@ const Timer = ({ timer }: { timer: TimerType }) => {
         }, 0);
       }}
       layout
-      initial={{ opacity: 0, scale: 0.92, y: 10 }}
+      initial={{ opacity: 0, scale: 0, y: 10 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       whileDrag={{ scale: 1.03, cursor: "grabbing" }}
-      transition={{ type: "spring", stiffness: 260, damping: 24 }}
       className={`
         fixed left-6 top-6 z-50
         select-none cursor-grab overflow-hidden
@@ -128,7 +127,7 @@ const Timer = ({ timer }: { timer: TimerType }) => {
         }}
         className={`
           group relative flex items-center gap-3 text-left
-          transition-all duration-200 pl-5
+          transition-all pl-5
           ${expanded ? "min-w-[260px] px-4 py-4" : "w-[158px] px-4 py-3"}
         `}
       >
@@ -169,8 +168,8 @@ const Timer = ({ timer }: { timer: TimerType }) => {
           <div className="flex items-center justify-between gap-2">
             <p
               className={`
-    font-bold leading-none tracking-tight tabular-nums
-    ${expanded ? "text-2xl" : "w-[52px] text-center text-base"}
+    font-bold leading-none tracking-tight tabular-nums w-[52px] 
+    ${expanded ? "text-xl" : "text-center text-md"}
   `}
             >
               {remainingText}
@@ -258,7 +257,7 @@ const Timer = ({ timer }: { timer: TimerType }) => {
                   onClick={handleTimerCancel}
                   className={`
       flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-bold
-      border transition-all duration-150 active:scale-[0.96]
+      border transition-all active:scale-[0.96]
       ${
         preferences.darkMode
           ? "bg-white/5 border-white/10 text-white/60 hover:bg-white/10"
@@ -275,7 +274,7 @@ const Timer = ({ timer }: { timer: TimerType }) => {
                   onClick={handleUnpin}
                   className={`
       flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-bold
-      border transition-all duration-150 active:scale-[0.96]
+      border transition-all active:scale-[0.96]
       ${
         preferences.darkMode
           ? "bg-white/5 border-white/10 text-white/60 hover:bg-white/10"
@@ -293,7 +292,7 @@ const Timer = ({ timer }: { timer: TimerType }) => {
                   onClick={togglePause}
                   className={`
       flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-bold
-      border transition-all duration-150 active:scale-[0.96]
+      border transition-all active:scale-[0.96]
       ${
         timer.paused
           ? preferences.darkMode

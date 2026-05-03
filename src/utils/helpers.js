@@ -697,8 +697,8 @@ export const getTimers = () => {
 
     const timers = JSON.parse(timersStr);
 
-    if (Array.isArray(timers)) {
-      throw new Error("Timers are not stored as an array");
+    if (!timers) {
+      return [];
     }
 
     return timers;
@@ -718,8 +718,8 @@ export const removeTimerFromStorage = (id) => {
 
     const timers = JSON.parse(timersStr);
 
-    if (Array.isArray(timers)) {
-      throw new Error("Timers are not stored as an array");
+    if (!timers) {
+      return [];
     }
 
     const newTimers = timers.filter((t) => t.id !== id) || [];
@@ -729,6 +729,21 @@ export const removeTimerFromStorage = (id) => {
     localStorage.setItem("timers", newTimersStr);
   } catch (err) {
     console.log("Error removing timer from storage");
+    console.log(err);
+  }
+};
+
+export const addTimerToStorage = (newTimer) => {
+  try {
+    const existingTimers = getTimers() || [];
+
+    const newTimers = [...existingTimers, newTimer];
+
+    const newTimersStr = JSON.stringify(newTimers);
+
+    localStorage.setItem("timers", newTimersStr);
+  } catch (err) {
+    console.log("Error adding new timer to storage");
     console.log(err);
   }
 };

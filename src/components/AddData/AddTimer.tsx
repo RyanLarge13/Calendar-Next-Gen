@@ -1,14 +1,57 @@
-import React, { useContext } from "react";
+import React, { Dispatch, SetStateAction, useContext, useState } from "react";
 import { BiTimer, BiPlus, BiMinus, BiPlay } from "react-icons/bi";
 import { MdOutlineTimer, MdOutlineAccessTime, MdClear } from "react-icons/md";
 import UserContext from "../../context/UserContext";
+import { PreferencesType } from "../../types/preferences";
+import { TimerType } from "../../types/timers";
+import { v4 as uuidv4 } from "uuid";
+import { addTimerToStorage } from "../../utils/helpers";
 
 const AddTimer = () => {
-  const { preferences } = useContext(UserContext);
+  const { preferences, setTimers } = useContext(UserContext) as {
+    preferences: PreferencesType;
+    setTimers: Dispatch<SetStateAction<TimerType[]>>;
+  };
+
+  const [selectedMinutes, setSelectedMinutes] = useState(0);
 
   // placeholders only
   const quickTimes = [5, 10, 15, 25, 30, 45, 60];
-  const selectedMinutes = 25;
+
+  const setTime = (mins: number) => {
+    setSelectedMinutes(mins);
+  };
+
+  const adjustTimer = (inc: number) => {
+    setSelectedMinutes((prev) => prev + inc);
+  };
+
+  const createTimer = () => {
+    const endTime = new Date().setMinutes(
+      new Date().getMinutes() + selectedMinutes,
+    );
+
+    const newTimer: TimerType = {
+      startTime: new Date().toString(),
+      endTime: new Date(endTime).toString(),
+      howLongMS: selectedMinutes * 60 * 1000,
+      pauseCount: 0,
+      paused: false,
+      pinned: true,
+      id: uuidv4(),
+      title: "New Timer",
+    };
+
+    console.log(newTimer);
+
+    setTimers((prev) => [...prev, newTimer]);
+
+    addTimerToStorage(newTimer);
+  };
+
+  const clearTimer = () => {
+    setSelectedMinutes(0);
+  };
 
   return (
     <div className="w-full mt-20">
@@ -114,6 +157,7 @@ const AddTimer = () => {
               {quickTimes.map((mins) => (
                 <button
                   key={mins}
+                  onClick={() => setTime(mins)}
                   type="button"
                   className={`
                     rounded-2xl border shadow-sm px-3 py-2.5 sm:px-3 sm:py-3 text-xs sm:text-sm font-semibold transition
@@ -177,6 +221,7 @@ const AddTimer = () => {
             <div className="grid grid-cols-[48px_1fr_48px] sm:grid-cols-[56px_1fr_56px] gap-2 sm:gap-3 items-center">
               <button
                 type="button"
+                onClick={() => adjustTimer(-1)}
                 className={`
                   h-12 w-12 sm:h-14 sm:w-14 grid place-items-center rounded-2xl border shadow-sm transition
                   hover:shadow-md active:scale-[0.97]
@@ -215,6 +260,7 @@ const AddTimer = () => {
 
               <button
                 type="button"
+                onClick={() => adjustTimer(1)}
                 className={`
                   h-12 w-12 sm:h-14 sm:w-14 grid place-items-center rounded-2xl border shadow-sm transition
                   hover:shadow-md active:scale-[0.97]
@@ -308,6 +354,7 @@ const AddTimer = () => {
         >
           <div className="grid grid-cols-1 xs:grid-cols-2 gap-3">
             <button
+              onClick={clearTimer}
               type="button"
               className={`
                 flex items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold shadow-sm transition
@@ -324,6 +371,7 @@ const AddTimer = () => {
             </button>
 
             <button
+              onClick={createTimer}
               type="button"
               className={`
                 flex items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold text-white shadow-md transition
