@@ -4,6 +4,7 @@ export type TimerType = {
   howLongMS: number;
   pauseCount: number;
   paused: boolean;
+  lastPausedAt: string;
   pinned: boolean;
   id: string;
   title: string;

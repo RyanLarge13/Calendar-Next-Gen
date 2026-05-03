@@ -747,3 +747,57 @@ export const addTimerToStorage = (newTimer) => {
     console.log(err);
   }
 };
+
+export const getNewTimes = (timer) => {
+  const lastPause = new Date(timer.lastPausedAt).getTime();
+  const now = new Date().getTime();
+
+  const timeElapsed = now - lastPause;
+
+  const newEndTime = new Date(timer.endTime).setMilliseconds(timeElapsed);
+  const newStartTime = new Date(timer.startTime).setMilliseconds(timeElapsed);
+
+  return {
+    end: new Date(newEndTime).toString(),
+    start: new Date(newStartTime).toString(),
+  };
+};
+
+export const toggleTimerPaused = (timer) => {
+  try {
+    if (timer.paused) {
+      const timers = getTimers();
+
+      const newTimers = timers.map((t) => {
+        if (t.id === timer.id) {
+          const { start, end } = getNewTimes(timer);
+          return {
+            ...t,
+            paused: false,
+            endTime: end,
+            startTime: start,
+          };
+        }
+        return t;
+      });
+    } else {
+      const timers = getTimers();
+      const newTimers = timers.map((t) => {
+        if (t.id === timer.id) {
+          return {
+            ...t,
+            paused: true,
+            lastPausedAt: new Date().toString(),
+          };
+        }
+        return t;
+      });
+
+      const timersStr = JSON.stringify(newTimers);
+      localStorage.setItem("timers", timersStr);
+    }
+  } catch (err) {
+    console.log("Error pausing or unpausing timer from localStorage");
+    console.log(err);
+  }
+};

@@ -12,6 +12,11 @@ import { TimerType } from "../../types/timers";
 import UserContext from "../../context/UserContext";
 import { BiPause, BiTimer } from "react-icons/bi";
 import { PreferencesType } from "../../types/preferences";
+import {
+  getNewTimes,
+  removeTimerFromStorage,
+  toggleTimerPaused,
+} from "../../utils/helpers";
 
 const Timer = ({ timer }: { timer: TimerType }) => {
   const { preferences, setTimers } = useContext(UserContext) as {
@@ -68,12 +73,39 @@ const Timer = ({ timer }: { timer: TimerType }) => {
     return () => clearInterval(int);
   }, [timer.paused, isDone]);
 
-  const togglePause = () => {};
+  const togglePause = (e) => {
+    e.preventDefault();
+
+    setTimers((prev) =>
+      prev.map((t: TimerType) => {
+        if (t.id === timer.id) {
+          if (t.paused) {
+            const { start, end } = getNewTimes(timer);
+            return {
+              ...t,
+              paused: false,
+              endTime: end,
+              startTime: start,
+            };
+          }
+          return {
+            ...t,
+            paused: true,
+            lastPausedAt: new Date().toString(),
+          };
+        }
+        return t;
+      }),
+    );
+
+    toggleTimerPaused(timer);
+  };
 
   const handleUnpin = () => {};
 
   const handleTimerCancel = () => {
     setTimers((prev) => prev.filter((t) => t.id !== timer.id));
+    removeTimerFromStorage(timer.id);
   };
 
   return (

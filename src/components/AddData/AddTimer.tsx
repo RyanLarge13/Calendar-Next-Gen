@@ -46,11 +46,10 @@ const AddTimer = () => {
       pauseCount: 0,
       paused: false,
       pinned: true,
+      lastPausedAt: new Date().toString(),
       id: uuidv4(),
       title: "New Timer",
     };
-
-    console.log(newTimer);
 
     setTimers((prev) => [...prev, newTimer]);
 
