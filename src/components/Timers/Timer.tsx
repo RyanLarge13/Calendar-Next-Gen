@@ -65,7 +65,12 @@ const Timer = ({ timer }: { timer: TimerType }) => {
   }, [timer, count]);
 
   useEffect(() => {
-    if (timer.paused || isDone) return;
+    if (isDone) {
+      triggerAlarm();
+      return;
+    }
+
+    if (timer.paused) return;
 
     const int = setInterval(() => {
       setCount((prev) => prev + 1);
@@ -73,6 +78,25 @@ const Timer = ({ timer }: { timer: TimerType }) => {
 
     return () => clearInterval(int);
   }, [timer.paused, isDone]);
+
+  const triggerAlarm = async () => {
+    // Please check permissions and use in app notification system if it does not work or is denied
+    const reg = await navigator.serviceWorker?.ready;
+    if (reg?.showNotification) {
+      await reg.showNotification("Timer Finished", {
+        body: `Your ${timer.title + " "}timer has finished`,
+        icon: "/sys-icon.svg",
+        badge: "/badge.svg",
+        tag: "timer-alert",
+        data: {
+          url: "/",
+        },
+      });
+      if ("vibrate" in navigator) {
+        navigator.vibrate([1000, 250, 250]);
+      }
+    }
+  };
 
   const togglePause = (e) => {
     e.preventDefault();
