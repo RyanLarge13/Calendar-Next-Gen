@@ -29,6 +29,7 @@ const Timer = ({ timer }: { timer: TimerType }) => {
   const [count, setCount] = useState(0);
 
   const wasDragging = useRef(false);
+  const loadedPaused = useRef(false);
 
   const { progress, remainingText, totalText, isDone } = useMemo(() => {
     const start = new Date(timer.startTime).getTime();
@@ -65,12 +66,29 @@ const Timer = ({ timer }: { timer: TimerType }) => {
   }, [timer, count]);
 
   useEffect(() => {
+    if (timer.paused && !isDone && loadedPaused.current === false) {
+      const { start, end } = getNewTimes(timer);
+      setTimers((prev) =>
+        prev.map((t) => {
+          if (t.id === timer.id) {
+            return {
+              ...t,
+              endTime: end,
+              startTime: start,
+              lastPausedAt: new Date().toString(),
+            };
+          }
+          return t;
+        }),
+      );
+      loadedPaused.current = true;
+      return;
+    }
+
     if (isDone) {
       triggerAlarm();
       return;
     }
-
-    if (timer.paused) return;
 
     const int = setInterval(() => {
       setCount((prev) => prev + 1);
