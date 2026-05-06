@@ -12,6 +12,7 @@ import friendsRouter from "./routes/friendsRouter.js";
 import kanbanRouter from "./routes/kanbanRouter.js";
 import stickiesRouter from "./routes/stickiesRouter.js";
 import processPushNotifications from "./utils/globalCron.js";
+import timerRouter from "./routes/timerRouter.js";
 dotenv.config();
 
 const PORT = process.env.PORT || 8080;
@@ -44,7 +45,8 @@ app.use(
   listRouter,
   taskRouter,
   kanbanRouter,
-  stickiesRouter
+  stickiesRouter,
+  timerRouter,
 );
 app.use("/friends", friendsRouter);
 

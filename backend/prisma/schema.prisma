@@ -300,3 +300,15 @@ customerNotes String
 burnoutDays String[]
 overbooking String[]
 }
+
+model Timer {
+id String @id @default(uuid())
+title String?
+startTime String
+endTime String
+howLongMS Int
+pauseCount Int @default(0)
+paused Boolean @default(false)
+lastPausedAt String @default("")
+pinned Boolean @default(true)
+}
