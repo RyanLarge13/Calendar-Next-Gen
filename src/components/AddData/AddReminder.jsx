@@ -571,13 +571,11 @@ const AddReminder = () => {
               ))}
             </div>
             <div
-              className={`mt-5 flex flex-col gap-1 justify-center items-start
-                ${
-                  preferences.darkMode
-                    ? "border-white/10 bg-white/5"
-                    : "border-black/10 bg-black/[0.02]"
-                }
-                `}
+              className={`flex items-center justify-between rounded-2xl border px-4 py-3 ${
+                preferences.darkMode
+                  ? "border-white/10 bg-white/5"
+                  : "border-black/10 bg-black/[0.02]"
+              }`}
             >
               <p className="text-xs text-gray-700 ml-4">Repeat Forever</p>
               <Toggle
@@ -598,7 +596,7 @@ const AddReminder = () => {
                           ? "months"
                           : repeat.howOften === "Yearly"
                             ? "years"
-                            : ""
+                            : "times"
                 }?`}
                 className={`mt-3 w-full rounded-2xl border px-4 py-3 text-sm font-semibold outline-none transition ${
                   preferences.darkMode
