@@ -11,6 +11,7 @@ import QuickPanel from "./QuickPanel";
 import ChangeDateAndTime from "./ChangeDateAndTime";
 import QuickPanelTop from "./QuickPanelTop";
 import ReminderDeviceSubscriptions from "./ReminderDeviceSubscriptions";
+import RepeatReminders from "./RepeatReminders";
 
 const ReminderView = ({ reminder, setShowFullReminder }) => {
   const { preferences, eventMap } = useContext(UserContext);
@@ -243,32 +244,7 @@ const ReminderView = ({ reminder, setShowFullReminder }) => {
                 ) : null}
 
                 {/* Repeating Reminders */}
-                {reminder.repeat?.repeats ? (
-                  <div className="space-y-4">
-                    <div
-                      className={`
-              rounded-3xl border shadow-sm p-4 sm:p-5
-              backdrop-blur-md
-              ${
-                preferences.darkMode
-                  ? "bg-[#161616]/65 border-white/10"
-                  : "bg-white/75 border-black/10"
-              }
-            `}
-                    >
-                      <p
-                        className={`text-[11px] font-semibold ${
-                          preferences.darkMode
-                            ? "text-white/50"
-                            : "text-slate-500"
-                        }`}
-                      >
-                        Repeating Reminders
-                      </p>
-                      {/* Show event here maybe <EventCard /> */}
-                    </div>
-                  </div>
-                ) : null}
+                <RepeatReminders reminder={reminder} />
                 {/* Event if any */}
                 {reminder.eventRefId ? (
                   <div className="space-y-4">

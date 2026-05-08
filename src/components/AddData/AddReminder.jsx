@@ -52,9 +52,9 @@ const AddReminder = () => {
   // Repeat states
   const [repeat, setRepeat] = useState({
     on: false,
-    repeatForever: false,
-    howOften: null,
-    count: 0,
+    howOften: "null",
+    interval: "infinity",
+    skipDates: [],
   });
 
   useEffect(() => {

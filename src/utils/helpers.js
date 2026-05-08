@@ -824,3 +824,9 @@ export const togglePinInStorage = (id, currentPin) => {
     console.log(err);
   }
 };
+
+export const repeatReminderOccursOnDay = (reminderTime, day) => {};
+
+export const reminderFutureDays = (reminderRepeats) => {
+  return [];
+};

@@ -41,6 +41,7 @@ export const UserProvider = ({ children }) => {
   const [refresh, setRefresh] = useState(false);
   const [lists, setLists] = useState([]);
   const [reminders, setReminders] = useState([]);
+  const [remindersMap, setRemindersMap] = useState(new Map());
   const [stickies, setStickies] = useState([]);
   const [userTasks, setUserTasks] = useState([]);
   const [friends, setFriends] = useState([]);
@@ -330,6 +331,30 @@ export const UserProvider = ({ children }) => {
       }
     });
     setEventMap(new Map(newMap));
+  };
+
+  const buildRemindersMap = (allReminders) => {
+    const newMap = new Map();
+
+    allReminders.forEach((rmd) => {
+      const date = new Date(rmd.time);
+      const key = `${date.getFullYear()}-${date.getMonth()}`;
+
+      if (!newMap.has(key)) {
+        newMap.set(key, { reminders: [rmd] });
+      } else {
+        newMap.get(key).reminders.push(rmd);
+      }
+
+      if (rmd.repeats.on) {
+        if (!newMap.has("repeat-reminders")) {
+          newMap.set("repeat-reminders", { reminders: [rmd] });
+        } else {
+          newMap.get("repeat-reminders").reminders.push(rmd);
+        }
+      }
+    });
+    setRemindersMap(new Map(newMap));
   };
 
   useEffect(() => {
@@ -776,6 +801,8 @@ export const UserProvider = ({ children }) => {
         localDB,
         reminderNotifications,
         timers,
+        remindersMap,
+        setRemindersMap,
         setTimers,
         setReminderNotifications,
         setNotifSubs,
