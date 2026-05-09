@@ -25,6 +25,7 @@ lists         List[]
 tasks Task[]
 kanbans Kanban[]
 stickies Sticky[]
+timers Timer[]
 friends       Friend[]       @relation(name: "UserToFriends")
 friendRequestsSent    FriendRequest[] @relation(name: "SentFriendRequests")
 friendRequestsReceived FriendRequest[] @relation(name: "ReceivedFriendRequests")
@@ -303,6 +304,7 @@ overbooking String[]
 
 model Timer {
 id String @id @default(uuid())
+userId String
 title String?
 startTime String
 endTime String
@@ -311,4 +313,5 @@ pauseCount Int @default(0)
 paused Boolean @default(false)
 lastPausedAt String @default("")
 pinned Boolean @default(true)
+User User   @relation(fields: [userId], references: [id])
 }
