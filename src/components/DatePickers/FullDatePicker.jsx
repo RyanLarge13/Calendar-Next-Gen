@@ -4,14 +4,18 @@ import {
   BsFillArrowDownCircleFill,
   BsFillArrowUpCircleFill,
 } from "react-icons/bs";
-import { staticMonths, staticYears } from "../../constants/dateAndTimeConstants.js";
+import {
+  staticMonths,
+  staticYears,
+} from "../../constants/dateAndTimeConstants.js";
 import DatesContext from "../../context/DatesContext.jsx";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
 import UserContext from "../../context/UserContext.jsx";
 import Portal from "../Misc/Portal.jsx";
 
 const FullDatePicker = ({ stateSetter }) => {
-  const { setShowFullDatePicker } = useContext(InteractiveContext);
+  const { setShowFullDatePicker, showFullDatePicker } =
+    useContext(InteractiveContext);
   const { preferences } = useContext(UserContext);
   const { month, year, day, daysInMonth } = useContext(DatesContext);
 
@@ -36,29 +40,26 @@ const FullDatePicker = ({ stateSetter }) => {
 
   useEffect(() => {
     const itemHeight = 60;
-    if (scrollMonthRef) {
+    if (scrollMonthRef.current) {
       scrollMonthRef.current.scrollTo({
         top: month * itemHeight,
-        behavior: "smooth",
       });
       setNewMonth(month);
     }
-    if (scrollYearRef) {
-      const index = staticYears.indexOf(year.toString());
+    if (scrollYearRef.current) {
+      const index = staticYears.indexOf(year);
       scrollYearRef.current.scrollTo({
         top: index * itemHeight,
-        behavior: "smooth",
       });
-      setNewYear(Number(staticYears[index]));
+      setNewYear(staticYears[index]);
     }
-    if (scrollDayRef) {
+    if (scrollDayRef.current) {
       scrollDayRef.current.scrollTo({
-        top: day - 1 * 60,
-        behavior: "smooth",
+        top: (day - 1) * 60,
       });
       setNewDay(day);
     }
-  }, []);
+  }, [showFullDatePicker]);
 
   const handleMonthScroll = () => {
     clearTimeout(debounceMonthTimeout);
@@ -120,7 +121,7 @@ const FullDatePicker = ({ stateSetter }) => {
   };
 
   const increaseYear = () => {
-    const index = staticYears.indexOf(newYear.toString());
+    const index = staticYears.indexOf(newYear);
     if (index < staticYears.length - 1) {
       const newYearToSet = Number(staticYears[index + 1]);
       setNewYear(newYearToSet);
@@ -132,7 +133,7 @@ const FullDatePicker = ({ stateSetter }) => {
   };
 
   const decreaseYear = () => {
-    const index = staticYears.indexOf(newYear.toString());
+    const index = staticYears.indexOf(newYear);
     if (index > 0) {
       const newYearToSet = Number(staticYears[index - 1]);
       setNewYear(newYearToSet);

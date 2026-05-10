@@ -18,34 +18,34 @@ const DatePicker = () => {
   const { setUpdatedDate, setNav, nav, month, year } = useContext(DatesContext);
   const { preferences } = useContext(UserContext);
 
-  const [newYear, setNewYear] = useState(null);
-  const [newMonth, setNewMonth] = useState(null);
+  const [newYear, setNewYear] = useState(year);
+  const [newMonth, setNewMonth] = useState(month);
 
   const scrollMonthRef = useRef(null);
   const scrollYearRef = useRef(null);
+
   let debounceMonthTimeout;
   let debounceYearTimeout;
 
   useEffect(() => {
+    if (!scrollMonthRef.current || !scrollYearRef.current) {
+      return;
+    }
+
     const itemHeight = 60;
-    if (scrollMonthRef.current) {
-      scrollMonthRef.current.scrollTo({
-        top: month * itemHeight,
-        behavior: "smooth",
-      });
-      setNewMonth(month);
-    }
-    if (scrollYearRef) {
-      const index = staticYears.indexOf(year.toString());
-      if (scrollYearRef.current) {
-        scrollYearRef.current.scrollTo({
-          top: index * itemHeight,
-          behavior: "smooth",
-        });
-        setNewYear(Number(staticYears[index]));
-      }
-    }
-  }, []);
+    scrollMonthRef.current.scrollTo({
+      top: month * itemHeight,
+      // behavior: "smooth",
+    });
+    setNewMonth(month);
+
+    const index = staticYears.indexOf(year);
+    scrollYearRef.current.scrollTo({
+      top: index * itemHeight,
+      // behavior: "smooth",
+    });
+    setNewYear(staticYears[index]);
+  }, [showDatePicker]);
 
   const handleMonthScroll = () => {
     clearTimeout(debounceMonthTimeout);
@@ -107,7 +107,7 @@ const DatePicker = () => {
   };
 
   const increaseYear = () => {
-    const index = staticYears.indexOf(newYear.toString());
+    const index = staticYears.indexOf(newYear);
     if (index < staticYears.length - 1) {
       const newYearToSet = Number(staticYears[index + 1]);
       setNewYear(newYearToSet);
@@ -119,7 +119,7 @@ const DatePicker = () => {
   };
 
   const decreaseYear = () => {
-    const index = staticYears.indexOf(newYear.toString());
+    const index = staticYears.indexOf(newYear);
     if (index > 0) {
       const newYearToSet = Number(staticYears[index - 1]);
       setNewYear(newYearToSet);
