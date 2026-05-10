@@ -83,7 +83,7 @@ const RepeatReminders = ({ reminder }) => {
                   : "text-slate-800 font-semibold mt-1"
               }
             >
-              Every {reminder.repeat?.howOften || "—"}
+              {reminder.repeat?.howOften || "—"}
             </p>
           </div>
 
@@ -115,7 +115,7 @@ const RepeatReminders = ({ reminder }) => {
             >
               {reminder.repeat?.interval === "infinity"
                 ? "Never"
-                : `After ${reminder.repeat?.interval || 1}`}
+                : `After ${reminder.repeat?.interval || 1} occurrences`}
             </p>
           </div>
 
@@ -170,15 +170,13 @@ const RepeatReminders = ({ reminder }) => {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {reminderFutureDays(reminder.repeat)
-              ?.slice(0, 4)
-              ?.map((date, index) => {
-                const isNext = index === 0;
+            {reminderFutureDays(reminder)?.map((date, index) => {
+              const isNext = index === 0;
 
-                return (
-                  <div
-                    key={date}
-                    className={`
+              return (
+                <div
+                  key={date}
+                  className={`
               relative overflow-hidden rounded-2xl border p-3
               transition-all duration-200
               ${
@@ -187,10 +185,10 @@ const RepeatReminders = ({ reminder }) => {
                   : "bg-white/70 border-black/10"
               }
             `}
-                  >
-                    {isNext && (
-                      <div
-                        className={`
+                >
+                  {isNext && (
+                    <div
+                      className={`
                   absolute top-0 right-0 px-2 py-1 text-[10px] font-bold rounded-bl-xl
                   ${
                     preferences.darkMode
@@ -198,24 +196,22 @@ const RepeatReminders = ({ reminder }) => {
                       : "bg-emerald-100 text-emerald-700"
                   }
                 `}
-                      >
-                        NEXT
-                      </div>
-                    )}
-
-                    <p
-                      className={`text-[11px] ${
-                        preferences.darkMode
-                          ? "text-white/35"
-                          : "text-slate-400"
-                      }`}
                     >
-                      Occurrence {index + 1}
-                    </p>
+                      NEXT
+                    </div>
+                  )}
 
-                    <div className="mt-2 flex items-center gap-3">
-                      <div
-                        className={`
+                  <p
+                    className={`text-[11px] ${
+                      preferences.darkMode ? "text-white/35" : "text-slate-400"
+                    }`}
+                  >
+                    Occurrence {index + 1}
+                  </p>
+
+                  <div className="mt-2 flex items-center gap-3">
+                    <div
+                      className={`
                   h-10 w-10 rounded-2xl flex items-center justify-center
                   border shrink-0
                   ${
@@ -224,45 +220,45 @@ const RepeatReminders = ({ reminder }) => {
                       : "bg-slate-100 border-black/5"
                   }
                 `}
+                    >
+                      <div
+                        className={`h-2 w-2 rounded-full ${
+                          isNext
+                            ? "bg-emerald-400"
+                            : preferences.darkMode
+                              ? "bg-white/40"
+                              : "bg-slate-400"
+                        }`}
+                      />
+                    </div>
+
+                    <div className="min-w-0">
+                      <p
+                        className={`font-semibold truncate ${
+                          preferences.darkMode
+                            ? "text-white/85"
+                            : "text-slate-800"
+                        }`}
                       >
-                        <div
-                          className={`h-2 w-2 rounded-full ${
-                            isNext
-                              ? "bg-emerald-400"
-                              : preferences.darkMode
-                                ? "bg-white/40"
-                                : "bg-slate-400"
-                          }`}
-                        />
-                      </div>
+                        {date}
+                      </p>
 
-                      <div className="min-w-0">
-                        <p
-                          className={`font-semibold truncate ${
-                            preferences.darkMode
-                              ? "text-white/85"
-                              : "text-slate-800"
-                          }`}
-                        >
-                          {date}
-                        </p>
-
-                        <p
-                          className={`text-xs mt-0.5 ${
-                            preferences.darkMode
-                              ? "text-white/35"
-                              : "text-slate-400"
-                          }`}
-                        >
-                          {isNext
-                            ? "Next reminder notification"
-                            : "Future repeating occurrence"}
-                        </p>
-                      </div>
+                      <p
+                        className={`text-xs mt-0.5 ${
+                          preferences.darkMode
+                            ? "text-white/35"
+                            : "text-slate-400"
+                        }`}
+                      >
+                        {isNext
+                          ? "Next reminder notification"
+                          : "Future repeating occurrence"}
+                      </p>
                     </div>
                   </div>
-                );
-              })}
+                </div>
+              );
+            })}
           </div>
         </div>
 

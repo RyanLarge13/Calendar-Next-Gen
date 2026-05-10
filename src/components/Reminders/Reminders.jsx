@@ -13,8 +13,32 @@ import { useModalActions } from "../../context/ContextHooks/ModalContext.jsx";
 
 const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
   const { reminders, preferences } = useContext(UserContext);
+  // const { preferences } = useContext(UserContext); // Created for testing reminders
   const { dateObj, string, setString } = useContext(DatesContext);
   const { setType, setMenu, setAddNewEvent } = useContext(InteractiveContext);
+
+  // Uncomment for reminder testing purposes and remove reminders from UserContext import
+  // const reminders = [
+  //   {
+  //     id: "1",
+  //     title: "Test repeat",
+  //     notes: "This is my repeating reminder",
+  //     time: new Date().toString(),
+  //     snoozes: { count: 0, snoozes: [] },
+  //     paused: false,
+  //     ignoreDates: [],
+  //     ignoreDevices: [],
+  //     repeat: {
+  //       on: true,
+  //       howOften: "Daily",
+  //       interval: 6,
+  //       skipDates: [],
+  //     },
+  //     completed: false,
+  //     groupId: "",
+  //     eventRefId: "",
+  //   },
+  // ];
 
   const { openModal } = useModalActions();
 
@@ -30,122 +54,6 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
   const completedRemindersToRender = useMemo(() => {
     return reminders.filter((r) => r.completed);
   }, [reminders, grouping]);
-
-  // useEffect(() => {
-  //   setIncompleteReminders(reminders.filter((r) => !r.completed));
-  //   setCompletedRemindersToRender(reminders.filter((r) => r.completed));
-  // }, [reminders, grouping]);
-
-  // useEffect(() => {
-  //   if (sort && sortOpt) {
-  //     const now = new Date();
-  //     const d = new Date();
-  //     const startOfDay = d.setHours(0, 0, 0, 0);
-  //     switch (sortOpt) {
-  //       case "title":
-  //         {
-  //           const copy = [...incompleteReminders];
-  //           const sortedByTitle = copy.sort((a, b) =>
-  //             a.title.localeCompare(b.title),
-  //           );
-  //           setIncompleteReminders(sortedByTitle);
-  //         }
-  //         break;
-  //       case "important":
-  //         {
-  //           const d = new Date();
-  //           const hourAgo = new Date(d.getTime() - 60 * 60 * 1000);
-  //           const importantReminders = reminders.filter(
-  //             (rem) => new Date(rem.time) >= hourAgo && new Date(rem.time) <= d,
-  //           );
-  //           setIncompleteReminders(importantReminders);
-  //         }
-  //         break;
-  //       case "event":
-  //         {
-  //           const copy = [...incompleteReminders];
-  //           const eventCarryingRems = copy.filter(
-  //             (rem) => rem.eventRefId !== null,
-  //           );
-  //           const sortedEventRems = eventCarryingRems.sort((a, b) =>
-  //             a.title.localeCompare(b.title),
-  //           );
-  //           setIncompleteReminders(sortedEventRems);
-  //         }
-  //         break;
-  //       case "today":
-  //         {
-  //           const dayAhead = new Date();
-  //           dayAhead.setTime(23, 59, 59, 999);
-  //           const todaysRems = reminders.filter((rem) => {
-  //             const remTime = new Date(rem.time);
-  //             return remTime >= startOfDay && remTime <= dayAhead;
-  //           });
-  //           setIncompleteReminders(todaysRems);
-  //         }
-  //         break;
-  //       case "tomorrow":
-  //         {
-  //           const midnight = new Date(startOfDay);
-  //           const midnightTomorrow = new Date(midnight);
-  //           midnightTomorrow.setDate(midnightTomorrow.getDate() + 1);
-  //           const endOfTomorrow = new Date(midnightTomorrow);
-  //           endOfTomorrow.setHours(23, 59, 59, 999);
-  //           const tomorrowsRems = reminders.filter((rem) => {
-  //             const remTime = new Date(rem.time);
-  //             return remTime >= midnightTomorrow && remTime <= endOfTomorrow;
-  //           });
-  //           setIncompleteReminders(tomorrowsRems);
-  //         }
-  //         break;
-  //       case "month":
-  //         {
-  //           const monthAhead = new Date(now.getMonth() + 1);
-  //           const monthRems = reminders.filter((rem) => {
-  //             const remTime = new Date(rem.time);
-  //             return remTime <= monthAhead && remTime >= d;
-  //           });
-  //           setIncompleteReminders(monthRems);
-  //         }
-  //         break;
-  //       case "week":
-  //         {
-  //           const weekAhead = new Date(startOfDay);
-  //           weekAhead.setDate(now.getDate() + 7);
-  //           const weekRems = reminders.filter((rem) => {
-  //             const remTime = new Date(rem.time);
-  //             return remTime <= weekAhead && remTime >= now;
-  //           });
-  //           setIncompleteReminders(weekRems);
-  //         }
-  //         break;
-  //       case "past":
-  //         {
-  //           const pastRems = reminders.filter((rem) => {
-  //             const remTime = new Date(rem.time);
-  //             return remTime < now;
-  //           });
-  //           setIncompleteReminders(pastRems);
-  //         }
-  //         break;
-  //       default:
-  //         setIncompleteReminders(incompleteReminders);
-  //     }
-  //   } else {
-  //     setIncompleteReminders(incompleteReminders);
-  //   }
-  // }, [sort, sortOpt, reminders]);
-
-  // useEffect(() => {
-  //   if (search && searchTxt) {
-  //     const filteredReminders = incompleteReminders.filter((rem) =>
-  //       rem.title.toLowerCase().includes(searchTxt.toLowerCase()),
-  //     );
-  //     setIncompleteReminders(filteredReminders);
-  //   } else {
-  //     setIncompleteReminders(incompleteReminders);
-  //   }
-  // }, [search, searchTxt]);
 
   const openModalAndSetType = () => {
     if (!string) {

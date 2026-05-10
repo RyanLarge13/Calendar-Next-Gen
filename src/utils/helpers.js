@@ -825,8 +825,159 @@ export const togglePinInStorage = (id, currentPin) => {
   }
 };
 
-export const repeatReminderOccursOnDay = (reminderTime, day) => {};
+export const reminderFutureDays = (reminder) => {
+  const mutatingDate = new Date(reminder.time);
 
-export const reminderFutureDays = (reminderRepeats) => {
-  return [];
+  const amount = 4; // Possibly change this to match reminder.repeat.howMany instead of 4
+
+  const howOften = reminder.repeat.howOften;
+
+  const nextDays = [];
+
+  for (let i = 0; i < 4; i++) {
+    switch (howOften) {
+      case "Daily": {
+        mutatingDate.setDate(mutatingDate.getDate() + 1);
+        const nextDay = mutatingDate.toISOString();
+        nextDays.push(nextDay);
+        break;
+      }
+
+      case "Weekly": {
+        mutatingDate.setDate(mutatingDate.getDate() + 7);
+        const nextDay = mutatingDate.toISOString();
+        nextDays.push(nextDay);
+        break;
+      }
+
+      case "Bi Weekly": {
+        mutatingDate.setDate(mutatingDate.getDate() + 14);
+        const nextDay = mutatingDate.toISOString();
+        nextDays.push(nextDay);
+        break;
+      }
+
+      case "Monthly": {
+        mutatingDate.setMonth(mutatingDate.getMonth() + 1);
+        const nextDay = mutatingDate.toISOString();
+        nextDays.push(nextDay);
+        break;
+      }
+
+      case "Yearly": {
+        mutatingDate.setFullYear(mutatingDate.getFullYear() + 1);
+        const nextDay = mutatingDate.toISOString();
+        nextDays.push(nextDay);
+        break;
+      }
+
+      default:
+        break;
+    }
+  }
+
+  return nextDays;
+};
+
+export const repeatReminderOccursOnDay = (reminder, candidateDay) => {
+  const reminderStart = startOfDay(new Date(reminder.time));
+  const candidate = startOfDay(candidateDay);
+
+  // no repeat
+  if (!reminder.repeat?.on) return false;
+
+  // do not render on original day
+  if (isSameCalendarDay(reminderStart, candidate)) return false;
+
+  // cannot repeat before start date
+  if (candidate < reminderStart) return false;
+
+  const rawCount = reminder.repeat.interval ?? 1;
+  const howOften = reminder.repeat.howOften;
+  const repeatCount = rawCount === "infinity" ? Infinity : rawCount - 1;
+
+  switch (howOften) {
+    case "Daily": {
+      const diffDays = daysBetween(reminderStart, candidate);
+
+      // daily repeats happen on day 1..repeatCount
+      return diffDays >= 1 && diffDays <= repeatCount;
+    }
+
+    case "Weekly": {
+      const diffDays = daysBetween(reminderStart, candidate);
+
+      // must be same weekday
+      if (candidate.getDay() !== reminderStart.getDay()) return false;
+
+      const diffWeeks = diffDays / 7;
+
+      // weekly repeats happen on week 1..repeatCount
+      return (
+        Number.isInteger(diffWeeks) &&
+        diffWeeks >= 1 &&
+        diffWeeks <= repeatCount
+      );
+    }
+
+    case "Bi Weekly": {
+      const diffDays = daysBetween(reminderStart, candidate);
+
+      // must be same weekday
+      if (candidate.getDay() !== reminderStart.getDay()) return false;
+
+      const diffBiWeeks = diffDays / 14;
+
+      // biweekly repeats happen on 2-week step 1..repeatCount
+      return (
+        Number.isInteger(diffBiWeeks) &&
+        diffBiWeeks >= 1 &&
+        diffBiWeeks <= repeatCount
+      );
+    }
+
+    case "Monthly": {
+      const diffMonths = monthsBetween(reminderStart, candidate);
+
+      if (candidate.getDate() !== reminderStart.getDate()) return false;
+
+      // monthly repeats happen on month 1..repeatCount
+      return diffMonths >= 1 && diffMonths <= repeatCount;
+    }
+
+    case "Yearly": {
+      const diffYears = yearsBetween(reminderStart, candidate);
+
+      return (
+        candidate.getMonth() === reminderStart.getMonth() &&
+        candidate.getDate() === reminderStart.getDate() &&
+        diffYears >= 1 &&
+        diffYears <= repeatCount
+      );
+    }
+
+    default:
+      return false;
+  }
+};
+
+export const cloneRepeatReminder = (reminder, day) => {
+  const currentTime = new Date(reminder.time);
+  const reminderHours = currentTime.getHours();
+  const reminderMinutes = currentTime.getMinutes();
+
+  const newTime = new Date(day);
+
+  newTime.setHours(reminderHours);
+  newTime.setMinutes(reminderMinutes);
+
+  const newReminder = {
+    id: uuidv4(),
+    time: newTime,
+    groupId: reminder.id,
+    completed: false, // How will the user complete future reminders. Maybe stored array??
+    ...reminder,
+  };
+
+  return newReminder;
 };

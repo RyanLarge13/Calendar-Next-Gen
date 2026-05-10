@@ -135,7 +135,7 @@ const QuickPanelTop = ({ reminder }) => {
         Delete This Reminder <MdDeleteSweep className="text-lg" />
       </button>
       {/* If not repeating */}
-      {!reminder.repeats?.repeat ? (
+      {reminder.repeats?.on === false ? (
         <button
           onClick={() => {}}
           className={`
