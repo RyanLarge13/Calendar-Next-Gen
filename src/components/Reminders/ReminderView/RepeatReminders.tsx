@@ -240,7 +240,13 @@ const RepeatReminders = ({ reminder }) => {
                             : "text-slate-800"
                         }`}
                       >
-                        {date}
+                        {new Date(date).toLocaleTimeString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                          hour: "numeric",
+                          minute: "numeric",
+                        })}
                       </p>
 
                       <p

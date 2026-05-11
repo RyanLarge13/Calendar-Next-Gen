@@ -44,8 +44,8 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
 
   // Pull this from user preferences in the future
   const [grouping, setGrouping] = useState({
-    complete: "week",
-    incomplete: "week",
+    complete: preferences.reminders?.complete?.groupType || "week",
+    incomplete: preferences.reminders?.incomplete?.groupType || "week",
   });
 
   const incompleteReminders = useMemo(() => {
@@ -66,10 +66,14 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
   };
 
   const updateGroup = (complete, type) => {
-    setGrouping((prev) => ({
-      complete: complete ? type : prev.complete,
-      incomplete: complete ? prev.incomplete : type,
-    }));
+    const newGrouping = {
+      complete: complete ? type : grouping.complete,
+      incomplete: complete ? grouping.incomplete : type,
+    };
+
+    setGrouping(newGrouping);
+
+    LocalStorage_UpdateGroupingPreferences(newGrouping);
   };
 
   return (
