@@ -7,16 +7,25 @@ import {
   deleteReminder,
 } from "../../utils/api.js";
 import { motion } from "framer-motion";
-import { BsAlarmFill, BsTrashFill } from "react-icons/bs";
+import { BsAlarmFill, BsRepeat, BsTrashFill } from "react-icons/bs";
 import { MdOpenInNew } from "react-icons/md";
 import {
   formatRelativeTime,
+  reminderFutureDays,
   setStateAndPushWindowState,
 } from "../../utils/helpers.js";
-import { BiAlarm, BiCalendarEvent, BiFullscreen } from "react-icons/bi";
+import {
+  BiAlarm,
+  BiAlarmExclamation,
+  BiCalendarEvent,
+  BiFullscreen,
+  BiRepeat,
+} from "react-icons/bi";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
 import DatesContext from "../../context/DatesContext.jsx";
 import ReminderView from "./ReminderView/ReminderView.jsx";
+import { RiRepeat2Fill } from "react-icons/ri";
+import { TbBellRinging2 } from "react-icons/tb";
 
 const Reminder = ({
   reminder,
@@ -246,7 +255,7 @@ const Reminder = ({
           <div className="px-4 py-3 pl-5 h-full flex flex-col justify-between">
             {/* Top row */}
             <div className="flex items-start justify-between gap-2">
-              <div className="min-w-0">
+              <div className="min-w-0 w-full">
                 <p
                   className={`text-[10px] font-semibold tracking-wide ${
                     preferences.darkMode ? "text-white/50" : "text-slate-500"
@@ -265,6 +274,7 @@ const Reminder = ({
                 <p className="mt-1 text-sm font-semibold leading-tight truncate">
                   {reminderTitle || reminder.title || "Reminder"}
                 </p>
+                {reminder.repeat.on ? <BsRepeat className="text-sm" /> : null}
               </div>
 
               <div className="flex items-center gap-1 flex-shrink-0">
@@ -416,238 +426,248 @@ const Reminder = ({
       animate={
         selected.includes(reminder.id)
           ? {
-              scale: 1.02,
-              boxShadow: "0 18px 55px rgba(0,0,0,0.16)",
+              scale: 1.01,
+              boxShadow: "0 18px 45px rgba(0,0,0,0.16)",
             }
           : {
               scale: 1,
-              boxShadow: "0 10px 30px rgba(0,0,0,0.10)",
+              boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
             }
       }
-      transition={{ type: "spring", stiffness: 220, damping: 18 }}
+      transition={{ type: "spring", stiffness: 240, damping: 20 }}
       className={`
-    relative my-4 rounded-3xl border overflow-hidden
-    backdrop-blur-md
-    ${selected.includes(reminder.id) ? "border-red-300" : preferences.darkMode ? "border-black/10" : "border-white/10"}
-    ${preferences.darkMode ? "bg-white/5 text-white" : "bg-white/85 text-slate-900"}
-   `}
+    relative overflow-hidden mt-10 rounded-[28px] border backdrop-blur-xl
+    px-4 py-3.5
+    ${
+      preferences.darkMode
+        ? "bg-[#111]/80 border-white/10 text-white"
+        : "bg-white/88 border-black/10 text-slate-900"
+    }
+  `}
       onPointerDown={() => startTime(reminder.id)}
       onPointerUp={() => stopTime(reminder.id)}
       onPointerCancel={() => clearTimeout(timeout.current)}
     >
-      {/* Left status rail */}
+      {/* Ambient background */}
       <div
         className={`
-      absolute left-0 top-0 bottom-0 w-[10px]
-      ${
-        reminder.completed
-          ? "bg-gradient-to-b from-lime-400 to-emerald-400"
-          : new Date(reminder.time) < dateObj
-            ? "bg-gradient-to-b from-rose-400 to-pink-400"
-            : new Date(reminder.time).toLocaleDateString() ===
-                dateObj.toLocaleDateString()
-              ? "bg-gradient-to-b from-amber-400 to-orange-300"
-              : "bg-gradient-to-b from-cyan-400 to-sky-400"
-      }
-    `}
+    pointer-events-none absolute inset-0 opacity-[0.55]
+    ${
+      reminder.completed
+        ? "bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.10),transparent_45%),radial-gradient(circle_at_bottom_right,rgba(34,211,238,0.06),transparent_45%)]"
+        : new Date(reminder.time) < dateObj
+          ? "bg-[radial-gradient(circle_at_top_left,rgba(244,63,94,0.10),transparent_40%),radial-gradient(circle_at_bottom_right,rgba(251,146,60,0.06),transparent_45%)]"
+          : new Date(reminder.time).toLocaleDateString() ===
+              dateObj.toLocaleDateString()
+            ? "bg-[radial-gradient(circle_at_top_left,rgba(251,191,36,0.10),transparent_40%),radial-gradient(circle_at_bottom_right,rgba(34,211,238,0.05),transparent_45%)]"
+            : "bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.10),transparent_40%),radial-gradient(circle_at_bottom_right,rgba(59,130,246,0.05),transparent_45%)]"
+    }
+  `}
       />
 
-      <div className="px-5 py-4">
-        {/* Top row: date + complete toggle */}
-        <div className="flex justify-between items-start gap-3">
-          <div className="min-w-0">
-            <p
-              className={`text-xs font-semibold tracking-wide ${
-                preferences.darkMode ? "text-white/60" : "text-slate-500"
-              }`}
-            >
-              {new Date(reminder.time).toLocaleDateString("en-US", {
-                weekday: "short",
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
-            </p>
-
-            <div className="mt-2 flex items-center gap-3">
-              <div className="flex flex-col">
-                <p
-                  className={`text-sm font-semibold ${preferences.darkMode ? "text-white/80" : "text-slate-700"}`}
-                >
-                  @{" "}
-                  {new Date(reminder.time).toLocaleTimeString("en-US", {
-                    timeZoneName: "short",
-                  })}
-                </p>
-
-                {reminder.completed ? (
-                  <p
-                    className={`text-sm font-semibold ${preferences.darkMode ? "text-lime-300/80" : "text-lime-700"}`}
-                  >
-                    Completed
-                  </p>
-                ) : (
-                  <div
-                    className={`mt-1 w-full flex items-center gap-2 text-xs ${preferences.darkMode ? "text-white/55" : "text-slate-500"}`}
-                  >
-                    {new Date(reminder.time) < dateObj ? (
-                      <p className="text-sm font-semibold text-rose-500">
-                        Over Due
-                      </p>
-                    ) : null}
-                    <BsAlarmFill
-                      className={`${preferences.darkMode ? "text-white/40" : "text-slate-400"}`}
-                    />
-                    <p>{formatRelativeTime(new Date(reminder.time))}</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div className="flex justify-start items-center gap-x-2">
-            {selected.includes(reminder.id) ? null : (
-              <button
-                onClick={() =>
-                  toggleComplete({
-                    completed: !reminder.completed,
-                    reminderId: reminder.id,
-                  })
-                }
-                className={`
-          grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition active:scale-95
+      <div className="relative flex items-start gap-3">
+        {/* Status rail / indicator */}
+        <div className="pt-1">
+          <div
+            className={`
+          h-2.5 w-2.5 rounded-full
           ${
             reminder.completed
-              ? preferences.darkMode
-                ? "bg-cyan-500/20 border-cyan-300/20 text-cyan-100 hover:bg-cyan-500/25"
-                : "bg-cyan-50 border-cyan-200 text-cyan-700 hover:bg-cyan-100"
-              : preferences.darkMode
-                ? "bg-white/5 border-white/10 text-white/70 hover:bg-white/10"
-                : "bg-black/[0.03] border-black/10 text-slate-600 hover:bg-black/[0.06]"
+              ? "bg-emerald-400"
+              : new Date(reminder.time) < dateObj
+                ? "bg-rose-400"
+                : new Date(reminder.time).toLocaleDateString() ===
+                    dateObj.toLocaleDateString()
+                  ? "bg-amber-400"
+                  : "bg-cyan-400"
           }
         `}
-                aria-label={
-                  reminder.completed ? "Mark incomplete" : "Mark complete"
-                }
-                type="button"
-              >
-                {reminder.eventRefId ? (
-                  <BiCalendarEvent className="text-lg" />
-                ) : (
-                  <BiAlarm className="text-lg" />
-                )}
-              </button>
-            )}
-
-            {/* Open Full View Button */}
-            {showFullViewButton && !selected.includes(reminder.id) ? (
-              <button
-                onClick={openReminder}
-                className={`
-          grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition active:scale-95
-          
-              ${
-                preferences.darkMode
-                  ? "bg-slate-500/20 border-slate-300/20 text-slate-100 hover:bg-slate-500/25"
-                  : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100"
-              }
-        `}
-                aria-label={
-                  reminder.completed ? "Mark incomplete" : "Mark complete"
-                }
-                type="button"
-              >
-                <BiFullscreen />
-              </button>
-            ) : null}
-          </div>
+          />
         </div>
 
-        {/* Title field */}
-        <div className="mt-4">
+        {/* Main content */}
+        <div className="min-w-0 flex-1">
+          {/* Top metadata */}
+          <div
+            className={`
+          flex flex-wrap items-center gap-x-2 gap-y-1
+          text-[10px] font-semibold tracking-wide
+          ${preferences.darkMode ? "text-white/45" : "text-slate-500"}
+        `}
+          >
+            <span>
+              {reminder.completed
+                ? "Completed"
+                : new Date(reminder.time) < dateObj
+                  ? "Overdue"
+                  : new Date(reminder.time).toLocaleDateString() ===
+                      dateObj.toLocaleDateString()
+                    ? "Today"
+                    : "Upcoming"}
+            </span>
+
+            <span className="opacity-30">•</span>
+
+            <span>
+              {new Date(reminder.time).toLocaleTimeString("en-US", {
+                hour: "numeric",
+                minute: "2-digit",
+              })}
+            </span>
+
+            <span className="opacity-30">•</span>
+
+            <span>{formatRelativeTime(new Date(reminder.time))}</span>
+
+            {reminder.repeat.on ? (
+              <>
+                <span className="opacity-30">•</span>
+
+                <span className="flex items-center gap-1">
+                  <BsRepeat className="text-[9px]" />
+                  Repeating
+                </span>
+              </>
+            ) : null}
+          </div>
+
+          {/* Title */}
           <input
             className={`
-          w-full px-4 py-3 rounded-2xl border shadow-inner transition
-          text-sm font-semibold
-          outline-none focus:outline-none
+          mt-1.5 w-full bg-transparent
+          text-[15px] font-semibold leading-tight
+          outline-none transition
           ${
             preferences.darkMode
-              ? "bg-white/5 border-white/10 placeholder:text-white/35 text-white/90 focus:bg-white/10"
-              : "bg-black/[0.03] border-black/10 placeholder:text-slate-400 text-slate-900 focus:bg-black/[0.05]"
+              ? "text-white placeholder:text-white/25"
+              : "text-slate-900 placeholder:text-slate-300"
           }
         `}
-            placeholder="Create a title"
+            placeholder="Untitled reminder"
             value={reminderTitle}
             onChange={(e) => setReminderTitle(e.target.value)}
             onBlur={saveReminderTitle}
           />
-        </div>
 
-        {/* Notes field */}
-        <div className="mt-3">
+          {/* Notes preview */}
           <input
             className={`
-          w-full px-4 py-3 rounded-2xl border shadow-inner transition
-          text-xs font-semibold
-          outline-none focus:outline-none
+          mt-1.5 w-full bg-transparent
+          text-xs leading-relaxed
+          outline-none transition
+          truncate
           ${
             preferences.darkMode
-              ? "bg-white/5 border-white/10 placeholder:text-white/35 text-white/75 focus:bg-white/10"
-              : "bg-black/[0.03] border-black/10 placeholder:text-slate-400 text-slate-700 focus:bg-black/[0.05]"
+              ? "text-white/50 placeholder:text-white/20"
+              : "text-slate-500 placeholder:text-slate-300"
           }
         `}
-            placeholder="Write a note..."
+            placeholder="Add a note..."
             value={reminderNote}
             onChange={(e) => setReminderNote(e.target.value)}
             onBlur={saveReminderNote}
           />
         </div>
 
-        {/* Open event */}
-        {reminder.eventRefId && showOpenEvent ? (
-          <button
-            onClick={() => openRelatedEvent(reminder.eventRefId)}
-            className={`
-          mt-4 w-full px-4 py-3 rounded-2xl text-sm font-semibold text-white
-          shadow-md transition active:scale-[0.97]
-          bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-500
-          flex items-center justify-center gap-2
-        `}
-            type="button"
-          >
-            Open Event <MdOpenInNew />
-          </button>
-        ) : null}
+        {/* Right actions */}
+        <div className="flex items-center gap-2 pl-1">
+          {!selected.includes(reminder.id) ? (
+            <button
+              onClick={() =>
+                toggleComplete({
+                  completed: !reminder.completed,
+                  reminderId: reminder.id,
+                })
+              }
+              className={`
+            grid h-9 w-9 place-items-center rounded-2xl border transition active:scale-95
+            ${
+              reminder.completed
+                ? preferences.darkMode
+                  ? "bg-cyan-500/15 border-cyan-300/15 text-cyan-100"
+                  : "bg-cyan-50 border-cyan-200 text-cyan-700"
+                : preferences.darkMode
+                  ? "bg-white/[0.04] border-white/10 text-white/65 hover:bg-white/[0.07]"
+                  : "bg-black/[0.03] border-black/10 text-slate-600 hover:bg-black/[0.05]"
+            }
+          `}
+              type="button"
+            >
+              {reminder.eventRefId ? (
+                <BiCalendarEvent className="text-sm" />
+              ) : (
+                <BiAlarm className="text-sm" />
+              )}
+            </button>
+          ) : null}
+
+          {showFullViewButton && !selected.includes(reminder.id) ? (
+            <button
+              onClick={openReminder}
+              className={`
+            grid h-9 w-9 place-items-center rounded-2xl border transition active:scale-95
+            ${
+              preferences.darkMode
+                ? "bg-white/[0.04] border-white/10 text-white/65 hover:bg-white/[0.07]"
+                : "bg-black/[0.03] border-black/10 text-slate-600 hover:bg-black/[0.05]"
+            }
+          `}
+              type="button"
+            >
+              <BiFullscreen className="text-sm" />
+            </button>
+          ) : null}
+        </div>
       </div>
 
-      {/* Selected “tools” overlay */}
+      {/* Open related event */}
+      {reminder.eventRefId && showOpenEvent ? (
+        <button
+          onClick={() => openRelatedEvent(reminder.eventRefId)}
+          className={`
+        relative mt-3 flex items-center gap-2
+        text-[11px] font-semibold transition
+        ${
+          preferences.darkMode
+            ? "text-cyan-200/80 hover:text-cyan-100"
+            : "text-cyan-700 hover:text-cyan-900"
+        }
+      `}
+          type="button"
+        >
+          <MdOpenInNew className="text-sm" />
+          Open linked event
+        </button>
+      ) : null}
+
+      {/* Delete overlay */}
       {selected.includes(reminder.id) && (
         <motion.div
           initial={{ opacity: 0, y: -6 }}
           animate={{ opacity: 1, y: 0 }}
-          className="absolute top-4 right-5 flex items-center gap-2"
+          className="absolute top-3 right-3"
         >
           <motion.button
             whileTap={{ scale: 0.95 }}
             className={`
-          grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition
+          grid h-9 w-9 place-items-center rounded-2xl border transition
           ${
             preferences.darkMode
-              ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70 hover:text-rose-200"
-              : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600 hover:text-rose-600"
+              ? "bg-white/[0.05] border-white/10 text-white/70 hover:text-rose-200"
+              : "bg-black/[0.03] border-black/10 text-slate-600 hover:text-rose-600"
           }
         `}
             onPointerDown={(e) => {
               e.stopPropagation();
               deleteAReminder(reminder.id);
             }}
-            aria-label="Delete reminder"
             type="button"
           >
-            <BsTrashFill className="text-sm" />
+            <BsTrashFill className="text-xs" />
           </motion.button>
         </motion.div>
       )}
+
       {reminderFullView ? (
         <ReminderView
           reminder={reminder}
@@ -656,6 +676,271 @@ const Reminder = ({
       ) : null}
     </motion.div>
   );
+
+  // return (
+  //   <motion.div
+  //     key={reminder.id}
+  //     style={styles}
+  //     animate={
+  //       selected.includes(reminder.id)
+  //         ? {
+  //             scale: 1.02,
+  //             boxShadow: "0 18px 55px rgba(0,0,0,0.16)",
+  //           }
+  //         : {
+  //             scale: 1,
+  //             boxShadow: "0 10px 30px rgba(0,0,0,0.10)",
+  //           }
+  //     }
+  //     transition={{ type: "spring", stiffness: 220, damping: 18 }}
+  //     className={`
+  //   relative my-4 rounded-3xl border overflow-hidden
+  //   backdrop-blur-md
+  //   ${selected.includes(reminder.id) ? "border-red-300" : preferences.darkMode ? "border-black/10" : "border-white/10"}
+  //   ${preferences.darkMode ? "bg-white/5 text-white" : "bg-white/85 text-slate-900"}
+  //  `}
+  //     onPointerDown={() => startTime(reminder.id)}
+  //     onPointerUp={() => stopTime(reminder.id)}
+  //     onPointerCancel={() => clearTimeout(timeout.current)}
+  //   >
+  //     {/* Left status rail */}
+  //     <div
+  //       className={`
+  //     absolute left-0 top-0 bottom-0 w-[10px]
+  //     ${
+  //       reminder.completed
+  //         ? "bg-gradient-to-b from-lime-400 to-emerald-400"
+  //         : new Date(reminder.time) < dateObj
+  //           ? "bg-gradient-to-b from-rose-400 to-pink-400"
+  //           : new Date(reminder.time).toLocaleDateString() ===
+  //               dateObj.toLocaleDateString()
+  //             ? "bg-gradient-to-b from-amber-400 to-orange-300"
+  //             : "bg-gradient-to-b from-cyan-400 to-sky-400"
+  //     }
+  //   `}
+  //     />
+
+  //     <div className="px-5 py-4">
+  //       {/* Top row: date + complete toggle */}
+  //       <div className="flex justify-between items-start gap-3">
+  //         <div className="min-w-0">
+  //           <p
+  //             className={`text-xs font-semibold tracking-wide ${
+  //               preferences.darkMode ? "text-white/60" : "text-slate-500"
+  //             }`}
+  //           >
+  //             {new Date(reminder.time).toLocaleDateString("en-US", {
+  //               weekday: "short",
+  //               year: "numeric",
+  //               month: "long",
+  //               day: "numeric",
+  //             })}
+  //           </p>
+
+  //           <div className="mt-2 flex items-center gap-3">
+  //             <div className="flex flex-col">
+  //               <p
+  //                 className={`text-sm font-semibold flex justify-start items-center gap-x-2 ${preferences.darkMode ? "text-white/80" : "text-slate-700"}`}
+  //               >
+  //                 <TbBellRinging2 />{" "}
+  //                 {new Date(reminder.time).toLocaleTimeString("en-US", {
+  //                   timeZoneName: "short",
+  //                 })}
+  //               </p>
+
+  //               {reminder.completed ? (
+  //                 <p
+  //                   className={`text-sm font-semibold ${preferences.darkMode ? "text-lime-300/80" : "text-lime-700"}`}
+  //                 >
+  //                   Completed
+  //                 </p>
+  //               ) : (
+  //                 <div
+  //                   className={`mt-1 w-full flex items-center gap-2 text-xs ${preferences.darkMode ? "text-white/55" : "text-slate-500"}`}
+  //                 >
+  //                   {new Date(reminder.time) < dateObj ? (
+  //                     <p className="text-sm font-semibold text-rose-500">
+  //                       Over Due
+  //                     </p>
+  //                   ) : null}
+  //                   <BsAlarmFill
+  //                     className={`${preferences.darkMode ? "text-white/40" : "text-slate-400"}`}
+  //                   />
+  //                   <p>{formatRelativeTime(new Date(reminder.time))}</p>
+  //                 </div>
+  //               )}
+  //             </div>
+  //           </div>
+  //           <div>
+  //             {reminder.repeat.on ? (
+  //               <p
+  //                 className={`${preferences.darkMode ? "text-white/40" : "text-slate-400"} text-xs font-semibold flex justify-start items-center gap-x-2 mt-1`}
+  //               >
+  //                 <BsRepeat className="font-bold" />{" "}
+  //                 {new Date(
+  //                   reminderFutureDays(reminder, 1)[0],
+  //                 ).toLocaleDateString("en-US", {
+  //                   weekday: "short",
+  //                   year: "numeric",
+  //                   month: "long",
+  //                   day: "numeric",
+  //                 })}
+  //               </p>
+  //             ) : null}
+  //           </div>
+  //         </div>
+
+  //         <div className="flex justify-start items-center gap-x-2">
+  //           {selected.includes(reminder.id) ? null : (
+  //             <button
+  //               onClick={() =>
+  //                 toggleComplete({
+  //                   completed: !reminder.completed,
+  //                   reminderId: reminder.id,
+  //                 })
+  //               }
+  //               className={`
+  //         grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition active:scale-95
+  //         ${
+  //           reminder.completed
+  //             ? preferences.darkMode
+  //               ? "bg-cyan-500/20 border-cyan-300/20 text-cyan-100 hover:bg-cyan-500/25"
+  //               : "bg-cyan-50 border-cyan-200 text-cyan-700 hover:bg-cyan-100"
+  //             : preferences.darkMode
+  //               ? "bg-white/5 border-white/10 text-white/70 hover:bg-white/10"
+  //               : "bg-black/[0.03] border-black/10 text-slate-600 hover:bg-black/[0.06]"
+  //         }
+  //       `}
+  //               aria-label={
+  //                 reminder.completed ? "Mark incomplete" : "Mark complete"
+  //               }
+  //               type="button"
+  //             >
+  //               {reminder.eventRefId ? (
+  //                 <BiCalendarEvent className="text-lg" />
+  //               ) : (
+  //                 <BiAlarm className="text-lg" />
+  //               )}
+  //             </button>
+  //           )}
+
+  //           {/* Open Full View Button */}
+  //           {showFullViewButton && !selected.includes(reminder.id) ? (
+  //             <button
+  //               onClick={openReminder}
+  //               className={`
+  //         grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition active:scale-95
+
+  //             ${
+  //               preferences.darkMode
+  //                 ? "bg-slate-500/20 border-slate-300/20 text-slate-100 hover:bg-slate-500/25"
+  //                 : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100"
+  //             }
+  //       `}
+  //               aria-label={
+  //                 reminder.completed ? "Mark incomplete" : "Mark complete"
+  //               }
+  //               type="button"
+  //             >
+  //               <BiFullscreen />
+  //             </button>
+  //           ) : null}
+  //         </div>
+  //       </div>
+
+  //       {/* Title field */}
+  //       <div className="mt-4">
+  //         <input
+  //           className={`
+  //         w-full px-4 py-3 rounded-2xl border shadow-inner transition
+  //         text-sm font-semibold
+  //         outline-none focus:outline-none
+  //         ${
+  //           preferences.darkMode
+  //             ? "bg-white/5 border-white/10 placeholder:text-white/35 text-white/90 focus:bg-white/10"
+  //             : "bg-black/[0.03] border-black/10 placeholder:text-slate-400 text-slate-900 focus:bg-black/[0.05]"
+  //         }
+  //       `}
+  //           placeholder="Create a title"
+  //           value={reminderTitle}
+  //           onChange={(e) => setReminderTitle(e.target.value)}
+  //           onBlur={saveReminderTitle}
+  //         />
+  //       </div>
+
+  //       {/* Notes field */}
+  //       <div className="mt-3">
+  //         <input
+  //           className={`
+  //         w-full px-4 py-3 rounded-2xl border shadow-inner transition
+  //         text-xs font-semibold
+  //         outline-none focus:outline-none
+  //         ${
+  //           preferences.darkMode
+  //             ? "bg-white/5 border-white/10 placeholder:text-white/35 text-white/75 focus:bg-white/10"
+  //             : "bg-black/[0.03] border-black/10 placeholder:text-slate-400 text-slate-700 focus:bg-black/[0.05]"
+  //         }
+  //       `}
+  //           placeholder="Write a note..."
+  //           value={reminderNote}
+  //           onChange={(e) => setReminderNote(e.target.value)}
+  //           onBlur={saveReminderNote}
+  //         />
+  //       </div>
+
+  //       {/* Open event */}
+  //       {reminder.eventRefId && showOpenEvent ? (
+  //         <button
+  //           onClick={() => openRelatedEvent(reminder.eventRefId)}
+  //           className={`
+  //         mt-4 w-full px-4 py-3 rounded-2xl text-sm font-semibold text-white
+  //         shadow-md transition active:scale-[0.97]
+  //         bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-500
+  //         flex items-center justify-center gap-2
+  //       `}
+  //           type="button"
+  //         >
+  //           Open Event <MdOpenInNew />
+  //         </button>
+  //       ) : null}
+  //     </div>
+
+  //     {/* Selected “tools” overlay */}
+  //     {selected.includes(reminder.id) && (
+  //       <motion.div
+  //         initial={{ opacity: 0, y: -6 }}
+  //         animate={{ opacity: 1, y: 0 }}
+  //         className="absolute top-4 right-5 flex items-center gap-2"
+  //       >
+  //         <motion.button
+  //           whileTap={{ scale: 0.95 }}
+  //           className={`
+  //         grid place-items-center h-10 w-10 rounded-2xl border shadow-sm transition
+  //         ${
+  //           preferences.darkMode
+  //             ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70 hover:text-rose-200"
+  //             : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600 hover:text-rose-600"
+  //         }
+  //       `}
+  //           onPointerDown={(e) => {
+  //             e.stopPropagation();
+  //             deleteAReminder(reminder.id);
+  //           }}
+  //           aria-label="Delete reminder"
+  //           type="button"
+  //         >
+  //           <BsTrashFill className="text-sm" />
+  //         </motion.button>
+  //       </motion.div>
+  //     )}
+  //     {reminderFullView ? (
+  //       <ReminderView
+  //         reminder={reminder}
+  //         setShowFullReminder={setReminderFullView}
+  //       />
+  //     ) : null}
+  //   </motion.div>
+  // );
 };
 
 export default Reminder;

@@ -825,16 +825,14 @@ export const togglePinInStorage = (id, currentPin) => {
   }
 };
 
-export const reminderFutureDays = (reminder) => {
+export const reminderFutureDays = (reminder, amount = 4) => {
   const mutatingDate = new Date(reminder.time);
-
-  const amount = 4; // Possibly change this to match reminder.repeat.howMany instead of 4
 
   const howOften = reminder.repeat.howOften;
 
   const nextDays = [];
 
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < amount; i++) {
     switch (howOften) {
       case "Daily": {
         mutatingDate.setDate(mutatingDate.getDate() + 1);
