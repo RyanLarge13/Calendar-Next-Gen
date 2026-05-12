@@ -137,6 +137,7 @@ id String   @id @unique @default(uuid())
 title String
 notes String
 time String
+timeDate DateTime?
 snoozes Json?
 paused Boolean @default(false)
 // Snoozes look like 
@@ -162,6 +163,7 @@ model Notification {
 id String   @id @unique @default(uuid())
 type String
 time String
+timeDate DateTime?
 read Boolean  @default(false)
 readTime String?
 notifData Json
@@ -176,7 +178,7 @@ sentNotification Boolean @default(false)
 sentWebPush Boolean @default(false)
 userId String
 
-@@index([userId], name: "userNotificationIndex")
+@@index([userId, sentWebPush, timeDate])
 }
 
 

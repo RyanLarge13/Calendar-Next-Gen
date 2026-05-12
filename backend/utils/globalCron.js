@@ -1,54 +1,159 @@
 import prisma from "./prismaClient.js";
+import { v4 as uuidv4 } from "uuid";
 import { sendNotification } from "./notificationService.js";
+import { reminderFutureDays } from "./helpers.js";
+
+// Potential stale repeat query
+/**
+const staleRepeatingReminders = await prisma.reminder.findMany({
+  where: {
+    paused: false,
+    completed: false,
+    timeDate: {
+      lte: new Date(),
+    },
+    repeat: {
+      path: ["on"],
+      equals: true,
+    },
+    notification: {
+      none: {
+        sentWebPush: false,
+      },
+    },
+  },
+});
+ */
+
+const updateRepeatingReminder = async (notification) => {
+  const reminderRefId = notification.reminderRefId;
+
+  const reminderRepeating = await prisma.reminder.findFirst({
+    where: {
+      id: reminderRefId,
+      paused: false,
+      completed: false,
+      repeat: {
+        path: ["on"],
+        equals: true,
+      },
+    },
+  });
+
+  if (reminderRepeating) {
+    const newTime = new Date(reminderFutureDays(reminderRepeating, 1)[0]);
+    const newPreviousData = {
+      time: reminderRepeating.time,
+      status: {
+        complete: reminderRepeating.completed,
+        when: new Date(), // CHANGE!!! I don't think I event have this value in the table stored yet
+      },
+      snoozed: reminderRepeating.snoozes?.snoozes?.length > 0,
+    };
+    const newNotification = {
+      ...notification,
+      id: uuidv4(),
+      time: newTime.toISOString(),
+      timeDate: newTime,
+      sentWebPush: false,
+    };
+    try {
+      await prisma.$transaction([
+        prisma.reminder.update({
+          where: { id: reminderRefId },
+          data: {
+            time: newTime.toISOString(),
+            timeDate: newTime,
+            completed: false,
+            repeat: {
+              ...(reminderRepeating.repeat || {}),
+              previousReminders: [
+                ...(reminderRepeating.repeat?.previousReminders || []),
+                newPreviousData,
+              ],
+            },
+          },
+        }),
+
+        prisma.notification.create({
+          data: newNotification,
+        }),
+      ]);
+
+      return true;
+    } catch (err) {
+      console.log("Error updating repeating reminder");
+      console.log(err);
+      return false;
+    }
+  }
+
+  return true;
+};
 
 const processPushNotifications = async () => {
+  // Include below processes to make sure stale crap is taken care of
+  // repairStaleRepeats(take: 25)
   try {
     const notificationIdsToUpdate = [];
-    const usersWithNotificationSub = await prisma.user.findMany({
+    const notifications = await prisma.notification.findMany({
       where: {
-        NOT: {
-          notifSub: {
-            equals: null,
-          },
+        sentWebPush: false,
+        timeDate: {
+          lte: new Date(),
         },
-        NOT: {
+        User: {
           notifSub: {
-            isEmpty: true,
+            isEmpty: false,
           },
         },
       },
-      take: 1000,
+      include: {
+        User: {
+          select: {
+            id: true,
+            notifSub: true,
+          },
+        },
+      },
+      orderBy: {
+        timeDate: "asc",
+      },
+      take: 500,
     });
-    for (const user of usersWithNotificationSub) {
-      const notifications = await prisma.notification.findMany({
-        where: {
-          userId: user.id,
-          sentWebPush: false,
+    for (const notification of notifications) {
+      const payload = JSON.stringify({
+        title: notification.notifData.title,
+        body: notification.notifData.notes,
+        data: {
+          id: notification.id,
+          userId: notification.userId,
+          time: notification.time,
+          notifType: notification.type,
+          eventRefId:
+            notification.type === "event" ? notification.eventRefId : null,
+          deviceExceptions: notification.deviceExceptions || [],
         },
       });
-      for (const notification of notifications) {
-        if (new Date(notification.time) <= new Date()) {
-          const payload = JSON.stringify({
-            title: notification.notifData.title,
-            body: notification.notifData.notes,
-            data: {
-              id: notification.id,
-              userId: notification.userId,
-              time: notification.time,
-              notifType: notification.type,
-              eventRefId:
-                notification.type === "event" ? notification.eventRefId : null,
-              deviceExceptions: notification.deviceExceptions || [],
-            },
-          });
-          if (user.notifSub.length > 1) {
-            sendNotification(payload, [...user.notifSub], user.id);
-          }
-          if (user.notifSub.length < 2) {
-            sendNotification(payload, [JSON.parse(...user.notifSub)], user.id);
-          }
-          notificationIdsToUpdate.push(notification.id);
+      // Update reminder here???
+      if (notification.reminderRefId) {
+        const reminderUpdated = await updateRepeatingReminder(notification);
+        if (!reminderUpdated) {
+          // Handle reminder not being updated???? continue for now
+          continue;
         }
+      }
+      if (user.notifSub.length > 1) {
+        await sendNotification(payload, [...user.notifSub], user.id);
+        notificationIdsToUpdate.push(notification.id);
+      }
+      if (user.notifSub.length < 2) {
+        await sendNotification(
+          payload,
+          [JSON.parse(...user.notifSub)],
+          user.id,
+        );
+        notificationIdsToUpdate.push(notification.id);
       }
     }
     if (notificationIdsToUpdate.length > 0) {

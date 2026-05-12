@@ -3,7 +3,8 @@ export type ReminderRepeatType = {
   howOften: string;
   interval: string;
   skipDates: string[];
-  previousReminders: PreviousReminderType;
+  originalTime: Date;
+  previousReminders: PreviousReminderType[];
 };
 
 export type PreviousReminderType = {
