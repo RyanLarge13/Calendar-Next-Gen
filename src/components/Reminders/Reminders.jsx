@@ -12,33 +12,33 @@ import { MdOutlineClearAll } from "react-icons/md";
 import { useModalActions } from "../../context/ContextHooks/ModalContext.jsx";
 
 const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
-  // const { reminders, preferences } = useContext(UserContext);
-  const { preferences } = useContext(UserContext); // Created for testing reminders
+  const { reminders, preferences } = useContext(UserContext);
+  // const { preferences } = useContext(UserContext); // Created for testing reminders
   const { dateObj, string, setString } = useContext(DatesContext);
   const { setType, setMenu, setAddNewEvent } = useContext(InteractiveContext);
 
   // Uncomment for reminder testing purposes and remove reminders from UserContext import
-  const reminders = [
-    {
-      id: "1",
-      title: "Test repeat",
-      notes: "This is my repeating reminder",
-      time: new Date().toString(),
-      snoozes: { count: 0, snoozes: [] },
-      paused: false,
-      ignoreDates: [],
-      ignoreDevices: [],
-      repeat: {
-        on: true,
-        howOften: "Daily",
-        interval: 6,
-        skipDates: [],
-      },
-      completed: false,
-      groupId: "",
-      eventRefId: "",
-    },
-  ];
+  // const reminders = [
+  //   {
+  //     id: "1",
+  //     title: "Test repeat",
+  //     notes: "This is my repeating reminder",
+  //     time: new Date().toString(),
+  //     snoozes: { count: 0, snoozes: [] },
+  //     paused: false,
+  //     ignoreDates: [],
+  //     ignoreDevices: [],
+  //     repeat: {
+  //       on: true,
+  //       howOften: "Daily",
+  //       interval: 6,
+  //       skipDates: [],
+  //     },
+  //     completed: false,
+  //     groupId: "",
+  //     eventRefId: "",
+  //   },
+  // ];
 
   const { openModal } = useModalActions();
 
