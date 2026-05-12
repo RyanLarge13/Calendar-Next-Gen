@@ -828,7 +828,7 @@ export const togglePinInStorage = (id, currentPin) => {
 export const reminderFutureDays = (reminder, amount = 4) => {
   const mutatingDate = new Date(reminder.time);
 
-  const howOften = reminder.repeat.howOften;
+  const howOften = reminder.repeat?.howOften;
 
   const nextDays = [];
 
@@ -890,8 +890,8 @@ export const repeatReminderOccursOnDay = (reminder, candidateDay) => {
   // cannot repeat before start date
   if (candidate < reminderStart) return false;
 
-  const rawCount = reminder.repeat.interval ?? 1;
-  const howOften = reminder.repeat.howOften;
+  const rawCount = reminder.repeat?.interval ?? 1;
+  const howOften = reminder.repeat?.howOften;
   const repeatCount = rawCount === "infinity" ? Infinity : rawCount - 1;
 
   switch (howOften) {

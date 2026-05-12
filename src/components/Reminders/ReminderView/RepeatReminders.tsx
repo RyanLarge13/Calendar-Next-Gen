@@ -329,7 +329,7 @@ const RepeatReminders = ({ reminder }) => {
 
         {!!reminder.repeat?.skipDates?.length && (
           <div className="mt-4 flex flex-wrap gap-2">
-            {reminder.repeat.skipDates.slice(0, 4).map((date) => (
+            {reminder.repeat?.skipDates.slice(0, 4).map((date) => (
               <span
                 key={date}
                 className={`
@@ -345,7 +345,7 @@ const RepeatReminders = ({ reminder }) => {
               </span>
             ))}
 
-            {reminder.repeat.skipDates.length > 4 && (
+            {reminder.repeat?.skipDates.length > 4 && (
               <span
                 className={`
               rounded-full px-3 py-1 text-[11px] font-semibold border
@@ -356,7 +356,7 @@ const RepeatReminders = ({ reminder }) => {
               }
             `}
               >
-                +{reminder.repeat.skipDates.length - 4} more
+                +{reminder.repeat?.skipDates.length - 4} more
               </span>
             )}
           </div>

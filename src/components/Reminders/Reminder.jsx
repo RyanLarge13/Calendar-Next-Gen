@@ -274,7 +274,7 @@ const Reminder = ({
                 <p className="mt-1 text-sm font-semibold leading-tight truncate">
                   {reminderTitle || reminder.title || "Reminder"}
                 </p>
-                {reminder.repeat.on ? <BsRepeat className="text-sm" /> : null}
+                {reminder.repeat?.on ? <BsRepeat className="text-sm" /> : null}
               </div>
 
               <div className="flex items-center gap-1 flex-shrink-0">
@@ -519,7 +519,7 @@ const Reminder = ({
 
             <span>{formatRelativeTime(new Date(reminder.time))}</span>
 
-            {reminder.repeat.on ? (
+            {reminder.repeat?.on ? (
               <>
                 <span className="opacity-30">•</span>
 
