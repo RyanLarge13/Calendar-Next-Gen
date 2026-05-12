@@ -10,6 +10,7 @@ import { BsCalendarDay, BsCalendarMonth, BsCalendarWeek } from "react-icons/bs";
 import GroupedReminders from "./GroupedReminders.jsx";
 import { MdOutlineClearAll } from "react-icons/md";
 import { useModalActions } from "../../context/ContextHooks/ModalContext.jsx";
+import { LocalStorage_UpdateGroupingPreferences } from "../../utils/localStorageHelpers.ts";
 
 const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
   const { reminders, preferences } = useContext(UserContext);
