@@ -134,6 +134,7 @@ const processPushNotifications = async () => {
       take: 500,
     });
     for (const notification of notifications) {
+      const user = notification.User
       const payload = JSON.stringify({
         title: notification.notifData.title,
         body: notification.notifData.notes,
