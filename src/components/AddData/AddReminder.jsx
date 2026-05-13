@@ -199,7 +199,6 @@ const AddReminder = () => {
       repeat: repeat,
       deviceExceptions: deviceExceptions,
     };
-    return;
     const newNotification = {
       type: "reminder",
       time: timeToAdd,
