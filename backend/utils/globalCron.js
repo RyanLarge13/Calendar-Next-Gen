@@ -41,10 +41,12 @@ const updateRepeatingReminder = async (notification) => {
   });
 
   if (reminderRepeating) {
-    if (reminderRepeating.repeat?.interval === 0) {
+    const isOutOfRepeats = interval !== "infinity" && Number(interval) <= 0;
+
+    if (isOutOfRepeats) {
       await prisma.reminder.update({
         where: { id: reminderRepeating.id },
-        data: { repeat: { on: false, ...(reminderRepeating.repeat || {}) } },
+        data: { repeat: { ...(reminderRepeating.repeat || {}), on: false } },
       });
       return true;
     }
@@ -58,12 +60,31 @@ const updateRepeatingReminder = async (notification) => {
       snoozed: reminderRepeating.snoozes?.snoozes?.length > 0,
     };
     const newNotification = {
-      ...notification,
       id: uuidv4(),
+      type: notification.type,
       time: newTime.toISOString(),
       timeDate: newTime,
+      read: false,
+      readTime: null,
+      notifData: notification.notifData,
+      sentNotification: false,
       sentWebPush: false,
+
+      User: {
+        connect: { id: notification.userId },
+      },
+
+      reminderRef: {
+        connect: { id: reminderRefId },
+      },
+
+      ...(notification.eventRefId && {
+        eventRef: {
+          connect: { id: notification.eventRefId },
+        },
+      }),
     };
+
     try {
       await prisma.$transaction([
         prisma.reminder.update({
@@ -134,7 +155,7 @@ const processPushNotifications = async () => {
       take: 500,
     });
     for (const notification of notifications) {
-      const user = notification.User
+      const user = notification.User;
       const payload = JSON.stringify({
         title: notification.notifData.title,
         body: notification.notifData.notes,
