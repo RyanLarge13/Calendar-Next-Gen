@@ -41,6 +41,13 @@ const updateRepeatingReminder = async (notification) => {
   });
 
   if (reminderRepeating) {
+    if (reminderRepeating.repeat?.interval === 0) {
+      await prisma.reminder.update({
+        where: { id: reminderRepeating.id },
+        data: { repeat: { on: false, ...(reminderRepeating.repeat || {}) } },
+      });
+      return true;
+    }
     const newTime = new Date(reminderFutureDays(reminderRepeating, 1)[0]);
     const newPreviousData = {
       time: reminderRepeating.time,
