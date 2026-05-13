@@ -201,41 +201,68 @@ export const addNewReminder = async (req, res) => {
 };
 
 export const deleteReminder = async (req, res) => {
-  const id = req.params.reminderId;
-  const deletedReminder = await prisma.reminder.delete({
-    where: {
-      id: id,
-    },
-  });
-  if (deletedReminder) {
-    const event = await prisma.event.findUnique({
-      where: { id: deletedReminder.eventRefId },
+  const id = req.params?.reminderId;
+  const userId = req.user?.id;
+
+  if (!userId) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to make this request" });
+    return;
+  }
+
+  if (!id) {
+    res
+      .status(400)
+      .json({ message: "Please provide a valid reminder id to delete" });
+    return;
+  }
+
+  try {
+    const deletedReminder = await prisma.reminder.delete({
+      where: {
+        id: id,
+        userId: userId,
+      },
     });
 
-    if (event) {
-      const eventReminderInfo = event.reminders;
-      const eventRemindersExisting = eventReminderInfo?.eventReminders || [];
-      const newEventReminders = eventRemindersExisting.filter(
-        (r) => r.id !== id,
-      );
+    if (deletedReminder) {
+      if (deletedReminder.eventRefId) {
+        const event = await prisma.event.findUnique({
+          where: { id: deletedReminder.eventRefId, userId: userId },
+        });
 
-      const len = newEventReminders.length;
+        if (event) {
+          const eventReminderInfo = event.reminders;
+          const eventRemindersExisting =
+            eventReminderInfo?.eventReminders || [];
+          const newEventReminders = eventRemindersExisting.filter(
+            (r) => r.id !== id,
+          );
 
-      await prisma.event.update({
-        where: { id: deletedReminder.eventRefId },
-        data: {
-          reminders: {
-            reminder: len === 0 ? false : len,
-            eventReminders: newEventReminders,
-          },
-        },
+          const len = newEventReminders.length;
+
+          await prisma.event.update({
+            where: { id: deletedReminder.eventRefId, userId: userId },
+            data: {
+              reminders: {
+                reminder: len === 0 ? false : len,
+                eventReminders: newEventReminders,
+              },
+            },
+          });
+        }
+      }
+
+      res.status(200).json({
+        message: "Successfully deleted reminder",
+        reminderId: deletedReminder.id,
       });
+      return;
     }
-
-    return res.json({
-      message: "Successfully deleted reminder",
-      reminderId: deletedReminder.id,
-    });
+    res.status(400).json({ message: "No reminder was found to be deleted" });
+  } catch (err) {
+    console.log("Error removing reminder from db or updating event attachment");
   }
 };
 
