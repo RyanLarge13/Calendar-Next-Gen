@@ -133,7 +133,7 @@ export const updateReminderComplete = async (req, res) => {
 };
 
 export const addNewReminder = async (req, res) => {
-  const { title, notes, time, eventRefId, deviceExceptions } =
+  const { title, notes, time, eventRefId, repeat, deviceExceptions } =
     req.body.reminder;
   const { id } = req.user;
   const stringTime = new Date(time).toString();
@@ -141,8 +141,14 @@ export const addNewReminder = async (req, res) => {
     title,
     notes,
     completed: false,
+    paused: false,
     time: stringTime,
+    timeDate: new Date(stringTime),
     eventRefId,
+    repeat,
+    ignoreDates: [], // Change in the future from the frontend
+    ignoreDevices: deviceExceptions,
+    snoozes: {}, // Change in the future form frontend
     userId: id,
   };
   const newNotif = {
@@ -150,6 +156,7 @@ export const addNewReminder = async (req, res) => {
     read: false,
     readTime: null,
     time: stringTime,
+    timeDate: new Date(stringTime),
     notifData: newReminder,
     sentNotification: false,
     sentWebPush: false,
