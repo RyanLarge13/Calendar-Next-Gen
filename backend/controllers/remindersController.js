@@ -1,4 +1,5 @@
 import prisma from "../utils/prismaClient.js";
+import { v4 as uuidv4 } from "uuid";
 
 export const getReminders = async (req, res) => {
   const { id } = req.user;
@@ -136,8 +137,11 @@ export const addNewReminder = async (req, res) => {
   const { title, notes, time, eventRefId, repeat, deviceExceptions } =
     req.body.reminder;
   const { id } = req.user;
+
+  const newReminderId = uuidv4();
   const stringTime = new Date(time).toString();
   const newReminder = {
+    id: newReminderId,
     title,
     notes,
     completed: false,
@@ -157,6 +161,7 @@ export const addNewReminder = async (req, res) => {
     readTime: null,
     time: stringTime,
     timeDate: new Date(stringTime),
+    reminderRefId: newReminderId,
     notifData: newReminder,
     sentNotification: false,
     sentWebPush: false,

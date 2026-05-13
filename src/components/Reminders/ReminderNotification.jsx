@@ -44,10 +44,6 @@ const ReminderNotification = ({ notification, remindersVibrated }) => {
     try {
       // Update reminder association
       if (notification.reminderRefId) {
-        await updateReminderComplete({
-          reminderId: notification.reminderRefId,
-          completed: true,
-        });
         setReminders((prev) => {
           const newReminders = prev.map((r) => {
             if (r.id === notification.reminderRefId) {
@@ -58,10 +54,13 @@ const ReminderNotification = ({ notification, remindersVibrated }) => {
 
           return newReminders;
         });
+        await updateReminderComplete({
+          reminderId: notification.reminderRefId,
+          completed: true,
+        });
       }
 
       // Update actual notification
-      await markAsRead(notification.id);
       setNotifications((prev) => {
         const newNotifs = prev.map((notif) => {
           if (notif.id === notification.id) {
@@ -76,6 +75,7 @@ const ReminderNotification = ({ notification, remindersVibrated }) => {
 
         return newNotifs;
       });
+      await markAsRead(notification.id);
     } catch (err) {
       console.log("Error updating reminder to complete with server request");
       console.log(err);

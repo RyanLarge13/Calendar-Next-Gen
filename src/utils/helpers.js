@@ -829,7 +829,7 @@ export const reminderFutureDays = (reminder) => {
   const mutatingDate = new Date(reminder.time);
 
   const howOften = reminder.repeat?.howOften;
-  const amount = reminder.repeat?.interval;
+  const amount = Number(reminder.repeat?.interval) || 4;
 
   const nextDays = [];
 
