@@ -13,6 +13,8 @@ import Toggle from "../Misc/Toggle";
 import { useModalActions } from "../../context/ContextHooks/ModalContext";
 import { repeatOptions } from "../../constants/dateAndTimeConstants";
 import NotificationSubscription from "../Notifications/NotificationSubscription";
+import { RiRepeat2Fill } from "react-icons/ri";
+import { BiInfinite } from "react-icons/bi";
 
 const AddReminder = () => {
   const { setMenu, setAddNewEvent, setType, setShowCategory } =
@@ -52,9 +54,11 @@ const AddReminder = () => {
   // Repeat states
   const [repeat, setRepeat] = useState({
     on: false,
-    howOften: "null",
+    howOften: null,
     interval: "infinity",
+    repeatForever: true,
     skipDates: [],
+    previousReminders: [],
   });
 
   useEffect(() => {
@@ -168,7 +172,6 @@ const AddReminder = () => {
         eventDate.setHours(eventTime.getHours());
         eventDate.setMinutes(eventTime.getMinutes());
 
-        console.log(eventDate);
         if (isPassed(new Date(timeToCheck), eventDate)) {
           const newError = {
             show: true,
@@ -196,6 +199,7 @@ const AddReminder = () => {
       repeat: repeat,
       deviceExceptions: deviceExceptions,
     };
+    return;
     const newNotification = {
       type: "reminder",
       time: timeToAdd,
@@ -306,30 +310,26 @@ const AddReminder = () => {
   };
 
   // Repeat methods
-  const createRepeat = (isRepeatCallback) => {
-    const isRepeat = isRepeatCallback(repeat.on);
-
+  const createRepeat = () => {
     setRepeat((prev) => ({
       ...prev,
-      on: isRepeat,
+      on: !prev.on,
     }));
   };
 
-  const createHowOften = (newHowOftenCallback) => {
-    const newHowOften = newHowOftenCallback(repeat.howOften);
-
+  const createHowOften = (newOften) => {
+    const howOften = newOften();
     setRepeat((prev) => ({
       ...prev,
-      howOften: newHowOften,
+      howOften: howOften,
     }));
   };
 
-  const createNeverEndingRepeat = (isForeverCallback) => {
-    const isForever = isForeverCallback(repeat.repeatForever);
-
+  const createNeverEndingRepeat = () => {
     setRepeat((prev) => ({
       ...prev,
-      repeatForever: isForever,
+      repeatForever: !prev.repeatForever,
+      interval: !prev.repeatForever ? "infinity" : "",
     }));
   };
 
@@ -571,13 +571,15 @@ const AddReminder = () => {
               ))}
             </div>
             <div
-              className={`flex items-center justify-between rounded-2xl border px-4 py-3 ${
+              className={`flex items-center justify-between rounded-2xl border mt-2 px-4 py-3 ${
                 preferences.darkMode
                   ? "border-white/10 bg-white/5"
                   : "border-black/10 bg-black/[0.02]"
               }`}
             >
-              <p className="text-xs text-gray-700 ml-4">Repeat Forever</p>
+              <p className="text-xs text-gray-700 font-semibold">
+                <BiInfinite className="inline mr-2 text-lg" /> Repeat Forever
+              </p>
               <Toggle
                 condition={repeat.repeatForever}
                 setCondition={createNeverEndingRepeat}
@@ -585,6 +587,12 @@ const AddReminder = () => {
             </div>
             {repeat.howOften && !repeat.repeatForever ? (
               <input
+                onChange={(e) =>
+                  setRepeat((prev) => ({
+                    ...prev,
+                    interval: Number(e.target.value) || 0,
+                  }))
+                }
                 placeholder={`How many ${
                   repeat.howOften === "Daily"
                     ? "days"
