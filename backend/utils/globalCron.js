@@ -41,6 +41,7 @@ const updateRepeatingReminder = async (notification) => {
   });
 
   if (reminderRepeating) {
+    const interval = reminderRepeating.repeat?.interval || 0;
     const isOutOfRepeats = interval !== "infinity" && Number(interval) <= 0;
 
     if (isOutOfRepeats) {
