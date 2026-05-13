@@ -67,6 +67,11 @@ const updateRepeatingReminder = async (notification) => {
             completed: false,
             repeat: {
               ...(reminderRepeating.repeat || {}),
+              interval: reminderRepeating.repeat?.interval
+                ? reminderRepeating.repeat?.interval === "infinity"
+                  ? "infinity"
+                  : Number(reminderRepeating.repeat.interval) - 1
+                : 0,
               previousReminders: [
                 ...(reminderRepeating.repeat?.previousReminders || []),
                 newPreviousData,

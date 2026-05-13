@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from "uuid";
 import { addTimerToStorage } from "../../utils/helpers";
 import InteractiveContext from "../../context/InteractiveContext";
 import { useModalActions } from "../../context/ContextHooks/ModalContext";
+import { CgClose } from "react-icons/cg";
 
 const AddTimer = () => {
   const { preferences, setTimers } = useContext(UserContext) as {
@@ -406,7 +407,7 @@ const AddTimer = () => {
                 bg-gradient-to-r from-rose-500 to-rose-400 hover:from-rose-400 hover:to-rose-500
               `}
             >
-              <BiPlay className="text-lg" />
+              <CgClose className="text-lg" />
               Close Modal
             </button>
           </div>

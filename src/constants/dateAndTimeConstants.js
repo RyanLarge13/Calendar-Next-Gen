@@ -219,6 +219,7 @@ export const staticYears = (() => {
 })();
 
 export const repeatOptions = [
+  "Minute",
   "Daily",
   "Weekly",
   "Bi Weekly",
