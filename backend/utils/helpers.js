@@ -28,7 +28,7 @@ export const reminderFutureDays = (reminder, amount = 4) => {
       case "Minute": {
         mutatingDate.setMinutes(mutatingDate.getMinutes() + 1);
         const nextMinute = mutatingDate.toISOString();
-        nextMinutes.push(nextMinute);
+        nextMinute.push(nextMinute);
         break;
       }
       case "Daily": {
