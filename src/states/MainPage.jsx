@@ -14,6 +14,7 @@ import { useModalActions } from "../context/ContextHooks/ModalContext";
 import ReminderNotifications from "../components/Reminders/ReminderNotifications";
 import { setStateAndPushWindowState } from "../utils/helpers";
 import Timers from "../components/Timers/Timers";
+import PinLockScreen from "../components/Unlock/PinLockScreen";
 
 const MainPage = () => {
   const {
@@ -76,6 +77,16 @@ const MainPage = () => {
       <SystemNotif />
       <ReminderNotifications />
       <Stickies />
+      {/* <PinLockScreen
+        mode="unlock"
+        error={null}
+        onSubmit={(pin) => {
+          console.log("Entered PIN:", pin);
+        }}
+        onBiometricUnlock={() => {
+          console.log("Try biometric unlock");
+        }}
+      /> */}
       <div className="flex">
         <SideBar />
         <div className="overflow-hidden scrollbar-hide w-full">

@@ -1,5 +1,5 @@
 import { motion, AnimatePresence, useDragControls } from "framer-motion";
-import { useContext, useState } from "react";
+import { Dispatch, SetStateAction, useContext, useState } from "react";
 import { BiSolidMoon } from "react-icons/bi";
 import { FaGripHorizontal, FaMinusCircle } from "react-icons/fa";
 import { RiSunFill } from "react-icons/ri";
@@ -10,13 +10,28 @@ import NotificationSubscriptions from "./NotificationSubscriptions";
 import SettingsSection from "./SettingsSection";
 import SelectPill from "./SelectPill";
 import SettingRow from "./SettingRow";
+import { PreferencesType } from "../../../types/preferences";
+import { LocalStorage_StorePreferences } from "../../../utils/localStorageHelpers";
 
 const Settings = ({ setOption }) => {
-  const { preferences, setPreferences } = useContext(UserContext);
+  const { preferences, setPreferences } = useContext(UserContext) as {
+    preferences: PreferencesType;
+    setPreferences: Dispatch<SetStateAction<PreferencesType>>;
+  };
 
   const [start, setStart] = useState(0);
 
   const controls = useDragControls();
+  const availableViewsMap = [
+    ["showEvents", "Events"],
+    ["showWeather", "Weather"],
+    ["showReminders", "Reminders"],
+    ["showTasks", "Tasks"],
+    ["showNotes", "Notes"],
+    ["showKanban", "Kanban"],
+    ["showAppointments", "Appointments"],
+    ["showLists", "Lists"],
+  ];
 
   const startDrag = (e) => {
     setStart(e.clientY);
@@ -51,6 +66,18 @@ const Settings = ({ setOption }) => {
     setPreferences(newPreferences);
   };
 
+  const M_UpdatePreferences = <K extends keyof PreferencesType>(
+    field: K,
+    newValue: PreferencesType[K],
+  ): void => {
+    const newPreferences: PreferencesType = preferences;
+
+    newPreferences[field] = newValue;
+
+    LocalStorage_StorePreferences(newPreferences);
+    setPreferences(newPreferences);
+  };
+
   return (
     <AnimatePresence>
       <Portal>
@@ -74,14 +101,14 @@ const Settings = ({ setOption }) => {
         dragConstraints={{ top: 0, bottom: 0 }}
         onDragEnd={finish}
         className={`
-              fixed inset-x-0 bottom-0 z-[999]
-              max-h-[100vh] overflow-hidden
-              rounded-t-[32px] border shadow-2xl
-              will-change-transform
-              ${preferences.darkMode ? "bg-[#161616]/75 border-white/10 text-white" : "bg-white/92 border-black/10 text-slate-900"}
-              lg:top-0 lg:bottom-0 lg:left-[60%] lg:right-0
-              lg:rounded-none lg:rounded-l-[32px] lg:max-h-screen
-              `}
+          fixed inset-x-0 bottom-0 z-[999]
+          max-h-[100vh] overflow-hidden
+          rounded-t-[32px] border shadow-2xl
+          will-change-transform
+          ${preferences.darkMode ? "bg-[#161616]/75 border-white/10 text-white" : "bg-white/92 border-black/10 text-slate-900"}
+          lg:top-0 lg:bottom-0 lg:left-[60%] lg:right-0
+          lg:rounded-none lg:rounded-l-[32px] lg:max-h-screen
+        `}
       >
         {/* Drag / action bar (the thing you grab) */}
         <div
@@ -229,10 +256,10 @@ const Settings = ({ setOption }) => {
               >
                 <SelectPill
                   value={preferences.view || "Month"}
-                  options={["Month", "Week", "Day", "Agenda"]}
+                  options={["Month", "Week", "Day", "Agenda", "Mason"]}
                   preferences={preferences}
-                  onChange={(value) => {
-                    console.log("TODO: update preferences.view", value);
+                  onChange={(value: string) => {
+                    M_UpdatePreferences("view", value);
                   }}
                 />
               </SettingRow>
@@ -240,24 +267,27 @@ const Settings = ({ setOption }) => {
               <Switch
                 title="Do Not Disturb"
                 styles={`
-      rounded-3xl border shadow-sm px-3 py-3
-      ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-black/[0.02] border-black/10"}
-    `}
+                  rounded-3xl border shadow-sm px-3 py-3
+                  ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-black/[0.02] border-black/10"}
+                `}
                 value={preferences.doNotDisturb}
-                toggle={(value) => {
-                  console.log("TODO: update preferences.doNotDisturb", value);
+                toggle={(value: boolean) => {
+                  M_UpdatePreferences("doNotDisturb", value);
                 }}
               />
 
               <Switch
                 title="Lock App"
                 styles={`
-      rounded-3xl border shadow-sm px-3 py-3
-      ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-black/[0.02] border-black/10"}
-    `}
-                value={preferences.lockApp}
-                toggle={(value) => {
-                  console.log("TODO: update preferences.lockApp", value);
+                  rounded-3xl border shadow-sm px-3 py-3
+                  ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-black/[0.02] border-black/10"}
+                `}
+                value={preferences.lockApp.enabled}
+                toggle={(value: boolean) => {
+                  M_UpdatePreferences("lockApp", {
+                    ...preferences.lockApp,
+                    enabled: value,
+                  });
                 }}
               />
             </SettingsSection>
@@ -280,37 +310,39 @@ const Settings = ({ setOption }) => {
                   value={
                     preferences.mainMenuPage?.defaultPageOpening || "Dashboard"
                   }
-                  options={["Dashboard", "Events", "Tasks", "Reminders"]}
+                  options={[
+                    "Dashboard",
+                    "Events",
+                    "Tasks",
+                    "Reminders",
+                    "Lists",
+                    "Kanban",
+                    "Stickies",
+                  ]}
                   preferences={preferences}
-                  onChange={(value) => {
-                    console.log(
-                      "TODO: update mainMenuPage.defaultPageOpening",
-                      value,
-                    );
+                  onChange={(value: string) => {
+                    M_UpdatePreferences("mainMenuPage", {
+                      ...preferences.mainMenuPage,
+                      defaultPageOpening: value,
+                    });
                   }}
                 />
               </SettingRow>
 
-              {[
-                ["showEvents", "Events"],
-                ["showWeather", "Weather"],
-                ["showReminders", "Reminders"],
-                ["showTasks", "Tasks"],
-                ["showNotes", "Notes"],
-                ["showKanban", "Kanban"],
-                ["showAppointments", "Appointments"],
-                ["showLists", "Lists"],
-              ].map(([key, label]) => (
+              {availableViewsMap.map(([key, label]) => (
                 <Switch
                   key={key}
                   title={label}
                   styles={`
-        rounded-3xl border shadow-sm px-3 py-3
-        ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-black/[0.02] border-black/10"}
-      `}
+                    rounded-3xl border shadow-sm px-3 py-3
+                    ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-black/[0.02] border-black/10"}
+                  `}
                   value={preferences.mainMenuPage?.[key]}
-                  toggle={(value) => {
-                    console.log(`TODO: update mainMenuPage.${key}`, value);
+                  toggle={(value: string) => {
+                    M_UpdatePreferences("mainMenuPage", {
+                      ...preferences.mainMenuPage,
+                      [key]: value,
+                    });
                   }}
                 />
               ))}
@@ -326,36 +358,45 @@ const Settings = ({ setOption }) => {
               <Switch
                 title="Show Sidebar"
                 styles={`
-      rounded-3xl border shadow-sm px-3 py-3
-      ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-black/[0.02] border-black/10"}
-    `}
+                  rounded-3xl border shadow-sm px-3 py-3
+                  ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-black/[0.02] border-black/10"}
+                `}
                 value={preferences.showSidebar?.on}
-                toggle={(value) => {
-                  console.log("TODO: update showSidebar.on", value);
+                toggle={(value: boolean) => {
+                  M_UpdatePreferences("showSidebar", {
+                    ...preferences.showSidebar,
+                    on: value,
+                  });
                 }}
               />
 
               <Switch
                 title="Sidebar Events"
                 styles={`
-      rounded-3xl border shadow-sm px-3 py-3
-      ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-black/[0.02] border-black/10"}
-    `}
+                  rounded-3xl border shadow-sm px-3 py-3
+                  ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-black/[0.02] border-black/10"}
+                `}
                 value={preferences.showSidebar?.showEvents}
-                toggle={(value) => {
-                  console.log("TODO: update showSidebar.showEvents", value);
+                toggle={(value: boolean) => {
+                  M_UpdatePreferences("showSidebar", {
+                    ...preferences.showSidebar,
+                    showEvents: value,
+                  });
                 }}
               />
 
               <Switch
                 title="Sidebar Reminders"
                 styles={`
-      rounded-3xl border shadow-sm px-3 py-3
-      ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-black/[0.02] border-black/10"}
-    `}
+                  rounded-3xl border shadow-sm px-3 py-3
+                  ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-black/[0.02] border-black/10"}
+                `}
                 value={preferences.showSidebar?.showReminders}
-                toggle={(value) => {
-                  console.log("TODO: update showSidebar.showReminders", value);
+                toggle={(value: boolean) => {
+                  M_UpdatePreferences("showSidebar", {
+                    ...preferences.showSidebar,
+                    showReminders: value,
+                  });
                 }}
               />
             </SettingsSection>
@@ -376,8 +417,11 @@ const Settings = ({ setOption }) => {
                   value={preferences.events?.filter || "All"}
                   options={["All", "Upcoming", "Past", "Repeating"]}
                   preferences={preferences}
-                  onChange={(value) => {
-                    console.log("TODO: update events.filter", value);
+                  onChange={(value: string) => {
+                    M_UpdatePreferences("events", {
+                      ...preferences.events,
+                      filter: value,
+                    });
                   }}
                 />
               </SettingRow>
@@ -391,8 +435,11 @@ const Settings = ({ setOption }) => {
                   value={preferences.events?.sort || "Newest"}
                   options={["Newest", "Oldest", "A-Z", "Custom"]}
                   preferences={preferences}
-                  onChange={(value) => {
-                    console.log("TODO: update events.sort", value);
+                  onChange={(value: string) => {
+                    M_UpdatePreferences("events", {
+                      ...preferences.events,
+                      sort: value,
+                    });
                   }}
                 />
               </SettingRow>
@@ -400,6 +447,7 @@ const Settings = ({ setOption }) => {
 
             {/* Reminders */}
             <SettingsSection
+              badge={""}
               title="Reminders"
               description="Manage grouping for complete and incomplete reminders."
               preferences={preferences}
@@ -413,11 +461,14 @@ const Settings = ({ setOption }) => {
                   value={preferences.reminders?.incomplete?.groupType || "Date"}
                   options={["Date", "Priority", "List", "None"]}
                   preferences={preferences}
-                  onChange={(value) => {
-                    console.log(
-                      "TODO: update reminders.incomplete.groupType",
-                      value,
-                    );
+                  onChange={(value: string) => {
+                    M_UpdatePreferences("reminders", {
+                      ...preferences.reminders,
+                      incomplete: {
+                        ...preferences.reminders.incomplete,
+                        groupType: value,
+                      },
+                    });
                   }}
                 />
               </SettingRow>
@@ -432,10 +483,13 @@ const Settings = ({ setOption }) => {
                   options={["Date", "Priority", "List", "None"]}
                   preferences={preferences}
                   onChange={(value) => {
-                    console.log(
-                      "TODO: update reminders.complete.groupType",
-                      value,
-                    );
+                    M_UpdatePreferences("reminders", {
+                      ...preferences.reminders,
+                      complete: {
+                        ...preferences.reminders.complete,
+                        groupType: value,
+                      },
+                    });
                   }}
                 />
               </SettingRow>
@@ -451,12 +505,15 @@ const Settings = ({ setOption }) => {
               <Switch
                 title="Auto Save"
                 styles={`
-      rounded-3xl border shadow-sm px-3 py-3
-      ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-black/[0.02] border-black/10"}
-    `}
+                  rounded-3xl border shadow-sm px-3 py-3
+                  ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-black/[0.02] border-black/10"}
+                `}
                 value={preferences.stickies?.autoSave}
-                toggle={(value) => {
-                  console.log("TODO: update stickies.autoSave", value);
+                toggle={(value: boolean) => {
+                  M_UpdatePreferences("stickies", {
+                    ...preferences.stickies,
+                    autoSave: value,
+                  });
                 }}
               />
             </SettingsSection>

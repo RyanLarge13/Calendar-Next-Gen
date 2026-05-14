@@ -4,7 +4,7 @@ export type PreferencesType = {
   darkMode: boolean;
   view: string;
   doNotDisturb: boolean;
-  lockApp: boolean;
+  lockApp: LockApp;
   notifications: Notification;
   tasks: Tasks;
   reminders: Reminders;
@@ -89,4 +89,11 @@ export type Reminders = {
 
 export type ReminderGroup = {
   groupType: string;
+};
+
+export type LockApp = {
+  enabled: boolean;
+  method: string;
+  lockOnClose: boolean;
+  lockAfterMinutes: number;
 };

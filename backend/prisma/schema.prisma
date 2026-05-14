@@ -18,6 +18,7 @@ createAt      DateTime       @default(now())
 notifSub      String[]
 notifSubCanceled String[]
 importedGoogleEvents Boolean @default(false)
+preferences Preferences?
 events        Event[]
 reminders     Reminder[]
 notifications Notification[]
@@ -32,6 +33,13 @@ friendRequestsReceived FriendRequest[] @relation(name: "ReceivedFriendRequests")
 categories            UserCategory[]
 
 @@index([id], name: "userIdIndex")
+}
+
+model Preferences {
+    id String @id @unique @default(uuid())
+    user User @relation(fields: [userId], references: [id])
+    userId String
+    preferences Json
 }
 
 model UserCategory {
