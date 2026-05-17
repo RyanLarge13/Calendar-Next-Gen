@@ -114,12 +114,18 @@ export const updateReminderComplete = async (req, res) => {
   const { id } = req.user;
 
   try {
-    await prisma.reminder.update({
+    const updatedReminder = await prisma.reminder.update({
       where: { userId: id, id: reminderId },
       data: {
         completed: completed,
       },
     });
+
+    if (updatedReminder.timeDate < new Date()) {
+      await prisma.notification.deleteMany({
+        where: { userId: id, reminderRefId: reminderId },
+      });
+    }
 
     res.status(200).json({ message: "reminder update" });
   } catch (err) {

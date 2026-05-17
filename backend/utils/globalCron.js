@@ -32,7 +32,6 @@ const updateRepeatingReminder = async (notification) => {
     where: {
       id: reminderRefId,
       paused: false,
-      completed: false,
       repeat: {
         path: ["on"],
         equals: true,
