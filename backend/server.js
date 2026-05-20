@@ -49,6 +49,7 @@ const httpsServer = IS_PRODUCTION
       },
       app,
     );
+const socketDB = new SocketDBInterface();
 const io = new Server(httpsServer, {
   cors: {
     origin: process.env.FRONTEND_URL,
@@ -88,4 +89,4 @@ httpsServer.listen(PORT, () => {
   console.log(`Your app is listening on port ${PORT}`);
 });
 
-export { io };
+export { io, socketDB };
