@@ -19,7 +19,7 @@ import timerRouter from "./routes/timerRouter.js";
 import processPushNotifications from "./utils/globalCron.js";
 import cron from "node-cron";
 
-// Socket.io imprts
+// Socket.io imports
 import https from "https";
 import fs from "fs";
 import { Server } from "socket.io";
@@ -85,7 +85,7 @@ cron.schedule("*/15 * * * * *", () => {
   processPushNotifications();
 });
 
-httpsServer.listen(PORT, () => {
+httpsServer.listen(PORT, "0.0.0.0", () => {
   console.log(`Your app is listening on port ${PORT}`);
 });
 
