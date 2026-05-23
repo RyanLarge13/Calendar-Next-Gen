@@ -1,4 +1,4 @@
-class SocketDBInterface {
+export class SocketDBInterface {
   constructor(clinets = [], messages = [], rooms = []) {
     this.clients = new Map();
     this.messages = new Map();
