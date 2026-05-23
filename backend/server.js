@@ -20,7 +20,7 @@ import processPushNotifications from "./utils/globalCron.js";
 import cron from "node-cron";
 
 // Socket.io imports
-import https from "https";
+import http from "http";
 import fs from "fs";
 import { Server } from "socket.io";
 import { SocketDBInterface } from "./sockets/socketDB/inMemDb.js";
@@ -28,8 +28,6 @@ import { SocketDBInterface } from "./sockets/socketDB/inMemDb.js";
 dotenv.config();
 
 const PORT = process.env.PORT || 8080;
-const ENV = process.env.ENV || "production";
-const IS_PRODUCTION = ENV === "production";
 const corsOptions = {
   origin: [
     "https://calng.app",
@@ -41,17 +39,9 @@ const corsOptions = {
 };
 
 const app = express();
-const httpsServer = IS_PRODUCTION
-  ? https.createServer(app)
-  : https.createServer(
-      {
-        key: fs.readFileSync("./sockets/certs/key.pem"),
-        cert: fs.readFileSync("./sockets/certs/cert.pem"),
-      },
-      app,
-    );
+const httpServer = http.createServer(app);
 const socketDB = new SocketDBInterface();
-const io = new Server(httpsServer, {
+const io = new Server(httpServer, {
   cors: {
     origin: process.env.FRONTEND_URL,
     credentials: true,
@@ -86,7 +76,7 @@ cron.schedule("*/15 * * * * *", () => {
   processPushNotifications();
 });
 
-httpsServer.listen(PORT, "0.0.0.0", () => {
+httpServer.listen(PORT, "0.0.0.0", () => {
   console.log(`Your app is listening on port ${PORT}`);
 });
 
