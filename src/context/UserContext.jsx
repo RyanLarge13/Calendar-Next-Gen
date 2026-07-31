@@ -578,9 +578,12 @@ export const UserProvider = ({ children }) => {
     const registration = await navigator.serviceWorker.ready;
     let currentSub = await registration.pushManager.getSubscription();
 
-    const endpointToUpdate = currentSub.endpoint;
+    const endpointToUpdate = currentSub?.endpoint || null;
 
     const newSubs = parseNotifSubs(notifSubs).map((s) => {
+      if (endpointToUpdate === null) {
+        return JSON.stringify(s);
+      }
       if (s.endpoint === endpointToUpdate) {
         return JSON.stringify({ ...s, lastSeenAt: new Date() });
       }

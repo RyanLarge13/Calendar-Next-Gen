@@ -282,7 +282,7 @@ const Settings = ({ setOption }) => {
                   rounded-3xl border shadow-sm px-3 py-3
                   ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-black/[0.02] border-black/10"}
                 `}
-                value={preferences.lockApp.enabled}
+                value={preferences.lockApp?.enabled || false}
                 toggle={(value: boolean) => {
                   M_UpdatePreferences("lockApp", {
                     ...preferences.lockApp,
