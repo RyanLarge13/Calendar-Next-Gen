@@ -1,300 +1,257 @@
-# Calendar Next Gen
+<div align="center">
 
-A next-generation progressive web app for staying organized with calendars, reminders, tasks, lists, kanban boards, stickies, and notifications.
+# 📅 Calendar Next Gen
 
-Live site: `https://calng.app`
+### Your calendar should be more than a grid of dates.
 
-## Overview
+**Calendar Next Gen is a full-stack productivity platform that brings your calendar, reminders, tasks, lists, Kanban boards, sticky notes, notifications, and more into one connected workspace.**
 
-Calendar Next Gen is a full-stack productivity application built around a PWA-first experience. The frontend is a React application powered by Vite, while the backend is an Express server with Prisma for data access.
+[**🚀 Launch Calendar Next Gen**](https://calng.app) · [**💻 Explore the Code**](https://github.com/RyanLarge13/Calendar-Next-Gen)
 
-The app is structured to support:
+`React` · `Node.js` · `Express` · `Prisma` · `Redis` · `PWA`
 
-- Calendar-based planning
-- Event and reminder creation
-- Tasks and lists
-- Kanban boards
-- Sticky notes
-- Push notifications
-- Google authentication
-- Google Calendar event import
-- Friend / social utility features
+</div>
 
-## Features
+---
 
-- **Progressive Web App**
-  - Installable on supported devices
-  - Standalone display mode
-  - Service worker support
-  - App shortcuts for creating a new event or reminder
+> **Hero screenshot:** Add a current, wide screenshot of the main Calendar Next Gen workspace here.
 
-- **Calendar workflow**
-  - Main calendar interface
-  - Dedicated calendar views
-  - Date picker utilities
-  - Event and reminder flows
+## More than a calendar.
 
-- **Productivity tools**
-  - Tasks
-  - Lists
-  - Kanban boards
-  - Sticky notes
+Calendar Next Gen started with a simple idea:
 
-- **User features**
-  - Google OAuth integration
-  - User context and persisted session state
-  - Notification subscriptions
-  - Friend-related flows and QR-based sharing helpers
+**The tools you use to organize your life shouldn't all live in separate places.**
 
-- **Backend services**
-  - REST routes for users, events, reminders, notifications, lists, tasks, friends, kanban, and stickies
-  - Prisma-based database layer
-  - Cron-based background processing
-  - Email and push notification support
+A calendar knows *when* something is happening. A reminder knows *when you need to remember it*. A task knows *what needs to get done*. Lists organize the things around it. Kanban boards track progress. Sticky notes capture the thoughts you don't want to lose.
 
-## Tech Stack
+Calendar Next Gen brings those tools together into a single productivity environment built around time, organization, and the things you're actually trying to accomplish.
+
+And because CNG is built as a Progressive Web App, that experience isn't limited to another browser tab — it can be installed and used as an application on supported devices.
+
+---
+
+## ✨ One workspace. A lot going on.
+
+### 📅 Calendar & Events
+
+The calendar sits at the center of CNG, providing the primary interface for planning dates, navigating time, and managing events.
+
+### ⏰ Reminders
+
+Create reminders that work alongside the calendar and notification system so important things don't disappear into a forgotten list.
+
+### ✅ Tasks & Lists
+
+Organize things that need to get done without forcing everything to become a calendar event.
+
+### 📋 Kanban Boards
+
+Use board-based workflows when a simple task list isn't enough.
+
+### 📝 Sticky Notes
+
+Keep quick information and ideas immediately accessible inside the same workspace.
+
+### 🔔 Notifications
+
+CNG includes notification subscriptions and Web Push infrastructure, backed by server-side scheduled processing.
+
+### 👥 Friends & Sharing
+
+Friend-related workflows and QR utilities extend CNG beyond a purely isolated personal calendar.
+
+### 📲 Progressive Web App
+
+CNG is designed as an installable PWA with standalone display, service-worker support, application shortcuts, share-target support, and dedicated mobile and desktop assets.
+
+---
+
+## 🧠 This isn't just a frontend.
+
+Calendar Next Gen is a full-stack application with separate client, server, data, background-processing, notification, caching, real-time, and external-integration concerns.
+
+<pre>
+                    ┌──────────────────────────┐
+                    │    Calendar Next Gen     │
+                    └────────────┬─────────────┘
+                                 │
+                    ┌────────────┴─────────────┐
+                    │                          │
+              React / Vite                Node / Express
+                    │                          │
+           Application UI                  REST API
+                    │                          │
+           React Router                    Prisma
+                    │                          │
+          Service Worker                 Data Layer
+                    │
+             PWA / Web Push
+
+                         Backend Services
+                               │
+              ┌────────────────┼────────────────┐
+              │                │                │
+            Redis          Cron Jobs       External APIs
+                                              │
+                                      Google · Email · Push
+</pre>
+
+---
+
+## ⚙️ Under the hood
 
 ### Frontend
 
-- React 18
-- Vite
-- React Router
+The client is built with **React 18 and Vite** around a dashboard-style productivity experience. React Router handles navigation, while application providers manage shared concerns such as user, date, and interactive state.
+
+The frontend also uses:
+
 - Tailwind CSS
 - Framer Motion
 - React Quill / Quill
-- Google OAuth libraries
-- Google Maps library
-- Vite PWA / Workbox
+- Google OAuth
+- Google Maps
+- QR generation and scanning
+- Socket.IO client
+- Service-worker functionality
+- Web Push subscriptions
 
 ### Backend
 
-- Node.js
-- Express
-- Prisma
-- Redis
-- Nodemailer
-- Web Push
-- Google APIs
-- node-cron
+CNG has its own **Node.js / Express backend** rather than relying entirely on client-side services.
 
-## Project Structure
+The server exposes application routes for:
 
+- Users
+- Events
+- Reminders
+- Notifications
+- Lists
+- Tasks
+- Friends
+- Kanban
+- Stickies
+
+The backend also incorporates **Prisma**, **Redis**, **Socket.IO**, **node-cron**, **Nodemailer**, **Web Push**, **Google APIs**, **JWT**, and **bcrypt**.
+
+---
+
+## 🔔 Notifications don't stop at the UI.
+
+One of the more interesting parts of CNG is that reminders and notifications aren't treated as purely visual React components.
+
+The project contains infrastructure for notification subscriptions, Web Push delivery, email, and scheduled server-side processing. Parts of the application can therefore continue doing work outside the immediate calendar interface.
+
+---
+
+## 📲 Built like an application.
+
+Calendar Next Gen is designed to behave more like installed software than a traditional static website.
+
+Its PWA configuration includes:
+
+- Standalone display
+- Service-worker support
+- Mobile and desktop application assets
+- Installable application behavior
+- Shortcuts for creating events and reminders
+- Push notification support
+- Share-target support
+- Mobile and desktop screenshots
+
+**Opening your productivity system should feel like opening an app — because it is one.**
+
+---
+
+## 🛠️ Technology
+
+| Area | Technologies |
+| --- | --- |
+| **Frontend** | React 18, Vite, React Router |
+| **UI** | Tailwind CSS, Framer Motion, Quill |
+| **Backend** | Node.js, Express |
+| **Data & Infrastructure** | Prisma, Redis |
+| **Real Time** | Socket.IO |
+| **Authentication** | JWT, bcrypt, Google OAuth |
+| **Notifications** | Web Push, Nodemailer, node-cron |
+| **Integrations** | Google APIs, Google Maps |
+| **PWA** | Service Workers, Vite PWA / Workbox |
+
+---
+
+## 🏗️ Repository
+
+<pre>
 Calendar-Next-Gen/
-├── backend/
-│ ├── auth/
-│ ├── controllers/
-│ ├── emailTemplates/
-│ ├── middleware/
-│ ├── prisma/
-│ ├── routes/
-│ ├── utils/
-│ ├── package.json
-│ └── server.js
-├── docs/
-│ └── CONTRIBUTING.md
+│
+├── src/                    # React application
+│   ├── components/
+│   ├── context/
+│   ├── states/
+│   ├── utils/
+│   ├── App.jsx
+│   └── main.jsx
+│
+├── backend/                # Node / Express application
+│   ├── auth/
+│   ├── controllers/
+│   ├── middleware/
+│   ├── prisma/
+│   ├── routes/
+│   ├── utils/
+│   └── server.js
+│
 ├── public/
-│ ├── android/
-│ ├── ios/
-│ ├── screenshots/
-│ ├── windows11/
-│ ├── manifest.webmanifest
-│ ├── registerSw.js
-│ └── sw.js
-├── src/
-│ ├── assets/
-│ ├── components/
-│ ├── constants/
-│ ├── context/
-│ ├── states/
-│ ├── utils/
-│ ├── App.jsx
-│ ├── main.jsx
-│ └── index.css
-├── package.json
-├── vite.config.js
-└── vercel.json
+│   ├── android/
+│   ├── ios/
+│   ├── screenshots/
+│   ├── windows11/
+│   ├── manifest.webmanifest
+│   └── sw.js
+│
+└── docs/
+</pre>
 
-## Frontend Architecture
+---
 
-The frontend bootstraps from `src/main.jsx`, where the app loads global styles and registers the service worker script. The app root in `src/App.jsx` wraps the UI in providers for user, date, and interactive state, plus Google OAuth and React Router.
+## 🚀 Run it locally
 
-`MainPage.jsx` composes the main experience using:
+### Clone the repository
 
-- `Header`
-- `Search`
-- `SystemNotif`
-- `Stickies`
-- `SideBar`
-- `Calendar`
-- `AddCircle`
-- `Views`
+    git clone https://github.com/RyanLarge13/Calendar-Next-Gen.git
+    cd Calendar-Next-Gen
 
-This suggests a central dashboard-style interface with modal or route-driven flows for creating events and reminders.
+### Install and start the frontend
 
-## Backend Architecture
+    npm install
+    npm run dev
 
-The backend server is defined in `backend/server.js` and wires together route modules for:
+### Install and start the backend
 
-- users
-- events
-- reminders
-- notifications
-- lists
-- tasks
-- friends
-- kanban
-- stickies
+    cd backend
+    npm install
+    npm run dev
 
-The backend also uses:
+Additional configuration is required for services such as the database, authentication, Google integrations, Redis, email, and Web Push.
 
-- CORS configuration
-- environment variables via `dotenv`
-- scheduled processing with `node-cron`
-- a global push notification cron utility
+A complete development-environment guide should document the exact required environment variables separately rather than guessing them here.
 
-Prisma configuration and schema live under `backend/prisma/`.
+---
 
-## Getting Started
+## 🤝 Contributing
 
-### 1. Clone the repository
+Calendar Next Gen is an actively developed project.
 
-```bash
-git clone https://github.com/RyanLarge13/Calendar-Next-Gen.git
-cd Calendar-Next-Gen
-```
+Bug reports, feature ideas, documentation improvements, and code contributions are welcome. Please review the project's contributing guidelines and Code of Conduct before opening a pull request.
 
-### 2. Install frontend dependencies
+---
 
-```bash
-npm install
-```
+<div align="center">
 
-### 3. Install backend dependencies
+## Want to see what all of that actually feels like?
 
-```bash
-cd backend
-npm install
-cd ..
-```
+### [🚀 **Try Calendar Next Gen →**](https://calng.app)
 
-## Running Locally
+Built and maintained by **Ryan Large**
 
-### Start the frontend
-
-From the project root:
-
-```bash
-npm run dev
-```
-
-### Start the backend
-
-From the `backend` directory:
-
-```bash
-npm run dev
-```
-
-## Available Scripts
-
-### Frontend
-
-```bash
-npm run dev
-npm run build
-npm run preview
-```
-
-### Backend
-
-```bash
-npm run dev
-npm start
-```
-
-## Environment Variables
-
-This repository uses environment variables on both the frontend and backend.
-
-### Frontend
-
-Based on the codebase, you will likely need at least:
-
-```env
-VITE_GOOGLE_CLIENT_ID=your_google_oauth_client_id
-VITE_VAPID_PUBLIC_KEY=your_web_push_public_key
-```
-
-### Backend
-
-The backend uses `dotenv`, Prisma, Google APIs, email, Redis, and web push, so expect a `.env` with values similar to:
-
-```env
-PORT=8080
-DATABASE_URL=your_database_url
-JWT_SECRET=your_jwt_secret
-
-# Google / OAuth / APIs
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-
-# Redis
-REDIS_URL=your_redis_connection_string
-
-# Email
-EMAIL_USER=your_email_user
-EMAIL_PASS=your_email_password
-
-# Web Push
-VAPID_PUBLIC_KEY=your_vapid_public_key
-VAPID_PRIVATE_KEY=your_vapid_private_key
-```
-
-You may need additional variables depending on deployment and integrations.
-
-## PWA Notes
-
-The manifest shows that the app is configured as an installable standalone experience and includes:
-
-- app shortcuts for **New Event** and **New Reminder**
-- screenshots for mobile and desktop
-- a service worker entry
-- share target support
-- file handling experiments for PDFs and 3D model types
-
-## Deployment Notes
-
-The repository includes:
-
-- `vercel.json` in the project root
-- production CORS origins in the backend for:
-  - `https://calng.app`
-  - `https://www.calng.app`
-  - `https://calendar-next-gen.vercel.app`
-
-That suggests the frontend is intended for web deployment on Vercel or a similar host, while the backend is deployed separately.
-
-## Current Documentation Status
-
-A few project docs already exist in the repository:
-
-- `CHANGELOG.md`
-- `CODE_ASSESSMENT.md`
-- `docs/CONTRIBUTING.md`
-- `SECURITY.md`
-- `CODE_OF_CONDUCT.md`
-
-At the moment, the root `README.md` appears to be empty, so this draft is meant to give the project a much stronger landing page for contributors and users.
-
-## Contributing
-
-Please review the existing contribution and conduct files before opening a pull request:
-
-- `docs/CONTRIBUTING.md`
-- `CODE_OF_CONDUCT.md`
-
-## License
-
-MIT
-
-[1]: https://raw.githubusercontent.com/RyanLarge13/Calendar-Next-Gen/main/package.json "raw.githubusercontent.com"
+</div>
