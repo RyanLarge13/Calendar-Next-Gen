@@ -14,7 +14,8 @@
 
 ---
 
-> **Hero screenshot:** Add a current, wide screenshot of the main Calendar Next Gen workspace here.
+> **Hero screenshot:**
+<img src="./public/screenshots/calng-desktop.png" alt="screenshot" />
 
 ## More than a calendar.
 
