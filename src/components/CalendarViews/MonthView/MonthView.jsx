@@ -39,8 +39,8 @@ const MonthView = () => {
 
   useEffect(() => {
     const next = new Date(dt.getFullYear(), dt.getMonth(), 1);
-    if (pendingNavigationRef.current === next.getTime()) {
-      pendingNavigationRef.current = null;
+    if (pendingNavigationRef.current !== null) {
+      if (pendingNavigationRef.current === next.getTime()) pendingNavigationRef.current = null;
       return;
     }
     if (next.getTime() === displayMonth.getTime()) return;
