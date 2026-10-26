@@ -22,7 +22,7 @@ import AddTimer from "../AddData/AddTimer";
 
 const Modal = () => {
   const { events, preferences, reminders } = useContext(UserContext);
-  const { string, dateObj, theDay, setSecondString } = useContext(DatesContext);
+  const { string, theDay, setSecondString } = useContext(DatesContext);
   const {
     addNewEvent,
     setAddNewEvent,
@@ -92,46 +92,39 @@ const Modal = () => {
   }, [theDay, events, string]);
 
   useEffect(() => {
-    if (string === dateObj.toLocaleDateString()) {
-      const todaysHours = dateObj.getHours();
-      if (modalRef.current) {
-        !addNewEvent
-          ? modalRef.current.scrollTo(0, todaysHours * 240)
-          : modalRef.current.scrollTo(0, 0);
-      }
-      addNewEvent && modalRef.current.scrollTo(0, 0);
-    }
-    const eventsForDay = events.filter((event) => {
-      const startDate = new Date(event.startDate);
-      const endDate = new Date(event.endDate);
-      startDate.setHours(0, 0, 0, 0);
-      endDate.setHours(0, 0, 0, 0);
-      const diff = (endDate - startDate) / (24 * 60 * 60 * 1000);
-      if (event.date === string && diff < 1) {
-        return event;
-      }
-    });
-    const timedEvents = eventsForDay.filter(
-      (event) =>
-        event.start.startTime !== null &&
-        event.end.endTime !== null &&
-        new Date(event.end.endTime).getHours() -
-          new Date(event.start.startTime).getHours() <=
-          23,
-    );
-    if (string !== dateObj.toLocaleDateString() && timedEvents.length > 0) {
-      const firstEventHour = new Date(
-        timedEvents[0]?.start?.startTime,
-      ).getHours();
-      if (modalRef.current) {
-        !addNewEvent
-          ? modalRef.current.scrollTo(0, firstEventHour * 240)
-          : modalRef.current.scrollTo(0, 0);
-      }
-    }
+    // Position the viewport using the actual rendered timeline height, not a
+    // hard-coded pixels-per-hour estimate (the timeline uses viewport units).
+    if (!open || !modalRef.current || !staticTimesContainerRef.current) return;
+    const selectedDate = new Date(string);
+    const now = new Date();
+    const isToday = selectedDate.toDateString() === now.toDateString();
+    const timedEvents = events
+      .filter((item) => {
+        const start = new Date(item.start?.startTime);
+        const end = new Date(item.end?.endTime);
+        return Number.isFinite(start.getTime()) && Number.isFinite(end.getTime()) &&
+          end > start && start.toDateString() === selectedDate.toDateString() &&
+          !eventIsAllDay(item);
+      })
+      .sort((a, b) => new Date(a.start.startTime) - new Date(b.start.startTime));
     setDayEvents(timedEvents);
-    return () => setSecondString("");
-  }, [string, events, addNewEvent]);
+    if (addNewEvent) {
+      modalRef.current.scrollTo({ top: 0, behavior: "instant" });
+      return;
+    }
+    const target = isToday ? now : timedEvents.length ? new Date(timedEvents[0].start.startTime) : null;
+    const frame = requestAnimationFrame(() => {
+      if (!modalRef.current || !staticTimesContainerRef.current) return;
+      const timeline = staticTimesContainerRef.current;
+      const minutes = target ? target.getHours() * 60 + target.getMinutes() + target.getSeconds() / 60 : 0;
+      const position = timeline.offsetTop + (minutes / 1440) * timeline.clientHeight;
+      const viewportOffset = Math.min(100, modalRef.current.clientHeight * 0.2);
+      modalRef.current.scrollTo({ top: Math.max(0, position - viewportOffset), behavior: "instant" });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [open, string, events, addNewEvent]);
+
+  useEffect(() => () => setSecondString(""), [setSecondString]);
 
   const getHeight = () => {
     if (staticTimeHeight !== 0) {
