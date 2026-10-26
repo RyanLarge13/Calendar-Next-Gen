@@ -29,7 +29,7 @@ const MonthPanel = React.memo(function MonthPanel({ panelDate, todayDay, todayMo
       {days.map(({ index, dayNumber, dateStr, isCurrentDate, eventsToRender, isPaddingDay }) => (
         <DayCell key={index} index={index} dayNumber={dayNumber} dateStr={dateStr}
           isCurrentDate={isCurrentDate} eventsToRender={eventsToRender} month={month}
-          year={year} paddingDays={paddingDays} isPaddingDay={isPaddingDay} />
+          year={year} dateObj={new Date(todayYear, todayMonth, todayDay)} paddingDays={paddingDays} isPaddingDay={isPaddingDay} />
       ))}
     </div>
   </div>;
