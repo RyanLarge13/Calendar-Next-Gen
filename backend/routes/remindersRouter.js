@@ -14,6 +14,7 @@ import {
   updateReminderTime,
   togglePauseReminder,
   updateReminderAndNotificationIgnore,
+  deleteMultipleReminders,
 } from "../controllers/remindersController.js";
 
 const reminderRouter = express.Router();
@@ -47,5 +48,6 @@ reminderRouter.delete(
   authorizeDelete("reminderId", prisma.reminder),
   deleteReminder,
 );
+reminderRouter.delete("/delete/reminders/bulk", auth, deleteMultipleReminders);
 
 export default reminderRouter;

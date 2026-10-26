@@ -438,3 +438,40 @@ export const updateReminderAndNotificationIgnore = async (req, res) => {
     console.log(err);
   }
 };
+
+export const deleteMultipleReminders = async (req, res) => {
+  const { ids } = req.body;
+  const user = req.user;
+
+  if (!user) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to update this reminder" });
+    return;
+  }
+
+  if (!ids || ids.length < 1) {
+    res
+      .status(400)
+      .json({ message: "Please provide valid reminders id to delete" });
+    return;
+  }
+
+  try {
+    await prisma.reminder.deleteMany({
+      where: {
+        id: {
+          in: ids,
+        },
+        userId: user.id,
+      },
+    });
+
+    res.status(200).json({
+      message: "Successfully deleted reminders",
+    });
+  } catch (err) {
+    res.status(400).json({ message: "No reminders deleted" });
+    console.log("Error removing reminder from db or updating event attachment");
+  }
+};
