@@ -106,7 +106,7 @@ const Menu = () => {
               className={`
           absolute inset-0
           ${preferences.darkMode ? "bg-black/50" : "bg-black/30"}
-          backdrop-blur-sm
+          
         `}
             />
             <div
@@ -118,7 +118,7 @@ const Menu = () => {
                 ? "bg-[#161616]/90 border-white/10 text-white"
                 : "bg-white/90 border-black/10 text-slate-900"
             }
-            backdrop-blur-md
+            
           `}
               onClick={(e) => e.stopPropagation()}
             >
@@ -155,7 +155,7 @@ const Menu = () => {
                               ? "bg-[#161616]/90 border-white/10"
                               : "bg-white/90 border-black/10"
                           }
-                          backdrop-blur-md
+                          
                         `}
                           >
                             <div className="mx-auto max-w-6xl">
@@ -260,7 +260,7 @@ const Menu = () => {
                               ? "bg-[#161616]/90 border-white/10"
                               : "bg-white/90 border-black/10"
                           }
-                          backdrop-blur-md
+                          
                         `}
                           >
                             <div className="mx-auto max-w-6xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -356,7 +356,7 @@ const Menu = () => {
                               ? "bg-[#161616]/90 border-white/10"
                               : "bg-white/90 border-black/10"
                           }
-                          backdrop-blur-md
+                          
                         `}
                           >
                             <div className="mx-auto max-w-6xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
