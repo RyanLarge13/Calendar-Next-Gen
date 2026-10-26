@@ -4,7 +4,7 @@ import { weekDays } from "../constants/dateAndTimeConstants";
 const DatesContext = createContext({});
 
 export const DatesProvider = ({ children }) => {
-  const dateObj = new Date();
+  const [dateObj] = useState(() => new Date());
   const [weekDateObj, setWeekDateObj] = useState(new Date());
   const [weekOffset, setWeekOffset] = useState(0);
   const [nav, setNav] = useState(0);
