@@ -6,7 +6,7 @@ import { MdEventAvailable, MdSystemSecurityUpdateGood } from "react-icons/md";
 import { RxDragHandleHorizontal } from "react-icons/rx";
 import InteractiveContext from "../../context/InteractiveContext";
 import UserContext from "../../context/UserContext";
-import { deleteNotification, markAsUnread } from "../../utils/api";
+import { deleteNotification, markAsUnread, markAsRead } from "../../utils/api";
 import { formatRelativeTime } from "../../utils/helpers";
 // import mockNotifications from "../../constants/mockNotifications";
 
@@ -18,6 +18,51 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
   const { showNotifs, setShowNotifs } = useContext(InteractiveContext);
 
   const [notifOpen, setNotifOpen] = useState("");
+  const [filter, setFilter] = useState("All");
+  const [sort, setSort] = useState("newest");
+  const [bulkBusy, setBulkBusy] = useState(false);
+  const visibleNotifications = [...notifications].filter((notif) => {
+    if (filter === "Unread") return !notif.read;
+    if (filter === "Events") return notif.type === "event";
+    if (filter === "Reminders") return notif.type === "reminder";
+    if (filter === "System") return !["event", "reminder"].includes(notif.type);
+    return true;
+  }).sort((a, b) => sort === "oldest" ? new Date(a.time) - new Date(b.time) : sort === "unread" ? Number(a.read) - Number(b.read) || new Date(b.time) - new Date(a.time) : new Date(b.time) - new Date(a.time));
+
+  const bulkRead = async (read) => {
+    if (bulkBusy) return;
+    const changed = notifications.filter((notif) => notif.read !== read);
+    if (!changed.length) return;
+    setBulkBusy(true);
+    try {
+      const results = await Promise.allSettled(changed.map((notif) => read ? markAsRead(notif.id) : markAsUnread(notif.id)));
+      const successful = new Set(changed.filter((_, i) => results[i].status === "fulfilled").map((notif) => notif.id));
+      setNotifications((prev) => prev.map((notif) => successful.has(notif.id) ? { ...notif, read } : notif));
+      if (!read) setIdsToUpdate((prev) => prev.filter((id) => !successful.has(id)));
+      if (results.some((result) => result.status === "rejected")) console.error("Some notification updates failed");
+    } finally { setBulkBusy(false); }
+  };
+
+  const bulkDelete = () => {
+    if (bulkBusy || !notifications.length) return;
+    setSystemNotif({ show: true, title: "Delete all notifications", text: `Permanently delete all ${notifications.length} notifications?`, color: "bg-red-200", hasCancel: true, actions: [
+      { text: "cancel", func: () => setSystemNotif({ show: false }) },
+      { text: "delete all", func: async () => {
+        setSystemNotif({ show: false });
+        const token = localStorage.getItem("authToken");
+        if (!token) return;
+        setBulkBusy(true);
+        try {
+          const snapshot = [...notifications];
+          const results = await Promise.allSettled(snapshot.map((notif) => deleteNotification(token, notif.id)));
+          const deleted = new Set(snapshot.filter((_, i) => results[i].status === "fulfilled").map((notif) => notif.id));
+          setNotifications((prev) => prev.filter((notif) => !deleted.has(notif.id)));
+          setIdsToUpdate((prev) => prev.filter((id) => !deleted.has(id)));
+          if (results.some((result) => result.status === "rejected")) console.error("Some notification deletions failed");
+        } finally { setBulkBusy(false); }
+      } },
+    ] });
+  };
 
   const controls = useDragControls();
 
@@ -235,7 +280,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
               <div className="mt-4 grid grid-cols-2 gap-2">
                 <button
                   type="button"
-                  onClick={() => {}}
+                  onClick={() => bulkRead(true)}
                   className={`
                 px-3 py-2 rounded-2xl border shadow-sm text-xs font-semibold transition active:scale-[0.97]
                 flex items-center justify-center gap-2
@@ -251,7 +296,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
 
                 <button
                   type="button"
-                  onClick={() => {}}
+                  onClick={() => bulkRead(false)}
                   className={`
                 px-3 py-2 rounded-2xl border shadow-sm text-xs font-semibold transition active:scale-[0.97]
                 flex items-center justify-center gap-2
@@ -267,7 +312,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
 
                 <button
                   type="button"
-                  onClick={() => {}}
+                  onClick={bulkDelete}
                   className={`
                 px-3 py-2 rounded-2xl border shadow-sm text-xs font-semibold transition active:scale-[0.97]
                 flex items-center justify-center gap-2
@@ -313,6 +358,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
               </div>
             </div>
 
+            <div className="px-5 pt-3 flex items-center justify-between gap-3"><label htmlFor="notification-sort" className="text-xs font-semibold">Sort notifications</label><select id="notification-sort" value={sort} onChange={(event) => setSort(event.target.value)} className="rounded-xl border px-3 py-2 bg-transparent text-sm"><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="unread">Unread first</option></select></div>
             {/* Filters */}
             <div
               className={`
@@ -330,7 +376,8 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                 <button
                   key={filter.label}
                   type="button"
-                  onClick={() => {}}
+                  onClick={() => setFilter(filter.label)}
+                  aria-pressed={filter === filter.label}
                   className={`
         flex-shrink-0 px-4 py-2 rounded-2xl text-xs font-semibold
         border shadow-sm transition active:scale-[0.97]
@@ -370,7 +417,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
 
             {/* Body */}
             <div className="px-5 pt-4 pb-[425px] overflow-y-auto min-h-full max-h-full">
-              {notifications.length < 1 ? (
+              {visibleNotifications.length < 1 ? (
                 <div className="min-h-[50vh] grid place-items-center">
                   <div
                     className={`
@@ -404,7 +451,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {notifications.map((notif) => (
+                  {visibleNotifications.map((notif) => (
                     <motion.div
                       key={notif.id}
                       animate={
