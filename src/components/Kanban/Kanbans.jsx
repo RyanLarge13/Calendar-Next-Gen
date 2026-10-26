@@ -1,240 +1,58 @@
 import { useContext, useState } from "react";
 import UserContext from "../../context/UserContext";
+import InteractiveContext from "../../context/InteractiveContext";
+import { useModalActions } from "../../context/ContextHooks/ModalContext";
 import Kanban from "./Kanban";
-import KanbanFolder from "./KanbanFolder";
-import { IoIosAddCircle } from "react-icons/io";
 
 const Kanbans = () => {
-  const { kanbans, preferences } = useContext(UserContext);
+  const { kanbans = [], preferences } = useContext(UserContext);
+  const { setType, setAddNewEvent, setMenu } = useContext(InteractiveContext);
+  const { openModal } = useModalActions();
+  const [projectId, setProjectId] = useState(null);
+  const [folderId, setFolderId] = useState(null);
+  const [query, setQuery] = useState("");
+  const project = kanbans.find((item) => item.id === projectId);
+  const folders = Array.isArray(project?.folders) ? project.folders : [];
+  const folder = folders.find((item, index) => (item.id ?? index) === folderId);
+  const surface = preferences.darkMode ? "bg-[#202020] border-white/10 text-white" : "bg-white border-black/10 text-slate-900";
+  const createProject = () => { setMenu(false); setType("kanban"); setAddNewEvent(true); openModal(); };
+  const projects = kanbans.filter((item) => item.title?.toLowerCase().includes(query.toLowerCase()));
 
-  const [kanbanView, setKanbanView] = useState(null);
-  const [addingFolder, setAddingFolder] = useState(false);
-  const [newFolderName, setNewFolderName] = useState("");
-
-  const openModalAndSetType = () => {};
-
-  const addFolder = () => {};
-
-  return (
-    <div className={preferences.darkMode ? "text-white" : "text-slate-900"}>
-      {kanbanView ? (
-        <div
-          className={`
-        min-h-screen
-        pt-20 px-3 md:px-6 lg:px-10
-      `}
-        >
-          <div
-            className={`
-          mx-auto w-full max-w-6xl
-          grid grid-cols-1 lg:grid-cols-[360px_1fr]
-          gap-6
-        `}
-          >
-            {/* Sidebar */}
-            <aside
-              className={`
-            relative rounded-3xl border shadow-2xl overflow-hidden
-            backdrop-blur-md
-            ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-white/85 border-black/10"}
-          `}
-            >
-              {/* Header */}
-              <div
-                className={`
-              px-5 pt-5 pb-4
-              border-b
-              ${preferences.darkMode ? "border-white/10" : "border-black/10"}
-            `}
-              >
-                <p
-                  className={`text-[11px] font-semibold tracking-wide ${
-                    preferences.darkMode ? "text-white/60" : "text-slate-500"
-                  }`}
-                >
-                  Project
-                </p>
-
-                <h2 className="mt-1 text-xl font-semibold tracking-tight truncate">
-                  {kanbanView.title}
-                </h2>
-
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <span
-                    className={`
-                  inline-flex items-center gap-2
-                  px-3 py-1.5 rounded-2xl border text-[11px] font-semibold shadow-sm
-                  ${preferences.darkMode ? "bg-white/5 border-white/10 text-white/70" : "bg-black/[0.03] border-black/10 text-slate-700"}
-                `}
-                  >
-                    <span className="h-2 w-2 rounded-full bg-cyan-400" />
-                    Project folders
-                  </span>
-
-                  <span
-                    className={`
-                  inline-flex items-center gap-2
-                  px-3 py-1.5 rounded-2xl border text-[11px] font-semibold shadow-sm
-                  ${preferences.darkMode ? "bg-white/5 border-white/10 text-white/70" : "bg-black/[0.03] border-black/10 text-slate-700"}
-                `}
-                  >
-                    <span className="font-bold">
-                      {kanbanView.folders.length}
-                    </span>
-                    folders
-                  </span>
-                </div>
-              </div>
-
-              {/* Folder list */}
-              <div className="p-4 space-y-3 max-h-[70vh] overflow-y-auto scrollbar-hide">
-                {kanbanView.folders.map((folder, index) => (
-                  <KanbanFolder key={index} folder={folder} />
-                ))}
-              </div>
-
-              {addingFolder ? (
-                <form
-                  onSubmit={addFolder}
-                  className="flex justify-between items-center"
-                >
-                  <input
-                    type="text"
-                    placeholder="Folder Name"
-                    value={newFolderName}
-                    onChange={(e) => setNewFolderName(e.target.value)}
-                    className={`mt-2 mb-4 pt-20 pl-3 w-full bg-transparent text-3xl sm:text-4xl font-semibold tracking-tight outline-none placeholder:opacity-60 ${
-                      preferences.darkMode
-                        ? "placeholder:text-gray-300"
-                        : "placeholder:text-gray-500"
-                    }`}
-                  />
-                  <button
-                    type="submit"
-                    className={`
-                  grid place-items-center h-12 w-12 rounded-2xl shadow-md transition active:scale-95
-                  bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-500
-                  text-white
-                `}
-                  >
-                    Add
-                  </button>
-                </form>
-              ) : null}
-
-              <button
-                onClick={() => setAddingFolder(true)}
-                aria-label="Add kanban folder"
-                className={`
-                  grid place-items-center h-12 w-12 rounded-2xl shadow-md transition active:scale-95
-                  bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-500
-                  text-white
-                `}
-              >
-                Add +
-              </button>
-            </aside>
-
-            {/* Main content placeholder (your boards/folder view goes here) */}
-            <main
-              className={`
-            rounded-3xl border shadow-2xl overflow-hidden
-            backdrop-blur-md
-            ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-white/85 border-black/10"}
-          `}
-            >
-              <div
-                className={`
-              px-6 py-6
-              ${preferences.darkMode ? "text-white/75" : "text-slate-700"}
-            `}
-              >
-                <p className="text-sm font-semibold">
-                  Select a folder on the left to view its boards.
-                </p>
-                <p
-                  className={`text-xs mt-2 ${preferences.darkMode ? "text-white/55" : "text-slate-500"}`}
-                >
-                  This area is intentionally styled as your future “kanban
-                  workspace”.
-                </p>
-              </div>
-            </main>
-          </div>
-        </div>
-      ) : (
-        <div className="pt-20 px-3 md:px-6 lg:px-10">
-          <div className="mx-auto w-full max-w-6xl">
-            {/* Page header */}
-            <div className="mb-6">
-              <p
-                className={`text-[11px] font-semibold tracking-wide ${
-                  preferences.darkMode ? "text-white/60" : "text-slate-500"
-                }`}
-              >
-                Kanban
-              </p>
-              <h2 className="text-2xl font-semibold tracking-tight">
-                Your projects
-              </h2>
-            </div>
-
-            {/* Grid */}
-            <div
-              className={`
-            grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3
-            gap-4 md:gap-6
-          `}
-            >
-              {kanbans.length > 0 ? (
-                kanbans.map((kanban) => (
-                  <Kanban
-                    key={kanban.id}
-                    kanban={kanban}
-                    setKanbanView={setKanbanView}
-                  />
-                ))
-              ) : (
-                <div
-                  className={`
-                col-span-full
-                rounded-3xl border shadow-2xl p-6
-                backdrop-blur-md
-                flex items-center justify-between gap-4
-                ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-white/85 border-black/10"}
-              `}
-                >
-                  <div>
-                    <h2 className="text-lg font-semibold">
-                      Create a new project
-                    </h2>
-                    <p
-                      className={`text-sm mt-1 ${preferences.darkMode ? "text-white/60" : "text-slate-500"}`}
-                    >
-                      Start organizing your boards with folders.
-                    </p>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => openModalAndSetType()}
-                    className={`
-                  grid place-items-center h-12 w-12 rounded-2xl shadow-md transition active:scale-95
-                  bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-500
-                  text-white
-                `}
-                    aria-label="Create project"
-                  >
-                    <IoIosAddCircle className="text-2xl" />
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+  return <div className="px-3 md:px-6 pt-24 pb-24 max-w-7xl mx-auto">
+    <div className="flex flex-wrap justify-between items-center gap-3 mb-6">
+      <div><p className="text-xs opacity-60 uppercase tracking-wider">Workspace</p><h1 className="text-2xl font-semibold">Kanban projects</h1></div>
+      <button type="button" onClick={createProject} className="rounded-xl bg-cyan-600 text-white px-4 py-2 text-sm font-semibold">+ New project</button>
     </div>
-  );
+    {project ? <>
+      <div className="flex flex-wrap items-center gap-3 mb-5">
+        <button type="button" onClick={() => { setProjectId(null); setFolderId(null); }} className="rounded-lg border px-3 py-2 text-sm">← All projects</button>
+        <h2 className="text-xl font-semibold">{project.title}</h2>
+        <span className="text-xs opacity-60">{folders.length} folders</span>
+      </div>
+      <div className="grid lg:grid-cols-[280px_minmax(0,1fr)] gap-4">
+        <aside className={`rounded-2xl border p-4 space-y-2 ${surface}`}>
+          <h3 className="text-sm font-semibold mb-3">Folders</h3>
+          {folders.length ? folders.map((item, index) => <button key={item.id ?? index} type="button" onClick={() => setFolderId(item.id ?? index)}
+            className={`block w-full text-left rounded-xl border p-3 text-sm ${folderId === (item.id ?? index) ? "border-cyan-500 bg-cyan-500/10" : "border-current/10"}`}>
+            <span className="font-medium">{item.title}</span><span className="block text-xs opacity-60">{Array.isArray(item.boards) ? item.boards.length + " boards" : "Folder"}</span>
+          </button>) : <p className="text-sm opacity-60">No folders have been created.</p>}
+          <p className="text-xs opacity-50 pt-4">Folder editing will be available when the server supports it.</p>
+        </aside>
+        <main className={`rounded-2xl border p-5 min-h-[260px] ${surface}`}>
+          {!folder ? <div><h3 className="font-semibold">Choose a folder</h3><p className="text-sm opacity-60 mt-2">Select a folder to explore its boards and cards.</p></div>
+          : <div><h3 className="text-xl font-semibold">{folder.title}</h3><p className="text-sm opacity-60 mt-1">Folder contents</p>
+            {Array.isArray(folder.boards) && folder.boards.length ? <div className="grid md:grid-cols-2 gap-3 mt-5">{folder.boards.map((board, index) => <div key={board.id ?? index} className="rounded-xl border border-current/10 p-4"><h4 className="font-semibold">{board.title || board.name || "Untitled board"}</h4>
+              {Array.isArray(board.cards) && board.cards.length ? <div className="space-y-2 mt-3">{board.cards.map((card, i) => <div key={card.id ?? i} className="rounded-lg border border-current/10 p-3 text-sm">{card.title || card.name || "Untitled card"}</div>)}</div> : <p className="text-xs opacity-60 mt-3">No cards in this board.</p>}</div>)}</div>
+              : <p className="mt-6 text-sm opacity-60">No boards are available in this folder yet.</p>}
+          </div>}
+        </main>
+      </div>
+    </> : <>
+      <input aria-label="Filter Kanban projects" placeholder="Find a project…" value={query} onChange={(e) => setQuery(e.target.value)} className={`w-full mb-5 rounded-xl border px-4 py-3 text-sm ${surface}`} />
+      {projects.length ? <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">{projects.map((item) => <Kanban key={item.id} kanban={item} setKanbanView={(selected) => { setProjectId(selected.id); setFolderId(null); }} />)}</div>
+        : <div className={`rounded-2xl border p-8 text-center ${surface}`}><p className="font-semibold">{kanbans.length ? "No matching projects" : "No projects yet"}</p><p className="text-sm opacity-60 mt-2">Create a project to organize your Kanban folders.</p></div>}
+    </>}
+  </div>;
 };
 
 export default Kanbans;
