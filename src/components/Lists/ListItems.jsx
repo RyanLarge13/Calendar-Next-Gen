@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { AiFillCloseCircle, AiFillPlusCircle } from "react-icons/ai";
 import { Reorder, useDragControls } from "framer-motion";
@@ -27,6 +27,17 @@ const ListItems = ({ addItems, listId, items, expanded = false }) => {
   const [newItemText, setNewItemText] = useState("");
   const [indexes, setIndexes] = useState([]);
   const [showAll, setShowAll] = useState(false);
+  const [overflowing, setOverflowing] = useState(false);
+  const itemsRef = useRef(null);
+  useEffect(() => {
+    const element = itemsRef.current;
+    if (!element) return;
+    const measure = () => setOverflowing(element.scrollHeight > 700);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [indexes, expanded, showAll]);
 
   useEffect(() => {
     const sorted = [...(items || [])].sort(
@@ -263,6 +274,7 @@ const ListItems = ({ addItems, listId, items, expanded = false }) => {
       {/* List */}
       <Reorder.Group
         axis="y"
+        ref={itemsRef}
         values={indexes}
         onReorder={setIndexes}
         className={`
@@ -333,7 +345,7 @@ const ListItems = ({ addItems, listId, items, expanded = false }) => {
           </SortableItem>
         ))}
       </Reorder.Group>
-      {!expanded && indexes.length > 7 && <button type="button" onClick={() => setShowAll((value) => !value)} className="calendar-action w-full px-4 py-2 text-sm">{showAll ? "Show less" : "View more"}</button>}
+      {!expanded && (overflowing || showAll) && <button type="button" onClick={() => setShowAll((value) => !value)} className="calendar-action w-full px-4 py-2 text-sm">{showAll ? "Show less" : "View more"}</button>}
     </div>
   );
 };
