@@ -72,6 +72,7 @@ const PopUpMonthViewWindow = ({
             ? "bg-[#1e1e1e] border-gray-700 text-gray-100"
             : "bg-white/90 backdrop-blur-md border-gray-200 text-gray-900"
         }`}
+      data-month-popup="true"
       onWheel={(e) => e.stopPropagation()}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
