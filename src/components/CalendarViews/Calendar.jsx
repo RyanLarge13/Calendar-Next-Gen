@@ -20,9 +20,9 @@ import { useModalActions } from "../../context/ContextHooks/ModalContext";
 
 const Calendar = () => {
   const { preferences } = useContext(UserContext);
-  const { showFullDatePicker, view, setShowFullDatePicker } =
+  const { showFullDatePicker, view, setShowFullDatePicker, addNewEvent, setType, setAddNewEvent } =
     useContext(InteractiveContext);
-  const { loading, setNav, setTheDay } = useContext(DatesContext);
+  const { loading, setNav, setTheDay, setSecondString } = useContext(DatesContext);
   const { openModal } = useModalActions();
 
   const containerRef = useRef(null);
@@ -111,7 +111,7 @@ const Calendar = () => {
         <DatePicker />
         {showFullDatePicker && (
           <FullDatePicker
-            stateSetter={view === "day" ? setDayViewDay : setSecondDateObject}
+            stateSetter={addNewEvent ? setSecondDateObject : view === "day" ? setDayViewDay : setSecondDateObject}
           />
         )}
         <ModalHeader />
