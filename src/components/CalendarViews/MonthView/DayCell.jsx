@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { calendarBlocks } from "../../../motion";
+import { createPortal } from "react-dom";
 import React, { useContext, useRef, useState, useCallback } from "react";
 import UserContext from "../../../context/UserContext";
 import DatesContext from "../../../context/DatesContext";
@@ -168,7 +168,7 @@ const DayCell = ({
       onClick={() => { if (!isPaddingDay) handleDayClick(index); }}
       key={index}
       style={getCellStyle(index)}
-      className={`relative w-full ${
+      className={`relative min-w-0 min-h-0 w-full overflow-hidden ${
         preferences.darkMode ? "shadow-slate-700" : "shadow-slate-200"
       } rounded-sm shadow-sm flex flex-col items-center justify-start gap-y-1 cursor-pointer ${
         isCurrentDate && "shadow-cyan-400 shadow-md outline outline-slate-400"
@@ -187,7 +187,7 @@ const DayCell = ({
       </div>
 
       <div
-        className={`w-full absolute inset-0 pt-11 overflow-y-clip ${
+        className={`w-full absolute inset-0 pt-11 overflow-hidden ${
           selected.includes(index)
             ? "bg-cyan-100 bg-opacity-50"
             : "bg-transparent"
@@ -220,7 +220,7 @@ const DayCell = ({
           </motion.div>
         ))}
       </div>
-      {newPopup && (
+      {newPopup && typeof document !== "undefined" && createPortal(
         <PopUpMonthViewWindow
           positions={mousePosition}
           remindersToRender={popUpReminders}
@@ -237,7 +237,8 @@ const DayCell = ({
             isHoveringPopupRef.current = false;
             clearPopupNow();
           }}
-        />
+        />,
+        document.body
       )}
     </motion.div>
   );
