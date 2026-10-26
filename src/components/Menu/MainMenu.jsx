@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import {
   MdOutlineAccessAlarm,
   MdOutlineCheckCircle,
@@ -37,6 +37,11 @@ const Dashboard = ({ timeOfDay }) => {
   const { theDay } = useContext(DatesContext);
 
   const [todaysReminders, setTodaysReminders] = useState([]);
+  const [weatherSlide, setWeatherSlide] = useState(0);
+  const weatherTouchStart = useRef(null);
+  const weatherCount = Math.min(7, weatherData?.daily?.time?.length ?? 0);
+  const changeWeatherSlide = (offset) => setWeatherSlide((current) => Math.max(0, Math.min(weatherCount - 1, current + offset)));
+  useEffect(() => setWeatherSlide(0), [weatherData?.daily?.time]);
 
   const weekday = new Date().getDay();
   const newWeekdays = weekDays
@@ -64,12 +69,12 @@ const Dashboard = ({ timeOfDay }) => {
         {/* Greeting / Hero */}
         <div
           className={`
-        rounded-3xl border shadow-2xl backdrop-blur-md
+        rounded-3xl border shadow-2xl
         px-5 py-5 sm:px-6 sm:py-6
         ${
           preferences.darkMode
             ? "bg-[#161616]/90 border-white/10 text-white"
-            : "bg-white/90 border-black/10 text-slate-900"
+            : "calendar-surface"
         }
       `}
         >
@@ -381,16 +386,18 @@ const Dashboard = ({ timeOfDay }) => {
                     mx-5 mb-5
                     rounded-3xl border shadow-2xl overflow-hidden
                     ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-white/85 border-black/10"}
-                    backdrop-blur-md
                     min-w-0
                   `}
                   >
                     <div className="px-4 py-4 min-w-0">
-                      {/* ✅ The ONLY horizontal scroller */}
-                      <div className="min-w-0 overflow-x-auto scrollbar-slick pt-2 pb-3 px-2">
-                        <div className="flex gap-3 w-max pr-2">
+                      {/* One slide at a time; touch gestures and buttons control navigation. */}
+                      <div className="min-w-0 overflow-hidden pt-2 pb-3 px-2 touch-pan-y"
+                        onTouchStart={(e) => { weatherTouchStart.current = e.touches[0].clientX; }}
+                        onTouchEnd={(e) => { if (weatherTouchStart.current == null) return; const delta = e.changedTouches[0].clientX - weatherTouchStart.current; if (Math.abs(delta) > 45) changeWeatherSlide(delta < 0 ? 1 : -1); weatherTouchStart.current = null; }}>
+                        <div className="flex w-full transition-transform duration-300 ease-out"
+                          style={{ transform: `translateX(-${weatherSlide * 100}%)` }}>
                           {weatherData?.daily
-                            ? newWeekdays.map((d, i) => {
+                            ? newWeekdays.slice(0, weatherCount).map((d, i) => {
                                 const {
                                   precipitation_probability_mean,
                                   sunrise,
@@ -446,7 +453,7 @@ const Dashboard = ({ timeOfDay }) => {
                                     type="button"
                                     className={`
                                     group flex-shrink-0
-                                    w-[220px] sm:w-[230px]
+                                    w-full
                                     rounded-3xl border shadow-sm overflow-hidden
                                     transition-all duration-200
                                     hover:shadow-md hover:scale-[1.01] active:scale-[0.99]
@@ -638,6 +645,11 @@ const Dashboard = ({ timeOfDay }) => {
                         </div>
                       </div>
 
+                      <div className="mt-3 flex items-center justify-between gap-3" aria-label="Weather forecast carousel controls">
+                        <button type="button" onClick={() => changeWeatherSlide(-1)} disabled={weatherSlide === 0} aria-label="Previous forecast day" className="calendar-action px-4 py-2 text-sm disabled:opacity-30">←</button>
+                        <span className="text-xs font-semibold calendar-accent" aria-live="polite">Day {weatherSlide + 1} of {weatherCount}</span>
+                        <button type="button" onClick={() => changeWeatherSlide(1)} disabled={weatherSlide >= weatherCount - 1} aria-label="Next forecast day" className="calendar-action px-4 py-2 text-sm disabled:opacity-30">→</button>
+                      </div>
                       <p
                         className={`mt-3 text-[11px] ${
                           preferences.darkMode
@@ -645,7 +657,7 @@ const Dashboard = ({ timeOfDay }) => {
                             : "text-slate-500"
                         }`}
                       >
-                        Tip: swipe sideways to scroll the week.
+                        Swipe to change days, or use the arrows below.
                       </p>
                     </div>
                   </div>
