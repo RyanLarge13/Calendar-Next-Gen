@@ -17,9 +17,11 @@ const DayCell = ({
   month,
   year,
   dateObj,
+  paddingDays,
+  isPaddingDay = false,
 }) => {
   const { preferences } = useContext(UserContext);
-  const { rowDays, dateString, setNav, paddingDays, setString } =
+  const { rowDays, dateString, setNav, setString } =
     useContext(DatesContext);
   const { setMenu, setShowLogin } = useContext(InteractiveContext);
 
@@ -150,20 +152,20 @@ const DayCell = ({
 
   return (
     <motion.div
-      variants={calendarBlocks}
+      initial={false}
       whileHover={{
         outline: preferences.darkMode ? "1px solid white" : "1px solid black",
         backgroundColor: preferences.darkMode ? "#333333" : "#f2f2f2",
       }}
-      onMouseEnter={(e) =>
-        createPopup(e, eventsToRender, remindersToRender, index)
-      }
+      onMouseEnter={(e) => {
+        if (!isPaddingDay && window.matchMedia("(hover: hover) and (pointer: fine)").matches) createPopup(e, eventsToRender, remindersToRender, index);
+      }}
       onMouseLeave={clearPopupNow}
       onContextMenu={(e) => {
         e.preventDefault();
-        handleDayLongPress(index);
+        if (!isPaddingDay) handleDayLongPress(index);
       }}
-      onClick={() => handleDayClick(index)}
+      onClick={() => { if (!isPaddingDay) handleDayClick(index); }}
       key={index}
       style={getCellStyle(index)}
       className={`relative w-full ${
