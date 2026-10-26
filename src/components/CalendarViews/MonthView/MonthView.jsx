@@ -17,6 +17,7 @@ const MonthView = () => {
   const [displayMonth, setDisplayMonth] = useState(() => new Date(dt.getFullYear(), dt.getMonth(), 1));
   const viewportRef = useRef(null);
   const widthRef = useRef(0);
+  const [viewportWidth, setViewportWidth] = useState(0);
   const x = useMotionValue(0);
   const animatingRef = useRef(false);
   const monthOffset = (date, offset) => new Date(date.getFullYear(), date.getMonth() + offset, 1);
@@ -26,6 +27,7 @@ const MonthView = () => {
     if (!element) return;
     const update = () => {
       widthRef.current = element.clientWidth;
+      setViewportWidth(element.clientWidth);
       if (!animatingRef.current) x.set(-widthRef.current);
     };
     update();
@@ -232,7 +234,7 @@ const MonthView = () => {
         drag="x"
         dragMomentum={false}
         dragElastic={0.08}
-        dragConstraints={{ left: -2 * widthRef.current, right: 0 }}
+        dragConstraints={{ left: -2 * viewportWidth, right: 0 }}
         onDragEnd={finishSwipe}
       >
         {[-1, 0, 1].map(renderPanel)}
