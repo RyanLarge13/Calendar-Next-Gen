@@ -1,5 +1,5 @@
-import { AnimatePresence, motion } from "framer-motion";
-import { useContext, useEffect, useRef } from "react";
+import { AnimatePresence } from "framer-motion";
+import { useContext, useRef } from "react";
 import { weekDays } from "../../constants/dateAndTimeConstants";
 import DatesContext from "../../context/DatesContext";
 import InteractiveContext from "../../context/InteractiveContext";
@@ -22,24 +22,10 @@ const Calendar = () => {
   const { preferences } = useContext(UserContext);
   const { showFullDatePicker, view, setShowFullDatePicker, addNewEvent, setType, setAddNewEvent } =
     useContext(InteractiveContext);
-  const { loading, setNav, setTheDay, setSecondString } = useContext(DatesContext);
+  const { setTheDay, setSecondString } = useContext(DatesContext);
   const { openModal } = useModalActions();
 
   const containerRef = useRef(null);
-
-  const checkScroll = (e) => {
-    if (view !== "month") {
-      return;
-    }
-    const offset = e.deltaY;
-    if (offset > 0) {
-      setNav((prev) => prev + 1);
-      return;
-    } else if (offset < 0) {
-      setNav((prev) => prev - 1);
-      return;
-    }
-  };
 
   const setSecondDateObject = (newString) => {
     setSecondString(newString);
@@ -52,17 +38,6 @@ const Calendar = () => {
   const setDayViewDay = (newString) => {
     setTheDay(new Date(newString));
     setShowFullDatePicker(false);
-  };
-
-  const finish = (e, info) => {
-    const dragDistance = info.offset.x;
-    const cancelThreshold = 175;
-
-    if (dragDistance > cancelThreshold) {
-      setNav((prev) => prev - 1);
-    } else if (dragDistance < -cancelThreshold) {
-      setNav((prev) => prev + 1);
-    }
   };
 
   return (
@@ -87,15 +62,7 @@ const Calendar = () => {
             ))}
         </div>
         <section>
-          {!loading ? (
-            <motion.div
-              drag={view === "month" && "x"}
-              onWheel={checkScroll}
-              dragSnapToOrigin={true}
-              dragTransition={{ bounceStiffness: 100, bounceDamping: 10 }}
-              onDragEnd={(e, info) => finish(e, info)}
-              className="will-change-transform"
-            >
+          <div>
               <div>
                 {view === "month" && <MonthView />}
                 {view === "day" && <DayView containerRef={containerRef} />}
@@ -105,8 +72,7 @@ const Calendar = () => {
                 )}
                 {view === "agenda" && <AgendaView />}
               </div>
-            </motion.div>
-          ) : null}
+          </div>
         </section>
         <DatePicker />
         {showFullDatePicker && (
