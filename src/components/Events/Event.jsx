@@ -102,49 +102,35 @@ const Event = () => {
 
   useEffect(() => {
     if (!event) return;
-    const isToday =
-      new Date(event.date).toLocaleDateString() ===
-      new Date().toLocaleDateString();
-    if (!isToday) return;
+    const start = new Date(event.start?.startTime);
+    const end = new Date(event.end?.endTime);
+    if (!Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime()) || end <= start) {
+      setTimeLeft(null);
+      setWidth(0);
+      setTimeInEvent(0);
+      return;
+    }
 
-    const start = new Date(event.start.startTime);
-    const end = new Date(event.end.endTime);
-
-    const timeInterval = setInterval(() => {
-      const now = new Date();
-      let timeUntilStart = start - now;
-      let timeUntilEnd = end - now;
-      let eventDuration = end - start;
-      if (now < start) {
-        let startHours = Math.floor(timeUntilStart / (1000 * 60 * 60));
-        let startMinutes = Math.floor(
-          (timeUntilStart % (1000 * 60 * 60)) / (1000 * 60),
-        );
-        let startSeconds = Math.floor((timeUntilStart % (1000 * 60)) / 1000);
-        const startTimeString = `${startHours > 0 ? startHours + "h" : ""} ${
-          startMinutes > 0 ? startMinutes + "m" : ""
-        } ${startSeconds}s`;
-        let startPercentage =
-          Math.max(0, (eventDuration - timeUntilStart) / eventDuration) * 100;
-        setWidth(startPercentage);
-        setTimeLeft(startTimeString);
-      } else {
-        setWidth(0);
-        setTimeLeft("");
-        if (now > end) return;
-        let endHours = Math.floor(timeUntilEnd / (1000 * 60 * 60));
-        let endMinutes = Math.floor(
-          (timeUntilEnd % (1000 * 60 * 60)) / (1000 * 60),
-        );
-        let endSeconds = Math.floor((timeUntilEnd % (1000 * 60)) / 1000);
-        let endPercentage =
-          Math.max(0, (eventDuration - timeUntilEnd) / eventDuration) * 100;
-        setTimeInEvent(endPercentage);
-      }
-    }, 1000);
-
-    return () => clearInterval(timeInterval);
-  }, [event]);
+    const duration = end.getTime() - start.getTime();
+    const updateProgress = () => {
+      const now = Date.now();
+      const remaining = Math.max(0, start.getTime() - now);
+      const formatRemaining = (ms) => {
+        const seconds = Math.ceil(ms / 1000);
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        return `${hours ? `${hours}h ` : ""}${minutes ? `${minutes}m ` : ""}${seconds % 60}s`;
+      };
+      // Before the event, show the remaining time and a progress bar over
+      // the last 24 hours. After it starts, track elapsed event duration.
+      setTimeLeft(now < start.getTime() ? formatRemaining(remaining) : now < end.getTime() ? "In progress" : "Completed");
+      setWidth(now < start.getTime() ? Math.max(0, Math.min(100, (1 - remaining / 86400000) * 100)) : 100);
+      setTimeInEvent(Math.max(0, Math.min(100, ((now - start.getTime()) / duration) * 100)));
+    };
+    updateProgress(); // No one-second blank state on opening an event.
+    const timer = setInterval(updateProgress, 1000);
+    return () => clearInterval(timer);
+  }, [event?.id, event?.start?.startTime, event?.end?.endTime]);
 
   const checkToClose = (e, info) => {
     const end = info.point.y;
@@ -492,7 +478,7 @@ const Event = () => {
                   <div className="relative rounded-xl shadow-sm p-3 flex items-center justify-between overflow-hidden border">
                     <motion.div
                       animate={{ width: `${width}%` }}
-                      className="absolute left-0 top-0 bottom-0 bg-gradient-to-r from-cyan-400 to-blue-500 opacity-30 rounded-xl"
+                      className="absolute left-0 top-0 bottom-0 bg-gradient-to-r from-amber-300 to-yellow-500 opacity-30 rounded-xl"
                     />
                     <span className="z-10 font-semibold">{timeLeft}</span>
                     <span className="z-10 text-sm text-gray-500">
@@ -504,7 +490,7 @@ const Event = () => {
                   <div className="relative rounded-xl shadow-sm p-3 flex items-center justify-between overflow-hidden border">
                     <motion.div
                       animate={{ width: `${timeInEvent}%` }}
-                      className="absolute left-0 top-0 bottom-0 bg-gradient-to-r from-green-400 to-emerald-500 opacity-30 rounded-xl"
+                      className="absolute left-0 top-0 bottom-0 bg-gradient-to-r from-amber-400 to-yellow-600 opacity-30 rounded-xl"
                     />
                     <span className="z-10 text-sm text-gray-500">
                       {new Date(event.start.startTime).toLocaleTimeString()}
