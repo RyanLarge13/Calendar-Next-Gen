@@ -93,8 +93,8 @@ const Menu = () => {
             rounded-none sm:rounded-3xl border shadow-2xl overflow-hidden
             ${
               preferences.darkMode
-                ? "bg-[#161616]/90 border-white/10 text-white"
-                : "bg-white/90 border-black/10 text-slate-900"
+                ? "bg-[#161616] border-white/10 text-white"
+                : "bg-white border-black/10 text-slate-900"
             }
             
           `}
@@ -130,8 +130,8 @@ const Menu = () => {
                           border-b
                           ${
                             preferences.darkMode
-                              ? "bg-[#161616]/90 border-white/10"
-                              : "bg-white/90 border-black/10"
+                              ? "bg-[#161616] border-white/10"
+                              : "bg-white border-black/10"
                           }
                           
                         `}
@@ -235,8 +235,8 @@ const Menu = () => {
                           border-b
                           ${
                             preferences.darkMode
-                              ? "bg-[#161616]/90 border-white/10"
-                              : "bg-white/90 border-black/10"
+                              ? "bg-[#161616] border-white/10"
+                              : "bg-white border-black/10"
                           }
                           
                         `}
@@ -331,8 +331,8 @@ const Menu = () => {
                           border-b
                           ${
                             preferences.darkMode
-                              ? "bg-[#161616]/90 border-white/10"
-                              : "bg-white/90 border-black/10"
+                              ? "bg-[#161616] border-white/10"
+                              : "bg-white border-black/10"
                           }
                           
                         `}
