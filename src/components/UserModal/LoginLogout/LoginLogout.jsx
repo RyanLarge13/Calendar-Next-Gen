@@ -108,7 +108,7 @@ const LoginLogout = () => {
                 if (option) return setOption(null);
                 setShowLogin(false);
               }}
-              className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm z-10"
+              className="fixed inset-0 bg-black/45 z-10"
             ></motion.div>
             <motion.div
               initial={{ y: 50, opacity: 0 }}
@@ -118,12 +118,12 @@ const LoginLogout = () => {
                   ? { y: "85%", opacity: 1 }
                   : { y: 0, opacity: 1 }
               }
-              className={`p-3 fixed bottom-0 left-0 right-0 rounded-md shadow-md z-10 lg:right-[65%] ${
+              className={`p-3 fixed bottom-0 left-0 right-0 rounded-t-3xl shadow-2xl z-10 lg:right-[65%] max-h-[100dvh] overflow-y-auto ${
                 !user ? "top-0" : ""
               } ${
                 preferences.darkMode
                   ? "bg-[#222] text-white"
-                  : "bg-white text-black"
+                  : "calendar-surface"
               }`}
             >
               {user ? (
