@@ -313,7 +313,7 @@ export const AddCircle = () => {
         className={menuFab(
           "bg-gradient-to-tr from-indigo-400 via-purple-300 to-violet-200",
         )}
-        onClick={() => setShow(false)}
+        onClick={() => openModalAndSetType("appointment")}
       >
         <AiFillSchedule />
       </motion.div>
