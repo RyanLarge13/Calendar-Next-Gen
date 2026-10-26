@@ -196,8 +196,7 @@ const DayCell = ({
         {eventsToRender.map((event) => (
           <motion.div
             key={`${event.id}_${index}`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={false}
             style={{
               color: tailwindBgToHex(event.color),
             }}
