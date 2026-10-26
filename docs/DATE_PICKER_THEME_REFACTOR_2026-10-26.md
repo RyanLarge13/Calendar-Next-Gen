@@ -42,3 +42,19 @@ Branch: `dev`. This is a first-pass source-level fix and style foundation, **not
 4. Check forecast layout on narrow screens and desktop; verify the entire weather panel is visible without horizontal overflow.
 
 Changes were made through GitHub without running a build or browser tests.
+
+## Follow-up: login, modal positioning, event progress
+
+- Login components (`LoginLogout.jsx`, `SocialLogin.jsx`, `UsernamePassLogin.jsx`): responsive, cleaner sign-in layout, shared gold controls and input focus accents, reduced blur and better mobile drawer overflow. Existing authentication handlers remain unchanged.
+- `Modal.jsx`: replaced fixed `hour * 240` scrolling with timeline-relative positioning based on actual rendered height. Today targets the current time; other dates target the earliest timed event, with a small visible lead-in. Event selection is sorted by start time. New-event forms start at top.
+- `Event.jsx`: countdown now updates immediately and for dates other than today; pre-start progress uses a documented 24-hour window; elapsed duration is clamped 0–100%, including completion state. Invalid date ranges reset progress.
+
+### Manual tests
+
+1. Log in with email/username and Google/Facebook on mobile and desktop. Verify errors, loading and closing work.
+2. Open today's timeline at morning, midday, and night. Confirm the current time is visible with a little space above it.
+3. Open a future/past date with multiple timed events; ensure the earliest event is visible. Open a day with no events and confirm top positioning.
+4. Check the add-event modal opens at the top and that event creation remains functional.
+5. Inspect countdown before an event, during it, and after completion; check an event tomorrow and an event crossing midnight.
+
+No build or browser tests were run through this connector. Pre-start progress uses a 24-hour horizon rather than an event-specific creation timestamp.
