@@ -40,11 +40,20 @@ const PopUpMonthViewWindow = ({
   };
 
   const openReminders = () => {};
+  // A portal avoids clipping by the swipe track. Anchor its edge directly to
+  // the hovered cell, not to the mouse coordinates.
   const popupWidth = 400;
   const popupHeight = 320;
-  const margin = 12;
-  const left = typeof window === "undefined" ? 0 : Math.max(margin, Math.min(positions.x - popupWidth / 2, window.innerWidth - popupWidth - margin));
-  const top = typeof window === "undefined" ? 0 : Math.max(margin, Math.min(positions.y - popupHeight - 12, window.innerHeight - popupHeight - margin));
+  const viewportWidth = typeof window === "undefined" ? 1024 : window.innerWidth;
+  const viewportHeight = typeof window === "undefined" ? 768 : window.innerHeight;
+  const rightSpace = Math.max(0, viewportWidth - positions.right - 1);
+  const leftSpace = Math.max(0, positions.left - 1);
+  const placeRight = rightSpace >= popupWidth || rightSpace >= leftSpace;
+  const availableWidth = placeRight ? rightSpace : leftSpace;
+  const width = Math.max(1, Math.min(popupWidth, availableWidth));
+  const left = placeRight ? positions.right + 1 : positions.left - width - 1;
+  const maxHeight = Math.min(popupHeight, viewportHeight - 24);
+  const top = Math.max(12, Math.min(positions.top, viewportHeight - maxHeight - 12));
 
   return (
     <motion.div
@@ -54,8 +63,8 @@ const PopUpMonthViewWindow = ({
       style={{
         top: `${top}px`,
         left: `${left}px`,
-        width: `min(${popupWidth}px, calc(100vw - 24px))`,
-        maxHeight: `min(${popupHeight}px, calc(100dvh - 24px))`,
+        width: `${width}px`,
+        maxHeight: `${maxHeight}px`,
       }}
       className={`hidden md:block fixed p-4 z-[900] rounded-2xl min-h-[120px] max-h-80 overflow-y-auto scrollbar-hide shadow-xl border
         ${
