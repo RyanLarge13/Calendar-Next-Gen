@@ -11,7 +11,7 @@ import UserContext from "../../context/UserContext";
 import MenuNavigation from "../Menu/MenuNavigation";
 
 const Header = () => {
-  const { dt, setNav, theDay, setTheDay, currentWeek, setWeekOffset } =
+  const { dt, requestMonthNavigation, theDay, setTheDay, currentWeek, setWeekOffset } =
     useContext(DatesContext);
   const { user, preferences, notifications } = useContext(UserContext);
   const {
@@ -72,7 +72,7 @@ const Header = () => {
           {view === "month" && (
             <div className="flex justify-between items-center w-60">
               <BsFillArrowLeftCircleFill
-                onClick={() => setNav((prev) => prev - 1)}
+                onClick={() => requestMonthNavigation(-1)}
                 className="text-xl cursor-pointer"
               />
               <h1
@@ -85,7 +85,7 @@ const Header = () => {
                 })}
               </h1>
               <BsFillArrowRightCircleFill
-                onClick={() => setNav((prev) => prev + 1)}
+                onClick={() => requestMonthNavigation(1)}
                 className="text-xl cursor-pointer"
               />
             </div>
