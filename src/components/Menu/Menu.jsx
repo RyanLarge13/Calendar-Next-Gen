@@ -62,14 +62,17 @@ const Menu = () => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="z-10 fixed inset-0"
+          onClick={(event) => { if (event.target === event.currentTarget) setMenu(false); }}
         >
           {/* Backdrop */}
           <div
             className={`
-        absolute inset-0 z-[-1]
+        absolute inset-0
         ${preferences.darkMode ? "bg-black/50" : "bg-black/30"}
         
       `}
+            onClick={() => setMenu(false)}
+            aria-hidden="true"
           />
           {/* Panel */}
           <motion.div
