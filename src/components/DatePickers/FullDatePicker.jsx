@@ -27,16 +27,16 @@ const FullDatePicker = ({ stateSetter }) => {
   const scrollYearRef = useRef(null);
   const scrollDayRef = useRef(null);
   const [daysThisMonth, setDaysThisMonth] = useState(
-    Array.from({ length: daysInMonth }, (_, index) => index),
+    Array.from({ length: daysInMonth }, (_, index) => index + 1),
   );
   let debounceDayTimeout;
   let debounceMonthTimeout;
   let debounceYearTimeout;
 
   useEffect(() => {
-    const newSetOfDays = new Date(year, newMonth + 1, 0).getDate();
+    const newSetOfDays = new Date(newYear ?? year, (newMonth ?? month) + 1, 0).getDate();
     setDaysThisMonth(Array.from({ length: newSetOfDays }, (_, index) => index));
-  }, [newMonth]);
+  }, [newMonth, newYear, year, month]);
 
   useEffect(() => {
     const itemHeight = 60;
@@ -165,9 +165,9 @@ const FullDatePicker = ({ stateSetter }) => {
   };
 
   const increaseDay = () => {
-    if (newDay < daysThisMonth.length - 1) {
+    if (newDay < daysThisMonth.length) {
       scrollDayRef.current.scrollTo({
-        top: (newDay + 1) * 60,
+        top: newDay * 60,
         behavior: "smooth",
       });
       setNewDay((prev) => prev + 1);
@@ -175,9 +175,9 @@ const FullDatePicker = ({ stateSetter }) => {
   };
 
   const decreaseDay = () => {
-    if (newDay > 0) {
+    if (newDay > 1) {
       scrollDayRef.current.scrollTo({
-        top: (newDay - 1) * 60,
+        top: (newDay - 2) * 60,
         behavior: "smooth",
       });
       setNewDay((prev) => prev - 1);
@@ -186,10 +186,7 @@ const FullDatePicker = ({ stateSetter }) => {
 
   const submitDateString = () => {
     // Set up the date object
-    const newDt = new Date();
-    newDt.setMonth(newMonth);
-    newDt.setFullYear(newYear);
-    newDt.setDate(newDay + 1);
+    const newDt = new Date(newYear ?? year, newMonth ?? month, Math.min(newDay ?? day, daysThisMonth.length));
 
     // Build the date string to be set
     const stringTwo = newDt.toLocaleDateString();
@@ -197,16 +194,18 @@ const FullDatePicker = ({ stateSetter }) => {
     // Set states
 
     stateSetter(stringTwo);
+    setShowFullDatePicker(false);
   };
 
   return (
+    <Portal>
     <motion.div
       initial={{ opacity: 0, y: 18, scale: 0.98 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 18, scale: 0.98 }}
       transition={{ type: "spring", stiffness: 260, damping: 22 }}
       className={`
-    fixed z-[999]
+    fixed z-[1001]
     top-1/2 left-1/2 !-translate-x-1/2 !-translate-y-1/2
     w-[92vw] max-w-md
     rounded-3xl border shadow-2xl overflow-hidden
@@ -524,7 +523,7 @@ const FullDatePicker = ({ stateSetter }) => {
                 ${preferences.darkMode ? "text-white/85" : "text-slate-900"}
               `}
                 >
-                  {day + 1}
+                  {day}
                 </motion.div>
               ))}
             </div>
@@ -568,7 +567,7 @@ const FullDatePicker = ({ stateSetter }) => {
           }
         `}
           >
-            {new Date(newYear, newMonth, newDay + 1).toLocaleDateString(
+            {new Date(newYear ?? year, newMonth ?? month, Math.min(newDay ?? day, daysThisMonth.length)).toLocaleDateString(
               "en-US",
               {
                 weekday: "short",
@@ -608,7 +607,7 @@ const FullDatePicker = ({ stateSetter }) => {
           className={`
         px-5 py-2 rounded-2xl text-sm font-semibold text-white shadow-md transition
         active:scale-[0.97]
-        bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-500
+        bg-gradient-to-r from-amber-600 to-yellow-500 hover:from-amber-500 hover:to-yellow-600
       `}
           onClick={submitDateString}
         >
@@ -616,6 +615,7 @@ const FullDatePicker = ({ stateSetter }) => {
         </button>
       </div>
     </motion.div>
+    </Portal>
   );
 };
 
