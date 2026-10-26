@@ -1,373 +1,108 @@
 import { motion } from "framer-motion";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import Masonry from "react-masonry-css";
 import DatesContext from "../../context/DatesContext";
 import InteractiveContext from "../../context/InteractiveContext";
 import UserContext from "../../context/UserContext";
+import ReminderView from "../Reminders/ReminderView/ReminderView";
 import { setStateAndPushWindowState } from "../../utils/helpers";
 
-const MasonryView = ({ containerRef }) => {
-  const { eventMap } = useContext(UserContext);
-  const { setEvent } = useContext(InteractiveContext);
-  const { dateObj } = useContext(DatesContext);
-
-  const [uniqueDates, setUniqueDates] = useState([]);
-  const [shouldScroll, setShouldScroll] = useState(false);
-  const [refDate, setRefDate] = useState(null);
-
-  const closestDateRef = useRef(null);
-  const dateMapRef = useRef(null);
-
-  const breakpointColumnsObj = {
-    default: 4, // Number of columns by default
-    1700: 4,
-    1100: 3, // Number of columns on screens > 1100px
-    700: 2, // Number of columns on screens > 700px
-  };
-
-  useEffect(() => {
-    if (eventMap) {
-      const dates = Array.from(new Set(Array.from([...eventMap.keys()])));
-      setUniqueDates(dates);
-    }
-  }, [eventMap]);
-
-  // AI implementation of my attempt of scrolling sync behavior commented out below
-  // useEffect(() => {
-  //   let containerTimeout = null;
-  //   let dateMapTimeout = null;
-
-  //   const SYNC_DELAY = 50; // ms debounce so we wait for user scroll to settle
-
-  //   const handleContainerScroll = () => {
-  //     if (!containerRef.current || !dateMapRef.current) return;
-
-  //     // clear any pending syncs
-  //     if (containerTimeout) clearTimeout(containerTimeout);
-
-  //     containerTimeout = setTimeout(() => {
-  //       const container = containerRef.current;
-  //       const map = dateMapRef.current;
-
-  //       const ratio =
-  //         container.scrollTop /
-  //         (container.scrollHeight - container.clientHeight);
-
-  //       map.scrollTo({
-  //         top: ratio * (map.scrollHeight - map.clientHeight * 3.5),
-  //         behavior: "smooth",
-  //       });
-  //     }, SYNC_DELAY);
-  //   };
-
-  //   const handleDateMapScroll = () => {
-  //     if (!dateMapRef.current || !containerRef.current) return;
-
-  //     if (dateMapTimeout) clearTimeout(dateMapTimeout);
-
-  //     dateMapTimeout = setTimeout(() => {
-  //       const container = containerRef.current;
-  //       const map = dateMapRef.current;
-
-  //       const ratio =
-  //         map.scrollTop / (map.scrollHeight - map.clientHeight * 3.5);
-
-  //       container.scrollTo({
-  //         top: ratio * (container.scrollHeight - container.clientHeight),
-  //         behavior: "smooth",
-  //       });
-  //     }, SYNC_DELAY);
-  //   };
-
-  //   if (containerRef.current) {
-  //     containerRef.current.addEventListener("scroll", handleContainerScroll);
-  //   }
-  //   if (dateMapRef.current) {
-  //     dateMapRef.current.addEventListener("scroll", handleDateMapScroll);
-  //   }
-
-  //   return () => {
-  //     if (containerRef.current) {
-  //       containerRef.current.removeEventListener(
-  //         "scroll",
-  //         handleContainerScroll
-  //       );
-  //     }
-  //     if (dateMapRef.current) {
-  //       dateMapRef.current.removeEventListener("scroll", handleDateMapScroll);
-  //     }
-  //     if (containerTimeout) clearTimeout(containerTimeout);
-  //     if (dateMapTimeout) clearTimeout(dateMapTimeout);
-  //   };
-  // }, []);
-
-  // Testing AI, commenting out bottom code to see if AI can replace it with one that properly waits for scroll events to finish. AI implementation above
-  // useEffect(() => {
-  //   let isSyncingContainer = false;
-  //   let isSyncingDateMap = false;
-
-  //   const handleContainerScroll = () => {
-  //     if (isSyncingDateMap) return;
-  //     if (dateMapRef.current && containerRef.current) {
-  //       isSyncingContainer = true;
-  //       const container = containerRef.current;
-  //       const map = dateMapRef.current;
-
-  //       const ratio =
-  //         container.scrollTop /
-  //         (container.scrollHeight - container.clientHeight);
-
-  //       map.scrollTo({
-  //         top: ratio * (map.scrollHeight - map.clientHeight),
-  //         behavior: "smooth",
-  //       });
-  //     }
-  //   };
-
-  //   const handleDateMapScroll = () => {
-  //     if (isSyncingContainer) return;
-  //     isSyncingDateMap = true;
-  //     if (dateMapRef.current && containerRef.current) {
-  //       const container = containerRef.current;
-  //       const map = dateMapRef.current;
-
-  //       const ratio = map.scrollTop / (map.scrollHeight - map.clientHeight);
-
-  //       container.scrollTo({
-  //         top: ratio * (container.scrollHeight - container.clientHeight),
-  //         behavior: "smooth",
-  //       });
-  //     }
-  //   };
-
-  //   const scrollEndContainerRef = () => {
-  //     isSyncingContainer = false;
-  //   };
-
-  //   const scrollEndDateMapRef = () => {
-  //     isSyncingDateMap = false;
-  //   };
-
-  //   if (containerRef.current) {
-  //     containerRef.current.addEventListener("scroll", handleContainerScroll);
-  //     containerRef.current.addEventListener("scrollend", scrollEndContainerRef);
-  //   }
-  //   if (dateMapRef.current) {
-  //     dateMapRef.current.addEventListener("scroll", handleDateMapScroll);
-  //     dateMapRef.current.addEventListener("scrollend", scrollEndDateMapRef);
-  //   }
-
-  //   return () => {
-  //     if (containerRef.current) {
-  //       containerRef.current.removeEventListener(
-  //         "scroll",
-  //         handleContainerScroll
-  //       );
-  //       containerRef.current.removeEventListener(
-  //         "scrollend",
-  //         scrollEndContainerRef
-  //       );
-  //     }
-  //     if (dateMapRef.current) {
-  //       dateMapRef.current.removeEventListener("scroll", handleDateMapScroll);
-  //       dateMapRef.current.removeEventListener(
-  //         "scrollend",
-  //         scrollEndDateMapRef
-  //       );
-  //     }
-  //   };
-  // }, []);
-
-  useEffect(() => {
-    if (uniqueDates.length > 0) {
-      const closestDate = uniqueDates.reduce((a, b) => {
-        const dateA = new Date(
-          parseInt(a.split("-")[0], 10),
-          parseInt(a.split("-")[1], 10),
-          1,
-        );
-        const dateB = new Date(
-          parseInt(b.split("-")[0], 10),
-          parseInt(b.split("-")[1], 10),
-          1,
-        );
-        return Math.abs(dateA - dateObj) < Math.abs(dateB - dateObj) ? a : b;
-      });
-      // Update the closestDateRef with the ref to the element representing the closest date
-      const element = document.getElementById(closestDate);
-      if (element) {
-        closestDateRef.current = element;
-        setShouldScroll(true);
-      }
-    }
-  }, [uniqueDates]);
-
-  useEffect(() => {
-    // Step 4: Scroll to the closest date element on component mount
-    if (closestDateRef.current && shouldScroll && containerRef?.current) {
-      const padding = 50; // Adjust the padding value as needed
-      const scrollOptions = {
-        behavior: "smooth",
-        left: 0,
-        top: closestDateRef.current.offsetTop - padding,
-      };
-      containerRef.current.scrollTo(scrollOptions);
-    }
-  }, [shouldScroll, dateObj]);
-
-  const getHeight = (start, end) => {
-    if (!start || !end) {
-      return;
-    }
-    const startMinutes = new Date(start).getMinutes();
-    const startHours = new Date(start).getHours();
-    const endMinutes = new Date(end).getMinutes();
-    const endHours = new Date(end).getHours();
-    const totalHours = (endHours - startHours) * 30;
-    const totalMinutes = (endMinutes - startMinutes) * 15;
-    const result = totalHours + totalMinutes;
-    return result;
-  };
-
-  const scrollToArea = (dateStr) => {
-    const element = document.getElementById(dateStr);
-    if (element && containerRef?.current) {
-      const padding = 0; // Adjust the padding value as needed
-      const scrollOptions = {
-        behavior: "smooth",
-        left: 0,
-        top: element.offsetTop - padding,
-      };
-      containerRef.current.scrollTo(scrollOptions);
-      setRefDate(dateStr);
-    }
-  };
-
-  return (
-    <div className="pb-10 flex w-full max-w-screen">
-      <div
-        className="sticky top-0 left-0 ml-2 min-w-16 max-w-16 h-[100vh] overflow-y-scroll scrollbar-hide"
-        ref={dateMapRef}
-      >
-        {uniqueDates.map((d) => {
-          const dayEventsLen = eventMap.get(d)?.events.length || 0;
-
-          return dayEventsLen > 0 ? (
-            <button
-              key={d}
-              onClick={() => scrollToArea(d)}
-              className={`text-sm p-3 my-3 w-16 flex justify-center items-center border bg-gradient-to-r
-                 from-purple-500 via-blue-500 to-black to-[80%] rounded-md bg-clip-text text-transparent bg-[length:200%_100%] 
-                 transition-[background-position] duration-700 ease-in-out ${
-                   refDate === d
-                     ? "bg-left font-semibold shadow-lg"
-                     : "bg-right shadow-none"
-                 }
-`}
-            >
-              <p>
-                {new Date(
-                  parseInt(d.split("-")[0], 10),
-                  parseInt(d.split("-")[1], 10),
-                  1,
-                ).toLocaleDateString("en-US", {
-                  month: "short",
-                  year: "numeric",
-                })}
-              </p>
-            </button>
-          ) : null;
-        })}
-      </div>
-      <div className="flex-1 min-w-0 ml-0">
-        {uniqueDates.map((dateString) => {
-          const dayEvents = eventMap.get(dateString)?.events || [];
-
-          return (
-            <div key={dateString} className="mt-10 border-1 border-gray-400">
-              <div className="p-2" id={dateString}>
-                {dayEvents.length > 0 ? (
-                  <h2 className="bg-gradient-to-r ml-2 from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent font-semibold text-lg">
-                    {new Date(
-                      parseInt(dateString.split("-")[0], 10),
-                      parseInt(dateString.split("-")[1], 10),
-                      1,
-                    ).toLocaleDateString("en-US", {
-                      month: "short",
-                      year: "numeric",
-                    })}
-                  </h2>
-                ) : null}
-              </div>
-              <Masonry
-                breakpointCols={breakpointColumnsObj}
-                className="my-masonry-grid"
-                columnClassName="my-masonry-grid_column"
-              >
-                {dayEvents.map((event) => (
-                  <motion.div
-                    key={event.id}
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    style={{
-                      minHeight: `${getHeight(
-                        event.start.startTime,
-                        event.end.endTime,
-                      )}px`,
-                    }}
-                    className="my-3 relative p-2 pl-4 whitespace-pre-wrap overflow-hidden rounded-xl border shadow-lg"
-                    onClick={() =>
-                      setStateAndPushWindowState(() => setEvent(event))
-                    }
-                  >
-                    <div
-                      className={`w-2 rounded-l-xl absolute left-0 top-0 bottom-0 ${event.color}`}
-                    ></div>
-                    <p className="mb-1 text-sm font-semibold truncate">
-                      {event.summary}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                      {new Date(event.date).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                      })}
-                    </p>
-                    {event.start.startTime && event.end.endTime ? (
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                        {event.start?.startTime
-                          ? `${new Date(
-                              event.start.startTime,
-                            ).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })} - `
-                          : ""}
-                        {event.end?.endTime
-                          ? new Date(event.end.endTime).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })
-                          : ""}
-                      </p>
-                    ) : (
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                        All Day Event
-                      </p>
-                    )}
-                    {event.description ? (
-                      <p className="text-xs leading-snug text-gray-500 whitespace-pre-wrap">
-                        {event.description}
-                      </p>
-                    ) : null}
-                  </motion.div>
-                ))}
-              </Masonry>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
+const monthKey = (date) => `${date.getFullYear()}-${date.getMonth()}`;
+const parseMonth = (key) => {
+  const parts = key.split("-").map(Number);
+  if (parts.length !== 2 || !Number.isInteger(parts[0]) || !Number.isInteger(parts[1]) || parts[1] < 0 || parts[1] > 11) return null;
+  return new Date(parts[0], parts[1], 1);
 };
 
+const MasonryView = ({ containerRef }) => {
+  const { eventMap, reminders = [], preferences } = useContext(UserContext);
+  const { setEvent } = useContext(InteractiveContext);
+  const { dateObj } = useContext(DatesContext);
+  const [range, setRange] = useState(12);
+  const [activeReminder, setActiveReminder] = useState(null);
+  const dateMapRef = useRef(null);
+  const anchor = new Date(dateObj.getFullYear(), dateObj.getMonth(), 1);
+
+  const groups = useMemo(() => {
+    const center = anchor.getFullYear() * 12 + anchor.getMonth();
+    const byMonth = new Map();
+    for (const [key, value] of eventMap || []) {
+      const month = parseMonth(key);
+      if (!month || Math.abs(month.getFullYear() * 12 + month.getMonth() - center) > range) continue;
+      const events = Array.isArray(value?.events) ? value.events : [];
+      if (events.length) byMonth.set(key, { date: month, events, reminders: [] });
+    }
+    for (const reminder of reminders) {
+      const date = new Date(reminder.time);
+      if (!Number.isFinite(date.getTime()) || Math.abs(date.getFullYear() * 12 + date.getMonth() - center) > range) continue;
+      const key = monthKey(date);
+      if (!byMonth.has(key)) byMonth.set(key, { date: new Date(date.getFullYear(), date.getMonth(), 1), events: [], reminders: [] });
+      byMonth.get(key).reminders.push(reminder);
+    }
+    return Array.from(byMonth.entries()).sort((a, b) => a[1].date - b[1].date)
+      .map(([key, value]) => ({ key, ...value, reminders: value.reminders.sort((a, b) => new Date(a.time) - new Date(b.time)) }));
+  }, [eventMap, reminders, anchor.getFullYear(), anchor.getMonth(), range]);
+
+  useEffect(() => {
+    if (!containerRef?.current || !groups.length) return;
+    const center = anchor.getFullYear() * 12 + anchor.getMonth();
+    const nearest = groups.reduce((best, item) => {
+      const distance = Math.abs(item.date.getFullYear() * 12 + item.date.getMonth() - center);
+      return distance < best.distance ? { key: item.key, distance } : best;
+    }, { key: null, distance: Infinity });
+    const element = document.getElementById(`masonry-month-${nearest.key}`);
+    if (element) containerRef.current.scrollTo({ top: Math.max(0, element.offsetTop - 80), behavior: "smooth" });
+  }, [groups, containerRef]);
+
+  const jumpTo = (key) => {
+    const element = document.getElementById(`masonry-month-${key}`);
+    if (element && containerRef?.current) containerRef.current.scrollTo({ top: Math.max(0, element.offsetTop - 80), behavior: "smooth" });
+  };
+  const columns = { default: 4, 1100: 3, 700: 2, 480: 1 };
+  const surface = preferences.darkMode ? "bg-[#202020] border-white/10 text-white" : "bg-white border-black/10 text-slate-900";
+
+  return <div className="w-full pb-16">
+    <div className={`sticky top-0 z-10 flex flex-wrap items-center justify-between gap-2 p-3 rounded-xl border shadow-sm ${surface}`}>
+      <div><h2 className="text-sm font-semibold">Timeline</h2><p className="text-xs opacity-60">Events and reminders near {anchor.toLocaleDateString([], { month: "long", year: "numeric" })}</p></div>
+      <label className="flex items-center gap-2 text-xs">Show
+        <select aria-label="Masonry timeline range" value={range} onChange={(e) => setRange(Number(e.target.value))} className={`rounded-lg border p-2 ${surface}`}>
+          <option value="6">± 6 months</option><option value="12">± 12 months</option><option value="24">± 24 months</option>
+        </select>
+      </label>
+    </div>
+    <div className="flex gap-2">
+      <nav ref={dateMapRef} aria-label="Timeline months" className="sticky top-16 self-start shrink-0 w-[76px] max-h-[75dvh] overflow-y-auto scrollbar-hide">
+        {groups.map(({ key, date, events, reminders: due }) => <button key={key} type="button" onClick={() => jumpTo(key)} className="block w-full text-left text-xs p-2 my-2 rounded-lg hover:bg-cyan-500/10">
+          <span className="block font-semibold">{date.toLocaleDateString([], { month: "short" })}</span><span className="opacity-60">{date.getFullYear()}</span><span className="block opacity-50">{events.length + due.length} items</span>
+        </button>)}
+      </nav>
+      <div className="min-w-0 flex-1">
+        {!groups.length && <div className={`rounded-xl border p-8 mt-6 text-center ${surface}`}>No events or reminders in this range.</div>}
+        {groups.map(({ key, date, events, reminders: due }) => <section key={key} id={`masonry-month-${key}`} className="mt-8 scroll-mt-24">
+          <h3 className="font-semibold text-lg mb-3 bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent">{date.toLocaleDateString([], { month: "long", year: "numeric" })}</h3>
+          <Masonry breakpointCols={columns} className="my-masonry-grid" columnClassName="my-masonry-grid_column">
+            {events.map((event) => <motion.button key={`event-${event.id}`} type="button" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
+              onClick={() => setStateAndPushWindowState(() => setEvent(event))}
+              className={`block w-full text-left my-2 relative p-4 pl-5 rounded-xl border shadow-sm ${surface}`}>
+              <span className={`absolute left-0 inset-y-0 w-1 rounded-l-xl ${event.color || "bg-cyan-500"}`} />
+              <span className="text-[10px] uppercase opacity-50">Event</span>
+              <span className="block font-semibold text-sm mt-1 break-words">{event.summary || event.title || "Untitled event"}</span>
+              <span className="block text-xs opacity-60 mt-1">{event.start?.startTime && Number.isFinite(new Date(event.start.startTime).getTime()) ? new Date(event.start.startTime).toLocaleString() : event.date ? new Date(event.date).toLocaleDateString() : "All day"}</span>
+              {event.description && <span className="block text-xs opacity-70 mt-2 whitespace-pre-wrap break-words">{event.description}</span>}
+            </motion.button>)}
+            {due.map((reminder) => <motion.button key={`reminder-${reminder.id}`} type="button" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
+              onClick={() => setActiveReminder(reminder)} className={`block w-full text-left my-2 relative p-4 pl-5 rounded-xl border shadow-sm ${surface}`}>
+              <span className="absolute left-0 inset-y-0 w-1 rounded-l-xl bg-amber-400" />
+              <span className="text-[10px] uppercase text-amber-500">Reminder {reminder.completed ? "· Completed" : ""}</span>
+              <span className="block font-semibold text-sm mt-1 break-words">{reminder.title || "Untitled reminder"}</span>
+              <span className="block text-xs opacity-60 mt-1">{new Date(reminder.time).toLocaleString()}</span>
+              {reminder.notes && <span className="block text-xs opacity-70 mt-2 whitespace-pre-wrap break-words">{reminder.notes}</span>}
+            </motion.button>)}
+          </Masonry>
+        </section>)}
+      </div>
+    </div>
+    {activeReminder && <ReminderView reminder={activeReminder} setShowFullReminder={(open) => { if (!open) setActiveReminder(null); }} />}
+  </div>;
+};
 export default MasonryView;
