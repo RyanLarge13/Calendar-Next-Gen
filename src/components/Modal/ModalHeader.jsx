@@ -258,7 +258,7 @@ const ModalHeader = () => {
         </div>
         <div>
           {secondString && (
-            <p className="bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent">
+            <p className="calendar-accent">
               {new Date(secondString).toLocaleDateString("en-US", {
                 weekday: "short",
                 month: "short",
