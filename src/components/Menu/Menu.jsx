@@ -61,8 +61,16 @@ const Menu = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-10"
+          className="z-10 fixed inset-0"
         >
+          {/* Backdrop */}
+          <div
+            className={`
+        absolute inset-0 z-[-1]
+        ${preferences.darkMode ? "bg-black/50" : "bg-black/30"}
+        
+      `}
+          />
           {/* Panel */}
           <motion.div
             initial={{ y: 12, opacity: 0 }}
@@ -75,18 +83,6 @@ const Menu = () => {
           pt-0 sm:pt-12
           `}
           >
-            {/* Backdrop */}
-            <div
-              onClick={() => {
-                // optional: click outside to close
-                setMenu(false);
-              }}
-              className={`
-          absolute inset-0
-          ${preferences.darkMode ? "bg-black/50" : "bg-black/30"}
-          
-        `}
-            />
             <div
               className={`
             mx-auto w-full max-w-none sm:max-w-6xl h-[100dvh] sm:h-[calc(100vh-5rem)]
@@ -137,7 +133,7 @@ const Menu = () => {
                         `}
                           >
                             <div className="mx-auto max-w-6xl">
-                              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                              <div className="flex sm:flex-row flex-col sm:justify-between sm:items-center gap-3">
                                 <div className="flex gap-3">
                                   <Switch
                                     title="Sort"
@@ -241,7 +237,7 @@ const Menu = () => {
                           
                         `}
                           >
-                            <div className="mx-auto max-w-6xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                            <div className="flex sm:flex-row flex-col sm:justify-between sm:items-center gap-3 mx-auto max-w-6xl">
                               <div className="flex gap-3">
                                 <Switch
                                   title="Sort"
@@ -337,7 +333,7 @@ const Menu = () => {
                           
                         `}
                           >
-                            <div className="mx-auto max-w-6xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                            <div className="flex sm:flex-row flex-col sm:justify-between sm:items-center gap-3 mx-auto max-w-6xl">
                               <div className="flex gap-3">
                                 <Switch
                                   title="Sort"

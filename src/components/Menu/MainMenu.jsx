@@ -40,7 +40,10 @@ const Dashboard = ({ timeOfDay }) => {
   const [weatherSlide, setWeatherSlide] = useState(0);
   const weatherTouchStart = useRef(null);
   const weatherCount = Math.min(7, weatherData?.daily?.time?.length ?? 0);
-  const changeWeatherSlide = (offset) => setWeatherSlide((current) => Math.max(0, Math.min(weatherCount - 1, current + offset)));
+  const changeWeatherSlide = (offset) =>
+    setWeatherSlide((current) =>
+      Math.max(0, Math.min(weatherCount - 1, current + offset)),
+    );
   useEffect(() => setWeatherSlide(0), [weatherData?.daily?.time]);
 
   const weekday = new Date().getDay();
@@ -62,7 +65,7 @@ const Dashboard = ({ timeOfDay }) => {
       initial={{ x: "-5%", opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: "-5%", opacity: 0 }}
-      className="pt-24 px-3 sm:px-6 lg:px-10"
+      className="px-3 sm:px-6 lg:px-10 pt-24"
     >
       {/* Centered container so desktop doesn't look stretched */}
       <div className="mx-auto max-w-6xl">
@@ -78,9 +81,9 @@ const Dashboard = ({ timeOfDay }) => {
         }
       `}
         >
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+          <div className="flex sm:flex-row flex-col sm:justify-between sm:items-end gap-4">
             <div>
-              <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">
+              <h1 className="font-semibold text-3xl sm:text-4xl tracking-tight">
                 {timeOfDay},
               </h1>
               {user.username && (
@@ -140,7 +143,7 @@ const Dashboard = ({ timeOfDay }) => {
         </div>
 
         {/* Dashboard Grid */}
-        <div className="mt-6 grid grid-cols-12 gap-4">
+        <div className="gap-4 grid grid-cols-12 mt-6">
           {/* Upcoming Events (wide) */}
           <div
             className={`
@@ -158,7 +161,7 @@ const Dashboard = ({ timeOfDay }) => {
                 preferences.darkMode ? "border-white/10" : "border-black/10"
               }`}
             >
-              <h2 className="text-sm font-semibold flex items-center gap-2">
+              <h2 className="flex items-center gap-2 font-semibold text-sm">
                 <span
                   className={`
                 grid place-items-center h-9 w-9 rounded-2xl border shadow-sm
@@ -215,11 +218,11 @@ const Dashboard = ({ timeOfDay }) => {
                       </button>
 
                       {event.diff < 1 ? (
-                        <p className="text-xs font-semibold text-rose-500">
+                        <p className="font-semibold text-rose-500 text-xs">
                           Today
                         </p>
                       ) : event.diff < 2 ? (
-                        <p className="text-xs font-semibold text-amber-500">
+                        <p className="font-semibold text-amber-500 text-xs">
                           Tomorrow
                         </p>
                       ) : (
@@ -235,7 +238,7 @@ const Dashboard = ({ timeOfDay }) => {
                         </p>
                       )}
 
-                      <p className="text-sm font-semibold mt-1 pr-12">
+                      <p className="mt-1 pr-12 font-semibold text-sm">
                         {event.summary}
                       </p>
                     </div>
@@ -254,7 +257,7 @@ const Dashboard = ({ timeOfDay }) => {
           </div>
 
           {/* Weather + Location (stacked) */}
-          <div className="col-span-12 lg:col-span-6 grid gap-4">
+          <div className="gap-4 grid col-span-12 lg:col-span-6">
             {/* Weather */}
             <div
               className={`
@@ -271,7 +274,7 @@ const Dashboard = ({ timeOfDay }) => {
                   preferences.darkMode ? "border-white/10" : "border-black/10"
                 }`}
               >
-                <h2 className="text-sm font-semibold flex items-center gap-2">
+                <h2 className="flex items-center gap-2 font-semibold text-sm">
                   <span
                     className={`
                   grid place-items-center h-9 w-9 rounded-2xl border shadow-sm
@@ -289,7 +292,7 @@ const Dashboard = ({ timeOfDay }) => {
               </div>
 
               {weatherData ? (
-                <div className="p-5 flex justify-between items-start gap-3">
+                <div className="flex justify-between items-start gap-3 p-5">
                   <div>
                     <p
                       className={`text-sm font-semibold ${
@@ -319,11 +322,11 @@ const Dashboard = ({ timeOfDay }) => {
                       weatherCodeMap[weatherData?.current_weather?.weathercode]
                         ?.name
                     }
-                    className="object-contain aspect-square w-16 sm:w-20 flex-shrink-0 mt-[-20px]"
+                    className="flex-shrink-0 mt-[-20px] w-16 sm:w-20 object-contain aspect-square"
                   />
                 </div>
               ) : (
-                <div className="p-5 flex justify-between">
+                <div className="flex justify-between p-5">
                   <div>
                     <p
                       className={`text-[11px] font-semibold tracking-wide ${
@@ -351,10 +354,10 @@ const Dashboard = ({ timeOfDay }) => {
               )}
 
               {weatherData?.daily ? (
-                <div className="min-w-0 w-full">
+                <div className="w-full min-w-0">
                   {/* 7-day outlook */}
                   {/* Header row */}
-                  <div className="flex items-end justify-between gap-3 mb-3 px-5">
+                  <div className="flex justify-between items-end gap-3 mb-3 px-5">
                     <div className="min-w-0">
                       <p
                         className={`text-[11px] font-semibold tracking-wide ${
@@ -365,7 +368,7 @@ const Dashboard = ({ timeOfDay }) => {
                       >
                         Weather
                       </p>
-                      <h3 className="text-lg font-semibold tracking-tight truncate">
+                      <h3 className="font-semibold text-lg truncate tracking-tight">
                         7-day outlook
                       </h3>
                     </div>
@@ -383,19 +386,35 @@ const Dashboard = ({ timeOfDay }) => {
                   {/* Outer shell (NO horizontal scroll here) */}
                   <div
                     className={`
-                    mx-5 mb-5
-                    rounded-3xl border shadow-2xl overflow-hidden
+                    
+                    rounded-3xl overflow-hidden
                     ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-white/85 border-black/10"}
                     min-w-0
                   `}
                   >
                     <div className="px-4 py-4 min-w-0">
                       {/* One slide at a time; touch gestures and buttons control navigation. */}
-                      <div className="min-w-0 overflow-hidden pt-2 pb-3 px-2 touch-pan-y"
-                        onTouchStart={(e) => { weatherTouchStart.current = e.touches[0].clientX; }}
-                        onTouchEnd={(e) => { if (weatherTouchStart.current == null) return; const delta = e.changedTouches[0].clientX - weatherTouchStart.current; if (Math.abs(delta) > 45) changeWeatherSlide(delta < 0 ? 1 : -1); weatherTouchStart.current = null; }}>
-                        <div className="flex w-full transition-transform duration-300 ease-out"
-                          style={{ transform: `translateX(-${weatherSlide * 100}%)` }}>
+                      <div
+                        className="px-5 pt-2 pb-3 min-w-0 overflow-hidden touch-pan-y"
+                        onTouchStart={(e) => {
+                          weatherTouchStart.current = e.touches[0].clientX;
+                        }}
+                        onTouchEnd={(e) => {
+                          if (weatherTouchStart.current == null) return;
+                          const delta =
+                            e.changedTouches[0].clientX -
+                            weatherTouchStart.current;
+                          if (Math.abs(delta) > 45)
+                            changeWeatherSlide(delta < 0 ? 1 : -1);
+                          weatherTouchStart.current = null;
+                        }}
+                      >
+                        <div
+                          className="flex gap-x-5 w-full transition-transform duration-300 ease-out"
+                          style={{
+                            transform: `translateX(-${weatherSlide * 105}%)`,
+                          }}
+                        >
                           {weatherData?.daily
                             ? newWeekdays.slice(0, weatherCount).map((d, i) => {
                                 const {
@@ -470,7 +489,7 @@ const Dashboard = ({ timeOfDay }) => {
                                     `}
                                     >
                                       <div className="min-w-0 text-left">
-                                        <p className="text-sm font-semibold truncate">
+                                        <p className="font-semibold text-sm truncate">
                                           {d}
                                         </p>
                                         <p
@@ -505,7 +524,7 @@ const Dashboard = ({ timeOfDay }) => {
                                           <img
                                             src={icon}
                                             alt={name || "weather"}
-                                            className="h-8 w-8 object-contain"
+                                            className="w-8 h-8 object-contain"
                                           />
                                         ) : (
                                           <span
@@ -522,16 +541,16 @@ const Dashboard = ({ timeOfDay }) => {
                                     </div>
 
                                     {/* Body */}
-                                    <div className="px-4 py-4 text-left space-y-3">
+                                    <div className="space-y-3 px-4 py-4 text-left">
                                       {/* High / Low */}
-                                      <div className="flex items-center justify-between gap-2">
+                                      <div className="flex justify-between items-center gap-2">
                                         <div
                                           className={`
                                           inline-flex items-center gap-2 px-3 py-1.5 rounded-2xl border text-[11px] font-semibold shadow-sm
                                           ${preferences.darkMode ? "bg-white/5 border-white/10 text-white/70" : "bg-black/[0.03] border-black/10 text-slate-700"}
                                         `}
                                         >
-                                          <span className="h-2 w-2 rounded-full bg-rose-400" />
+                                          <span className="bg-rose-400 rounded-full w-2 h-2" />
                                           High{" "}
                                           <span className="font-bold">
                                             {Math.round(
@@ -547,7 +566,7 @@ const Dashboard = ({ timeOfDay }) => {
                                             ${preferences.darkMode ? "bg-white/5 border-white/10 text-white/70" : "bg-black/[0.03] border-black/10 text-slate-700"}
                                           `}
                                         >
-                                          <span className="h-2 w-2 rounded-full bg-cyan-400" />
+                                          <span className="bg-cyan-400 rounded-full w-2 h-2" />
                                           Low{" "}
                                           <span className="font-bold">
                                             {Math.round(
@@ -617,11 +636,11 @@ const Dashboard = ({ timeOfDay }) => {
                                           >
                                             Sunrise
                                           </p>
-                                          <p className="text-xs font-semibold">
+                                          <p className="font-semibold text-xs">
                                             {sunRiseStr}
                                           </p>
                                         </div>
-                                        <div className="h-6 w-px bg-black/10 dark:bg-white/10" />
+                                        <div className="bg-black/10 dark:bg-white/10 w-px h-6" />
                                         <div className="text-right">
                                           <p
                                             className={`text-[10px] font-semibold ${
@@ -632,7 +651,7 @@ const Dashboard = ({ timeOfDay }) => {
                                           >
                                             Sunset
                                           </p>
-                                          <p className="text-xs font-semibold">
+                                          <p className="font-semibold text-xs">
                                             {sunSetStr}
                                           </p>
                                         </div>
@@ -645,10 +664,34 @@ const Dashboard = ({ timeOfDay }) => {
                         </div>
                       </div>
 
-                      <div className="mt-3 flex items-center justify-between gap-3" aria-label="Weather forecast carousel controls">
-                        <button type="button" onClick={() => changeWeatherSlide(-1)} disabled={weatherSlide === 0} aria-label="Previous forecast day" className="calendar-action px-4 py-2 text-sm disabled:opacity-30">←</button>
-                        <span className="text-xs font-semibold calendar-accent" aria-live="polite">Day {weatherSlide + 1} of {weatherCount}</span>
-                        <button type="button" onClick={() => changeWeatherSlide(1)} disabled={weatherSlide >= weatherCount - 1} aria-label="Next forecast day" className="calendar-action px-4 py-2 text-sm disabled:opacity-30">→</button>
+                      <div
+                        className="flex justify-between items-center gap-3 mt-3"
+                        aria-label="Weather forecast carousel controls"
+                      >
+                        <button
+                          type="button"
+                          onClick={() => changeWeatherSlide(-1)}
+                          disabled={weatherSlide === 0}
+                          aria-label="Previous forecast day"
+                          className="disabled:opacity-30 px-4 py-2 text-sm calendar-action"
+                        >
+                          ←
+                        </button>
+                        <span
+                          className="font-semibold text-xs calendar-accent"
+                          aria-live="polite"
+                        >
+                          Day {weatherSlide + 1} of {weatherCount}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => changeWeatherSlide(1)}
+                          disabled={weatherSlide >= weatherCount - 1}
+                          aria-label="Next forecast day"
+                          className="disabled:opacity-30 px-4 py-2 text-sm calendar-action"
+                        >
+                          →
+                        </button>
                       </div>
                       <p
                         className={`mt-3 text-[11px] ${
@@ -686,7 +729,7 @@ const Dashboard = ({ timeOfDay }) => {
                 preferences.darkMode ? "border-white/10" : "border-black/10"
               }`}
             >
-              <h2 className="text-sm font-semibold flex items-center gap-2">
+              <h2 className="flex items-center gap-2 font-semibold text-sm">
                 <span
                   className={`
                 grid place-items-center h-9 w-9 rounded-2xl border shadow-sm
@@ -733,7 +776,7 @@ const Dashboard = ({ timeOfDay }) => {
                     }
                   `}
                     >
-                      <p className="text-sm font-semibold">{reminder.title}</p>
+                      <p className="font-semibold text-sm">{reminder.title}</p>
                       <p
                         className={`text-xs mt-1 ${
                           preferences.darkMode
@@ -775,7 +818,7 @@ const Dashboard = ({ timeOfDay }) => {
                 preferences.darkMode ? "border-white/10" : "border-black/10"
               }`}
             >
-              <h2 className="text-sm font-semibold flex items-center gap-2">
+              <h2 className="flex items-center gap-2 font-semibold text-sm">
                 <span
                   className={`
                 grid place-items-center h-9 w-9 rounded-2xl border shadow-sm
@@ -842,7 +885,7 @@ const Dashboard = ({ timeOfDay }) => {
                 preferences.darkMode ? "border-white/10" : "border-black/10"
               }`}
             >
-              <h2 className="text-sm font-semibold flex items-center gap-2">
+              <h2 className="flex items-center gap-2 font-semibold text-sm">
                 <span
                   className={`
                 grid place-items-center h-9 w-9 rounded-2xl border shadow-sm
@@ -878,7 +921,7 @@ const Dashboard = ({ timeOfDay }) => {
                 }
               `}
                 >
-                  <div className="flex items-start justify-between gap-3 py-2 px-3">
+                  <div className="flex justify-between items-start gap-3 px-3 py-2">
                     {/* Title */}
                     <input
                       defaultValue={stickies[0].title}
@@ -892,7 +935,7 @@ const Dashboard = ({ timeOfDay }) => {
                       style={{ caretColor: tailwindBgToHex(stickies[0].color) }}
                       placeholder="Title…"
                     />
-                    {/* <p className="text-sm font-semibold">{stickies[0].title}</p> */}
+                    {/* <p className="font-semibold text-sm">{stickies[0].title}</p> */}
                     <span
                       className={`${stickies[0].color} h-3.5 mt-3 w-3.5 rounded-full ring-1 ring-black/10`}
                     />
