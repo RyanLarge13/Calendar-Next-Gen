@@ -43,12 +43,12 @@ const Calendar = () => {
   return (
     <main
       ref={containerRef}
-      className={`px-2 pt-[65px] h-screen overflow-y-auto scrollbar-hide ${
+      className={`px-2 pt-[65px] h-[100dvh] min-h-0 flex flex-col overflow-y-auto scrollbar-hide ${
         preferences.darkMode ? "bg-[#222]" : "bg-white"
       }`}
     >
-      <section>
-        <div className="grid grid-cols-7 gap-2 justify-center items-center my-5">
+      <section className={view === "month" ? "flex flex-1 min-h-0 flex-col" : ""}>
+        <div className={`grid grid-cols-7 gap-2 justify-center items-center my-5 ${view === "month" ? "shrink-0" : ""}`}>
           {view === "month" &&
             weekDays.map((day) => (
               <p
@@ -61,9 +61,9 @@ const Calendar = () => {
               </p>
             ))}
         </div>
-        <section>
-          <div>
-              <div>
+        <section className={view === "month" ? "flex-1 min-h-0" : ""}>
+          <div className={view === "month" ? "h-full min-h-0" : ""}>
+              <div className={view === "month" ? "h-full min-h-0" : ""}>
                 {view === "month" && <MonthView />}
                 {view === "day" && <DayView containerRef={containerRef} />}
                 {view === "week" && <WeekView />}
