@@ -46,6 +46,9 @@ const MonthView = () => {
   const [viewportWidth, setViewportWidth] = useState(0);
   const x = useMotionValue(0);
   const animatingRef = useRef(false);
+  const wheelAccumulatorRef = useRef(0);
+  const wheelLastTimeRef = useRef(0);
+  const wheelCooldownRef = useRef(0);
   const pendingNavigationRef = useRef(null);
   const desiredMonthRef = useRef(new Date(dt.getFullYear(), dt.getMonth(), 1));
   desiredMonthRef.current = new Date(dt.getFullYear(), dt.getMonth(), 1);
@@ -134,6 +137,27 @@ const MonthView = () => {
       });
       animatingRef.current = false;
     }
+  };
+
+  const onWheel = (event) => {
+    // Leave trackpad horizontal swipes, pinch zoom, and nested scrolling alone.
+    if (event.ctrlKey || Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
+    if (event.target.closest("[data-month-popup], input, textarea, select, [contenteditable=true]")) return;
+    event.preventDefault();
+    const now = performance.now();
+    if (now - wheelLastTimeRef.current > 240) wheelAccumulatorRef.current = 0;
+    wheelLastTimeRef.current = now;
+    if (animatingRef.current || now < wheelCooldownRef.current) return;
+    const multiplier = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? window.innerHeight : 1;
+    wheelAccumulatorRef.current += event.deltaY * multiplier;
+    const magnitude = Math.abs(wheelAccumulatorRef.current);
+    // Small wheel gestures require more input; strong scrolls cross sooner.
+    const threshold = 90;
+    if (magnitude < threshold) return;
+    const direction = wheelAccumulatorRef.current > 0 ? 1 : -1;
+    wheelAccumulatorRef.current = 0;
+    wheelCooldownRef.current = now + 420;
+    navigateRef.current?.(direction);
   };
 
   const handleFloatRepeat = (e, targetDate) => {
@@ -278,7 +302,7 @@ const MonthView = () => {
   });
 
   return (
-    <motion.div ref={viewportRef} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.22 }} className="w-full h-full min-h-0 overflow-hidden">
+    <motion.div ref={viewportRef} onWheel={onWheel} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.22 }} className="w-full h-full min-h-0 overflow-hidden">
       <motion.div
         className="flex w-[300%] h-full touch-pan-y will-change-transform"
         style={{ x }}
