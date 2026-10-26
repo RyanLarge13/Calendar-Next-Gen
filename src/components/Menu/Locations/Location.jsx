@@ -5,8 +5,27 @@ import SearchLocation from "./SearchLocation";
 import { H_FetchWeather } from "../../../utils/helpers";
 
 const Location = () => {
-  const { preferences, location, usersLocations, setLocation, setWeatherData } =
+  const { preferences, location, usersLocations, setUsersLocations, localDB, setLocation, setWeatherData } =
     useContext(UserContext);
+
+  const [removeError, setRemoveError] = useState("");
+  const [removing, setRemoving] = useState(null);
+
+  const removeLocation = async (item, index) => {
+    if (!localDB) { setRemoveError("Local storage is not ready. Try again shortly."); return; }
+    setRemoving(index);
+    setRemoveError("");
+    const remaining = usersLocations.filter((_, i) => i !== index);
+    try {
+      await localDB.setUserLocations(remaining);
+      setUsersLocations(remaining);
+      if (checkMatchingLocation(item)) {
+        const replacement = remaining[0];
+        if (replacement) await changeWeather(replacement);
+      }
+    } catch (error) { setRemoveError("Could not remove the saved location. Please try again."); }
+    finally { setRemoving(null); }
+  };
 
   const checkMatchingLocation = (l) => {
     return location.city === l.city && location.state === l.state;
@@ -106,11 +125,12 @@ const Location = () => {
           Your Places...
         </p>
         <div className="flex flex-col">
+          {removeError && <p role="alert" className="text-sm text-red-500 px-4">{removeError}</p>}
           {usersLocations.map((l, index) => (
+            <div key={index} className="flex items-center gap-2 mx-2 my-1">
             <button
-              key={index}
               className={`
-                  rounded-xl m-2 p-5 border text-start shadow-sm transition-all
+                  flex-1 rounded-xl p-5 border text-start shadow-sm transition-all
                   ${
                     preferences.darkMode
                       ? "bg-white/5 border-white/10 hover:bg-white/7"
@@ -127,6 +147,8 @@ const Location = () => {
                 {l.city}, {l.state}
               </p>
             </button>
+            <button type="button" disabled={removing !== null} onClick={() => removeLocation(l, index)} aria-label={`Remove ${l.city}, ${l.state}`} className="rounded-xl border border-red-400/40 px-3 py-3 text-sm text-red-500 disabled:opacity-50">Remove</button>
+            </div>
           ))}
         </div>
       </div>
