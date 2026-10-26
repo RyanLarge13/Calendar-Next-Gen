@@ -454,17 +454,10 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                   {visibleNotifications.map((notif) => (
                     <motion.div
                       key={notif.id}
-                      animate={
-                        notifOpen === notif.id
-                          ? { height: 400, minHeight: 400, maxHeight: 600 }
-                          : { height: 175, maxHeight: 175 }
-                      }
-                      transition={{
-                        type: "spring",
-                        stiffness: 220,
-                        damping: 20,
-                      }}
+                      animate={{ height: "auto" }}
+                      transition={{ height: { duration: 0.28, ease: "easeInOut" } }}
                       onClick={() => openNotif(notif.id, notif.read)}
+                      layout
                       className={`
                     relative rounded-3xl border shadow-sm overflow-hidden cursor-pointer
                     transition hover:shadow-md
@@ -480,7 +473,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                         <div className="absolute top-4 left-4 h-2.5 w-2.5 rounded-full bg-gradient-to-tr from-rose-400 to-red-400 shadow-sm" />
                       )}
 
-                      <div className="px-5 py-4 pt-8 h-full flex flex-col justify-between">
+                      <div className="px-5 py-4 pt-8 flex flex-col gap-4">
                         <div>
                           <div className="flex justify-between items-start gap-3">
                             <div className="min-w-0">
