@@ -93,8 +93,8 @@ const Menu = () => {
             transition={{ type: "spring", stiffness: 260, damping: 26 }}
             className={`
           relative mx-auto h-full
-          px-3 sm:px-6
-          pt-12
+          px-0 sm:px-6
+          pt-0 sm:pt-12
           `}
           >
             {/* Backdrop */}
@@ -111,8 +111,8 @@ const Menu = () => {
             />
             <div
               className={`
-            mx-auto max-w-6xl h-[calc(100vh-5rem)]
-            rounded-3xl border shadow-2xl overflow-hidden
+            mx-auto w-full max-w-none sm:max-w-6xl h-[100dvh] sm:h-[calc(100vh-5rem)]
+            rounded-none sm:rounded-3xl border shadow-2xl overflow-hidden
             ${
               preferences.darkMode
                 ? "bg-[#161616]/90 border-white/10 text-white"
