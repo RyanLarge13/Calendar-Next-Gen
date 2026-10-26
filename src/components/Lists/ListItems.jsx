@@ -1,23 +1,32 @@
 import { useContext, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { AiFillCloseCircle, AiFillPlusCircle } from "react-icons/ai";
-import { Reorder } from "framer-motion";
+import { Reorder, useDragControls } from "framer-motion";
 import {
   FaSortAlphaDownAlt,
   FaSortAlphaUp,
   FaSortAmountDown,
   FaSortAmountUp,
 } from "react-icons/fa";
+import { MdDragIndicator } from "react-icons/md";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
 import UserContext from "../../context/UserContext.jsx";
 import { getAuthToken } from "../../utils/helpers.js";
 import { API_UpdateListItems } from "../../utils/api.js";
 
-const ListItems = ({ addItems, listId, items }) => {
+const SortableItem = ({ item, children, onDragEnd, className }) => {
+  const controls = useDragControls();
+  return <Reorder.Item value={item} dragListener={false} dragControls={controls} onDragEnd={onDragEnd} layout className={className}>
+    <button type="button" aria-label="Drag to reorder" onPointerDown={(event) => controls.start(event)} className="touch-none cursor-grab p-2 calendar-accent"><MdDragIndicator size={22} /></button>{children}
+  </Reorder.Item>;
+};
+
+const ListItems = ({ addItems, listId, items, expanded = false }) => {
   const { setSystemNotif, preferences, setLists } = useContext(UserContext);
 
   const [newItemText, setNewItemText] = useState("");
   const [indexes, setIndexes] = useState([]);
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     const sorted = [...(items || [])].sort(
@@ -257,25 +266,14 @@ const ListItems = ({ addItems, listId, items }) => {
         values={indexes}
         onReorder={setIndexes}
         className={`
-          max-h-[700px] pt-3 overflow-y-auto scrollbar-hide pr-1
+          ${expanded || showAll ? "overflow-visible" : "max-h-[700px] overflow-hidden"} pt-3 pr-1
         `}
       >
         {indexes?.map((listItem, index) => (
-          <Reorder.Item
+          <SortableItem
             key={listItem.id}
-            value={listItem}
+            item={listItem}
             onDragEnd={() => saveItemsOrder(indexes)}
-            layout
-            transition={{
-              layout: {
-                duration: 0.18,
-                ease: "easeOut",
-              },
-            }}
-            whileDrag={{
-              scale: 1.015,
-              zIndex: 50,
-            }}
             className={`
               relative cursor-grab select-none mb-2
               rounded-3xl border shadow-sm
@@ -332,9 +330,10 @@ const ListItems = ({ addItems, listId, items }) => {
             >
               <AiFillCloseCircle className="text-xl" />
             </button>
-          </Reorder.Item>
+          </SortableItem>
         ))}
       </Reorder.Group>
+      {!expanded && indexes.length > 7 && <button type="button" onClick={() => setShowAll((value) => !value)} className="calendar-action w-full px-4 py-2 text-sm">{showAll ? "Show less" : "View more"}</button>}
     </div>
   );
 };
