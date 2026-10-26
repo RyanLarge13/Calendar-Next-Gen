@@ -8,6 +8,7 @@ import InteractiveContext from "../../context/InteractiveContext.jsx";
 import UserContext from "../../context/UserContext.jsx";
 import { BsCalendarDay, BsCalendarMonth, BsCalendarWeek } from "react-icons/bs";
 import GroupedReminders from "./GroupedReminders.jsx";
+import Reminder from "./Reminder.jsx";
 import { MdOutlineClearAll } from "react-icons/md";
 import { useModalActions } from "../../context/ContextHooks/ModalContext.jsx";
 import { LocalStorage_UpdateGroupingPreferences } from "../../utils/localStorageHelpers.ts";
@@ -52,6 +53,13 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
   const incompleteReminders = useMemo(() => {
     return reminders.filter((r) => !r.completed);
   }, [reminders, grouping]);
+  const urgentReminders = useMemo(() => {
+    const now = Date.now();
+    const soon = now + 24 * 60 * 60 * 1000;
+    return reminders.filter((r) => !r.completed && !r.paused && Number.isFinite(new Date(r.time).getTime()) && new Date(r.time).getTime() <= soon).sort((a, b) => new Date(a.time) - new Date(b.time));
+  }, [reminders]);
+  const urgentIds = useMemo(() => new Set(urgentReminders.map((r) => r.id)), [urgentReminders]);
+  const regularReminders = useMemo(() => incompleteReminders.filter((r) => !urgentIds.has(r.id)), [incompleteReminders, urgentIds]);
   const completedRemindersToRender = useMemo(() => {
     return reminders.filter((r) => r.completed);
   }, [reminders, grouping]);
@@ -81,6 +89,7 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
     <motion.div className="mt-6 px-3 sm:px-6 mb-96">
       {/* Center container to prevent "stretching across the universe" */}
       <div className="mx-auto max-w-6xl">
+        {urgentReminders.length > 0 && <section className="rounded-3xl border border-amber-400/40 bg-amber-100/10 p-4 sm:p-6 mt-6"><p className="text-xs font-bold tracking-widest uppercase calendar-accent">Needs attention</p><h2 className="text-xl font-semibold mt-1">Overdue & next 24 hours</h2><div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">{urgentReminders.map((reminder) => <Reminder key={reminder.id} reminder={reminder} showOpenEvent={true} styles={{}} />)}</div></section>}
         {incompleteReminders.length < 1 ? (
           <div className="min-h-[55vh] grid place-items-center">
             <div
@@ -262,7 +271,7 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
             </div>
             <GroupedReminders
               groupType={grouping.incomplete}
-              reminders={incompleteReminders}
+              reminders={regularReminders}
             />
           </div>
         )}
