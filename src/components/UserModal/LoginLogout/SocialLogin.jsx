@@ -57,39 +57,34 @@ const SocialLogin = () => {
         y: 0,
         transition: { delay: 0.25 },
       }}
-      className="flex flex-col justify-between min-h-screen overflow-y-auto p-10 px-12"
+      className="flex flex-col gap-8 min-h-full overflow-y-auto px-5 py-10 sm:px-8 max-w-lg mx-auto"
     >
       <button
         onClick={() => setShowLogin(false)}
-        className="absolute top-5 left-3 rounded-lg border border-red-300 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 transition-all duration-200 hover:bg-red-100 hover:border-red-400 hover:scale-[0.97] active:scale-95 shadow-sm"
+        className="self-end rounded-xl border border-[var(--calendar-border)] px-4 py-2 text-xs font-semibold calendar-accent hover:bg-amber-50"
       >
         Cancel
       </button>
 
       <div>
-        <p className="text-3xl mb-20 mt-10 text-center font-bold">
-          Login Or Sign Up With
-        </p>
-        <div className="flex justify-center items-center gap-x-5 w-full">
+        <div className="text-center mb-8"><p className="text-xs uppercase tracking-[0.3em] calendar-accent font-bold">Welcome back</p><h1 className="text-3xl mt-3 font-semibold tracking-tight">Your day, beautifully organized.</h1><p className="text-sm mt-3 opacity-65">Sign in or create an account to keep everything in sync.</p></div>
+        <div className="grid grid-cols-2 gap-3 w-full">
           <button
             onClick={() => loginGoogle()}
-            className="px-5 py-2 my-2 w-full font-bold rounded-md shadow-md text-white google duration-200 hover:shadow-lg hover:scale-[1.01]"
+            className="calendar-action px-4 py-3 w-full font-semibold shadow-sm hover:shadow-md"
           >
             <p>Google</p>
           </button>
           <FacebookLogin
             appId={fbId}
-            className="px-5 py-2 my-2 w-full font-bold rounded-md shadow-md text-white facebook duration-200 hover:shadow-lg hover:scale-[1.01]"
+            className="calendar-action px-4 py-3 w-full font-semibold shadow-sm hover:shadow-md"
             children="Facebook"
             scope="email, public_profile"
             callback={loginFb}
           />
         </div>
       </div>
-      <div className="text-center">
-        <p>or</p>
-        <div className="w-full h-1 rounded-full bg-slate-200 mt-2"></div>
-      </div>
+      <div className="flex items-center gap-4 text-xs opacity-60"><div className="h-px flex-1 bg-[var(--calendar-border)]" /><span>OR CONTINUE WITH EMAIL</span><div className="h-px flex-1 bg-[var(--calendar-border)]" /></div>
       <UsernamePassLogin />
     </motion.div>
   );
