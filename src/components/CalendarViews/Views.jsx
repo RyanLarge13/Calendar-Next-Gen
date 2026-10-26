@@ -17,12 +17,14 @@ import UserContext from "../../context/UserContext";
 import { useModalState } from "../../context/ContextHooks/ModalContext";
 
 const Views = () => {
-  const { setView, setFilters, showLogin, menu, setMenu } =
+  const { view, setView, setFilters, showLogin, menu, setMenu } =
     useContext(InteractiveContext);
   const { preferences } = useContext(UserContext);
 
   const [show, setShow] = useState(false);
   const [invisible, setInvisible] = useState(false);
+  const [showOptions, setShowOptions] = useState(false);
+  const [displayOptions, setDisplayOptions] = useState(() => Object.fromEntries(["month", "week", "day", "agenda", "masonry"].map((v) => [v, { events: true, reminders: true, tasks: false, appointments: true }])));
 
   const open = useModalState();
 
@@ -259,7 +261,7 @@ const Views = () => {
         )}
         onClick={() => {
           setShow(false);
-          setView("week");
+          setShowOptions(true);
         }}
       >
         <CgOptions />
@@ -288,6 +290,18 @@ const Views = () => {
       >
         <TbSwitch3 />
       </motion.div>
+      {showOptions && <div className="fixed inset-0 z-[900] flex items-center justify-center px-4">
+        <button className="absolute inset-0 bg-black/50" aria-label="Close view options" onClick={() => setShowOptions(false)} />
+        <section role="dialog" aria-modal="true" aria-label="Calendar view display options" className={`relative w-full max-w-lg max-h-[85dvh] overflow-y-auto rounded-2xl border shadow-2xl p-5 ${preferences.darkMode ? "bg-[#1c1c1c] border-white/15 text-white" : "bg-white border-black/10 text-slate-900"}`}>
+          <div className="flex items-start justify-between gap-3 mb-4"><div><h2 className="font-semibold text-lg">View display options</h2><p className="text-xs opacity-60">UI preview only — filters are not applied yet.</p></div><button onClick={() => setShowOptions(false)} aria-label="Close options">✕</button></div>
+          <p className="text-xs opacity-60 mb-3">Current view: {view}</p>
+          {["month", "week", "day", "agenda", "masonry"].map((name) => <div key={name} className="border-t border-current/10 py-3">
+            <p className="capitalize font-medium text-sm mb-2">{name} view</p>
+            <div className="grid grid-cols-2 gap-3">{["events", "reminders", "tasks", "appointments"].map((kind) => <label key={kind} className="flex items-center gap-2 text-sm capitalize"><input type="checkbox" checked={displayOptions[name][kind]} onChange={(e) => setDisplayOptions((prev) => ({...prev, [name]: {...prev[name], [kind]: e.target.checked}}))} />{kind}</label>)}</div>
+          </div>)}
+          <p className="mt-3 text-xs opacity-60">Selections are temporary until the filtering logic and persistence are connected.</p>
+        </section>
+      </div>}
     </>
   );
 };
