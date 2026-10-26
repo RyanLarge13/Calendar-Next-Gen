@@ -58,3 +58,22 @@ Changes were made through GitHub without running a build or browser tests.
 5. Inspect countdown before an event, during it, and after completion; check an event tomorrow and an event crossing midnight.
 
 No build or browser tests were run through this connector. Pre-start progress uses a 24-hour horizon rather than an event-specific creation timestamp.
+
+## Lists update
+
+- Fixed item deletion passing an object instead of its ID, which prevented the item from being filtered out locally.
+- Fixed list sorting invoking a nonexistent function; sorting now uses the existing persistence method.
+- Whole-list deletion now removes the list from React state after the server confirms deletion.
+- List items keep a 700px collapsed height; an overflow-dependent View more button expands the contents, with Show less to collapse.
+- Each list now offers an Open full screen view with a vertically scrollable content area and extra right padding.
+- Drag-to-reorder now requires touching the dedicated drag handle, so normal vertical scrolling on touch screens does not accidentally rearrange items.
+
+### Manual verification
+
+1. Delete a list and confirm it disappears without reloading; refresh and verify persistence.
+2. Delete an individual list item in regular and full-screen views; verify immediate UI removal and persistence after reload.
+3. Add enough items to exceed 700px; check View more and Show less, including on mobile.
+4. Open full screen, scroll on the right-hand side, then drag a row using its handle and verify saved order.
+5. Test alphabetical/length sorting and creating new items.
+
+Source-level changes only; no build or browser verification was performed. Item add/delete operations remain optimistic and currently log API errors rather than restoring previous state.
