@@ -1,5 +1,5 @@
-import { motion } from "framer-motion";
-import React, { useCallback, useContext, useMemo, useRef } from "react";
+import { motion, animate, useMotionValue } from "framer-motion";
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import DatesContext from "../../../context/DatesContext.jsx";
 import UserContext from "../../../context/UserContext.jsx";
 import { calendar } from "../../../motion.js";
@@ -13,10 +13,59 @@ import DayCell from "./DayCell.jsx";
 
 const MonthView = () => {
   const { eventMap } = useContext(UserContext);
-  const { paddingDays, daysInMonth, month, year, day, dateObj } =
-    useContext(DatesContext);
+  const { dt, setNav, day, dateObj } = useContext(DatesContext);
+  const [displayMonth, setDisplayMonth] = useState(() => new Date(dt.getFullYear(), dt.getMonth(), 1));
+  const viewportRef = useRef(null);
+  const widthRef = useRef(0);
+  const x = useMotionValue(0);
+  const animatingRef = useRef(false);
+  const monthOffset = (date, offset) => new Date(date.getFullYear(), date.getMonth() + offset, 1);
 
-  const cloneMap = useRef(new Map());
+  useEffect(() => {
+    const element = viewportRef.current;
+    if (!element) return;
+    const update = () => {
+      widthRef.current = element.clientWidth;
+      if (!animatingRef.current) x.set(-widthRef.current);
+    };
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [x]);
+
+  useEffect(() => {
+    const next = new Date(dt.getFullYear(), dt.getMonth(), 1);
+    if (next.getTime() === displayMonth.getTime()) return;
+    const delta = (next.getFullYear() - displayMonth.getFullYear()) * 12 + next.getMonth() - displayMonth.getMonth();
+    if (Math.abs(delta) !== 1 || !widthRef.current) {
+      setDisplayMonth(next);
+      x.set(-widthRef.current);
+      animatingRef.current = false;
+      return;
+    }
+    animatingRef.current = true;
+    const animation = animate(x, -widthRef.current * (1 + delta), {
+      duration: 0.28, ease: [0.22, 1, 0.36, 1],
+      onComplete: () => {
+        setDisplayMonth(next);
+        x.set(-widthRef.current);
+        animatingRef.current = false;
+      }
+    });
+    return () => animation.stop();
+  }, [dt, displayMonth, x]);
+
+  const finishSwipe = async (_, info) => {
+    if (animatingRef.current || !widthRef.current) return;
+    const threshold = widthRef.current * 0.2;
+    const delta = info.offset.x < -threshold || info.velocity.x < -550 ? 1 : info.offset.x > threshold || info.velocity.x > 550 ? -1 : 0;
+    animatingRef.current = true;
+    await animate(x, -widthRef.current * (1 + delta), { duration: 0.24, ease: [0.22, 1, 0.36, 1] });
+    if (delta) setNav((previous) => previous + delta);
+    else { x.set(-widthRef.current); animatingRef.current = false; }
+  };
+
 
   const handleFloatRepeat = (e, targetDate) => {
     const kind = e?.repeats?.kind;
@@ -113,7 +162,7 @@ const MonthView = () => {
   };
 
   const getIndicesForEvents = useCallback(
-    (dtStr) => {
+    (dtStr, month, year) => {
       const targetDateObj = parseCalendarDate(dtStr);
       // const targetDateObj = new Date(dtStr);
       const key = `${year}-${month}`;
@@ -171,77 +220,46 @@ const MonthView = () => {
         )
         .sort((a, b) => b.duration - a.duration);
     },
-    [month, year, eventMap],
+    [eventMap],
   );
 
-  const daysData = useMemo(() => {
-    return [...Array(paddingDays + daysInMonth)].map((_, index) => {
+  const renderPanel = (offset) => {
+    const panelDate = monthOffset(displayMonth, offset);
+    const month = panelDate.getMonth();
+    const year = panelDate.getFullYear();
+    const paddingDays = panelDate.getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const days = Array.from({ length: paddingDays + daysInMonth }, (_, index) => {
       const dayNumber = index - paddingDays + 1;
       const isPaddingDay = index < paddingDays;
-
-      if (isPaddingDay) {
-        return {
-          index,
-          dayNumber,
-          dateStr: null,
-          isCurrentDate: false,
-          eventsToRender: [],
-          isPaddingDay: true,
-        };
-      }
-
-      const dateStr = `${month + 1}/${dayNumber}/${year}`;
-
-      const isCurrentDate =
-        dayNumber === day &&
-        month === dateObj.getMonth() &&
-        year === dateObj.getFullYear();
-
-      const eventsToRender = getIndicesForEvents(dateStr);
-
-      return {
-        index,
-        dayNumber,
-        dateStr,
-        isCurrentDate,
-        eventsToRender,
-        isPaddingDay: false,
-      };
+      const dateStr = isPaddingDay ? null : (month + 1) + "/" + dayNumber + "/" + year;
+      return { index, dayNumber, dateStr, isPaddingDay,
+        isCurrentDate: !isPaddingDay && dayNumber === day && month === dateObj.getMonth() && year === dateObj.getFullYear(),
+        eventsToRender: isPaddingDay ? [] : getIndicesForEvents(dateStr, month, year) };
     });
-  }, [
-    paddingDays,
-    daysInMonth,
-    month,
-    year,
-    day,
-    dateObj,
-    getIndicesForEvents,
-  ]);
+    return <div key={year + "-" + month} className="w-1/3 shrink-0 min-w-0 grid grid-cols-7 min-h-[50vh] h-[83vh] gap-1">
+      {days.map(({ index, dayNumber, dateStr, isCurrentDate, eventsToRender, isPaddingDay }) => (
+        <DayCell key={index} index={index} dayNumber={dayNumber} dateStr={dateStr}
+          isCurrentDate={isCurrentDate} eventsToRender={eventsToRender} month={month}
+          year={year} dateObj={dateObj} paddingDays={paddingDays} isPaddingDay={isPaddingDay} />
+      ))}
+    </div>;
+  };
 
   return (
-    <motion.div
-      variants={calendar}
-      initial="hidden"
-      animate="show"
-      className="grid grid-cols-7 min-h-[50vh] h-[83vh] gap-1"
-    >
-      {daysData.map(
-        ({ index, dayNumber, dateStr, isCurrentDate, eventsToRender }) => (
-          <DayCell
-            key={index}
-            index={index}
-            dayNumber={dayNumber}
-            dateStr={dateStr}
-            isCurrentDate={isCurrentDate}
-            eventsToRender={eventsToRender}
-            month={month}
-            year={year}
-            dateObj={dateObj}
-          />
-        ),
-      )}
-      {/* <ConfirmDates /> */}
-    </motion.div>
+    <div ref={viewportRef} className="w-full overflow-hidden">
+      <motion.div
+        className="flex w-[300%] touch-pan-y will-change-transform"
+        style={{ x }}
+        drag="x"
+        dragMomentum={false}
+        dragElastic={0.08}
+        dragConstraints={{ left: -2 * widthRef.current, right: 0 }}
+        onDragEnd={finishSwipe}
+      >
+        {[-1, 0, 1].map(renderPanel)}
+      </motion.div>
+    </div>
   );
 };
 
