@@ -5,6 +5,7 @@ import DatesContext from "../../context/DatesContext";
 import InteractiveContext from "../../context/InteractiveContext";
 import UserContext from "../../context/UserContext";
 import AddEvent from "../AddData/AddEvent";
+import AddAppointment from "../AddData/AddAppointment";
 import AddKanban from "../AddData/AddKanban";
 import AddList from "../AddData/AddList";
 import AddReminder from "../AddData/AddReminder";
@@ -210,7 +211,8 @@ const Modal = () => {
           {type === "timer" ? <AddTimer /> : null}
 
           {/* To be added with time */}
-          {/* {type === "appointment" ? <AddAppointment /> : null}
+          {type === "appointment" ? <AddAppointment /> : null}
+          {/*
           {type === "group" ? <AddGroupEvent /> : null}
           {type === "project" ? <AddProject /> : null}
           {type === "custom" ? <AddCustom /> : null}
