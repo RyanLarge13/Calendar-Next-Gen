@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { createPortal } from "react-dom";
-import React, { useContext, useRef, useState, useCallback } from "react";
+import React, { useContext, useRef, useState, useCallback, useEffect } from "react";
 import UserContext from "../../../context/UserContext";
 import DatesContext from "../../../context/DatesContext";
 import { tailwindBgToHex } from "../../../utils/helpers";
@@ -38,6 +38,7 @@ const DayCell = ({
   const [longPressActive, setLongPressActive] = useState(false);
   const [longPressTimeout, setLongPressTimeout] = useState(null);
 
+  const cellRef = useRef(null);
   const popupTimeoutRef = useRef(null);
   const isHoveringPopupRef = useRef(false);
   const closePopupTimeoutRef = useRef(null);
@@ -118,17 +119,15 @@ const DayCell = ({
         return;
       }
 
-      const mousePositions = {
-        x: e.clientX,
-        y: e.clientY,
-      };
+      const rect = e.currentTarget.getBoundingClientRect();
+      const anchor = { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom };
 
       popupTimeoutRef.current = setTimeout(() => {
         const theHoverDay = `${month + 1}/${index - paddingDays + 1}/${year}`;
 
         setPopupEvents(eventsToRender);
         setPopUpReminders(remindersToRender);
-        setMousePosition(mousePositions);
+        setMousePosition(anchor);
         setHoverDay(theHoverDay);
         setNewPopup(true);
       }, 1000);
@@ -150,8 +149,25 @@ const DayCell = ({
     setNewPopup(false);
   }, []);
 
+  const schedulePopupClose = useCallback(() => {
+    if (popupTimeoutRef.current) {
+      clearTimeout(popupTimeoutRef.current);
+      popupTimeoutRef.current = null;
+    }
+    if (closePopupTimeoutRef.current) clearTimeout(closePopupTimeoutRef.current);
+    closePopupTimeoutRef.current = setTimeout(() => {
+      if (!isHoveringPopupRef.current) clearPopupNow();
+    }, 220);
+  }, [clearPopupNow]);
+
+  useEffect(() => () => {
+    clearTimeout(popupTimeoutRef.current);
+    clearTimeout(closePopupTimeoutRef.current);
+  }, []);
+
   return (
     <motion.div
+      ref={cellRef}
       initial={false}
       whileHover={{
         outline: preferences.darkMode ? "1px solid white" : "1px solid black",
@@ -160,7 +176,7 @@ const DayCell = ({
       onMouseEnter={(e) => {
         if (!isPaddingDay && window.matchMedia("(hover: hover) and (pointer: fine)").matches) createPopup(e, eventsToRender, remindersToRender, index);
       }}
-      onMouseLeave={clearPopupNow}
+      onMouseLeave={schedulePopupClose}
       onContextMenu={(e) => {
         e.preventDefault();
         if (!isPaddingDay) handleDayLongPress(index);
@@ -234,7 +250,7 @@ const DayCell = ({
           }}
           onMouseLeave={() => {
             isHoveringPopupRef.current = false;
-            clearPopupNow();
+            schedulePopupClose();
           }}
         />,
         document.body
