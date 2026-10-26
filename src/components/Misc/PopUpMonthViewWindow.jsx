@@ -40,6 +40,11 @@ const PopUpMonthViewWindow = ({
   };
 
   const openReminders = () => {};
+  const popupWidth = 400;
+  const popupHeight = 320;
+  const margin = 12;
+  const left = typeof window === "undefined" ? 0 : Math.max(margin, Math.min(positions.x - popupWidth / 2, window.innerWidth - popupWidth - margin));
+  const top = typeof window === "undefined" ? 0 : Math.max(margin, Math.min(positions.y - popupHeight - 12, window.innerHeight - popupHeight - margin));
 
   return (
     <motion.div
@@ -47,10 +52,12 @@ const PopUpMonthViewWindow = ({
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
       style={{
-        top: `${positions.y - 200}px`,
-        left: `${positions.x - 400}px`,
+        top: `${top}px`,
+        left: `${left}px`,
+        width: `min(${popupWidth}px, calc(100vw - 24px))`,
+        maxHeight: `min(${popupHeight}px, calc(100dvh - 24px))`,
       }}
-      className={`fixed p-4 z-[900] rounded-2xl min-h-[120px] max-h-80 overflow-y-auto scrollbar-hide shadow-xl border
+      className={`hidden md:block fixed p-4 z-[900] rounded-2xl min-h-[120px] max-h-80 overflow-y-auto scrollbar-hide shadow-xl border
         ${
           preferences.darkMode
             ? "bg-[#1e1e1e] border-gray-700 text-gray-100"
