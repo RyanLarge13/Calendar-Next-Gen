@@ -53,7 +53,7 @@ const ListItems = ({ addItems, listId, items }) => {
   };
 
   const updateOrderIndexes = (newOrder) => {
-    updateAndSaveItems(newOrder);
+    saveItemsOrder(newOrder);
   };
 
   const sortItems = (type) => {
@@ -75,11 +75,11 @@ const ListItems = ({ addItems, listId, items }) => {
       sorted.sort((a, b) => a.text.length - b.text.length);
     }
 
-    updateAndSaveItems(sorted);
+    saveItemsOrder(sorted);
   };
 
   const removeItem = async (itemId) => {
-    const newItems = items.filter((i) => i.id !== itemId);
+    const newItems = indexes.filter((i) => i.id !== itemId);
 
     setLists((prev) =>
       prev.map((l) => {
@@ -122,7 +122,7 @@ const ListItems = ({ addItems, listId, items }) => {
       complete: false,
     };
 
-    const newItems = [...items, newItem];
+    const newItems = [...indexes, newItem];
 
     setNewItemText("");
 
@@ -318,7 +318,7 @@ const ListItems = ({ addItems, listId, items }) => {
             {/* Remove */}
             <button
               type="button"
-              onClick={() => removeItem(listItem)}
+              onClick={() => removeItem(listItem.id)}
               className={`
             flex-shrink-0 h-10 w-10 grid place-items-center rounded-2xl border shadow-sm transition
             hover:shadow-md active:scale-[0.97]
