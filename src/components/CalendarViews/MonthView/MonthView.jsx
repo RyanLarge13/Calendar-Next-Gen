@@ -170,34 +170,12 @@ const MonthView = () => {
       const eventsToSort = [...baseEvents];
       const repeatEvents = eventMap.get("repeat-events")?.events || [];
 
-      const cloneKey = `${year}-${month}-${dtStr}`;
-
-      if (cloneMap.current.has(cloneKey)) {
-        const eventClones = cloneMap.current.get(cloneKey).events;
-        eventsToSort.push(...eventClones);
-      } else {
-        if (repeatEvents.length > 0) {
-          repeatEvents.forEach((e) => {
-            let eLandsOnDay = false;
-
-            if (e.repeats.kind && e.repeats.rules) {
-              eLandsOnDay = handleFloatRepeat(e, targetDateObj);
-            } else {
-              eLandsOnDay = eventOccursOnDay(e, targetDateObj);
-            }
-            if (eLandsOnDay) {
-              const eventRepeated = cloneEventForDay(e, targetDateObj);
-
-              if (cloneMap.current.has(cloneKey)) {
-                cloneMap.current.get(cloneKey).events.push(eventRepeated);
-              } else {
-                cloneMap.current.set(cloneKey, { events: [eventRepeated] });
-              }
-
-              eventsToSort.push(eventRepeated);
-            }
-          });
-        }
+      // Derive repeating instances from current eventMap so edits cannot leave stale clones.
+      for (const event of repeatEvents) {
+        const occurs = event?.repeats?.kind && event?.repeats?.rules
+          ? handleFloatRepeat(event, targetDateObj)
+          : eventOccursOnDay(event, targetDateObj);
+        if (occurs) eventsToSort.push(cloneEventForDay(event, targetDateObj));
       }
 
       if (!eventsToSort || eventsToSort.length < 1) {
@@ -247,7 +225,7 @@ const MonthView = () => {
   };
 
   return (
-    <div ref={viewportRef} className="w-full overflow-hidden">
+    <motion.div ref={viewportRef} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.22 }} className="w-full overflow-hidden">
       <motion.div
         className="flex w-[300%] touch-pan-y will-change-transform"
         style={{ x }}
@@ -259,7 +237,7 @@ const MonthView = () => {
       >
         {[-1, 0, 1].map(renderPanel)}
       </motion.div>
-    </div>
+    </motion.div>
   );
 };
 
