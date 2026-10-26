@@ -1,198 +1,71 @@
-import { useContext, useEffect, useState } from "react";
-import { AiFillCalendar } from "react-icons/ai";
-import {
-  BsAlarmFill,
-  BsFillCalendarPlusFill,
-  BsStickiesFill,
-} from "react-icons/bs";
-import { weekDays } from "../../constants/dateAndTimeConstants.js";
+import { useContext, useMemo, useState } from "react";
+import { motion } from "framer-motion";
 import DatesContext from "../../context/DatesContext.jsx";
 import InteractiveContext from "../../context/InteractiveContext.jsx";
 import UserContext from "../../context/UserContext.jsx";
-import {
-  formatDbText,
-  formatRelativeTime,
-  setStateAndPushWindowState,
-} from "../../utils/helpers.js";
+import { setStateAndPushWindowState } from "../../utils/helpers.js";
+
+const dayStart = (date) => new Date(date.getFullYear(), date.getMonth(), date.getDate());
+const eventStart = (event) => new Date(event.start?.startTime || event.startDate || event.date);
+const eventEnd = (event) => new Date(event.end?.endTime || event.endDate || event.start?.startTime || event.startDate || event.date);
 
 const AgendaView = () => {
-  const { view, setEvent } = useContext(InteractiveContext);
+  const { setEvent } = useContext(InteractiveContext);
   const { events, preferences } = useContext(UserContext);
-  const {
-    month,
-    year,
-    day,
-    dateString,
-    dateObj,
-    paddingDays,
-    daysInMonth,
-    setString,
-    theDay,
-    string,
-  } = useContext(DatesContext);
-
-  const [selectedEvents, setSelectedEvents] = useState([]);
-  const [timesForEvents, setTimesForEvents] = useState([]);
-
-  useEffect(() => {
-    const dayEvents = events.filter(
-      (evnt) =>
-        new Date(evnt.date).toLocaleDateString() ===
-        new Date(string).toLocaleDateString(),
-    );
-    const times = dayEvents.map((event) =>
-      new Date(event.start.startTime).toLocaleTimeString("en-US", {
-        hour: "numeric",
-        minute: "2-digit",
-      }),
-    );
-    const timesSet = Array.from(new Set(times));
-    setTimesForEvents(timesSet);
-    setSelectedEvents(dayEvents);
+  const { string, setString } = useContext(DatesContext);
+  const [range, setRange] = useState(14);
+  const anchor = useMemo(() => {
+    const parsed = new Date(string);
+    return Number.isFinite(parsed.getTime()) ? dayStart(parsed) : dayStart(new Date());
   }, [string]);
-
-  const handleDayClick = (index) => {
-    const dayString = `${month + 1}/${index - paddingDays + 1}/${year}`;
-    if (view === "month" || view === "agenda") {
-      setString(dayString);
-    }
-  };
-
+  const today = dayStart(new Date());
+  const days = useMemo(() => Array.from({ length: range }, (_, index) => {
+    const date = new Date(anchor);
+    date.setDate(date.getDate() + index);
+    const next = new Date(date);
+    next.setDate(next.getDate() + 1);
+    const items = events.filter((event) => {
+      const start = eventStart(event);
+      const end = eventEnd(event);
+      return Number.isFinite(start.getTime()) && start < next && (Number.isFinite(end.getTime()) ? end >= date : start >= date);
+    }).sort((a, b) => eventStart(a) - eventStart(b));
+    return { date, items };
+  }), [events, anchor, range]);
+  const total = days.reduce((count, day) => count + day.items.length, 0);
+  const panel = preferences.darkMode ? "bg-white/5 border-white/10 text-white" : "calendar-surface";
   return (
-    <div className="p-3">
-      <div className="shadow-md rounded-md p-2">
-        <div className="flex justify-between items-center mb-2 font-semibold">
-          <p className={`py-1 px-2 bg-cyan-100 rounded-md shadow-md`}>
-            {theDay.toLocaleDateString("en-us", {
-              month: "short",
-              day: "numeric",
-              year: "numeric",
-            })}
-          </p>
-          <AiFillCalendar
-            className={`${preferences.darkMode ? "text-white" : "text-black"}`}
-          />
+    <div className="mx-auto max-w-5xl px-4 sm:px-8 py-8 pb-32">
+      <div className={`rounded-3xl border p-6 sm:p-8 shadow-sm ${panel}`}>
+        <p className="calendar-accent text-xs font-bold tracking-[0.25em] uppercase">Forward view</p>
+        <div className="flex flex-wrap justify-between items-end gap-4 mt-3">
+          <div><h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">Your upcoming days</h1><p className="mt-2 text-sm opacity-65">A clear timeline of what is ahead.</p></div>
+          <div className="flex gap-2">
+            <button className="rounded-xl border px-4 py-2 text-sm" onClick={() => setString(today.toLocaleDateString())}>Today</button>
+            <select aria-label="Agenda range" value={range} onChange={(e) => setRange(Number(e.target.value))} className="rounded-xl border px-3 py-2 text-sm bg-transparent"><option value={7}>7 days</option><option value={14}>14 days</option><option value={30}>30 days</option></select>
+          </div>
         </div>
-        <div className="grid grid-cols-7 place-items-center font-semibold mb-3 gap-3">
-          {weekDays.map((day, index) => (
-            <p
-              key={day}
-              className={`${
-                index === new Date().getDay() &&
-                new Date(dateString).getMonth() === dateObj.getMonth() &&
-                new Date(dateString).getYear() === dateObj.getYear()
-                  ? "text-cyan-300"
-                  : ""
-              } ${
-                preferences.darkMode ? "text-white" : "text-black"
-              } rounded-md shadow-md p-3 w-full text-center`}
-            >
-              {day.split("")[0]}
-            </p>
-          ))}
-        </div>
-        <div className="grid grid-cols-7 gap-1">
-          {[...Array(paddingDays + daysInMonth)].map((_, index) => {
-            const dateStr = `${month + 1}/${index - paddingDays + 1}/${year}`;
-            const event = events?.find((event) => event.date === dateStr);
-
-            return (
-              <div
-                onClick={() => handleDayClick(index)}
-                key={index}
-                className={`${
-                  string === `${month + 1}/${index - paddingDays + 1}/${year}`
-                    ? "shadow-blue-300 scale-[1.1]"
-                    : ""
-                } ${
-                  index - paddingDays + 1 === day &&
-                  month === dateObj.getMonth() &&
-                  year === dateObj.getFullYear()
-                    ? "bg-cyan-100 text-black"
-                    : preferences.darkMode
-                      ? "text-white"
-                      : "text-black"
-                } h-20 duration-200 relative w-full rounded-sm shadow-sm hover:shadow-blue-300 flex flex-col items-center justify-start gap-y-1 cursor-pointer`}
-              >
-                <div
-                  className={`text-center text-sm my-1 ${
-                    event
-                      ? `${event.color} w-[20px] h-[20px] rounded-full shadow-md text-black`
-                      : ""
-                  }`}
-                >
-                  <p>{index >= paddingDays && index - paddingDays + 1}</p>
-                </div>
-              </div>
-            );
-          })}
+        <div className="grid grid-cols-2 gap-3 mt-6">
+          <div className="rounded-2xl border p-4"><p className="text-2xl font-semibold">{total}</p><p className="text-xs opacity-60">Scheduled entries</p></div>
+          <div className="rounded-2xl border p-4"><p className="text-2xl font-semibold">{days.filter((d) => d.items.length).length}</p><p className="text-xs opacity-60">Busy days</p></div>
         </div>
       </div>
-      <div className="mt-10">
-        {timesForEvents.map((time, index) => (
-          <div key={index} className="my-20">
-            <div>
-              <p className="mb-5 text-xl font-semibold border-b-cyan-300">
-                {time}
-              </p>
-              <p className="text-semibold ml-5 mt-3">
-                In {formatRelativeTime(new Date(time))}
-              </p>
+      <div className="mt-6 space-y-3">
+        {days.map(({ date, items }) => {
+          const isToday = date.getTime() === today.getTime();
+          return <motion.section layout key={date.toDateString()} className={`rounded-3xl border p-4 sm:p-5 ${panel}`}>
+            <div className="flex items-center justify-between gap-3 mb-4">
+              <div><p className="text-xs uppercase tracking-wider opacity-55">{date.toLocaleDateString(undefined, { weekday: "long" })}</p><h2 className="text-xl font-semibold">{date.toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" })} {isToday && <span className="calendar-accent text-xs ml-2">TODAY</span>}</h2></div>
+              <span className="rounded-full border px-3 py-1 text-xs">{items.length} {items.length === 1 ? "event" : "events"}</span>
             </div>
-            {selectedEvents.length > 0 ? (
-              selectedEvents.map((event) => {
-                if (
-                  new Date(event.start.startTime).toLocaleTimeString("en-US", {
-                    hour: "numeric",
-                    minute: "2-digit",
-                  }) === time
-                ) {
-                  return (
-                    <div
-                      key={event.id}
-                      className={`p-2 pl-5 rounded-md my-3 bg-white relative shadow-md`}
-                      onClick={() =>
-                        setStateAndPushWindowState(() => setEvent(event))
-                      }
-                    >
-                      <div
-                        className={`${event.color} absolute left-0 top-0 bottom-0 w-2 rounded-md`}
-                      ></div>
-                      <p className="text-2xl font-semibold">{event.summary}</p>
-                      <div className="mt-3">
-                        {formatDbText(event.description || "").map(
-                          (text, index) => (
-                            <p
-                              key={index}
-                              className="text-[14px] font-semibold"
-                            >
-                              {text}
-                            </p>
-                          ),
-                        )}
-                      </div>
-                    </div>
-                  );
-                }
-              })
-            ) : (
-              <p className="text-xl mt-10 font-semibold">
-                You have nothing on your agenda for this day
-              </p>
-            )}
-            <div className="mt-3 flex justify-start items-center gap-x-2">
-              <button className="p-3 rounded-md bg-slate-200 hover:bg-slate-300 duration-200">
-                <BsFillCalendarPlusFill />
-              </button>
-              <button className="p-3 rounded-md bg-slate-200 hover:bg-slate-300 duration-200">
-                <BsAlarmFill />
-              </button>
-              <button className="p-3 rounded-md bg-slate-200 hover:bg-slate-300 duration-200">
-                <BsStickiesFill />
-              </button>
-            </div>
-          </div>
-        ))}
+            {items.length ? <div className="space-y-2">{items.map((event) => {
+              const start = eventStart(event);
+              return <button key={event.id} type="button" onClick={() => setStateAndPushWindowState(() => setEvent(event))} className="flex items-start text-left w-full gap-4 rounded-2xl border border-[var(--calendar-border)] p-3 hover:bg-amber-50/10 transition">
+                <span className="calendar-accent text-xs font-semibold min-w-[78px]">{Number.isFinite(start.getTime()) ? start.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) : "All day"}</span>
+                <span className="min-w-0"><span className="block font-semibold break-words">{event.summary || event.title || "Untitled event"}</span>{event.description && <span className="block text-xs opacity-60 mt-1 line-clamp-2">{event.description}</span>}</span>
+              </button>;
+            })}</div> : <p className="text-sm opacity-50 py-2">Nothing scheduled — room to breathe.</p>}
+          </motion.section>;
+        })}
       </div>
     </div>
   );
