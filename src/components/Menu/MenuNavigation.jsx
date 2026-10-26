@@ -35,8 +35,8 @@ const MenuNavigation = () => {
       <div
         className={`
       relative mx-auto max-w-2xl
-      rounded-3xl border pb-5 shadow-2xl backdrop-blur-md
-      ${preferences.darkMode ? "bg-[#161616]/90 border-white/10" : "bg-white/90 border-black/10"}
+      rounded-3xl border pb-5 shadow-2xl 
+      ${preferences.darkMode ? "bg-[#161616] border-white/10" : "bg-white border-black/10"}
     `}
       >
         {/* Tiles */}
@@ -126,12 +126,12 @@ const MenuNavigation = () => {
             type="button"
             onClick={() => setShowCategory(null)}
             className={`
-          grid place-items-center h-10 w-20 rounded-2xl border shadow-xl backdrop-blur-md transition
+          grid place-items-center h-10 w-20 rounded-2xl border shadow-xl  transition
           active:scale-95
           ${
             preferences.darkMode
               ? "bg-white/10 border-white/10 text-white hover:bg-white/15"
-              : "bg-white/95 border-black/10 text-slate-700 hover:bg-white"
+              : "bg-white border-black/10 text-slate-700 hover:bg-white"
           }
         `}
             aria-label="Home"
@@ -144,12 +144,12 @@ const MenuNavigation = () => {
             type="button"
             onClick={() => setHideMenuNav((prev) => !prev)}
             className={`
-          grid place-items-center h-10 w-10 rounded-2xl border shadow-xl backdrop-blur-md transition
+          grid place-items-center h-10 w-10 rounded-2xl border shadow-xl  transition
           active:scale-95
           ${
             preferences.darkMode
               ? "bg-white/10 border-white/10 text-white hover:bg-white/15"
-              : "bg-white/95 border-black/10 text-slate-700 hover:bg-white"
+              : "bg-white border-black/10 text-slate-700 hover:bg-white"
           }
         `}
             aria-label="Hide menu"
