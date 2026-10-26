@@ -39,7 +39,7 @@ const MonthPanel = React.memo(function MonthPanel({ panelDate, todayDay, todayMo
 
 const MonthView = () => {
   const { eventMap } = useContext(UserContext);
-  const { dt, setNav, day, dateObj } = useContext(DatesContext);
+  const { dt, setNav, registerMonthNavigation, day, dateObj } = useContext(DatesContext);
   const [displayMonth, setDisplayMonth] = useState(() => new Date(dt.getFullYear(), dt.getMonth(), 1));
   const viewportRef = useRef(null);
   const widthRef = useRef(0);
@@ -102,22 +102,39 @@ const MonthView = () => {
     return () => controls.stop();
   }, [dt, x]);
 
+  // Header and drag both complete the visual transition before committing nav.
+  const navigateRef = useRef(null);
+  navigateRef.current = async (delta) => {
+    if (animatingRef.current || !widthRef.current || !delta) return;
+    animatingRef.current = true;
+    const width = widthRef.current;
+    await animate(x, -width * (1 + delta), {
+      duration: 0.24, ease: [0.22, 1, 0.36, 1]
+    });
+    const next = monthOffset(displayMonth, delta);
+    pendingNavigationRef.current = next.getTime();
+    setDisplayMonth(next);
+    x.set(-widthRef.current);
+    animatingRef.current = false;
+    setNav((previous) => previous + delta);
+  };
+
+  useEffect(() => registerMonthNavigation((delta) => navigateRef.current?.(delta)), [registerMonthNavigation]);
+
   const finishSwipe = async (_, info) => {
     if (animatingRef.current || !widthRef.current) return;
     const threshold = widthRef.current * 0.2;
-    const delta = info.offset.x < -threshold || info.velocity.x < -550 ? 1 : info.offset.x > threshold || info.velocity.x > 550 ? -1 : 0;
-    animatingRef.current = true;
-    await animate(x, -widthRef.current * (1 + delta), { duration: 0.24, ease: [0.22, 1, 0.36, 1] });
-    if (delta) {
-      const next = monthOffset(displayMonth, delta);
-      pendingNavigationRef.current = next.getTime();
-      setDisplayMonth(next);
-      x.set(-widthRef.current);
+    const delta = info.offset.x < -threshold || info.velocity.x < -550 ? 1 :
+      info.offset.x > threshold || info.velocity.x > 550 ? -1 : 0;
+    if (delta) await navigateRef.current(delta);
+    else {
+      animatingRef.current = true;
+      await animate(x, -widthRef.current, {
+        duration: 0.24, ease: [0.22, 1, 0.36, 1]
+      });
       animatingRef.current = false;
-      setNav((previous) => previous + delta);
-    } else { x.set(-widthRef.current); animatingRef.current = false; }
+    }
   };
-
 
   const handleFloatRepeat = (e, targetDate) => {
     const kind = e?.repeats?.kind;
