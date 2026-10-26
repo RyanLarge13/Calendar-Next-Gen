@@ -142,13 +142,14 @@ const DatePicker = () => {
   };
 
   return showDatePicker ? (
+    <Portal>
     <motion.div
       initial={{ opacity: 0, y: 18, scale: 0.98 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 18, scale: 0.98 }}
       transition={{ type: "spring", stiffness: 260, damping: 22 }}
       className={`
-    fixed z-[999]
+    fixed z-[1001]
     top-1/2 left-1/2 !-translate-x-1/2 !-translate-y-1/2
     w-[92vw] max-w-md
     rounded-3xl border shadow-2xl overflow-hidden
@@ -452,13 +453,14 @@ const DatePicker = () => {
           className={`
         px-5 py-2 rounded-2xl text-sm font-semibold text-white shadow-md transition
         active:scale-[0.97]
-        bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-500
+        calendar-action
       `}
         >
           Okay
         </button>
       </div>
     </motion.div>
+    </Portal>
   ) : null;
 };
 
