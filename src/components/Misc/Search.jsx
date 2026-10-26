@@ -1,194 +1,137 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { BsSearch } from "react-icons/bs";
 import Portal from "./Portal";
-import DatesContext from "../../context/DatesContext";
 import InteractiveContext from "../../context/InteractiveContext";
 import UserContext from "../../context/UserContext";
+import ReminderView from "../Reminders/ReminderView/ReminderView.jsx";
+import { setStateAndPushWindowState } from "../../utils/helpers";
+
+const asText = (...values) => values.filter((value) => typeof value === "string").join(" ").toLowerCase();
+const validDate = (value) => {
+  const date = new Date(value);
+  return Number.isFinite(date.getTime()) ? date : null;
+};
 
 const Search = () => {
-  const { filters, setFilters } = useContext(InteractiveContext);
-  const { setSystemNotif, events, setEvents, preferences, staticEvents } =
-    useContext(UserContext);
-  const { setUpdatedDate } = useContext(DatesContext);
+  const { filters, setFilters, setEvent } = useContext(InteractiveContext);
+  const { events = [], reminders = [], lists = [], userTasks = [], stickies = [], preferences } = useContext(UserContext);
+  const [query, setQuery] = useState("");
+  const [type, setType] = useState("all");
+  const [expanded, setExpanded] = useState(null);
+  const [activeReminder, setActiveReminder] = useState(null);
+  const inputRef = useRef(null);
+  const open = filters === "search";
 
-  const [searchText, setSearchText] = useState("");
+  useEffect(() => {
+    if (!open) return;
+    inputRef.current?.focus();
+    const onKeyDown = (event) => {
+      if (event.key === "Escape") {
+        if (activeReminder) setActiveReminder(null);
+        else setFilters(null);
+      }
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [open, activeReminder, setFilters]);
 
-  const search = (e) => {
-    e.preventDefault();
-    if (!searchText) {
-      const newError = {
-        show: true,
-        title: "No Search Value",
-        text: "Please type in a value to search through your data",
-        color: "bg-red-200",
-        hasCancel: false,
-        actions: [
-          {
-            text: "close",
-            func: () => setSystemNotif({ show: false }),
-          },
-        ],
-      };
-      return setSystemNotif(newError);
+  const results = useMemo(() => {
+    const needle = query.trim().toLowerCase();
+    if (!needle) return [];
+    const matches = (value) => value.includes(needle);
+    const items = [];
+    const add = (kind, record, title, details, date, searchable) => {
+      if ((type === "all" || type === kind) && matches(searchable)) {
+        items.push({ kind, record, title, details, date, key: kind + "-" + record.id });
+      }
+    };
+    events.forEach((event) => add("event", event, event.summary || event.title || "Untitled event",
+      event.description || "", validDate(event.start?.startTime || event.startDate || event.date),
+      asText(event.summary, event.title, event.description, event.date, event.location?.name, event.location?.address)));
+    reminders.forEach((reminder) => add("reminder", reminder, reminder.title || "Untitled reminder",
+      reminder.notes || "", validDate(reminder.time), asText(reminder.title, reminder.notes, reminder.time)));
+    lists.forEach((list) => add("list", list, list.title || "Untitled list",
+      (list.items || []).map((item) => item.text || "").join(", "), null,
+      asText(list.title, ...(list.items || []).map((item) => item.text))));
+    userTasks.forEach((task) => add("task", task, task.title || "Untitled task",
+      (task.tasks || []).map((item) => item.title || item.text || "").join(", "), null,
+      asText(task.title, ...(task.tasks || []).map((item) => item.title || item.text))));
+    stickies.forEach((sticky) => add("sticky", sticky, sticky.title || "Untitled sticky",
+      sticky.text || sticky.body || sticky.content || "", null,
+      asText(sticky.title, sticky.text, sticky.body, sticky.content)));
+    return items.sort((a, b) => {
+      const aTitle = a.title.toLowerCase().startsWith(needle) ? 0 : 1;
+      const bTitle = b.title.toLowerCase().startsWith(needle) ? 0 : 1;
+      return aTitle - bTitle || (a.date?.getTime() || Infinity) - (b.date?.getTime() || Infinity);
+    }).slice(0, 80);
+  }, [query, type, events, reminders, lists, userTasks, stickies]);
+
+  const activate = (item) => {
+    if (item.kind === "event") {
+      setFilters(null);
+      setStateAndPushWindowState(() => setEvent(item.record));
+    } else if (item.kind === "reminder") {
+      setActiveReminder(item.record);
+    } else {
+      setExpanded((previous) => previous === item.key ? null : item.key);
     }
-    const unbiasedUserInput = searchText.toLowerCase();
-    const filteredEvents = events.filter((event) => {
-      const eventTitle = event.summary.toLowerCase();
-      const eventDescription = event.description.toLowerCase();
-      return (
-        event.date.includes(unbiasedUserInput) ||
-        eventTitle.includes(unbiasedUserInput) ||
-        eventDescription.includes(unbiasedUserInput)
-      );
-    });
-    const firstInstanceOfDate = filteredEvents[0].date;
-    setUpdatedDate(firstInstanceOfDate);
-    setEvents(filteredEvents);
   };
 
-  const clearSearchAndFilters = () => {
-    setSearchText("");
-    setEvents(staticEvents);
-  };
-
+  const dark = preferences.darkMode;
   return (
-    <AnimatePresence>
-      {filters === "search" && (
-        <motion.div
-          initial={{ y: -18, opacity: 0, scale: 0.98 }}
-          animate={{ y: 0, opacity: 1, scale: 1 }}
-          exit={{ y: -18, opacity: 0, scale: 0.98 }}
-          transition={{ type: "spring", stiffness: 260, damping: 22 }}
-          className={`
-        fixed z-30
-        top-24 left-1/2 !-translate-x-1/2
-        w-[92vw] max-w-xl
-        rounded-3xl border shadow-2xl overflow-hidden
-        ${preferences.darkMode ? "bg-[#161616]/90 border-white/10 text-white" : "bg-white/90 border-black/10 text-slate-900"}
-        backdrop-blur-md
-        `}
-        >
+    <>
+      <AnimatePresence>
+        {open && (
           <Portal>
-            <motion.button
-              type="button"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-20 bg-black/30 backdrop-blur-sm"
-              onClick={() => setFilters(null)}
-              aria-label="Close search"
-            />
+            <motion.div className="fixed inset-0 z-[100] flex justify-center items-start pt-[min(12vh,100px)] px-3"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <button type="button" aria-label="Close search" className="absolute inset-0 bg-black/45" onClick={() => setFilters(null)} />
+              <motion.section role="dialog" aria-modal="true" aria-label="Search your calendar data"
+                initial={{ y: -12, scale: 0.98 }} animate={{ y: 0, scale: 1 }}
+                className={`relative w-full max-w-2xl max-h-[80dvh] flex flex-col rounded-2xl border shadow-2xl overflow-hidden ${dark ? "bg-[#191919] border-white/15 text-white" : "bg-white border-black/10 text-slate-900"}`}>
+                <div className="flex items-center gap-3 p-4 border-b border-current/10">
+                  <BsSearch className="shrink-0 opacity-60" />
+                  <input ref={inputRef} value={query} onChange={(e) => { setQuery(e.target.value); setExpanded(null); }}
+                    placeholder="Search events, reminders, lists, tasks, notes…" aria-label="Search"
+                    className="flex-1 min-w-0 bg-transparent outline-none text-sm" />
+                  {query && <button type="button" onClick={() => { setQuery(""); setExpanded(null); }} className="text-xs opacity-70">Clear</button>}
+                  <button type="button" onClick={() => setFilters(null)} aria-label="Close" className="p-2 text-lg">×</button>
+                </div>
+                <div className="flex gap-2 overflow-x-auto p-3 border-b border-current/10">
+                  {["all", "event", "reminder", "list", "task", "sticky"].map((kind) =>
+                    <button key={kind} type="button" onClick={() => setType(kind)}
+                      className={`capitalize whitespace-nowrap px-3 py-1.5 rounded-full text-xs border ${type === kind ? "bg-cyan-600 text-white border-cyan-600" : "border-current/20"}`}>{kind === "all" ? "All" : kind === "sticky" ? "Notes" : kind + "s"}</button>)}
+                </div>
+                <div className="overflow-y-auto min-h-0 p-3" aria-live="polite">
+                  {!query.trim() ? <p className="p-6 text-center text-sm opacity-60">Start typing to search your saved data. Your calendar stays exactly where it is.</p>
+                    : results.length === 0 ? <p className="p-6 text-center text-sm opacity-60">No matching items found.</p>
+                    : <>
+                      <p className="px-2 pb-2 text-xs opacity-60">{results.length === 80 ? "Showing first 80 matches" : `${results.length} matches`}</p>
+                      <div className="space-y-2">{results.map((item) =>
+                        <div key={item.key} className={`rounded-xl border ${dark ? "border-white/10 hover:bg-white/5" : "border-black/10 hover:bg-slate-50"}`}>
+                          <button type="button" onClick={() => activate(item)} className="w-full text-left p-3">
+                            <span className="flex justify-between gap-3 items-center">
+                              <span className="font-medium text-sm break-words">{item.title}</span>
+                              <span className="shrink-0 uppercase text-[10px] tracking-wider opacity-60">{item.kind}</span>
+                            </span>
+                            {item.date && <span className="block mt-1 text-xs opacity-60">{item.date.toLocaleString()}</span>}
+                            {item.details && <span className="block mt-1 text-xs opacity-60 line-clamp-2">{item.details}</span>}
+                          </button>
+                          {expanded === item.key && <div className="border-t border-current/10 p-3 text-sm whitespace-pre-wrap break-words opacity-80">
+                            {item.details || "No additional details."}
+                          </div>}
+                        </div>)}</div>
+                    </>}
+                </div>
+                <p className="px-4 py-2 text-xs opacity-60 border-t border-current/10">Events and reminders open their details. Lists, tasks and notes expand here without changing views.</p>
+              </motion.section>
+            </motion.div>
           </Portal>
-          {/* Header */}
-          <div
-            className={`
-            px-5 py-4 flex items-center justify-between gap-3 border-b
-            ${preferences.darkMode ? "border-white/10" : "border-black/10"}
-          `}
-          >
-            <div className="min-w-0">
-              <p
-                className={`text-[11px] font-semibold ${preferences.darkMode ? "text-white/55" : "text-slate-500"}`}
-              >
-                Search
-              </p>
-              <h3 className="text-sm font-semibold truncate">
-                Find events, dates, and locations
-              </h3>
-            </div>
-
-            <div className="flex items-center gap-2 flex-shrink-0">
-              <button
-                type="button"
-                onClick={() => clearSearchAndFilters()}
-                className={`
-                px-3 py-2 rounded-2xl border shadow-sm text-xs font-semibold transition active:scale-[0.97]
-                ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70 hover:text-rose-200" : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600 hover:text-rose-600"}
-              `}
-              >
-                Clear
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setFilters(null)}
-                className={`
-                h-9 w-9 grid place-items-center rounded-2xl border shadow-sm transition active:scale-[0.97]
-                ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/70" : "bg-black/[0.03] border-black/10 hover:bg-black/[0.06] text-slate-600"}
-              `}
-                aria-label="Close"
-              >
-                ✕
-              </button>
-            </div>
-          </div>
-
-          {/* Body */}
-          <div className="px-5 py-5">
-            <form onSubmit={(e) => search(e)} className="space-y-3">
-              <div
-                className={`
-                flex items-center gap-3 rounded-3xl border shadow-inner px-4 py-3
-                ${preferences.darkMode ? "bg-white/5 border-white/10" : "bg-black/[0.03] border-black/10"}
-              `}
-              >
-                <span
-                  className={`
-                  grid place-items-center h-10 w-10 rounded-2xl border shadow-sm flex-shrink-0
-                  ${preferences.darkMode ? "bg-cyan-500/15 border-cyan-300/20 text-cyan-100" : "bg-cyan-50 border-cyan-200 text-cyan-700"}
-                `}
-                >
-                  <BsSearch className="text-lg" />
-                </span>
-
-                <input
-                  className={`
-                  w-full bg-transparent outline-none text-sm font-semibold
-                  ${preferences.darkMode ? "text-white placeholder:text-white/45" : "text-slate-900 placeholder:text-slate-400"}
-                `}
-                  placeholder="Search events, dates & locations…"
-                  value={searchText}
-                  onChange={(e) => setSearchText(e.target.value)}
-                  autoFocus
-                />
-
-                <button
-                  type="submit"
-                  className={`
-                  px-4 py-2 rounded-2xl text-xs font-semibold shadow-md transition
-                  hover:shadow-lg active:scale-[0.97]
-                  ${preferences.darkMode ? "bg-cyan-500/25 text-cyan-100 border border-cyan-300/20 hover:bg-cyan-500/30" : "bg-cyan-600 text-white hover:bg-cyan-700"}
-                `}
-                >
-                  Search
-                </button>
-              </div>
-
-              {/* Bottom actions (mobile-friendly) */}
-              <div className="flex items-center justify-between">
-                <button
-                  type="button"
-                  onClick={() => setFilters(null)}
-                  className={`
-                  px-3 py-2 rounded-2xl border text-xs font-semibold shadow-sm transition active:scale-[0.97]
-                  ${preferences.darkMode ? "bg-white/5 border-white/10 text-white/70 hover:bg-white/10" : "bg-white border-black/10 text-slate-600 hover:bg-black/[0.02]"}
-                `}
-                >
-                  Cancel
-                </button>
-
-                <p
-                  className={`text-[11px] font-semibold ${preferences.darkMode ? "text-white/50" : "text-slate-500"}`}
-                >
-                  Tip: press Enter to search
-                </p>
-              </div>
-            </form>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+        )}
+      </AnimatePresence>
+      {activeReminder && <ReminderView reminder={activeReminder} setShowFullReminder={(value) => { if (!value) setActiveReminder(null); }} />}
+    </>
   );
 };
 
