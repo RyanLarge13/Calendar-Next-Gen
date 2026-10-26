@@ -27,3 +27,18 @@ Branch: `dev`. This is a first-pass source-level fix and style foundation, **not
 - Date picker state still depends on global contexts. A future refactor should pass explicit `value` and `onChange` props so the same component can safely serve multiple use cases.
 - Styling tokens are introduced but most app components still use local Tailwind classes and conditional colors. A gradual migration is safer than claiming the entire app has been restyled.
 - Consider replacing scroll-wheel timeouts with refs and cleanup on unmount.
+
+## Follow-up: menu and weather carousel (October 26)
+
+- `src/components/Menu/MainMenu.jsx`: adopted the shared `calendar-surface` hero styling and `calendar-action` / `calendar-accent` carousel controls; removed the hero and weather forecast shell blur.
+- Replaced horizontal overflow weather cards with a single-day slide track. Touch swipe (>45px) changes slides; previous/next buttons and an accessible day counter provide non-touch navigation. The forecast is bounded to available daily data (up to seven days), and resets to the first slide when forecast dates change.
+- `src/components/Menu/Menu.jsx`: removed five backdrop blur utility classes from the menu overlay, panel and sticky category bars to reduce compositing cost. Opaque backgrounds were not otherwise redesigned.
+
+### Additional manual checks
+
+1. Open/close the menu on Android and check smoothness and legibility in light/dark modes.
+2. Swipe the weather forecast left/right, use both arrow buttons, and verify the first/last day bounds.
+3. Confirm weather cards show the correct corresponding date and conditions, including when location or forecast changes.
+4. Check forecast layout on narrow screens and desktop; verify the entire weather panel is visible without horizontal overflow.
+
+Changes were made through GitHub without running a build or browser tests.
