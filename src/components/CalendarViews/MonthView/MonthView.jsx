@@ -37,31 +37,34 @@ const MonthView = () => {
     return () => observer.disconnect();
   }, [x]);
 
+  // The header changes DatesContext before the slide begins. Animate the already
+  // rendered adjacent panel, then recycle it only after the slide completes.
   useEffect(() => {
     const next = new Date(dt.getFullYear(), dt.getMonth(), 1);
-    if (pendingNavigationRef.current !== null) {
-      if (pendingNavigationRef.current === next.getTime()) pendingNavigationRef.current = null;
+    if (pendingNavigationRef.current === next.getTime()) {
+      pendingNavigationRef.current = null;
       return;
     }
     if (next.getTime() === displayMonth.getTime()) return;
+    if (animatingRef.current) return;
     const delta = (next.getFullYear() - displayMonth.getFullYear()) * 12 + next.getMonth() - displayMonth.getMonth();
     if (Math.abs(delta) !== 1 || !widthRef.current) {
       setDisplayMonth(next);
       x.set(-widthRef.current);
-      animatingRef.current = false;
       return;
     }
     animatingRef.current = true;
-    const animation = animate(x, -widthRef.current * (1 + delta), {
+    const controls = animate(x, -widthRef.current * (1 + delta), {
       duration: 0.28, ease: [0.22, 1, 0.36, 1],
       onComplete: () => {
+        pendingNavigationRef.current = next.getTime();
         setDisplayMonth(next);
         x.set(-widthRef.current);
         animatingRef.current = false;
       }
     });
-    return () => animation.stop();
-  }, [dt, displayMonth, x]);
+    return () => controls.stop();
+  }, [dt, x]);
 
   const finishSwipe = async (_, info) => {
     if (animatingRef.current || !widthRef.current) return;
@@ -228,19 +231,19 @@ const MonthView = () => {
         isCurrentDate: !isPaddingDay && dayNumber === day && month === dateObj.getMonth() && year === dateObj.getFullYear(),
         eventsToRender: isPaddingDay ? [] : getIndicesForEvents(dateStr, month, year) };
     });
-    return <div key={year + "-" + month} className="w-1/3 shrink-0 min-w-0 h-[83vh] overflow-hidden grid grid-cols-7 grid-rows-6 auto-rows-fr gap-1">
+    return <div key={year + "-" + month} className="w-1/3 shrink-0 min-w-0 h-full min-h-0 overflow-hidden p-5 box-border"><div className="w-full h-full min-h-0 min-w-0 grid grid-cols-7 grid-rows-6 gap-1">
       {days.map(({ index, dayNumber, dateStr, isCurrentDate, eventsToRender, isPaddingDay }) => (
         <DayCell key={index} index={index} dayNumber={dayNumber} dateStr={dateStr}
           isCurrentDate={isCurrentDate} eventsToRender={eventsToRender} month={month}
           year={year} dateObj={dateObj} paddingDays={paddingDays} isPaddingDay={isPaddingDay} />
       ))}
-    </div>;
+    </div></div>;
   }), [displayMonth, day, dateObj, getIndicesForEvents]);
 
   return (
-    <motion.div ref={viewportRef} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.22 }} className="w-full overflow-hidden">
+    <motion.div ref={viewportRef} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.22 }} className="w-full h-[calc(100dvh-130px)] min-h-[360px] overflow-hidden">
       <motion.div
-        className="flex w-[300%] touch-pan-y will-change-transform"
+        className="flex w-[300%] h-full touch-pan-y will-change-transform"
         style={{ x }}
         drag="x"
         dragMomentum={false}
