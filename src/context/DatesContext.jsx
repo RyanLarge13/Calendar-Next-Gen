@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useRef, useCallback } from "react";
 import { weekDays } from "../constants/dateAndTimeConstants";
 
 const DatesContext = createContext({});
@@ -8,6 +8,15 @@ export const DatesProvider = ({ children }) => {
   const [weekDateObj, setWeekDateObj] = useState(new Date());
   const [weekOffset, setWeekOffset] = useState(0);
   const [nav, setNav] = useState(0);
+  const monthNavigationHandler = useRef(null);
+  const registerMonthNavigation = useCallback((handler) => {
+    monthNavigationHandler.current = handler;
+    return () => { if (monthNavigationHandler.current === handler) monthNavigationHandler.current = null; };
+  }, []);
+  const requestMonthNavigation = useCallback((direction) => {
+    if (monthNavigationHandler.current) monthNavigationHandler.current(direction);
+    else setNav((previous) => previous + direction);
+  }, []);
   const [dt, setDt] = useState(new Date());
   const [loading, setLoading] = useState(false);
   const [day, setDay] = useState(new Date().getDate());
@@ -102,6 +111,8 @@ export const DatesProvider = ({ children }) => {
         setWeekOffset,
         setSecondString,
         setNav,
+        registerMonthNavigation,
+        requestMonthNavigation,
         setCurrentWeek,
         setTheDay,
         setString,
