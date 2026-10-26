@@ -6,6 +6,7 @@ import { RiFileCopy2Line } from "react-icons/ri";
 import { BiListMinus, BiListPlus } from "react-icons/bi";
 import { BsFillShareFill, BsFillTrashFill } from "react-icons/bs";
 import ListItems from "./ListItems";
+import Portal from "../Misc/Portal";
 
 const List = ({ list }) => {
   const { setLists, preferences, setSystemNotif } = useContext(UserContext);
@@ -13,6 +14,7 @@ const List = ({ list }) => {
   const [title, setTitle] = useState(list.title);
   const [titleUpdate, setTitleUpdate] = useState(list.title);
   const [addItems, setAddItems] = useState(false);
+  const [fullscreen, setFullscreen] = useState(false);
 
   const updateTitleOnList = async (e) => {
     e.preventDefault();
@@ -44,10 +46,9 @@ const List = ({ list }) => {
     setSystemNotif({ show: false });
     const token = getAuthToken();
     if (!token) return;
-    setLists((prev) => prev.filter((item) => item.id !== listId));
-
     try {
       await deleteList(token, listId);
+      setLists((prev) => prev.filter((item) => item.id !== listId));
     } catch (err) {
       console.log("Error deleting entire list");
       console.log(err);
@@ -74,6 +75,8 @@ const List = ({ list }) => {
     };
     setSystemNotif(newNotif);
   };
+
+  const listBody = (expanded) => <ListItems addItems={addItems} listId={list.id} items={list.items} expanded={expanded} />;
 
   return (
     <div
@@ -175,10 +178,17 @@ const List = ({ list }) => {
         </div>
       </div>
 
+      <button type="button" className="calendar-action mx-5 mt-3 px-4 py-2 text-sm" onClick={() => setFullscreen(true)}>Open full screen</button>
       {/* Body */}
       <div className="p-2">
-        <ListItems addItems={addItems} listId={list.id} items={list.items} />
+        {listBody(false)}
       </div>
+      {fullscreen && <Portal><div className="fixed inset-0 z-[1200] bg-black/65 p-2 sm:p-6" role="dialog" aria-modal="true" aria-label={list.title}>
+        <div className={`${preferences.darkMode ? "bg-[#222] text-white" : "calendar-surface"} mx-auto h-full max-w-4xl rounded-3xl border shadow-xl flex flex-col overflow-hidden`}>
+          <div className="flex items-center justify-between border-b p-4"><h2 className="font-semibold text-xl">{list.title}</h2><button className="calendar-action px-4 py-2" onClick={() => setFullscreen(false)}>Close</button></div>
+          <div className="overflow-y-auto flex-1 p-4 pr-8 sm:pr-12 touch-pan-y">{listBody(true)}</div>
+        </div>
+      </div></Portal>}
     </div>
   );
 };
