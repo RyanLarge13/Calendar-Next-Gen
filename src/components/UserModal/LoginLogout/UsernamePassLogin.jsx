@@ -123,7 +123,7 @@ const UsernamePassLogin = () => {
         transition: { delay: 0.2, ease: "easeOut" },
       }}
       onSubmit={loginPasswordUsername}
-      className="flex flex-col items-center justify-center w-full gap-y-4"
+      className="flex flex-col items-center justify-center w-full gap-y-4 rounded-3xl border border-[var(--calendar-border)] p-5 sm:p-6 shadow-sm"
     >
       {/* Username */}
       <input
@@ -136,18 +136,18 @@ const UsernamePassLogin = () => {
         name="username"
         className={`
       w-full rounded-xl px-4 py-3 text-sm
-      backdrop-blur-md
+      
       transition-all duration-200
       border
       ${
         validUserName === null
-          ? "border-cyan-200"
+          ? "border-[var(--calendar-border)]"
           : validUserName
             ? "border-emerald-300 ring-1 ring-emerald-200"
             : "border-red-300 ring-1 ring-red-200"
       }
-      focus:outline-none focus:ring-2 focus:ring-cyan-300 focus:border-cyan-300
-      hover:bg-cyan-50
+      focus:outline-none focus:ring-2 focus:ring-amber-200 focus:border-amber-400
+      
       shadow-sm
       ${preferences.darkMode ? "bg-white/5 text-white" : "bg-white text-slate-800"}
     `}
@@ -163,11 +163,11 @@ const UsernamePassLogin = () => {
         name="email"
         className={`
       w-full rounded-xl px-4 py-3 text-sm
-      backdrop-blur-md
+      
       transition-all duration-200
-      border border-cyan-200
-      focus:outline-none focus:ring-2 focus:ring-cyan-300 focus:border-cyan-300
-      hover:bg-cyan-50
+      border border-[var(--calendar-border)]
+      focus:outline-none focus:ring-2 focus:ring-amber-200 focus:border-amber-400
+      
       shadow-sm
       ${preferences.darkMode ? "bg-white/5 text-white" : "bg-white text-slate-800"}
     `}
@@ -184,18 +184,18 @@ const UsernamePassLogin = () => {
         name="password"
         className={`
       w-full rounded-xl px-4 py-3 text-sm
-      backdrop-blur-md
+      
       transition-all duration-200
       border
       ${
         validPassword === null
-          ? "border-cyan-200"
+          ? "border-[var(--calendar-border)]"
           : validPassword
             ? "border-emerald-300 ring-1 ring-emerald-200"
             : "border-red-300 ring-1 ring-red-200"
       }
-      focus:outline-none focus:ring-2 focus:ring-cyan-300 focus:border-cyan-300
-      hover:bg-cyan-50
+      focus:outline-none focus:ring-2 focus:ring-amber-200 focus:border-amber-400
+      
       shadow-sm
       ${preferences.darkMode ? "bg-white/5 text-white" : "bg-white text-slate-800"}
     `}
@@ -208,11 +208,11 @@ const UsernamePassLogin = () => {
         className={`
       w-full mt-5 rounded-xl px-4 py-3 text-sm font-medium
       transition-all duration-200
-      bg-gradient-to-r from-cyan-400 to-cyan-500
+      calendar-action
       text-white
       shadow-md
       hover:shadow-lg hover:scale-[1.015]
-      focus:outline-none focus:ring-2 focus:ring-cyan-300
+      focus:outline-none focus:ring-2 focus:ring-amber-200
       disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100
       will-change-transform
     `}
