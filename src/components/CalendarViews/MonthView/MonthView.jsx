@@ -11,6 +11,32 @@ import {
 } from "../../../utils/helpers.js";
 import DayCell from "./DayCell.jsx";
 
+const MonthPanel = React.memo(function MonthPanel({ panelDate, todayDay, todayMonth, todayYear, getEvents }) {
+  const month = panelDate.getMonth();
+  const year = panelDate.getFullYear();
+  const paddingDays = panelDate.getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const days = useMemo(() => Array.from({ length: paddingDays + daysInMonth }, (_, index) => {
+    const dayNumber = index - paddingDays + 1;
+    const isPaddingDay = index < paddingDays;
+    const dateStr = isPaddingDay ? null : (month + 1) + "/" + dayNumber + "/" + year;
+    return { index, dayNumber, dateStr, isPaddingDay,
+      isCurrentDate: !isPaddingDay && dayNumber === todayDay && month === todayMonth && year === todayYear,
+      eventsToRender: isPaddingDay ? [] : getEvents(dateStr, month, year) };
+  }), [month, year, paddingDays, daysInMonth, todayDay, todayMonth, todayYear, getEvents]);
+  return <div className="w-1/3 shrink-0 min-w-0 h-full min-h-0 overflow-hidden p-5 box-border">
+    <div className="w-full h-full min-h-0 min-w-0 grid grid-cols-7 grid-rows-6 gap-1">
+      {days.map(({ index, dayNumber, dateStr, isCurrentDate, eventsToRender, isPaddingDay }) => (
+        <DayCell key={index} index={index} dayNumber={dayNumber} dateStr={dateStr}
+          isCurrentDate={isCurrentDate} eventsToRender={eventsToRender} month={month}
+          year={year} paddingDays={paddingDays} isPaddingDay={isPaddingDay} />
+      ))}
+    </div>
+  </div>;
+}, (a, b) => a.panelDate.getTime() === b.panelDate.getTime() &&
+  a.todayDay === b.todayDay && a.todayMonth === b.todayMonth &&
+  a.todayYear === b.todayYear && a.getEvents === b.getEvents);
+
 const MonthView = () => {
   const { eventMap } = useContext(UserContext);
   const { dt, setNav, day, dateObj } = useContext(DatesContext);
@@ -227,31 +253,15 @@ const MonthView = () => {
     [eventMap],
   );
 
-  const panels = useMemo(() => [-1, 0, 1].map((offset) => {
+  const panels = [-1, 0, 1].map((offset) => {
     const panelDate = monthOffset(displayMonth, offset);
-    const month = panelDate.getMonth();
-    const year = panelDate.getFullYear();
-    const paddingDays = panelDate.getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const days = Array.from({ length: paddingDays + daysInMonth }, (_, index) => {
-      const dayNumber = index - paddingDays + 1;
-      const isPaddingDay = index < paddingDays;
-      const dateStr = isPaddingDay ? null : (month + 1) + "/" + dayNumber + "/" + year;
-      return { index, dayNumber, dateStr, isPaddingDay,
-        isCurrentDate: !isPaddingDay && dayNumber === day && month === dateObj.getMonth() && year === dateObj.getFullYear(),
-        eventsToRender: isPaddingDay ? [] : getIndicesForEvents(dateStr, month, year) };
-    });
-    return <div key={year + "-" + month} className="w-1/3 shrink-0 min-w-0 h-full min-h-0 overflow-hidden p-5 box-border"><div className="w-full h-full min-h-0 min-w-0 grid grid-cols-7 grid-rows-6 gap-1">
-      {days.map(({ index, dayNumber, dateStr, isCurrentDate, eventsToRender, isPaddingDay }) => (
-        <DayCell key={index} index={index} dayNumber={dayNumber} dateStr={dateStr}
-          isCurrentDate={isCurrentDate} eventsToRender={eventsToRender} month={month}
-          year={year} dateObj={dateObj} paddingDays={paddingDays} isPaddingDay={isPaddingDay} />
-      ))}
-    </div></div>;
-  }), [displayMonth, day, dateObj, getIndicesForEvents]);
+    return <MonthPanel key={panelDate.getFullYear() + "-" + panelDate.getMonth()}
+      panelDate={panelDate} todayDay={day} todayMonth={dateObj.getMonth()}
+      todayYear={dateObj.getFullYear()} getEvents={getIndicesForEvents} />;
+  });
 
   return (
-    <motion.div ref={viewportRef} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.22 }} className="w-full h-[calc(100dvh-130px)] min-h-[360px] overflow-hidden">
+    <motion.div ref={viewportRef} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.22 }} className="w-full h-full min-h-0 overflow-hidden">
       <motion.div
         className="flex w-[300%] h-full touch-pan-y will-change-transform"
         style={{ x }}
