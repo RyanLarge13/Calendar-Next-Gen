@@ -21,6 +21,8 @@ const MonthView = () => {
   const x = useMotionValue(0);
   const animatingRef = useRef(false);
   const pendingNavigationRef = useRef(null);
+  const desiredMonthRef = useRef(new Date(dt.getFullYear(), dt.getMonth(), 1));
+  desiredMonthRef.current = new Date(dt.getFullYear(), dt.getMonth(), 1);
   const monthOffset = (date, offset) => new Date(date.getFullYear(), date.getMonth() + offset, 1);
 
   useEffect(() => {
@@ -61,6 +63,14 @@ const MonthView = () => {
         setDisplayMonth(next);
         x.set(-widthRef.current);
         animatingRef.current = false;
+        const desired = desiredMonthRef.current;
+        if (desired.getTime() !== next.getTime()) {
+          // Catch rapid header clicks after the current transition settles.
+          const distance = (desired.getFullYear() - next.getFullYear()) * 12 + desired.getMonth() - next.getMonth();
+          if (Math.abs(distance) > 1) {
+            setDisplayMonth(desired);
+          }
+        }
       }
     });
     return () => controls.stop();
