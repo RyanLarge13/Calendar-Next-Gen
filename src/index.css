@@ -346,3 +346,10 @@ li {
   outline-offset: 3px;
   box-shadow: 0 0 0 6px var(--rwp-ring-soft);
 }
+
+/* Calendar design tokens: reusable light/gold surfaces and actions. */
+:root { --calendar-gold: #b58b38; --calendar-gold-hover: #967027; --calendar-paper: #fffdf8; --calendar-border: #e9dfca; --calendar-ink: #28251f; }
+.calendar-surface { background: var(--calendar-paper); color: var(--calendar-ink); border-color: var(--calendar-border); }
+.calendar-action { background: var(--calendar-gold); color: white; border-radius: 1rem; transition: background 150ms ease; }
+.calendar-action:hover { background: var(--calendar-gold-hover); }
+.calendar-accent { color: var(--calendar-gold); }
