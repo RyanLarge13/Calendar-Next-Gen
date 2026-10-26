@@ -2,7 +2,7 @@ import { motion, animate, useMotionValue } from "framer-motion";
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import DatesContext from "../../../context/DatesContext.jsx";
 import UserContext from "../../../context/UserContext.jsx";
-import { calendar } from "../../../motion.js";
+
 import {
   cloneEventForDay,
   eventOccursOnDay,
@@ -20,6 +20,7 @@ const MonthView = () => {
   const [viewportWidth, setViewportWidth] = useState(0);
   const x = useMotionValue(0);
   const animatingRef = useRef(false);
+  const pendingNavigationRef = useRef(null);
   const monthOffset = (date, offset) => new Date(date.getFullYear(), date.getMonth() + offset, 1);
 
   useEffect(() => {
@@ -38,6 +39,10 @@ const MonthView = () => {
 
   useEffect(() => {
     const next = new Date(dt.getFullYear(), dt.getMonth(), 1);
+    if (pendingNavigationRef.current === next.getTime()) {
+      pendingNavigationRef.current = null;
+      return;
+    }
     if (next.getTime() === displayMonth.getTime()) return;
     const delta = (next.getFullYear() - displayMonth.getFullYear()) * 12 + next.getMonth() - displayMonth.getMonth();
     if (Math.abs(delta) !== 1 || !widthRef.current) {
@@ -64,8 +69,14 @@ const MonthView = () => {
     const delta = info.offset.x < -threshold || info.velocity.x < -550 ? 1 : info.offset.x > threshold || info.velocity.x > 550 ? -1 : 0;
     animatingRef.current = true;
     await animate(x, -widthRef.current * (1 + delta), { duration: 0.24, ease: [0.22, 1, 0.36, 1] });
-    if (delta) setNav((previous) => previous + delta);
-    else { x.set(-widthRef.current); animatingRef.current = false; }
+    if (delta) {
+      const next = monthOffset(displayMonth, delta);
+      pendingNavigationRef.current = next.getTime();
+      setDisplayMonth(next);
+      x.set(-widthRef.current);
+      animatingRef.current = false;
+      setNav((previous) => previous + delta);
+    } else { x.set(-widthRef.current); animatingRef.current = false; }
   };
 
 
@@ -203,7 +214,7 @@ const MonthView = () => {
     [eventMap],
   );
 
-  const renderPanel = (offset) => {
+  const panels = useMemo(() => [-1, 0, 1].map((offset) => {
     const panelDate = monthOffset(displayMonth, offset);
     const month = panelDate.getMonth();
     const year = panelDate.getFullYear();
@@ -217,14 +228,14 @@ const MonthView = () => {
         isCurrentDate: !isPaddingDay && dayNumber === day && month === dateObj.getMonth() && year === dateObj.getFullYear(),
         eventsToRender: isPaddingDay ? [] : getIndicesForEvents(dateStr, month, year) };
     });
-    return <div key={year + "-" + month} className="w-1/3 shrink-0 min-w-0 grid grid-cols-7 min-h-[50vh] h-[83vh] gap-1">
+    return <div key={year + "-" + month} className="w-1/3 shrink-0 min-w-0 h-[83vh] overflow-hidden grid grid-cols-7 grid-rows-6 auto-rows-fr gap-1">
       {days.map(({ index, dayNumber, dateStr, isCurrentDate, eventsToRender, isPaddingDay }) => (
         <DayCell key={index} index={index} dayNumber={dayNumber} dateStr={dateStr}
           isCurrentDate={isCurrentDate} eventsToRender={eventsToRender} month={month}
           year={year} dateObj={dateObj} paddingDays={paddingDays} isPaddingDay={isPaddingDay} />
       ))}
     </div>;
-  };
+  }), [displayMonth, day, dateObj, getIndicesForEvents]);
 
   return (
     <motion.div ref={viewportRef} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.22 }} className="w-full overflow-hidden">
@@ -237,7 +248,7 @@ const MonthView = () => {
         dragConstraints={{ left: -2 * viewportWidth, right: 0 }}
         onDragEnd={finishSwipe}
       >
-        {[-1, 0, 1].map(renderPanel)}
+        {panels}
       </motion.div>
     </motion.div>
   );
