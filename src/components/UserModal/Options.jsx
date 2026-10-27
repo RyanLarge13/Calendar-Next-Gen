@@ -20,6 +20,7 @@ const Options = ({ setOption }) => {
             border w-full
            ${preferences.darkMode ? "bg-white/5 border-white/10 hover:bg-white/20 hover:border-white/30" : "bg-white border-black/10 hover:bg-white/20 hover:border-black/30"}
           my-2 p-2 px-4 flex justify-between items-center rounded-md shadow-sm hover:scale-[1.005] duration-200`}
+          onClick={() => setOption("messages")}
         >
           <p>Messages</p>
           <AiFillMessage />
