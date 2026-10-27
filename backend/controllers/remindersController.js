@@ -464,6 +464,8 @@ export const deleteMultipleReminders = async (req, res) => {
           in: ids,
         },
         userId: user.id,
+        eventRefId: null,
+        completed: true,
       },
     });
 
