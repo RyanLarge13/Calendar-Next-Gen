@@ -410,9 +410,9 @@ const Dashboard = ({ timeOfDay }) => {
                         }}
                       >
                         <div
-                          className="flex gap-x-5 w-full transition-transform duration-300 ease-out"
+                          className="flex w-full transition-transform duration-300 ease-out"
                           style={{
-                            transform: `translateX(-${weatherSlide * 105}%)`,
+                            transform: `translateX(-${weatherSlide * 100}%)`,
                           }}
                         >
                           {weatherData?.daily

@@ -20,8 +20,14 @@ import { useModalActions } from "../../context/ContextHooks/ModalContext";
 
 const Calendar = () => {
   const { preferences } = useContext(UserContext);
-  const { showFullDatePicker, view, setShowFullDatePicker, addNewEvent, setType, setAddNewEvent } =
-    useContext(InteractiveContext);
+  const {
+    showFullDatePicker,
+    view,
+    setShowFullDatePicker,
+    addNewEvent,
+    setType,
+    setAddNewEvent,
+  } = useContext(InteractiveContext);
   const { setTheDay, setSecondString } = useContext(DatesContext);
   const { openModal } = useModalActions();
 
@@ -43,12 +49,16 @@ const Calendar = () => {
   return (
     <main
       ref={containerRef}
-      className={`px-2 pt-[65px] h-[100dvh] min-h-0 flex flex-col overflow-y-auto scrollbar-hide ${
+      className={`pt-[65px] h-[100dvh] min-h-0 flex flex-col overflow-y-auto scrollbar-hide ${
         preferences.darkMode ? "bg-[#222]" : "bg-white"
       }`}
     >
-      <section className={view === "month" ? "flex flex-1 min-h-0 flex-col" : ""}>
-        <div className={`grid grid-cols-7 gap-2 justify-center items-center my-5 ${view === "month" ? "shrink-0" : ""}`}>
+      <section
+        className={view === "month" ? "flex flex-1 min-h-0 flex-col" : ""}
+      >
+        <div
+          className={`grid grid-cols-7 gap-2 justify-center items-center mt-5 ${view === "month" ? "grid-rows-1" : ""}`}
+        >
           {view === "month" &&
             weekDays.map((day) => (
               <p
@@ -63,21 +73,27 @@ const Calendar = () => {
         </div>
         <section className={view === "month" ? "flex-1 min-h-0" : ""}>
           <div className={view === "month" ? "h-full min-h-0" : ""}>
-              <div className={view === "month" ? "h-full min-h-0" : ""}>
-                {view === "month" && <MonthView />}
-                {view === "day" && <DayView containerRef={containerRef} />}
-                {view === "week" && <WeekView />}
-                {view === "masonry" && (
-                  <MasonryView containerRef={containerRef} />
-                )}
-                {view === "agenda" && <AgendaView />}
-              </div>
+            <div className={view === "month" ? "h-full min-h-0" : ""}>
+              {view === "month" && <MonthView />}
+              {view === "day" && <DayView containerRef={containerRef} />}
+              {view === "week" && <WeekView />}
+              {view === "masonry" && (
+                <MasonryView containerRef={containerRef} />
+              )}
+              {view === "agenda" && <AgendaView />}
+            </div>
           </div>
         </section>
         <DatePicker />
         {showFullDatePicker && (
           <FullDatePicker
-            stateSetter={addNewEvent ? setSecondDateObject : view === "day" ? setDayViewDay : setSecondDateObject}
+            stateSetter={
+              addNewEvent
+                ? setSecondDateObject
+                : view === "day"
+                  ? setDayViewDay
+                  : setSecondDateObject
+            }
           />
         )}
         <ModalHeader />

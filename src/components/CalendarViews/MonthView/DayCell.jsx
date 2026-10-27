@@ -1,6 +1,12 @@
 import { motion } from "framer-motion";
 import { createPortal } from "react-dom";
-import React, { useContext, useRef, useState, useCallback, useEffect } from "react";
+import React, {
+  useContext,
+  useRef,
+  useState,
+  useCallback,
+  useEffect,
+} from "react";
 import UserContext from "../../../context/UserContext";
 import DatesContext from "../../../context/DatesContext";
 import { tailwindBgToHex } from "../../../utils/helpers";
@@ -21,8 +27,7 @@ const DayCell = ({
   isPaddingDay = false,
 }) => {
   const { preferences } = useContext(UserContext);
-  const { rowDays, dateString, setNav, setString } =
-    useContext(DatesContext);
+  const { rowDays, dateString, setNav, setString } = useContext(DatesContext);
   const { setMenu, setShowLogin } = useContext(InteractiveContext);
 
   const { openModal } = useModalActions();
@@ -120,7 +125,12 @@ const DayCell = ({
       }
 
       const rect = e.currentTarget.getBoundingClientRect();
-      const anchor = { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom };
+      const anchor = {
+        left: rect.left,
+        right: rect.right,
+        top: rect.top,
+        bottom: rect.bottom,
+      };
 
       popupTimeoutRef.current = setTimeout(() => {
         const theHoverDay = `${month + 1}/${index - paddingDays + 1}/${year}`;
@@ -154,16 +164,20 @@ const DayCell = ({
       clearTimeout(popupTimeoutRef.current);
       popupTimeoutRef.current = null;
     }
-    if (closePopupTimeoutRef.current) clearTimeout(closePopupTimeoutRef.current);
+    if (closePopupTimeoutRef.current)
+      clearTimeout(closePopupTimeoutRef.current);
     closePopupTimeoutRef.current = setTimeout(() => {
       if (!isHoveringPopupRef.current) clearPopupNow();
     }, 220);
   }, [clearPopupNow]);
 
-  useEffect(() => () => {
-    clearTimeout(popupTimeoutRef.current);
-    clearTimeout(closePopupTimeoutRef.current);
-  }, []);
+  useEffect(
+    () => () => {
+      clearTimeout(popupTimeoutRef.current);
+      clearTimeout(closePopupTimeoutRef.current);
+    },
+    [],
+  );
 
   return (
     <motion.div
@@ -174,19 +188,25 @@ const DayCell = ({
         backgroundColor: preferences.darkMode ? "#333333" : "#f2f2f2",
       }}
       onMouseEnter={(e) => {
-        if (!isPaddingDay && window.matchMedia("(hover: hover) and (pointer: fine)").matches) createPopup(e, eventsToRender, remindersToRender, index);
+        if (
+          !isPaddingDay &&
+          window.matchMedia("(hover: hover) and (pointer: fine)").matches
+        )
+          createPopup(e, eventsToRender, remindersToRender, index);
       }}
       onMouseLeave={schedulePopupClose}
       onContextMenu={(e) => {
         e.preventDefault();
         if (!isPaddingDay) handleDayLongPress(index);
       }}
-      onClick={() => { if (!isPaddingDay) handleDayClick(index); }}
+      onClick={() => {
+        if (!isPaddingDay) handleDayClick(index);
+      }}
       key={index}
       style={getCellStyle(index)}
-      className={`relative min-w-0 min-h-0 w-full overflow-hidden ${
+      className={`relative min-w-0 min-h-0 w-full h-full overflow-hidden ${
         preferences.darkMode ? "shadow-slate-700" : "shadow-slate-200"
-      } rounded-sm shadow-sm flex flex-col items-center justify-start gap-y-1 cursor-pointer ${
+      } rounded-sm shadow-sm flex flex-col duration-300 items-center justify-start gap-y-1 cursor-pointer ${
         isCurrentDate && "shadow-cyan-400 shadow-md outline outline-slate-400"
       }`}
     >
@@ -219,7 +239,7 @@ const DayCell = ({
             className={`rounded-lg ${event.color} shadow-md p-1 my-1 mx-auto relative`}
           >
             {new Date(event.startDate).toLocaleDateString() === dateStr ? (
-              <p className="whitespace-nowrap text-xs overflow-hidden">
+              <p className="overflow-hidden text-xs whitespace-nowrap">
                 {event.summary}
               </p>
             ) : (
@@ -227,7 +247,7 @@ const DayCell = ({
                 <div
                   className={`absolute left-0 w-2 translate-x-[-75%] top-[50%] translate-y-[-50%] rounded-full ${event.color} h-1`}
                 ></div>
-                <p className="text-xs whitespace-nowrap overflow-hidden">
+                <p className="overflow-hidden text-xs whitespace-nowrap">
                   {event.summary}
                 </p>
               </>
@@ -235,26 +255,28 @@ const DayCell = ({
           </motion.div>
         ))}
       </div>
-      {newPopup && typeof document !== "undefined" && createPortal(
-        <PopUpMonthViewWindow
-          positions={mousePosition}
-          remindersToRender={popUpReminders}
-          eventsToRender={popupEvents}
-          day={hoverDay}
-          onMouseEnter={() => {
-            isHoveringPopupRef.current = true;
-            if (closePopupTimeoutRef.current) {
-              clearTimeout(closePopupTimeoutRef.current);
-              closePopupTimeoutRef.current = null;
-            }
-          }}
-          onMouseLeave={() => {
-            isHoveringPopupRef.current = false;
-            schedulePopupClose();
-          }}
-        />,
-        document.body
-      )}
+      {newPopup &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <PopUpMonthViewWindow
+            positions={mousePosition}
+            remindersToRender={popUpReminders}
+            eventsToRender={popupEvents}
+            day={hoverDay}
+            onMouseEnter={() => {
+              isHoveringPopupRef.current = true;
+              if (closePopupTimeoutRef.current) {
+                clearTimeout(closePopupTimeoutRef.current);
+                closePopupTimeoutRef.current = null;
+              }
+            }}
+            onMouseLeave={() => {
+              isHoveringPopupRef.current = false;
+              schedulePopupClose();
+            }}
+          />,
+          document.body,
+        )}
     </motion.div>
   );
 };

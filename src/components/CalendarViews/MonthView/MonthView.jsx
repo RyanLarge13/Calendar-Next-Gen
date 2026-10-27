@@ -1,5 +1,12 @@
 import { motion, animate, useMotionValue } from "framer-motion";
-import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import DatesContext from "../../../context/DatesContext.jsx";
 import UserContext from "../../../context/UserContext.jsx";
 
@@ -11,36 +18,96 @@ import {
 } from "../../../utils/helpers.js";
 import DayCell from "./DayCell.jsx";
 
-const MonthPanel = React.memo(function MonthPanel({ panelDate, todayDay, todayMonth, todayYear, getEvents }) {
-  const month = panelDate.getMonth();
-  const year = panelDate.getFullYear();
-  const paddingDays = panelDate.getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const days = useMemo(() => Array.from({ length: paddingDays + daysInMonth }, (_, index) => {
-    const dayNumber = index - paddingDays + 1;
-    const isPaddingDay = index < paddingDays;
-    const dateStr = isPaddingDay ? null : (month + 1) + "/" + dayNumber + "/" + year;
-    return { index, dayNumber, dateStr, isPaddingDay,
-      isCurrentDate: !isPaddingDay && dayNumber === todayDay && month === todayMonth && year === todayYear,
-      eventsToRender: isPaddingDay ? [] : getEvents(dateStr, month, year) };
-  }), [month, year, paddingDays, daysInMonth, todayDay, todayMonth, todayYear, getEvents]);
-  return <div className="w-1/3 shrink-0 min-w-0 h-full min-h-0 overflow-hidden p-5 box-border">
-    <div className="w-full h-full min-h-0 min-w-0 grid grid-cols-7 grid-rows-6 gap-1">
-      {days.map(({ index, dayNumber, dateStr, isCurrentDate, eventsToRender, isPaddingDay }) => (
-        <DayCell key={index} index={index} dayNumber={dayNumber} dateStr={dateStr}
-          isCurrentDate={isCurrentDate} eventsToRender={eventsToRender} month={month}
-          year={year} dateObj={new Date(todayYear, todayMonth, todayDay)} paddingDays={paddingDays} isPaddingDay={isPaddingDay} />
-      ))}
-    </div>
-  </div>;
-}, (a, b) => a.panelDate.getTime() === b.panelDate.getTime() &&
-  a.todayDay === b.todayDay && a.todayMonth === b.todayMonth &&
-  a.todayYear === b.todayYear && a.getEvents === b.getEvents);
+const MonthPanel = React.memo(
+  function MonthPanel({
+    panelDate,
+    todayDay,
+    todayMonth,
+    todayYear,
+    getEvents,
+  }) {
+    const month = panelDate.getMonth();
+    const year = panelDate.getFullYear();
+    const paddingDays = panelDate.getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const days = useMemo(
+      () =>
+        Array.from({ length: paddingDays + daysInMonth }, (_, index) => {
+          const dayNumber = index - paddingDays + 1;
+          const isPaddingDay = index < paddingDays;
+          const dateStr = isPaddingDay
+            ? null
+            : month + 1 + "/" + dayNumber + "/" + year;
+          return {
+            index,
+            dayNumber,
+            dateStr,
+            isPaddingDay,
+            isCurrentDate:
+              !isPaddingDay &&
+              dayNumber === todayDay &&
+              month === todayMonth &&
+              year === todayYear,
+            eventsToRender: isPaddingDay ? [] : getEvents(dateStr, month, year),
+          };
+        }),
+      [
+        month,
+        year,
+        paddingDays,
+        daysInMonth,
+        todayDay,
+        todayMonth,
+        todayYear,
+        getEvents,
+      ],
+    );
+    return (
+      <div className="box-border px-1 md:px-5 pt-5 pb-1 w-1/3 min-w-0 h-full min-h-0 overflow-hidden shrink-0">
+        <div className="gap-1 grid grid-cols-7 w-full min-w-0 h-full min-h-full">
+          {days.map(
+            ({
+              index,
+              dayNumber,
+              dateStr,
+              isCurrentDate,
+              eventsToRender,
+              isPaddingDay,
+            }) => (
+              <DayCell
+                key={index}
+                index={index}
+                dayNumber={dayNumber}
+                dateStr={dateStr}
+                isCurrentDate={isCurrentDate}
+                eventsToRender={eventsToRender}
+                month={month}
+                year={year}
+                dateObj={new Date(todayYear, todayMonth, todayDay)}
+                paddingDays={paddingDays}
+                isPaddingDay={isPaddingDay}
+              />
+            ),
+          )}
+        </div>
+      </div>
+    );
+  },
+  (a, b) =>
+    a.panelDate.getTime() === b.panelDate.getTime() &&
+    a.todayDay === b.todayDay &&
+    a.todayMonth === b.todayMonth &&
+    a.todayYear === b.todayYear &&
+    a.getEvents === b.getEvents,
+);
 
 const MonthView = () => {
   const { eventMap } = useContext(UserContext);
-  const { dt, setNav, registerMonthNavigation, day, dateObj } = useContext(DatesContext);
-  const [displayMonth, setDisplayMonth] = useState(() => new Date(dt.getFullYear(), dt.getMonth(), 1));
+  const { dt, setNav, registerMonthNavigation, day, dateObj } =
+    useContext(DatesContext);
+  const [displayMonth, setDisplayMonth] = useState(
+    () => new Date(dt.getFullYear(), dt.getMonth(), 1),
+  );
   const viewportRef = useRef(null);
   const widthRef = useRef(0);
   const [viewportWidth, setViewportWidth] = useState(0);
@@ -52,7 +119,8 @@ const MonthView = () => {
   const pendingNavigationRef = useRef(null);
   const desiredMonthRef = useRef(new Date(dt.getFullYear(), dt.getMonth(), 1));
   desiredMonthRef.current = new Date(dt.getFullYear(), dt.getMonth(), 1);
-  const monthOffset = (date, offset) => new Date(date.getFullYear(), date.getMonth() + offset, 1);
+  const monthOffset = (date, offset) =>
+    new Date(date.getFullYear(), date.getMonth() + offset, 1);
 
   useEffect(() => {
     const element = viewportRef.current;
@@ -78,7 +146,10 @@ const MonthView = () => {
     }
     if (next.getTime() === displayMonth.getTime()) return;
     if (animatingRef.current) return;
-    const delta = (next.getFullYear() - displayMonth.getFullYear()) * 12 + next.getMonth() - displayMonth.getMonth();
+    const delta =
+      (next.getFullYear() - displayMonth.getFullYear()) * 12 +
+      next.getMonth() -
+      displayMonth.getMonth();
     if (Math.abs(delta) !== 1 || !widthRef.current) {
       setDisplayMonth(next);
       x.set(-widthRef.current);
@@ -86,7 +157,8 @@ const MonthView = () => {
     }
     animatingRef.current = true;
     const controls = animate(x, -widthRef.current * (1 + delta), {
-      duration: 0.28, ease: [0.22, 1, 0.36, 1],
+      duration: 0.28,
+      ease: [0.22, 1, 0.36, 1],
       onComplete: () => {
         pendingNavigationRef.current = next.getTime();
         setDisplayMonth(next);
@@ -95,12 +167,15 @@ const MonthView = () => {
         const desired = desiredMonthRef.current;
         if (desired.getTime() !== next.getTime()) {
           // Catch rapid header clicks after the current transition settles.
-          const distance = (desired.getFullYear() - next.getFullYear()) * 12 + desired.getMonth() - next.getMonth();
+          const distance =
+            (desired.getFullYear() - next.getFullYear()) * 12 +
+            desired.getMonth() -
+            next.getMonth();
           if (Math.abs(distance) > 1) {
             setDisplayMonth(desired);
           }
         }
-      }
+      },
     });
     return () => controls.stop();
   }, [dt, x]);
@@ -112,7 +187,8 @@ const MonthView = () => {
     animatingRef.current = true;
     const width = widthRef.current;
     await animate(x, -width * (1 + delta), {
-      duration: 0.24, ease: [0.22, 1, 0.36, 1]
+      duration: 0.24,
+      ease: [0.22, 1, 0.36, 1],
     });
     const next = monthOffset(displayMonth, delta);
     pendingNavigationRef.current = next.getTime();
@@ -122,18 +198,26 @@ const MonthView = () => {
     setNav((previous) => previous + delta);
   };
 
-  useEffect(() => registerMonthNavigation((delta) => navigateRef.current?.(delta)), [registerMonthNavigation]);
+  useEffect(
+    () => registerMonthNavigation((delta) => navigateRef.current?.(delta)),
+    [registerMonthNavigation],
+  );
 
   const finishSwipe = async (_, info) => {
     if (animatingRef.current || !widthRef.current) return;
     const threshold = widthRef.current * 0.2;
-    const delta = info.offset.x < -threshold || info.velocity.x < -550 ? 1 :
-      info.offset.x > threshold || info.velocity.x > 550 ? -1 : 0;
+    const delta =
+      info.offset.x < -threshold || info.velocity.x < -550
+        ? 1
+        : info.offset.x > threshold || info.velocity.x > 550
+          ? -1
+          : 0;
     if (delta) await navigateRef.current(delta);
     else {
       animatingRef.current = true;
       await animate(x, -widthRef.current, {
-        duration: 0.24, ease: [0.22, 1, 0.36, 1]
+        duration: 0.24,
+        ease: [0.22, 1, 0.36, 1],
       });
       animatingRef.current = false;
     }
@@ -141,14 +225,25 @@ const MonthView = () => {
 
   const onWheel = (event) => {
     // Leave trackpad horizontal swipes, pinch zoom, and nested scrolling alone.
-    if (event.ctrlKey || Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
-    if (event.target.closest("[data-month-popup], input, textarea, select, [contenteditable=true]")) return;
+    if (event.ctrlKey || Math.abs(event.deltaX) > Math.abs(event.deltaY))
+      return;
+    if (
+      event.target.closest(
+        "[data-month-popup], input, textarea, select, [contenteditable=true]",
+      )
+    )
+      return;
     event.preventDefault();
     const now = performance.now();
     if (now - wheelLastTimeRef.current > 240) wheelAccumulatorRef.current = 0;
     wheelLastTimeRef.current = now;
     if (animatingRef.current || now < wheelCooldownRef.current) return;
-    const multiplier = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? window.innerHeight : 1;
+    const multiplier =
+      event.deltaMode === 1
+        ? 16
+        : event.deltaMode === 2
+          ? window.innerHeight
+          : 1;
     wheelAccumulatorRef.current += event.deltaY * multiplier;
     const magnitude = Math.abs(wheelAccumulatorRef.current);
     // Small wheel gestures require more input; strong scrolls cross sooner.
@@ -265,9 +360,10 @@ const MonthView = () => {
 
       // Derive repeating instances from current eventMap so edits cannot leave stale clones.
       for (const event of repeatEvents) {
-        const occurs = event?.repeats?.kind && event?.repeats?.rules
-          ? handleFloatRepeat(event, targetDateObj)
-          : eventOccursOnDay(event, targetDateObj);
+        const occurs =
+          event?.repeats?.kind && event?.repeats?.rules
+            ? handleFloatRepeat(event, targetDateObj)
+            : eventOccursOnDay(event, targetDateObj);
         if (occurs) eventsToSort.push(cloneEventForDay(event, targetDateObj));
       }
 
@@ -296,13 +392,27 @@ const MonthView = () => {
 
   const panels = [-1, 0, 1].map((offset) => {
     const panelDate = monthOffset(displayMonth, offset);
-    return <MonthPanel key={panelDate.getFullYear() + "-" + panelDate.getMonth()}
-      panelDate={panelDate} todayDay={day} todayMonth={dateObj.getMonth()}
-      todayYear={dateObj.getFullYear()} getEvents={getIndicesForEvents} />;
+    return (
+      <MonthPanel
+        key={panelDate.getFullYear() + "-" + panelDate.getMonth()}
+        panelDate={panelDate}
+        todayDay={day}
+        todayMonth={dateObj.getMonth()}
+        todayYear={dateObj.getFullYear()}
+        getEvents={getIndicesForEvents}
+      />
+    );
   });
 
   return (
-    <motion.div ref={viewportRef} onWheel={onWheel} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.22 }} className="w-full h-full min-h-0 overflow-hidden">
+    <motion.div
+      ref={viewportRef}
+      onWheel={onWheel}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.22 }}
+      className="w-full h-full min-h-0 overflow-hidden"
+    >
       <motion.div
         className="flex w-[300%] h-full touch-pan-y will-change-transform"
         style={{ x }}
