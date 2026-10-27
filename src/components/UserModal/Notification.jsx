@@ -370,12 +370,12 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                 { label: "Events", accent: "indigo" },
                 { label: "Reminders", accent: "amber" },
                 { label: "System", accent: "emerald" },
-              ].map((filter) => (
+              ].map((option) => (
                 <button
-                  key={filter.label}
+                  key={option.label}
                   type="button"
-                  onClick={() => setFilter(filter.label)}
-                  aria-pressed={filter.label === filter}
+                  onClick={() => setFilter(option.label)}
+                  aria-pressed={filter === option.label}
                   className={`
         flex-shrink-0 px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-xl sm:rounded-2xl text-[11px] sm:text-xs font-semibold
         border shadow-sm transition active:scale-[0.97]
@@ -395,19 +395,19 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                       className={`
             h-2 w-2 rounded-full
             ${
-              filter.accent === "cyan"
+              option.accent === "cyan"
                 ? "bg-amber-400"
-                : filter.accent === "rose"
+                : option.accent === "rose"
                   ? "bg-rose-400"
-                  : filter.accent === "indigo"
+                  : option.accent === "indigo"
                     ? "bg-indigo-400"
-                    : filter.accent === "amber"
+                    : option.accent === "amber"
                       ? "bg-amber-400"
                       : "bg-emerald-400"
             }
           `}
                     />
-                    {filter.label}
+                    {option.label}
                   </span>
                 </button>
               ))}
