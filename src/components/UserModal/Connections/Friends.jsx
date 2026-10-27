@@ -87,13 +87,19 @@ const Friends = () => {
     frameRef.current = requestAnimationFrame(scanFrame);
   };
 
+  useEffect(() => {
+    if (!scanning || !videoRef.current || !streamRef.current) return;
+    videoRef.current.srcObject = streamRef.current;
+    videoRef.current.play().then(() => { frameRef.current = requestAnimationFrame(scanFrame); }).catch(() => { stopCamera(); setMessage("Camera preview could not start."); });
+  }, [scanning]);
+
   const startCamera = async () => {
     setMessage("");
     if (!navigator.mediaDevices?.getUserMedia) { setMessage("Camera scanning requires HTTPS and camera access."); return; }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false });
       streamRef.current = stream; setScanning(true);
-      if (videoRef.current) { videoRef.current.srcObject = stream; await videoRef.current.play(); frameRef.current = requestAnimationFrame(scanFrame); }
+
     } catch { stopCamera(); setMessage("Could not open the camera. Check camera permissions."); }
   };
 
