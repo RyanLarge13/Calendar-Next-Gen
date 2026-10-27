@@ -9,6 +9,7 @@ import Notification from "../Notification";
 import Options from "../Options";
 import Settings from "../Settings/Settings";
 import Connections from "../Connections/Connections";
+import Messages from "../Messages";
 import SocialLogin from "./SocialLogin";
 
 const LoginLogout = () => {
@@ -93,6 +94,7 @@ const LoginLogout = () => {
     <>
       <AnimatePresence>
         {option === "connections" && <Connections setOption={setOption} />}
+        {option === "messages" && <Messages setOption={setOption} />}
         {option === "settings" && <Settings setOption={setOption} />}
       </AnimatePresence>
       <Notification idsToUpdate={idsToUpdate} setIdsToUpdate={setIdsToUpdate} />
