@@ -349,6 +349,13 @@ export const deleteReminder = (username, reminderId, token) => {
   return res;
 };
 
+export const deleteRemindersBulk = (ids, token) => {
+  return Axios.delete(`${productionUrl}/delete/reminders/bulk`, {
+    headers: { Authorization: `Bearer ${token}` },
+    data: { ids },
+  });
+};
+
 //Notifications
 
 export const getNotificationsAtStart = (username, token) => {
