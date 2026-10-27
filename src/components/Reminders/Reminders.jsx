@@ -12,9 +12,13 @@ import Reminder from "./Reminder.jsx";
 import { MdOutlineClearAll } from "react-icons/md";
 import { useModalActions } from "../../context/ContextHooks/ModalContext.jsx";
 import { LocalStorage_UpdateGroupingPreferences } from "../../utils/localStorageHelpers.ts";
+import { deleteRemindersBulk } from "../../utils/api";
 
 const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
-  const { reminders, preferences } = useContext(UserContext);
+  const { reminders, setReminders, preferences } = useContext(UserContext);
+  const [deletingCompleted, setDeletingCompleted] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
+  const [confirmBulkDelete, setConfirmBulkDelete] = useState(false);
   // const { preferences } = useContext(UserContext); // Created for testing reminders
   const { dateObj, string, setString } = useContext(DatesContext);
   const { setType, setMenu, setAddNewEvent } = useContext(InteractiveContext);
@@ -63,6 +67,34 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
   const completedRemindersToRender = useMemo(() => {
     return reminders.filter((r) => r.completed);
   }, [reminders, grouping]);
+
+  const eligibleForBulkDelete = useMemo(() => {
+    const now = Date.now();
+    return reminders.filter((reminder) => {
+      const due = new Date(reminder.time).getTime();
+      return reminder.completed === true && !reminder.eventRefId &&
+        Number.isFinite(due) && due < now && reminder.id != null;
+    });
+  }, [reminders]);
+
+  const deleteOldCompleted = async () => {
+    if (deletingCompleted || !eligibleForBulkDelete.length) return;
+    setDeletingCompleted(true);
+    setDeleteError("");
+    const ids = [...new Set(eligibleForBulkDelete.map((reminder) => reminder.id))];
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) throw new Error("You must be signed in to delete reminders.");
+      await deleteRemindersBulk(ids, token);
+      const deletedIds = new Set(ids);
+      setReminders((previous) => previous.filter((reminder) => !deletedIds.has(reminder.id)));
+      setConfirmBulkDelete(false);
+    } catch (error) {
+      setDeleteError(error?.response?.data?.message || error.message || "Could not delete reminders. Please try again.");
+    } finally {
+      setDeletingCompleted(false);
+    }
+  };
 
   const openModalAndSetType = () => {
     if (!string) {
@@ -161,11 +193,15 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
               <div className="flex flex-wrap items-center gap-2">
                 {/* Delete Completed */}
                 <button
+              type="button"
+              onClick={() => { setDeleteError(""); setConfirmBulkDelete(true); }}
+              disabled={deletingCompleted || eligibleForBulkDelete.length === 0}
+              title="Delete past completed reminders not attached to events"
                   className={`
                 flex flex-col items-center justify-center
                 h-14 w-14 rounded-2xl border shadow-sm
                 text-[10px] font-semibold gap-1
-                transition active:scale-[0.95]
+                transition active:scale-[0.95] disabled:opacity-40 disabled:cursor-not-allowed
                 ${
                   preferences.darkMode
                     ? "bg-white/5 border-white/10 text-white/70 hover:bg-rose-500/20 hover:text-rose-200"
@@ -408,6 +444,15 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
             </button>
           </div>
         </div>
+        {deleteError && <p role="alert" className="my-3 text-sm text-red-500">{deleteError}</p>}
+        {confirmBulkDelete && <div className={`my-4 rounded-2xl border p-4 ${preferences.darkMode ? "bg-[#202020] border-white/15" : "bg-white border-black/15"}`} role="alertdialog" aria-modal="true" aria-label="Confirm bulk reminder deletion">
+          <p className="font-semibold">Delete {eligibleForBulkDelete.length} old completed reminders?</p>
+          <p className="text-sm opacity-70 mt-2">Only completed reminders with past due dates and no linked event will be deleted. This cannot be undone.</p>
+          <div className="flex flex-wrap gap-3 mt-4">
+            <button type="button" disabled={deletingCompleted} onClick={() => setConfirmBulkDelete(false)} className="rounded-xl border px-4 py-2 text-sm">Cancel</button>
+            <button type="button" disabled={deletingCompleted || !eligibleForBulkDelete.length} onClick={deleteOldCompleted} className="rounded-xl bg-red-600 text-white px-4 py-2 text-sm disabled:opacity-50">{deletingCompleted ? "Deleting…" : "Delete reminders"}</button>
+          </div>
+        </div>}
         <GroupedReminders
           groupType={grouping.complete}
           reminders={completedRemindersToRender}
