@@ -109,7 +109,7 @@ export const UserProvider = ({ children }) => {
   const subscribedFresh = useRef(false);
 
   // Update when necessary for indexedDB changes
-  const myLocalDBVersion = Math.max(4, Number(import.meta.env.VITE_INDEXED_DB_VERSION) || 0);
+  const myLocalDBVersion = Math.max(5, Number(import.meta.env.VITE_INDEXED_DB_VERSION) || 0);
 
   const updateStatus = () => {
     setIsOnline(navigator.onLine);
