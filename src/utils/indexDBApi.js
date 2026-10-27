@@ -35,9 +35,58 @@ class IndexedDBManager {
           });
           objStore.createIndex("locations", "locations", { unique: false });
         }
+        // Durable mutation outbox. Never clear these stores during entity cache refreshes.
+        if (!myDb.objectStoreNames.contains("mutationQueue")) {
+          const queue = myDb.createObjectStore("mutationQueue", { keyPath: "id" });
+          queue.createIndex("byUserStatusCreated", ["userId", "status", "createdAt"]);
+          queue.createIndex("byStatusNextAttempt", ["status", "nextAttemptAt"]);
+          queue.createIndex("byEntity", ["entityType", "entityId"]);
+        }
+        if (!myDb.objectStoreNames.contains("mutationQueueFailures")) {
+          const failures = myDb.createObjectStore("mutationQueueFailures", { keyPath: "id" });
+          failures.createIndex("byUser", "userId");
+        }
       });
     });
   }
+
+  // Queue primitives only: callers decide when to enqueue, retry, acknowledge or archive.
+  // Do not persist Authorization headers, cookies or other credentials in request metadata.
+  async queueMutation(mutation) {
+    if (!mutation?.userId || !mutation?.method || !mutation?.url) throw new Error("Queue mutation requires userId, method and url");
+    const method = mutation.method.toUpperCase();
+    if (!["POST", "PUT", "PATCH", "DELETE"].includes(method)) throw new Error("Unsupported mutation method");
+    const now = Date.now();
+    const record = { ...mutation, id: mutation.id ?? crypto.randomUUID(), method,
+      status: "pending", attempts: 0, createdAt: now, updatedAt: now,
+      nextAttemptAt: now };
+    return this.queueTransaction("mutationQueue", "readwrite", store => store.add(record));
+  }
+
+  async queueTransaction(name, mode, operation) {
+    await this.ready;
+    return new Promise((resolve, reject) => {
+      const tx = this.db.transaction(name, mode);
+      let result;
+      const request = operation(tx.objectStore(name));
+      request.onsuccess = () => { result = request.result; };
+      tx.oncomplete = () => resolve(result);
+      tx.onerror = () => reject(tx.error);
+      tx.onabort = () => reject(tx.error);
+    });
+  }
+
+  getQueuedMutations() { return this.queueTransaction("mutationQueue", "readonly", store => store.getAll()); }
+  getQueuedMutation(id) { return this.queueTransaction("mutationQueue", "readonly", store => store.get(id)); }
+  deleteQueuedMutation(id) { return this.queueTransaction("mutationQueue", "readwrite", store => store.delete(id)); }
+  async updateQueuedMutation(id, changes) {
+    const old = await this.getQueuedMutation(id);
+    if (!old) throw new Error("Queued mutation not found");
+    const { id: ignored, ...safeChanges } = changes;
+    return this.queueTransaction("mutationQueue", "readwrite", store => store.put({ ...old, ...safeChanges, id, updatedAt: Date.now() }));
+  }
+  archiveQueuedMutation(record) { return this.queueTransaction("mutationQueueFailures", "readwrite", store => store.put(record)); }
+  getArchivedMutations() { return this.queueTransaction("mutationQueueFailures", "readonly", store => store.getAll()); }
 
   async getUserLocations() {
     await this.ready;
