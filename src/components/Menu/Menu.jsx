@@ -21,7 +21,7 @@ import Events from "../Events/Events.jsx";
 const Menu = () => {
   const { menu, showCategory, setShowCategory, setMenu, setEvent } =
     useContext(InteractiveContext);
-  const { lists, setLists, preferences, events } = useContext(UserContext);
+  const { lists, setLists, preferences } = useContext(UserContext);
   const { dateObj } = useContext(DatesContext);
 
   const [timeOfDay, setTimeOfDay] = useState(null);
