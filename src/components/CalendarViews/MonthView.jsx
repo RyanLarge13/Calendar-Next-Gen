@@ -1,3 +1,4 @@
+import { getRemindersForDay } from "../../utils/reminderMapHelpers.js";
 import { motion } from "framer-motion";
 import {
   useCallback,
@@ -21,7 +22,7 @@ import PopUpMonthViewWindow from "../Misc/PopUpMonthViewWindow.jsx";
 import { useModalActions } from "../../context/ContextHooks/ModalContext.jsx";
 
 const MonthView = () => {
-  const { eventMap, preferences, reminders } = useContext(UserContext);
+  const { eventMap, preferences, remindersMap } = useContext(UserContext);
   const { setMenu, setShowLogin } = useContext(InteractiveContext);
   const {
     paddingDays,
@@ -284,7 +285,7 @@ const MonthView = () => {
 
       const eventsToRender = getIndicesForEvents(dateStr);
 
-      const remindersToRender = reminders.filter(
+      const remindersToRender = getRemindersForDay(remindersMap, new Date(dateStr)).filter(
         (reminder) => new Date(reminder.time).toLocaleDateString() === dateStr,
       );
 
@@ -305,7 +306,7 @@ const MonthView = () => {
     year,
     day,
     dateObj,
-    reminders,
+    remindersMap,
     getIndicesForEvents,
   ]);
 
