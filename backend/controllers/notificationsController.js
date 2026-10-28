@@ -1,7 +1,6 @@
 import prisma from "../utils/prismaClient.js";
 import { sendNotification } from "../utils/notificationService.js";
 import signToken from "../auth/signToken.js";
-import cron from "node-cron";
 const connectedClients = [];
 
 const checkForExistingSubscriptionOnUser = (existingNotifSubs, newEndpoint) => {
@@ -280,43 +279,49 @@ const pauseAllNotifications = async (req, res) => {
   }
 };
 
-const processNotifications = async (userId, res) => {
+const processingUsers = new Set();
+const processNotifications = async (userId) => {
+  if (processingUsers.has(userId)) return;
+  processingUsers.add(userId);
   try {
-    const notifications = await prisma.notification.findMany({
-      where: {
-        sentNotification: false,
-        userId: userId,
-      },
+    const pending = await prisma.notification.findMany({
+      where: { userId, sentNotification: false, time: { lte: new Date() } },
+      orderBy: { time: "asc" },
       take: 25,
     });
-    let delay = 3000;
-    const notificationIdsToUpdate = [];
-    for (const notification of notifications) {
-      if (new Date(notification.time) <= new Date()) {
-        setTimeout(() => {
-          sendSSEEventToClient(userId, notification);
-        }, delay);
-        delay += 3000;
-        notificationIdsToUpdate.push(notification.id);
+    for (const notification of pending) {
+      const frame = `id: ${notification.id}\ndata: ${JSON.stringify(notification)}\n\n`;
+      let delivered = false;
+      for (const client of connectedClients.filter((c) => c.id === userId)) {
+        if (client.response.destroyed || client.response.writableEnded) continue;
+        try {
+          client.response.write(frame);
+          delivered = true;
+        } catch (error) {
+          console.warn("SSE write failed:", error);
+        }
+      }
+      if (delivered) {
+        await prisma.notification.updateMany({
+          where: { id: notification.id, userId, sentNotification: false },
+          data: { sentNotification: true },
+        });
       }
     }
-    if (notificationIdsToUpdate.length > 0) {
-      await prisma.notification.updateMany({
-        where: { id: { in: notificationIdsToUpdate } },
-        data: { sentNotification: true },
-      });
-    }
   } catch (error) {
-    console.error("Error sending notifications:", error);
+    console.error("Error delivering notifications:", error);
+  } finally {
+    processingUsers.delete(userId);
   }
 };
 
-function sendSSEEventToClient(clientId, eventData) {
-  const client = connectedClients.find((c) => c.id === clientId);
-  if (client) {
-    client.response.write(`data: ${JSON.stringify(eventData)}\n\n`);
+// One shared poller for all active users instead of one cron job per tab.
+const notificationPoller = setInterval(() => {
+  for (const id of new Set(connectedClients.map((client) => client.id))) {
+    void processNotifications(id);
   }
-}
+}, 15000);
+notificationPoller.unref?.();
 
 export const getNotifications = async (req, res) => {
   const id = req.params.userId;
