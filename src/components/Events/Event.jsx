@@ -84,21 +84,25 @@ const Event = () => {
     }
   }, [event]);
 
+  // Reload per event identity; ignore late responses from a previously open event.
   useEffect(() => {
-    if (event?.attachmentLength > 0) {
-      setImagesLoading(true);
-      const token = localStorage.getItem("authToken");
-      fetchAttachments(event.id, token)
+    let active = true;
+    setFetchedImages([]);
+    setImagesLoading(Boolean(event?.id));
+    if (event?.id) {
+      fetchAttachments(event.id, localStorage.getItem("authToken"))
         .then((res) => {
-          console.log("Attachment response from server for event");
-          console.log(res);
-          setFetchedImages(res.data.attachments);
-          setImagesLoading(false);
+          if (active) setFetchedImages(res.data.attachments || []);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          console.error("Unable to load event attachments", err);
+        })
+        .finally(() => {
+          if (active) setImagesLoading(false);
+        });
     }
-    return () => setFetchedImages([]);
-  }, []);
+    return () => { active = false; };
+  }, [event?.id]);
 
   useEffect(() => {
     if (!event) return;
@@ -292,36 +296,51 @@ const Event = () => {
   };
 
   const uploadFiles = async (e) => {
-    const newFiles = [...e.target.files];
-    const uploadableAttachments = [];
-
-    for (const file of newFiles) {
-      try {
-        const compressedFile = await compressImage(file);
-        const compressedArrayBuffer = await compressedFile.arrayBuffer();
-        const compressedFileContent = new Uint8Array(compressedArrayBuffer);
-        const newFile = {
-          img: URL.createObjectURL(compressedFile),
-          mimetype: file.type,
-          filename: file.name,
-          content: compressedFileContent,
-        };
-        uploadableAttachments.push(newFile);
-      } catch (err) {
-        console.log(`Error compressing image: ${err}`);
-      }
-    }
-
-    setFetchedImages((prev) => [
-      ...prev,
-      ...uploadableAttachments.map((img) => img.img),
-    ]);
-
+    const files = [...(e.target.files || [])];
+    const eventId = event?.id;
+    e.target.value = "";
+    if (!eventId || !files.length) return;
+    setImagesLoading(true);
     try {
+      const uploadableAttachments = [];
+      for (const file of files) {
+        const compressedFile = await compressImage(file);
+        const bytes = new Uint8Array(await compressedFile.arrayBuffer());
+        uploadableAttachments.push({
+          mimetype: compressedFile.type || file.type,
+          filename: file.name,
+          content: bytes,
+        });
+      }
       const token = localStorage.getItem("authToken");
-      await createAttachments(uploadableAttachments, event.id, token);
-    } catch (err) {
-      console.log(`Error uploading new attachments. Error: ${err}`);
+      const response = await createAttachments(uploadableAttachments, eventId, token);
+      const saved = await fetchAttachments(eventId, token);
+      // Never apply a completed upload to a different event.
+      if (eventId !== event?.id) return;
+      setFetchedImages(saved.data.attachments || []);
+      const attachmentLength = response.data.attachmentLength;
+      setEvent((current) =>
+        current?.id === eventId ? { ...current, attachmentLength } : current,
+      );
+      setEventMap((previous) => {
+        const next = new Map(previous);
+        for (const [key, bucket] of next) {
+          const events = bucket?.events || [];
+          if (events.some((item) => item.id === eventId)) {
+            next.set(key, {
+              ...bucket,
+              events: events.map((item) =>
+                item.id === eventId ? { ...item, attachmentLength } : item,
+              ),
+            });
+          }
+        }
+        return next;
+      });
+    } catch (error) {
+      console.error("Unable to save event images", error);
+    } finally {
+      setImagesLoading(false);
     }
   };
 
