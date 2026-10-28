@@ -1,4 +1,5 @@
-import { useContext, useEffect, useState } from "react";
+import { getEventOccurrencesForDay } from "../../utils/eventMapHelpers";
+import { useContext, useEffect, useMemo, useState } from "react";
 import {
   BsFillArrowLeftCircleFill,
   BsFillArrowRightCircleFill,
@@ -16,6 +17,15 @@ const SideBar = () => {
   const { setEvent } = useContext(InteractiveContext);
 
   const [temporaryNav, setTemporaryNav] = useState(0);
+  const markedDays = useMemo(() => {
+    const days = new Map();
+    const count = new Date(temporaryYear, temporaryMonth + 1, 0).getDate();
+    for (let day = 1; day <= count; day++) {
+      const first = getEventOccurrencesForDay(eventMap, new Date(temporaryYear, temporaryMonth, day))[0];
+      if (first) days.set(day, first);
+    }
+    return days;
+  }, [eventMap, temporaryYear, temporaryMonth]);
   const [temporaryString, setTemporaryString] = useState(
     new Date().toLocaleDateString(),
   );
@@ -136,7 +146,7 @@ const SideBar = () => {
                 const dateStr = `${
                   temporaryMonth + 1
                 }/${dayNumber}/${temporaryYear}`;
-                const event = eventMap.get(`${temporaryYear}-${temporaryMonth}`)?.events?.find((item) => item.date === dateStr);
+                const event = dayNumber > 0 ? markedDays.get(dayNumber) : undefined;
 
                 return (
                   <div
