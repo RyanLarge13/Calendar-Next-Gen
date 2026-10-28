@@ -1,3 +1,4 @@
+import { updateReminderInMap, removeRemindersFromMap } from "../../utils/reminderMapHelpers.js";
 import { useContext, useRef, useState } from "react";
 import UserContext from "../../context/UserContext.jsx";
 import {
@@ -35,9 +36,8 @@ const Reminder = ({
   simpleView = false,
 }) => {
   const {
-    reminders = [],
-    events = [],
-    setReminders,
+    getEventById,
+    setRemindersMap,
     user,
     preferences,
   } = useContext(UserContext);
@@ -63,15 +63,7 @@ const Reminder = ({
       return;
     }
 
-    setReminders((prev) =>
-      prev.map((r) => {
-        if (r.id === reminder.id) {
-          return { ...r, notes: reminderNote };
-        } else {
-          return r;
-        }
-      }),
-    );
+    setRemindersMap((prev) => updateReminderInMap(prev, reminder.id, { notes: reminderNote }));
 
     try {
       const token = localStorage.getItem("authToken");
@@ -89,15 +81,7 @@ const Reminder = ({
       return;
     }
 
-    setReminders((prev) => {
-      prev.map((r) => {
-        if (r.id === reminder.id) {
-          return { ...r, title: reminderTitle };
-        } else {
-          return r;
-        }
-      });
-    });
+    setRemindersMap((prev) => updateReminderInMap(prev, reminder.id, { title: reminderTitle }));
 
     try {
       const token = localStorage.getItem("authToken");
@@ -109,18 +93,7 @@ const Reminder = ({
   };
 
   const toggleComplete = async (reminderInfo) => {
-    const newReminders = reminders.map((r) => {
-      if (r.id === reminderInfo.reminderId) {
-        return {
-          ...r,
-          completed: reminderInfo.completed,
-        };
-      } else {
-        return r;
-      }
-    });
-
-    setReminders(newReminders);
+    setRemindersMap((prev) => updateReminderInMap(prev, reminderInfo.reminderId, { completed: reminderInfo.completed }));
     try {
       const token = localStorage.getItem("authToken");
       await updateReminderComplete(reminderInfo, token);
@@ -147,8 +120,8 @@ const Reminder = ({
   // };
 
   const openRelatedEvent = (eventRefId) => {
-    const eventOfReminder = events.filter((event) => event.id === eventRefId);
-    setStateAndPushWindowState(() => setEvent(eventOfReminder[0]));
+    const linkedEvent = getEventById(eventRefId);
+    if (linkedEvent) setStateAndPushWindowState(() => setEvent(linkedEvent));
   };
 
   const addSelected = (id) => {
@@ -186,8 +159,7 @@ const Reminder = ({
   const deleteAReminder = (id) => {
     const token = localStorage.getItem("authToken");
 
-    const newReminders = reminders.filter((reminder) => reminder.id !== id);
-    setReminders(newReminders);
+    setRemindersMap((prev) => removeRemindersFromMap(prev, [id]));
 
     if (token) {
       deleteReminder(user.username, id, token)
