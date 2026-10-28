@@ -9,7 +9,7 @@ const getSignedUrl = async (filename) => {
   const [url] = await file.getSignedUrl({
     version: "v4",
     action: "read",
-    expires: Date.now() + 20000,
+    expires: Date.now() + 15 * 60 * 1000,
   });
 
   return url;
@@ -133,20 +133,26 @@ export const createAttachments = async (req, res) => {
   const event = await prisma.event.findFirst({ where: { id: eventId, userId } });
   if (!event) return res.status(404).json({ message: "Event not found" });
 
+  // Validate the entire batch before writing any object to storage.
+  for (const attachment of attachments) {
+    const { filename, mimetype, content } = attachment || {};
+    if (typeof filename !== "string" || !filename.trim() ||
+        typeof mimetype !== "string" || !mimetype.startsWith("image/") ||
+        !content || typeof content !== "object") {
+      return res.status(400).json({ message: "Invalid image attachment" });
+    }
+    const size = Object.values(content).length;
+    if (!size || size > 10 * 1024 * 1024) {
+      return res.status(400).json({ message: "Each image must be 1 byte to 10 MB" });
+    }
+  }
+
   const uploadedKeys = [];
   try {
     const rows = [];
     for (const attachment of attachments) {
       const { filename, mimetype, content } = attachment || {};
-      if (typeof filename !== "string" || !filename.trim() ||
-          typeof mimetype !== "string" || !mimetype.startsWith("image/") ||
-          !content || typeof content !== "object") {
-        return res.status(400).json({ message: "Invalid image attachment" });
-      }
       const bytes = Buffer.from(Object.values(content));
-      if (!bytes.length || bytes.length > 10 * 1024 * 1024) {
-        return res.status(400).json({ message: "Each image must be 1 byte to 10 MB" });
-      }
       const key = `events/${userId}/${eventId}/${randomUUID()}`;
       await bucket.file(key).save(bytes, {
         metadata: { contentType: mimetype },
