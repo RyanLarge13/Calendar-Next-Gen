@@ -26,7 +26,7 @@ const MainPage = () => {
     setShowNotifs,
     menu, showCategory, setShowCategory, showNotifs, showLogin, event, showDatePicker, setShowDatePicker, showFullDatePicker, setShowFullDatePicker,
   } = useContext(InteractiveContext);
-  const { getEventById } = useContext(UserContext);
+  const { eventsById } = useContext(UserContext);
 
   const { openModal, closeModal } = useModalActions();
   const modalOpen = useModalState();
@@ -89,14 +89,14 @@ const MainPage = () => {
 
       if (uuid) {
         closeMenu();
-        const e = getEventById(uuid);
+        const e = eventsById.get(String(uuid));
 
         if (e) {
           setStateAndPushWindowState(() => setEvent(e));
         }
       }
     }
-  }, [location]);
+  }, [location, eventsById]);
 
   const closeMenu = () => {
     setMenu((prev) => {
