@@ -34,6 +34,8 @@ const Event = () => {
   const [timeLeft, setTimeLeft] = useState(null);
   const [width, setWidth] = useState(0);
   const [timeInEvent, setTimeInEvent] = useState(0);
+  const activeEventIdRef = useRef(event?.id);
+  activeEventIdRef.current = event?.id;
   const [fetchedImages, setFetchedImages] = useState([]);
   const [imagesLoading, setImagesLoading] = useState(false);
   const [maximize, setMaximize] = useState(false);
@@ -316,7 +318,7 @@ const Event = () => {
       const response = await createAttachments(uploadableAttachments, eventId, token);
       const saved = await fetchAttachments(eventId, token);
       // Never apply a completed upload to a different event.
-      if (eventId !== event?.id) return;
+      if (eventId !== activeEventIdRef.current) return;
       setFetchedImages(saved.data.attachments || []);
       const attachmentLength = response.data.attachmentLength;
       setEvent((current) =>
