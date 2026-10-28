@@ -1,5 +1,5 @@
 import { indexEventsById } from "../utils/eventMapHelpers";
-import { createContext, useState, useEffect, useRef, useMemo } from "react";
+import { createContext, useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { weekDays } from "../constants/dateAndTimeConstants";
 import { holidays } from "../constants/holidays";
 import {
@@ -59,7 +59,7 @@ export const UserProvider = ({ children }) => {
   const [eventMap, setEventMap] = useState(new Map());
   const [eventMapDays, setEventMapDays] = useState(new Map());
   const eventsById = useMemo(() => indexEventsById(eventMap), [eventMap]);
-  const getEventById = (id) => id == null ? undefined : eventsById.get(String(id));
+  const getEventById = useCallback((id) => id == null ? undefined : eventsById.get(String(id)), [eventsById]);
   const [timers, setTimers] = useState(getTimers() || []);
   // const [timers, setTimers] =
   //   useState(
