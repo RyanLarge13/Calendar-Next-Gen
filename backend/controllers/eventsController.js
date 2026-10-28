@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import prisma from "../utils/prismaClient.js";
 import { bucket } from "../utils/googleStorage.js";
 
@@ -109,108 +110,71 @@ const createReminders = async (event) => {
   return newReminders;
 };
 
+/**
+ * Upload attachments for an event owned by the authenticated user.
+ * Storage object keys are unique per attachment; original filenames remain
+ * metadata only. Persist the attachment rows and count together after uploads.
+ * If persistence fails, remove the newly uploaded objects (best effort).
+ * Existing legacy objects are untouched.
+ */
 export const createAttachments = async (req, res) => {
-  const newEventId = req.params.newEventId;
-  // Does new event id exist? It should always from frontend...
-  const { attachments } = req.body;
-  const { id } = req.user;
+  const eventId = req.params.newEventId;
+  const userId = req.user?.id;
+  const attachments = req.body?.attachments;
 
-  if (!id) {
-    res
-      .status(401)
-      .json({ message: "You are not authorized to make this request" });
-    return;
+  if (!userId) return res.status(401).json({ message: "Unauthorized" });
+  if (!eventId || !Array.isArray(attachments) || !attachments.length) {
+    return res.status(400).json({ message: "Event ID and attachments are required" });
+  }
+  if (attachments.length > 20) {
+    return res.status(400).json({ message: "Maximum 20 attachments per request" });
   }
 
-  // Why did we not first create or check if first the event already exists before creating attachments?? Hmmmmmmmmmm
-  // Well we know in the frontend that you can only create attachments if you are currently making a new event
-  // or if..... you already have an event and are trying to update it.
+  const event = await prisma.event.findFirst({ where: { id: eventId, userId } });
+  if (!event) return res.status(404).json({ message: "Event not found" });
 
-  // So what do we do, lets review.
-
-  // Well, do we check to see if the event is there and has an attachments property? I must say yes, probably. Because if this is anm update
-  //Then we need to make sure the event has a true value in that spot!!!!
-
+  const uploadedKeys = [];
   try {
-    const event = await prisma.event.findUnique({ where: { id: newEventId } });
-
-    if (!event) {
-      console.log(
-        "Why is there no event here when trying to create an attachment!?",
-      );
-      res.status(400).json({
-        message:
-          "Yes, a 400 status. This is most likely you doing something you should not be doing on my app.",
+    const rows = [];
+    for (const attachment of attachments) {
+      const { filename, mimetype, content } = attachment || {};
+      if (typeof filename !== "string" || !filename.trim() ||
+          typeof mimetype !== "string" || !mimetype.startsWith("image/") ||
+          !content || typeof content !== "object") {
+        return res.status(400).json({ message: "Invalid image attachment" });
+      }
+      const bytes = Buffer.from(Object.values(content));
+      if (!bytes.length || bytes.length > 10 * 1024 * 1024) {
+        return res.status(400).json({ message: "Each image must be 1 byte to 10 MB" });
+      }
+      const key = `events/${userId}/${eventId}/${randomUUID()}`;
+      await bucket.file(key).save(bytes, {
+        metadata: { contentType: mimetype },
+        resumable: false,
+        preconditionOpts: { ifGenerationMatch: 0 },
       });
-      return;
+      uploadedKeys.push(key);
+      rows.push({ filename, mimetype, content: key, eventId, userId });
     }
 
-    // Nope! Do not need to check for length only add length.
-    // Another try catch for custom error handling? This is crazy
-    // I just thought.. Hopefully the event exists first huh? I guess I should look back at the steps before we get here
-
-    try {
-      await prisma.event.update({
-        where: { id: newEventId },
-        data: { attachmentLength: event.attachmentLength + attachments.length },
+    const updatedEvent = await prisma.$transaction(async (tx) => {
+      await tx.attachment.createMany({ data: rows });
+      return tx.event.update({
+        where: { id: eventId, userId },
+        data: { attachmentLength: { increment: rows.length } },
+        select: { id: true, attachmentLength: true },
       });
-      res.status(200).json({ message: "Nice. New attachments created!" });
-    } catch (err) {
-      console.log("Error updating event in db for longer attachment length");
-      console.log(err);
-      res.status(500).json({ message: "Sorry, server dump" });
-      return;
-    }
-  } catch (err) {
-    console.log("Error checking for event in DB when creating attachments");
-    console.log(err);
-    res.status(500).json({
-      message:
-        "Failed to create attachments due to server taking dump? I mean, I guess. Sorry",
     });
-    return;
-  }
 
-  try {
-    const createdAttachments = await Promise.all(
-      attachments.map(async (attachment) => {
-        // Logic body
-        const { filename, mimetype, content } = attachment;
-        const byteBuffer = Buffer.from(Object.values(content));
-
-        const file = bucket.file(filename);
-
-        await file.save(byteBuffer, {
-          metadata: { contentType: mimetype },
-          resumable: false,
-        });
-
-        // await file.makePublic();
-
-        // const pubUrl = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
-
-        return prisma.attachment.create({
-          data: {
-            filename,
-            mimetype,
-            content: filename,
-            eventId: newEventId,
-            userId: id,
-          },
-        });
-        // Logic body
-      }),
-    );
-
-    if (createdAttachments) {
-      res.status(201).json({
-        message: `Successfully created new attachments for event ${newEventId}`,
-      });
-      console.log("Attachments created:", createdAttachments);
-    }
-  } catch (err) {
-    res.status(401).json({ message: `Error creating new attachments ${err}` });
-    console.log(`Error creating attachments: ${err}`);
+    return res.status(201).json({
+      message: "Attachments saved",
+      count: rows.length,
+      attachmentLength: updatedEvent.attachmentLength,
+    });
+  } catch (error) {
+    console.error("Attachment upload failed:", error);
+    await Promise.allSettled(uploadedKeys.map((key) => bucket.file(key).delete()));
+    return res.status(500).json({ message: "Unable to save attachments" });
   }
 };
 
