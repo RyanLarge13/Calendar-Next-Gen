@@ -1,3 +1,4 @@
+import { getRemindersForDay } from "../../utils/reminderMapHelpers.js";
 import { getEventsForDate } from "../../utils/eventMapHelpers";
 import { motion } from "framer-motion";
 import { useContext, useEffect, useRef, useState } from "react";
@@ -23,7 +24,7 @@ import {
 import AddTimer from "../AddData/AddTimer";
 
 const Modal = () => {
-  const { eventMap, preferences, reminders } = useContext(UserContext);
+  const { eventMap, preferences, remindersMap } = useContext(UserContext);
   const { string, theDay, setSecondString } = useContext(DatesContext);
   const {
     addNewEvent,
@@ -64,13 +65,13 @@ const Modal = () => {
   }, []);
 
   useEffect(() => {
-    const remindersToday = reminders.filter(
+    const remindersToday = getRemindersForDay(remindersMap, theDay).filter(
       (reminder) =>
         new Date(reminder.time).toLocaleDateString() ===
         theDay.toLocaleDateString(),
     );
     setTodaysReminders(remindersToday);
-  }, []);
+  }, [remindersMap, theDay]);
 
   useEffect(() => {
     const eventsForDay = [...new Map([...eventMap.entries()].filter(([key]) => key !== "repeat-events").flatMap(([, bucket]) => bucket?.events || []).map((event) => [String(event.id), event])).values()].filter((event) => {
