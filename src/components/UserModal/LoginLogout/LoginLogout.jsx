@@ -22,7 +22,7 @@ const LoginLogout = () => {
     notifications,
     setNotifications,
     setAuthToken,
-    setEvents,
+    setEventMap,
     setReminders,
     setLists,
     setSystemNotif,
@@ -84,7 +84,7 @@ const LoginLogout = () => {
     setAuthToken(false);
     setGoogleToken(false);
     setUser(false);
-    setEvents([]);
+    setEventMap(new Map());
     setNotifications([]);
     setReminders([]);
     setLists([]);
