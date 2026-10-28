@@ -92,7 +92,6 @@ export default defineConfig({
         launch_handler: {
           client_mode: "focus-existing",
         },
-        scope_extensions: [{ origin: "*calng.app" }],
         screenshots: [
           {
             src: "/screenshots/calng-mobile.png",
