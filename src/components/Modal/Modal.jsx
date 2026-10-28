@@ -73,7 +73,7 @@ const Modal = () => {
   }, []);
 
   useEffect(() => {
-    const eventsForDay = [...new Map([...getEventsForDate(eventMap, theDay), ...(eventMap.get("repeat-events")?.events || [])].map((event) => [String(event.id), event])).values()].filter((event) => {
+    const eventsForDay = [...new Map([...eventMap.entries()].filter(([key]) => key !== "repeat-events").flatMap(([, bucket]) => bucket?.events || []).map((event) => [String(event.id), event])).values()].filter((event) => {
       const startDate = new Date(event.startDate);
       const endDate = new Date(event.endDate);
       startDate.setHours(0, 0, 0, 0);
