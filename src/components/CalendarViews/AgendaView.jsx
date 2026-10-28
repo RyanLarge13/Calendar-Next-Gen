@@ -1,3 +1,4 @@
+import { getRemindersForDay } from "../../utils/reminderMapHelpers.js";
 import { getEventOccurrencesForDay } from "../../utils/eventMapHelpers.js";
 import { useContext, useMemo, useState } from "react";
 import { motion } from "framer-motion";
@@ -13,7 +14,7 @@ const eventEnd = (event) => new Date(event.end?.endTime || event.endDate || even
 
 const AgendaView = () => {
   const { setEvent } = useContext(InteractiveContext);
-  const { eventMap, reminders, preferences } = useContext(UserContext);
+  const { eventMap, remindersMap, preferences } = useContext(UserContext);
   const [activeReminder, setActiveReminder] = useState(null);
   const [showCompleted, setShowCompleted] = useState(false);
   const { string, setString } = useContext(DatesContext);
@@ -29,12 +30,12 @@ const AgendaView = () => {
     const next = new Date(date);
     next.setDate(next.getDate() + 1);
     const items = getEventOccurrencesForDay(eventMap, date).sort((a, b) => eventStart(a) - eventStart(b));
-    const dayReminders = reminders.filter((reminder) => {
+    const dayReminders = getRemindersForDay(remindersMap, date).filter((reminder) => {
       const due = new Date(reminder.time);
       return Number.isFinite(due.getTime()) && due >= date && due < next && (showCompleted || !reminder.completed);
     }).sort((a, b) => new Date(a.time) - new Date(b.time));
     return { date, items, dayReminders };
-  }), [eventMap, reminders, anchor, range, showCompleted]);
+  }), [eventMap, remindersMap, anchor, range, showCompleted]);
   const total = days.reduce((count, day) => count + day.items.length, 0);
   const reminderTotal = days.reduce((count, day) => count + day.dayReminders.length, 0);
   const panel = preferences.darkMode ? "bg-white/5 border-white/10 text-white" : "calendar-surface";
