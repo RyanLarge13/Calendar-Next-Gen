@@ -157,7 +157,7 @@ const MonthView = () => {
     }
     animatingRef.current = true;
     const controls = animate(x, -widthRef.current * (1 + delta), {
-      duration: 0.28,
+      duration: 0.38,
       ease: [0.22, 1, 0.36, 1],
       onComplete: () => {
         pendingNavigationRef.current = next.getTime();
@@ -187,7 +187,7 @@ const MonthView = () => {
     animatingRef.current = true;
     const width = widthRef.current;
     await animate(x, -width * (1 + delta), {
-      duration: 0.24,
+      duration: 0.38,
       ease: [0.22, 1, 0.36, 1],
     });
     const next = monthOffset(displayMonth, delta);
@@ -216,7 +216,7 @@ const MonthView = () => {
     else {
       animatingRef.current = true;
       await animate(x, -widthRef.current, {
-        duration: 0.24,
+        duration: 0.38,
         ease: [0.22, 1, 0.36, 1],
       });
       animatingRef.current = false;
@@ -418,6 +418,12 @@ const MonthView = () => {
         style={{ x }}
         drag="x"
         dragMomentum={false}
+        dragTransition={{ power: 0, timeConstant: 260 }}
+        onDrag={(_, info) => {
+          // Subtle resistance: offset the gesture by 3% without changing swipe detection.
+          const center = -widthRef.current;
+          x.set(Math.max(-2 * widthRef.current, Math.min(0, center + info.offset.x * 0.97)));
+        }}
         dragElastic={0.08}
         dragConstraints={{ left: -2 * viewportWidth, right: 0 }}
         onDragEnd={finishSwipe}
