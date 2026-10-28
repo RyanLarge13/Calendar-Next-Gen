@@ -15,7 +15,7 @@ const validDate = (value) => {
 
 const Search = () => {
   const { filters, setFilters, setEvent } = useContext(InteractiveContext);
-  const { eventsById = new Map(), reminders = [], lists = [], userTasks = [], stickies = [], preferences } = useContext(UserContext);
+  const { eventsById = new Map(), remindersById = new Map(), lists = [], userTasks = [], stickies = [], preferences } = useContext(UserContext);
   const [query, setQuery] = useState("");
   const [type, setType] = useState("all");
   const [expanded, setExpanded] = useState(null);
@@ -49,7 +49,7 @@ const Search = () => {
     eventsById.forEach((event) => add("event", event, event.summary || event.title || "Untitled event",
       event.description || "", validDate(event.start?.startTime || event.startDate || event.date),
       asText(event.summary, event.title, event.description, event.date, event.location?.name, event.location?.address)));
-    reminders.forEach((reminder) => add("reminder", reminder, reminder.title || "Untitled reminder",
+    remindersById.forEach((reminder) => add("reminder", reminder, reminder.title || "Untitled reminder",
       reminder.notes || "", validDate(reminder.time), asText(reminder.title, reminder.notes, reminder.time)));
     lists.forEach((list) => add("list", list, list.title || "Untitled list",
       (list.items || []).map((item) => item.text || "").join(", "), null,
@@ -65,7 +65,7 @@ const Search = () => {
       const bTitle = b.title.toLowerCase().startsWith(needle) ? 0 : 1;
       return aTitle - bTitle || (a.date?.getTime() || Infinity) - (b.date?.getTime() || Infinity);
     }).slice(0, 80);
-  }, [query, type, eventsById, reminders, lists, userTasks, stickies]);
+  }, [query, type, eventsById, remindersById, lists, userTasks, stickies]);
 
   const activate = (item) => {
     if (item.kind === "event") {
