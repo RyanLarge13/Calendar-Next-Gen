@@ -231,8 +231,14 @@ export const getAttachments = async (req, res) => {
     return;
   }
 
+  const event = await prisma.event.findFirst({
+    where: { id: eventId, userId: id },
+    select: { id: true },
+  });
+  if (!event) return res.status(404).json({ message: "Event not found" });
+
   const attachments = await prisma.attachment.findMany({
-    where: { eventId: eventId, userId: id },
+    where: { eventId, userId: id },
   });
 
   const tempAttachmentUrls = await Promise.all(
