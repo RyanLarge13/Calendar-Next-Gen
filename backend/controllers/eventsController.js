@@ -317,36 +317,52 @@ export const updateEventDescription = async (req, res) => {
   }
 };
 
+/**
+ * Persist a complete Google Places location object, or clear the location.
+ * Accepts the previous newLocation/newCoords request format for compatibility.
+ */
 export const updateEventLocation = async (req, res) => {
-  const { eventId, newLocation, newCoords } = req.body;
-  const { id } = req.user;
+  const { eventId } = req.body || {};
+  const userId = req.user?.id;
+  if (!userId) return res.status(401).json({ message: "Unauthorized" });
+  if (!eventId) return res.status(400).json({ message: "Event ID required" });
 
-  if (!id) {
-    res
-      .status(401)
-      .json({ message: "You are not authorized to make this request" });
-    return;
+  const location = req.body.location ?? {
+    string: req.body.newLocation,
+    coordinates: req.body.newCoords,
+  };
+  if (!location || typeof location.string !== "string") {
+    return res.status(400).json({ message: "Invalid location" });
   }
-
-  if (!eventId) {
-    res.status(404).json({
-      message: "Bad request, missing new event location or eventId",
-    });
-    return;
+  const cleared = !location.string.trim();
+  const coords = location.coordinates;
+  if (!cleared && (!coords || !Number.isFinite(Number(coords.lat)) ||
+      !Number.isFinite(Number(coords.lng)))) {
+    return res.status(400).json({ message: "Valid coordinates are required" });
   }
+  const savedLocation = cleared
+    ? { string: "", coordinates: null }
+    : {
+        string: location.string.trim(),
+        coordinates: { lat: Number(coords.lat), lng: Number(coords.lng) },
+        ...(typeof location.id === "string" ? { id: location.id } : {}),
+        ...(typeof location.city === "string" ? { city: location.city } : {}),
+        ...(typeof location.state === "string" ? { state: location.state } : {}),
+      };
 
   try {
-    await prisma.event.update({
-      where: { id: eventId, userId: id },
-      data: { location: { string: newLocation, coordinates: newCoords } },
+    const result = await prisma.event.updateMany({
+      where: { id: eventId, userId },
+      data: { location: savedLocation },
     });
-
-    res.status(200).json({ message: "Successfully updated event location" });
-  } catch (err) {
-    console.log(`Error updating event location. Error: ${err}`);
-    res.status(500).json({
-      message: `Server error updating event location. Error: ${err}`,
+    if (!result.count) return res.status(404).json({ message: "Event not found" });
+    return res.status(200).json({
+      message: "Event location updated",
+      location: savedLocation,
     });
+  } catch (error) {
+    console.error("Unable to update event location:", error);
+    return res.status(500).json({ message: "Unable to update event location" });
   }
 };
 
