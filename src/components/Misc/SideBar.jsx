@@ -10,7 +10,7 @@ import UserContext from "../../context/UserContext";
 import { setStateAndPushWindowState } from "../../utils/helpers";
 
 const SideBar = () => {
-  const { events, upcoming, preferences } = useContext(UserContext);
+  const { eventMap, upcoming, preferences } = useContext(UserContext);
   const { dateString, dateObj, setString, setTheDay, setNav } =
     useContext(DatesContext);
   const { setEvent } = useContext(InteractiveContext);
@@ -136,7 +136,7 @@ const SideBar = () => {
                 const dateStr = `${
                   temporaryMonth + 1
                 }/${dayNumber}/${temporaryYear}`;
-                const event = events?.find((event) => event.date === dateStr);
+                const event = eventMap.get(`${temporaryYear}-${temporaryMonth}`)?.events?.find((item) => item.date === dateStr);
 
                 return (
                   <div
