@@ -1,3 +1,4 @@
+import { indexRemindersById } from "../utils/reminderMapHelpers";
 import { indexEventsById } from "../utils/eventMapHelpers";
 import {
   createContext,
@@ -48,6 +49,8 @@ export const UserProvider = ({ children }) => {
   const [lists, setLists] = useState([]);
   const [reminders, setReminders] = useState([]);
   const [remindersMap, setRemindersMap] = useState(new Map());
+  const remindersById = useMemo(() => indexRemindersById(remindersMap), [remindersMap]);
+  const getReminderById = useCallback((id) => id == null ? undefined : remindersById.get(String(id)), [remindersById]);
   const [stickies, setStickies] = useState([]);
   const [userTasks, setUserTasks] = useState([]);
   const [friends, setFriends] = useState([]);
@@ -553,6 +556,7 @@ export const UserProvider = ({ children }) => {
       (a, b) => new Date(a.time) - new Date(b.time),
     );
     setReminders(sortedReminders);
+    buildRemindersMap(sortedReminders);
     const sortedLists = freshUser.lists.sort(
       (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt),
     );
@@ -813,6 +817,8 @@ export const UserProvider = ({ children }) => {
         reminderNotifications,
         timers,
         remindersMap,
+        remindersById,
+        getReminderById,
         setRemindersMap,
         setTimers,
         setReminderNotifications,
