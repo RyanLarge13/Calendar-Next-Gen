@@ -1,4 +1,5 @@
-import { createContext, useState, useEffect, useRef } from "react";
+import { indexEventsById } from "../utils/eventMapHelpers";
+import { createContext, useState, useEffect, useRef, useMemo } from "react";
 import { weekDays } from "../constants/dateAndTimeConstants";
 import { holidays } from "../constants/holidays";
 import {
@@ -57,6 +58,8 @@ export const UserProvider = ({ children }) => {
   const [qrCodeUrl, setQrCodeUrl] = useState(null);
   const [eventMap, setEventMap] = useState(new Map());
   const [eventMapDays, setEventMapDays] = useState(new Map());
+  const eventsById = useMemo(() => indexEventsById(eventMap), [eventMap]);
+  const getEventById = (id) => id == null ? undefined : eventsById.get(String(id));
   const [timers, setTimers] = useState(getTimers() || []);
   // const [timers, setTimers] =
   //   useState(
@@ -165,7 +168,7 @@ export const UserProvider = ({ children }) => {
 
   useEffect(() => {
     const currentDate = new Date();
-    const filteredEvents = events
+    const filteredEvents = [...eventsById.values()]
       .filter((event) => {
         const eventDate = new Date(event.startDate);
         const diff = Math.ceil(
@@ -181,7 +184,7 @@ export const UserProvider = ({ children }) => {
       }))
       .sort((a, b) => a.diff - b.diff);
     setUpcoming(filteredEvents);
-  }, [events]);
+  }, [eventsById]);
 
   const M_GrabLocations = async () => {
     const dbLocations = (await localDB.getUserLocations()) || [];
@@ -796,6 +799,8 @@ export const UserProvider = ({ children }) => {
         staticEvents,
         preferences,
         eventMap,
+        eventsById,
+        getEventById,
         eventMapDays,
         weatherData,
         location,
