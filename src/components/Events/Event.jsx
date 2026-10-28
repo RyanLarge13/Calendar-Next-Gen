@@ -26,7 +26,7 @@ import { useModalActions } from "../../context/ContextHooks/ModalContext.jsx";
 const Event = () => {
   const { event, setEvent, setAddNewEvent, setType, menu, setMenu } =
     useContext(InteractiveContext);
-  const { preferences, setEventMap, reminders } = useContext(UserContext);
+  const { preferences, setEventMap, getReminderById } = useContext(UserContext);
   const { string, setString } = useContext(DatesContext);
 
   const { openModal } = useModalActions();
@@ -570,9 +570,7 @@ const Event = () => {
                 </div>
                 {event.reminders.reminder ? (
                   event.reminders?.eventReminders?.map((r) => {
-                    const eventReminder = reminders.find(
-                      (rem) => rem.id === r.id,
-                    );
+                    const eventReminder = getReminderById(r.id);
 
                     return eventReminder ? (
                       <Reminder
