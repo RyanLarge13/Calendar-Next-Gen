@@ -205,10 +205,9 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
           {/* Panel */}
           <div
             className={`
-          relative ml-auto h-full w-full
+          relative ml-auto h-full w-full flex flex-col min-h-0
           lg:w-[520px] lg:max-w-[520px]
-          ${preferences.darkMode ? "bg-[#161616]/90" : "bg-white/90"}
-          backdrop-blur-md
+          ${preferences.darkMode ? "bg-[#181818]" : "bg-white"}
           border-l
           ${preferences.darkMode ? "border-white/10" : "border-black/10"}
           shadow-2xl
@@ -217,15 +216,14 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
             {/* Sticky Header */}
             <div
               className={`
-            sticky top-0 z-[30]
-            px-5 pt-5 pb-4
+            relative z-[30] shrink-0
+            px-3 sm:px-5 pt-3 sm:pt-5 pb-2 sm:pb-4
             border-b
             ${preferences.darkMode ? "border-white/10" : "border-black/10"}
-            ${preferences.darkMode ? "bg-[#161616]/85" : "bg-white/70"}
-            backdrop-blur-md
+            ${preferences.darkMode ? "bg-[#181818]" : "bg-white"}
           `}
             >
-              <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start justify-between gap-2">
                 <div>
                   <p
                     className={`text-xs font-semibold tracking-wide ${
@@ -239,19 +237,19 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                   </h2>
 
                   {/* Optional count chip (no logic required; wire later) */}
-                  <div className="mt-2">
+                  <div className="mt-1 hidden sm:block">
                     <span
                       className={`
                     inline-flex items-center gap-2
                     text-[11px] font-semibold px-3 py-1.5 rounded-2xl border
                     ${
                       preferences.darkMode
-                        ? "bg-white/5 border-white/10 text-white/70"
+                        ? "bg-white/5 border-amber-200/15 text-white/70"
                         : "bg-black/[0.03] border-black/10 text-slate-600"
                     }
                   `}
                     >
-                      <span className="inline-block h-2 w-2 rounded-full bg-cyan-400" />
+                      <span className="inline-block h-2 w-2 rounded-full bg-amber-400" />
                       {/* Replace later with unread count */}
                       Manage your updates
                     </span>
@@ -277,12 +275,12 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
               </div>
 
               {/* Global Actions (no logic, just buttons) */}
-              <div className="mt-4 grid grid-cols-2 gap-2">
+              <div className="mt-2 sm:mt-4 grid grid-cols-3 sm:grid-cols-2 gap-1.5 sm:gap-2">
                 <button
                   type="button"
                   onClick={() => bulkRead(true)}
                   className={`
-                px-3 py-2 rounded-2xl border shadow-sm text-xs font-semibold transition active:scale-[0.97]
+                px-2 py-1.5 sm:px-3 sm:py-2 rounded-xl sm:rounded-2xl border shadow-sm text-[10px] sm:text-xs font-semibold transition active:scale-[0.97]
                 flex items-center justify-center gap-2
                 ${
                   preferences.darkMode
@@ -298,7 +296,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                   type="button"
                   onClick={() => bulkRead(false)}
                   className={`
-                px-3 py-2 rounded-2xl border shadow-sm text-xs font-semibold transition active:scale-[0.97]
+                px-2 py-1.5 sm:px-3 sm:py-2 rounded-xl sm:rounded-2xl border shadow-sm text-[10px] sm:text-xs font-semibold transition active:scale-[0.97]
                 flex items-center justify-center gap-2
                 ${
                   preferences.darkMode
@@ -314,7 +312,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                   type="button"
                   onClick={bulkDelete}
                   className={`
-                px-3 py-2 rounded-2xl border shadow-sm text-xs font-semibold transition active:scale-[0.97]
+                px-2 py-1.5 sm:px-3 sm:py-2 rounded-xl sm:rounded-2xl border shadow-sm text-[10px] sm:text-xs font-semibold transition active:scale-[0.97]
                 flex items-center justify-center gap-2
                 ${
                   preferences.darkMode
@@ -330,9 +328,9 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                   type="button"
                   onClick={() => {}}
                   className={`
-                px-3 py-2 rounded-2xl border shadow-sm text-xs font-semibold transition active:scale-[0.97]
+                px-2 py-1.5 sm:px-3 sm:py-2 rounded-xl sm:rounded-2xl border shadow-sm text-[10px] sm:text-xs font-semibold transition active:scale-[0.97]
                 flex items-center justify-center gap-2
-                bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-500
+                bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400
                 text-white
               `}
                 >
@@ -344,7 +342,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                   type="button"
                   onClick={() => {}}
                   className={`
-                col-span-2 px-3 py-2 rounded-2xl border shadow-sm text-xs font-semibold transition active:scale-[0.97]
+                col-span-2 px-2 py-1.5 sm:px-3 sm:py-2 rounded-xl sm:rounded-2xl border shadow-sm text-[10px] sm:text-xs font-semibold transition active:scale-[0.97]
                 flex items-center justify-center gap-2
                 ${
                   preferences.darkMode
@@ -358,11 +356,11 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
               </div>
             </div>
 
-            <div className="px-5 pt-3 flex items-center justify-between gap-3"><label htmlFor="notification-sort" className="text-xs font-semibold">Sort notifications</label><select id="notification-sort" value={sort} onChange={(event) => setSort(event.target.value)} className="rounded-xl border px-3 py-2 bg-transparent text-sm"><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="unread">Unread first</option></select></div>
+            <div className="px-3 sm:px-5 pt-2 flex items-center justify-between gap-2 shrink-0"><label htmlFor="notification-sort" className="text-xs font-semibold">Sort notifications</label><select id="notification-sort" value={sort} onChange={(event) => setSort(event.target.value)} className="rounded-lg border px-2 py-1 bg-transparent text-xs sm:text-sm"><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="unread">Unread first</option></select></div>
             {/* Filters */}
             <div
               className={`
-    py-4 -mx-1 px-5
+    py-2 sm:py-4 px-3 sm:px-5 shrink-0
     flex gap-2 overflow-x-auto scrollbar-hide
   `}
             >
@@ -372,14 +370,14 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                 { label: "Events", accent: "indigo" },
                 { label: "Reminders", accent: "amber" },
                 { label: "System", accent: "emerald" },
-              ].map((filter) => (
+              ].map((option) => (
                 <button
-                  key={filter.label}
+                  key={option.label}
                   type="button"
-                  onClick={() => setFilter(filter.label)}
-                  aria-pressed={filter === filter.label}
+                  onClick={() => setFilter(option.label)}
+                  aria-pressed={filter === option.label}
                   className={`
-        flex-shrink-0 px-4 py-2 rounded-2xl text-xs font-semibold
+        flex-shrink-0 px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-xl sm:rounded-2xl text-[11px] sm:text-xs font-semibold
         border shadow-sm transition active:scale-[0.97]
         ${
           preferences.darkMode
@@ -397,26 +395,26 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                       className={`
             h-2 w-2 rounded-full
             ${
-              filter.accent === "cyan"
-                ? "bg-cyan-400"
-                : filter.accent === "rose"
+              option.accent === "cyan"
+                ? "bg-amber-400"
+                : option.accent === "rose"
                   ? "bg-rose-400"
-                  : filter.accent === "indigo"
+                  : option.accent === "indigo"
                     ? "bg-indigo-400"
-                    : filter.accent === "amber"
+                    : option.accent === "amber"
                       ? "bg-amber-400"
                       : "bg-emerald-400"
             }
           `}
                     />
-                    {filter.label}
+                    {option.label}
                   </span>
                 </button>
               ))}
             </div>
 
             {/* Body */}
-            <div className="px-5 pt-4 pb-[425px] overflow-y-auto min-h-full max-h-full">
+            <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 sm:px-5 pt-2 sm:pt-4 pb-12" style={{ scrollbarGutter: "stable" }}>
               {visibleNotifications.length < 1 ? (
                 <div className="min-h-[50vh] grid place-items-center">
                   <div
@@ -425,7 +423,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                   ${
                     preferences.darkMode
                       ? "bg-white/5 border-white/10"
-                      : "bg-white/80 border-black/10"
+                      : "bg-white border-amber-200/40"
                   }
                 `}
                   >
@@ -450,16 +448,15 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                   </div>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-2 sm:space-y-4">
                   {visibleNotifications.map((notif) => (
                     <motion.div
                       key={notif.id}
-                      animate={{ height: "auto" }}
-                      transition={{ height: { duration: 0.28, ease: "easeInOut" } }}
+                      layout="size"
+                      transition={{ layout: { duration: 0.28, ease: "easeInOut" } }}
                       onClick={() => openNotif(notif.id, notif.read)}
-                      layout
                       className={`
-                    relative rounded-3xl border shadow-sm overflow-hidden cursor-pointer
+                    relative rounded-xl sm:rounded-3xl border shadow-sm overflow-hidden cursor-pointer
                     transition hover:shadow-md
                     ${
                       preferences.darkMode
@@ -470,12 +467,12 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                     >
                       {/* Unread dot */}
                       {!notif.read && (
-                        <div className="absolute top-4 left-4 h-2.5 w-2.5 rounded-full bg-gradient-to-tr from-rose-400 to-red-400 shadow-sm" />
+                        <div className="absolute top-3 left-3 h-2 w-2 rounded-full bg-gradient-to-tr from-rose-400 to-red-400 shadow-sm" />
                       )}
 
-                      <div className="px-5 py-4 pt-8 flex flex-col gap-4">
+                      <div className="px-3 sm:px-5 py-2.5 sm:py-4 flex flex-col gap-2 sm:gap-4">
                         <div>
-                          <div className="flex justify-between items-start gap-3">
+                          <div className="flex justify-between items-start gap-2">
                             <div className="min-w-0">
                               <p
                                 className={`text-[11px] font-semibold ${
@@ -495,14 +492,14 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                                 • {formatRelativeTime(new Date(notif.time))}
                               </p>
 
-                              <p className="text-sm font-semibold mt-2 truncate">
+                              <p className="text-sm font-semibold mt-1 truncate pl-3 sm:pl-0">
                                 {notif.notifData.title}
                               </p>
                             </div>
 
                             <div
                               className={`
-                            grid place-items-center h-10 w-10 rounded-2xl border shadow-sm flex-shrink-0
+                            grid place-items-center h-8 w-8 sm:h-10 sm:w-10 rounded-xl sm:rounded-2xl border shadow-sm flex-shrink-0
                             ${
                               preferences.darkMode
                                 ? "bg-white/5 border-white/10 text-white/70"
@@ -514,10 +511,16 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                             </div>
                           </div>
 
+                          <AnimatePresence initial={false}>
                           {notifOpen === notif.id && (
-                            <div
+                            <motion.div
+                              key="expanded-notification"
+                              initial={{ height: 0, opacity: 0, marginTop: 0 }}
+                              animate={{ height: "auto", opacity: 1, marginTop: 8 }}
+                              exit={{ height: 0, opacity: 0, marginTop: 0 }}
+                              transition={{ duration: 0.26, ease: "easeInOut" }}
                               className={`
-                            mt-3 p-4 rounded-2xl border shadow-inner max-h-[120px] overflow-y-auto scrollbar-slick
+                            p-3 sm:p-4 rounded-xl sm:rounded-2xl border shadow-inner max-h-[120px] overflow-y-auto scrollbar-slick
                             ${
                               preferences.darkMode
                                 ? "bg-white/5 border-white/10 text-white/75"
@@ -542,12 +545,13 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                                     </React.Fragment>
                                   ))}
                               </motion.div>
-                            </div>
+                            </motion.div>
                           )}
+                          </AnimatePresence>
                         </div>
 
                         {/* Per-notif actions */}
-                        <div className="mt-4 flex justify-between items-center gap-3">
+                        <div className="mt-1 sm:mt-4 flex justify-between items-center gap-2">
                           <button
                             type="button"
                             onClick={(e) => {
@@ -557,7 +561,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                                 : readNotif(notif.id);
                             }}
                             className={`
-                          px-3 py-2 rounded-2xl text-[11px] font-semibold border shadow-sm transition active:scale-[0.97]
+                          px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl sm:rounded-2xl text-[11px] font-semibold border shadow-sm transition active:scale-[0.97]
                           ${
                             preferences.darkMode
                               ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/75"
@@ -575,7 +579,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
                               initiateDeletion(notif.id);
                             }}
                             className={`
-                          px-3 py-2 rounded-2xl text-[11px] font-semibold border shadow-sm transition active:scale-[0.97]
+                          px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl sm:rounded-2xl text-[11px] font-semibold border shadow-sm transition active:scale-[0.97]
                           ${
                             preferences.darkMode
                               ? "bg-rose-500/15 border-rose-300/20 hover:bg-rose-500/20 text-rose-100"
@@ -596,16 +600,15 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
             {/* Bottom handle bar */}
             <div
               className={`
-            sticky bottom-0 z-[40]
-            px-5 py-4
+            relative shrink-0 z-[40]
+            px-3 sm:px-5 py-1.5 sm:py-4
             border-t
             ${preferences.darkMode ? "border-white/10" : "border-black/10"}
             ${
               preferences.darkMode
-                ? "bg-[#161616]/85 text-white"
-                : "bg-white/70 text-slate-900"
+                ? "bg-[#181818] text-white"
+                : "bg-white text-slate-900"
             }
-            backdrop-blur-md
             flex justify-between items-center
             pointer-events-auto
           `}
@@ -615,7 +618,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
               <button
                 onClick={() => setShowNotifs(false)}
                 className={`
-              px-4 py-2 rounded-2xl text-sm font-semibold border shadow-sm transition active:scale-[0.97]
+              px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-semibold border shadow-sm transition active:scale-[0.97]
               ${
                 preferences.darkMode
                   ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/80"
@@ -629,7 +632,7 @@ const Notification = ({ idsToUpdate, setIdsToUpdate }) => {
 
               <div
                 className={`
-              grid place-items-center h-10 w-16 rounded-2xl border shadow-sm
+              grid place-items-center h-7 w-12 sm:h-10 sm:w-16 rounded-xl sm:rounded-2xl border shadow-sm
               ${
                 preferences.darkMode
                   ? "bg-white/5 border-white/10 text-white/60"

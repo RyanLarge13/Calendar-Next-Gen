@@ -22,7 +22,7 @@ const parseMonth = (key) => {
 };
 
 const MasonryView = ({ containerRef }) => {
-  const { eventMap, reminders = [], preferences } = useContext(UserContext);
+  const { eventMap, remindersMap, preferences } = useContext(UserContext);
   const { setEvent } = useContext(InteractiveContext);
   const { dateObj } = useContext(DatesContext);
   const [range, setRange] = useState(12);
@@ -44,21 +44,11 @@ const MasonryView = ({ containerRef }) => {
       if (events.length)
         byMonth.set(key, { date: month, events, reminders: [] });
     }
-    for (const reminder of reminders) {
-      const date = new Date(reminder.time);
-      if (
-        !Number.isFinite(date.getTime()) ||
-        Math.abs(date.getFullYear() * 12 + date.getMonth() - center) > range
-      )
-        continue;
-      const key = monthKey(date);
-      if (!byMonth.has(key))
-        byMonth.set(key, {
-          date: new Date(date.getFullYear(), date.getMonth(), 1),
-          events: [],
-          reminders: [],
-        });
-      byMonth.get(key).reminders.push(reminder);
+    for (const [key, bucket] of remindersMap) {
+      const date = parseMonth(key);
+      if (!date || Math.abs(date.getFullYear() * 12 + date.getMonth() - center) > range) continue;
+      if (!byMonth.has(key)) byMonth.set(key, { date, events: [], reminders: [] });
+      byMonth.get(key).reminders.push(...(bucket?.reminders || []));
     }
     return Array.from(byMonth.entries())
       .sort((a, b) => a[1].date - b[1].date)
@@ -69,7 +59,7 @@ const MasonryView = ({ containerRef }) => {
           (a, b) => new Date(a.time) - new Date(b.time),
         ),
       }));
-  }, [eventMap, reminders, anchor.getFullYear(), anchor.getMonth(), range]);
+  }, [eventMap, remindersMap, anchor.getFullYear(), anchor.getMonth(), range]);
 
   useEffect(() => {
     if (!containerRef?.current || !groups.length) return;

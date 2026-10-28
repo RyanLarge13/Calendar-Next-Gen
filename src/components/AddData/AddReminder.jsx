@@ -1,3 +1,4 @@
+import { upsertReminderInMap } from "../../utils/reminderMapHelpers.js";
 import { useContext, useEffect, useState } from "react";
 import { AiFillInfoCircle } from "react-icons/ai";
 import { BsAlarmFill, BsClock, BsRepeat } from "react-icons/bs";
@@ -20,9 +21,8 @@ const AddReminder = () => {
   const { setMenu, setAddNewEvent, setType, setShowCategory } =
     useContext(InteractiveContext);
   const {
-    reminders,
     user,
-    setReminders,
+    setRemindersMap,
     setSystemNotif,
     preferences,
     eventMap,
@@ -253,10 +253,7 @@ const AddReminder = () => {
         closeModal();
         setAddNewEvent(false);
         setType(null);
-        const sortedReminders = [...reminders, res.data.reminder].sort(
-          (a, b) => new Date(a.time) - new Date(b.time),
-        );
-        setReminders(sortedReminders);
+        if (res.data?.reminder?.id != null) setRemindersMap((prev) => upsertReminderInMap(prev, res.data.reminder));
         setMenu(true);
         setShowCategory("reminder");
         window.history.pushState({ locked: true }, "");

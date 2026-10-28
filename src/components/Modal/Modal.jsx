@@ -1,3 +1,5 @@
+import { getRemindersForDay } from "../../utils/reminderMapHelpers.js";
+import { getEventsForDate } from "../../utils/eventMapHelpers";
 import { motion } from "framer-motion";
 import { useContext, useEffect, useRef, useState } from "react";
 import { staticTimes } from "../../constants/dateAndTimeConstants";
@@ -22,7 +24,7 @@ import {
 import AddTimer from "../AddData/AddTimer";
 
 const Modal = () => {
-  const { events, preferences, reminders } = useContext(UserContext);
+  const { eventMap, preferences, remindersMap } = useContext(UserContext);
   const { string, theDay, setSecondString } = useContext(DatesContext);
   const {
     addNewEvent,
@@ -63,16 +65,16 @@ const Modal = () => {
   }, []);
 
   useEffect(() => {
-    const remindersToday = reminders.filter(
+    const remindersToday = getRemindersForDay(remindersMap, theDay).filter(
       (reminder) =>
         new Date(reminder.time).toLocaleDateString() ===
         theDay.toLocaleDateString(),
     );
     setTodaysReminders(remindersToday);
-  }, []);
+  }, [remindersMap, theDay]);
 
   useEffect(() => {
-    const eventsForDay = events.filter((event) => {
+    const eventsForDay = [...new Map([...eventMap.entries()].filter(([key]) => key !== "repeat-events").flatMap(([, bucket]) => bucket?.events || []).map((event) => [String(event.id), event])).values()].filter((event) => {
       const startDate = new Date(event.startDate);
       const endDate = new Date(event.endDate);
       startDate.setHours(0, 0, 0, 0);
@@ -90,7 +92,7 @@ const Modal = () => {
     });
     const eventsAllDay = eventsForDay.filter((e) => eventIsAllDay(e));
     setAllDayEvents(eventsAllDay);
-  }, [theDay, events, string]);
+  }, [theDay, eventMap, string]);
 
   useEffect(() => {
     // Position the viewport using the actual rendered timeline height, not a
@@ -99,7 +101,7 @@ const Modal = () => {
     const selectedDate = new Date(string);
     const now = new Date();
     const isToday = selectedDate.toDateString() === now.toDateString();
-    const timedEvents = events
+    const timedEvents = getEventsForDate(eventMap, selectedDate)
       .filter((item) => {
         const start = new Date(item.start?.startTime);
         const end = new Date(item.end?.endTime);
@@ -123,7 +125,7 @@ const Modal = () => {
       modalRef.current.scrollTo({ top: Math.max(0, position - viewportOffset), behavior: "instant" });
     });
     return () => cancelAnimationFrame(frame);
-  }, [open, string, events, addNewEvent]);
+  }, [open, string, eventMap, addNewEvent]);
 
   useEffect(() => () => setSecondString(""), [setSecondString]);
 

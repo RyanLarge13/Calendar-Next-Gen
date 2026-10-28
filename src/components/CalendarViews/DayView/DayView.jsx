@@ -1,3 +1,4 @@
+import { getRemindersForDay } from "../../../utils/reminderMapHelpers.js";
 import { useEffect, useRef, useState, useContext } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { staticTimes } from "../../../constants/dateAndTimeConstants.js";
@@ -13,7 +14,7 @@ const DayView = ({ containerRef }) => {
   const { setAddEventWithStartEndTime, setType, setAddNewEvent } =
     useContext(InteractiveContext);
   const { theDay, dateObj } = useContext(DatesContext);
-  const { preferences, eventMap, reminders } = useContext(UserContext);
+  const { preferences, eventMap, remindersMap } = useContext(UserContext);
 
   const { openModal } = useModalActions();
 
@@ -30,13 +31,13 @@ const DayView = ({ containerRef }) => {
   let interval;
 
   useEffect(() => {
-    const remindersToday = reminders.filter(
+    const remindersToday = getRemindersForDay(remindersMap, theDay).filter(
       (reminder) =>
         new Date(reminder.time).toLocaleDateString() ===
         theDay.toLocaleDateString(),
     );
     setTodaysReminders(remindersToday);
-  }, [theDay, reminders]);
+  }, [theDay, remindersMap]);
 
   // Calculate quickly which events belong to this day view based on current viewing day
   useEffect(() => {

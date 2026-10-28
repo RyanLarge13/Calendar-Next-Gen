@@ -1,3 +1,4 @@
+import { updateReminderInMap } from "../../utils/reminderMapHelpers.js";
 import { useContext, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Portal from "../Misc/Portal";
@@ -15,8 +16,8 @@ const ReminderNotification = ({ notification, remindersVibrated }) => {
   const {
     preferences,
     setReminderNotifications,
-    setReminders,
-    reminders,
+    setRemindersMap,
+    getReminderById,
     setNotifications,
   } = useContext(UserContext);
 
@@ -44,16 +45,7 @@ const ReminderNotification = ({ notification, remindersVibrated }) => {
     try {
       // Update reminder association
       if (notification.reminderRefId) {
-        setReminders((prev) => {
-          const newReminders = prev.map((r) => {
-            if (r.id === notification.reminderRefId) {
-              return { ...r, completed: true };
-            }
-            return r;
-          });
-
-          return newReminders;
-        });
+        setRemindersMap((prev) => updateReminderInMap(prev, notification.reminderRefId, { completed: true }));
         await updateReminderComplete({
           reminderId: notification.reminderRefId,
           completed: true,
@@ -102,9 +94,7 @@ const ReminderNotification = ({ notification, remindersVibrated }) => {
 
       // Update snoozing information on reminder association
       if (notification.reminderRefId) {
-        const reminder = reminders.find(
-          (r) => r.id === notification.reminderRefId,
-        );
+        const reminder = getReminderById(notification.reminderRefId);
 
         if (reminder) {
           const newSnooze = {
@@ -116,18 +106,7 @@ const ReminderNotification = ({ notification, remindersVibrated }) => {
             snoozes: [...reminder.snoozes.snoozes, newSnooze],
           };
 
-          setReminders((prev) =>
-            prev.map((r) => {
-              if (r.id === notification.reminderRefId) {
-                return {
-                  ...r,
-                  snoozes: newSnoozes,
-                  time: nDate.toString(),
-                };
-              }
-              return r;
-            }),
-          );
+          setRemindersMap((prev) => updateReminderInMap(prev, notification.reminderRefId, { snoozes: newSnoozes, time: nDate.toString() }));
 
           await API_UpdateReminderSnoozeCount(
             notification.reminderRefId,

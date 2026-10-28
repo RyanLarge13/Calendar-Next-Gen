@@ -1,4 +1,13 @@
-import { createContext, useState, useEffect, useRef } from "react";
+import { indexRemindersById } from "../utils/reminderMapHelpers";
+import { indexEventsById } from "../utils/eventMapHelpers";
+import {
+  createContext,
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+} from "react";
 import { weekDays } from "../constants/dateAndTimeConstants";
 import { holidays } from "../constants/holidays";
 import {
@@ -31,8 +40,6 @@ const UserContext = createContext({});
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(false);
   const [authToken, setAuthToken] = useState(getAuthToken);
-  const [events, setEvents] = useState([]);
-  const [staticEvents, setStaticEvents] = useState([]);
   // const [googleEvents, setGoogleEvents] = useState([]);
   const [preferences, setPreferences] = useState(
     JSON.parse(localStorage.getItem("preferences")) || {},
@@ -40,8 +47,9 @@ export const UserProvider = ({ children }) => {
   const [upcoming, setUpcoming] = useState([]);
   const [refresh, setRefresh] = useState(false);
   const [lists, setLists] = useState([]);
-  const [reminders, setReminders] = useState([]);
   const [remindersMap, setRemindersMap] = useState(new Map());
+  const remindersById = useMemo(() => indexRemindersById(remindersMap), [remindersMap]);
+  const getReminderById = useCallback((id) => id == null ? undefined : remindersById.get(String(id)), [remindersById]);
   const [stickies, setStickies] = useState([]);
   const [userTasks, setUserTasks] = useState([]);
   const [friends, setFriends] = useState([]);
@@ -57,6 +65,11 @@ export const UserProvider = ({ children }) => {
   const [qrCodeUrl, setQrCodeUrl] = useState(null);
   const [eventMap, setEventMap] = useState(new Map());
   const [eventMapDays, setEventMapDays] = useState(new Map());
+  const eventsById = useMemo(() => indexEventsById(eventMap), [eventMap]);
+  const getEventById = useCallback(
+    (id) => (id == null ? undefined : eventsById.get(String(id))),
+    [eventsById],
+  );
   const [timers, setTimers] = useState(getTimers() || []);
   // const [timers, setTimers] =
   //   useState(
@@ -109,7 +122,10 @@ export const UserProvider = ({ children }) => {
   const subscribedFresh = useRef(false);
 
   // Update when necessary for indexedDB changes
-  const myLocalDBVersion = Math.max(4, Number(import.meta.env.VITE_INDEXED_DB_VERSION) || 0);
+  const myLocalDBVersion = Math.max(
+    5,
+    Number(import.meta.env.VITE_INDEXED_DB_VERSION) || 0,
+  );
 
   const updateStatus = () => {
     setIsOnline(navigator.onLine);
@@ -165,7 +181,7 @@ export const UserProvider = ({ children }) => {
 
   useEffect(() => {
     const currentDate = new Date();
-    const filteredEvents = events
+    const filteredEvents = [...eventsById.values()]
       .filter((event) => {
         const eventDate = new Date(event.startDate);
         const diff = Math.ceil(
@@ -181,7 +197,7 @@ export const UserProvider = ({ children }) => {
       }))
       .sort((a, b) => a.diff - b.diff);
     setUpcoming(filteredEvents);
-  }, [events]);
+  }, [eventsById]);
 
   const M_GrabLocations = async () => {
     const dbLocations = (await localDB.getUserLocations()) || [];
@@ -366,7 +382,7 @@ export const UserProvider = ({ children }) => {
   const completeAutomaticGoogleLogin = async () => {
     const resetOnFailure = () => {
       setUser(false);
-      setEvents(localStorage.getItem("events") || []);
+      setEventMap(new Map());
     };
 
     try {
@@ -534,13 +550,11 @@ export const UserProvider = ({ children }) => {
     };
     setUser(basicUser);
     localStorage.setItem("user", JSON.stringify(basicUser));
-    setEvents([...freshUser.events, ...holidays]);
     buildEventsMap([...freshUser.events, ...holidays]);
-    setStaticEvents([...freshUser.events, ...holidays]);
     const sortedReminders = freshUser.reminders.sort(
       (a, b) => new Date(a.time) - new Date(b.time),
     );
-    setReminders(sortedReminders);
+    buildRemindersMap(sortedReminders);
     const sortedLists = freshUser.lists.sort(
       (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt),
     );
@@ -609,10 +623,6 @@ export const UserProvider = ({ children }) => {
       // The service worker will be first grabbing stale cache quickly. Make sure this is not the case before
       // calling updateUI(). User data MUST be server fresh because down the road notification subscriptions are made
       const isFresh = responseTypeForUserData === "network";
-
-      console.log("user/data call fresh or sw intercept?");
-      console.log(responseTypeForUserData);
-      console.log(isFresh);
 
       if (!userData?.data) {
         throw new Error(
@@ -778,8 +788,6 @@ export const UserProvider = ({ children }) => {
     <UserContext.Provider
       value={{
         user,
-        events,
-        reminders,
         googleToken,
         isOnline,
         lists,
@@ -793,9 +801,10 @@ export const UserProvider = ({ children }) => {
         connectionRequests,
         friendRequests,
         upcoming,
-        staticEvents,
         preferences,
         eventMap,
+        eventsById,
+        getEventById,
         eventMapDays,
         weatherData,
         location,
@@ -805,6 +814,8 @@ export const UserProvider = ({ children }) => {
         reminderNotifications,
         timers,
         remindersMap,
+        remindersById,
+        getReminderById,
         setRemindersMap,
         setTimers,
         setReminderNotifications,
@@ -823,10 +834,8 @@ export const UserProvider = ({ children }) => {
         setNotifications,
         setLists,
         setUser,
-        setEvents,
         setGoogleToken,
         setAuthToken,
-        setReminders,
         setEventMap,
         setEventMapDays,
       }}

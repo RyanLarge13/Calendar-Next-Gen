@@ -1,3 +1,4 @@
+import { removeRemindersFromMap } from "../../utils/reminderMapHelpers.js";
 import { motion } from "framer-motion";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { BiAlarmSnooze, BiCheckCircle } from "react-icons/bi";
@@ -15,7 +16,7 @@ import { LocalStorage_UpdateGroupingPreferences } from "../../utils/localStorage
 import { deleteRemindersBulk } from "../../utils/api";
 
 const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
-  const { reminders, setReminders, preferences } = useContext(UserContext);
+  const { remindersById, setRemindersMap, preferences } = useContext(UserContext);
   const [deletingCompleted, setDeletingCompleted] = useState(false);
   const [deleteError, setDeleteError] = useState("");
   const [confirmBulkDelete, setConfirmBulkDelete] = useState(false);
@@ -54,6 +55,7 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
     incomplete: preferences.reminders?.incomplete?.groupType || "week",
   });
 
+  const reminders = useMemo(() => [...remindersById.values()], [remindersById]);
   const incompleteReminders = useMemo(() => {
     return reminders.filter((r) => !r.completed);
   }, [reminders, grouping]);
@@ -86,8 +88,7 @@ const Reminders = ({ sort, sortOpt, search, searchTxt }) => {
       const token = localStorage.getItem("authToken");
       if (!token) throw new Error("You must be signed in to delete reminders.");
       await deleteRemindersBulk(ids, token);
-      const deletedIds = new Set(ids);
-      setReminders((previous) => previous.filter((reminder) => !deletedIds.has(reminder.id)));
+      setRemindersMap((previous) => removeRemindersFromMap(previous, ids));
       setConfirmBulkDelete(false);
     } catch (error) {
       setDeleteError(error?.response?.data?.message || error.message || "Could not delete reminders. Please try again.");

@@ -9,6 +9,7 @@ import Notification from "../Notification";
 import Options from "../Options";
 import Settings from "../Settings/Settings";
 import Connections from "../Connections/Connections";
+import Messages from "../Messages";
 import SocialLogin from "./SocialLogin";
 
 const LoginLogout = () => {
@@ -21,8 +22,8 @@ const LoginLogout = () => {
     notifications,
     setNotifications,
     setAuthToken,
-    setEvents,
-    setReminders,
+    setEventMap,
+    setRemindersMap,
     setLists,
     setSystemNotif,
     preferences,
@@ -77,15 +78,13 @@ const LoginLogout = () => {
   const logout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("authToken");
-    localStorage.removeItem("events");
-    localStorage.removeItem("reminders");
     setSystemNotif({ show: false });
     setAuthToken(false);
     setGoogleToken(false);
     setUser(false);
-    setEvents([]);
+    setEventMap(new Map());
     setNotifications([]);
-    setReminders([]);
+    setRemindersMap(new Map());
     setLists([]);
   };
 
@@ -93,6 +92,7 @@ const LoginLogout = () => {
     <>
       <AnimatePresence>
         {option === "connections" && <Connections setOption={setOption} />}
+        {option === "messages" && <Messages setOption={setOption} />}
         {option === "settings" && <Settings setOption={setOption} />}
       </AnimatePresence>
       <Notification idsToUpdate={idsToUpdate} setIdsToUpdate={setIdsToUpdate} />

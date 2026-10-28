@@ -1,3 +1,4 @@
+import { upsertEventInMap } from "../../utils/eventMapHelpers";
 import Compressor from "compressorjs";
 import { motion } from "framer-motion";
 import { useContext, useEffect, useState } from "react";
@@ -31,7 +32,6 @@ import { useModalActions } from "../../context/ContextHooks/ModalContext.jsx";
 
 const AddEvent = () => {
   const {
-    setEvents,
     user,
     isOnline,
     setReminders,
@@ -205,22 +205,9 @@ const AddEvent = () => {
       postEvent(newEvent, token)
         .then((res) => {
           setAddEventWithStartEndTime({ start: null, end: null });
-          setEvents((prev) => [...prev, ...res.data.event]);
-          setEventMap((prev) => {
-            const newMap = new Map(prev);
-            const mapDate = `${date.getFullYear()}-${date.getMonth()}`;
-
-            if (newMap.has(mapDate)) {
-              const entry = newMap.get(mapDate);
-              newMap.set(mapDate, {
-                ...entry,
-                events: [...entry.events, newEvent], // new array, not mutated
-              });
-            } else {
-              newMap.set(mapDate, { events: [newEvent] });
-            }
-
-            return newMap;
+          const savedEvents = Array.isArray(res.data.event) ? res.data.event : [res.data.event];
+          savedEvents.filter(Boolean).forEach((savedEvent) => {
+            setEventMap((prev) => upsertEventInMap(prev, savedEvent));
           });
 
           if (res.data.reminders) {

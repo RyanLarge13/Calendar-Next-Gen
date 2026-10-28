@@ -1,4 +1,5 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { getEventOccurrencesForDay } from "../../utils/eventMapHelpers.js";
+import { useContext, useEffect, useMemo, useRef } from "react";
 import { motion } from "framer-motion";
 import { staticTimes } from "../../constants/dateAndTimeConstants.js";
 import UserContext from "../../context/UserContext.jsx";
@@ -13,24 +14,17 @@ import {
 import { useModalActions } from "../../context/ContextHooks/ModalContext.jsx";
 
 const WeekView = () => {
-  const { events, preferences } = useContext(UserContext);
+  const { eventMap, preferences } = useContext(UserContext);
   const { setEvent } = useContext(InteractiveContext);
   const { currentWeek, setString, dateObj } = useContext(DatesContext);
 
   const { openModal } = useModalActions();
 
-  const [weeklyEvents, setWeeklyEvents] = useState([]);
+  const weeklyEvents = useMemo(() => currentWeek.map((day) => getEventOccurrencesForDay(eventMap, day)), [currentWeek, eventMap]);
   const dateContainerRefs = useRef([]);
   const containerWidth = useRef(null);
 
   const currentWeekday = dateObj.getDay();
-
-  useEffect(() => {
-    const matchingEvents = currentWeek.map((weekDay) =>
-      events.filter((e) => e.date === weekDay.toLocaleDateString()),
-    );
-    setWeeklyEvents(matchingEvents);
-  }, [currentWeek, events]);
 
   useEffect(() => {
     const scrollToFirstEvent = () => {
