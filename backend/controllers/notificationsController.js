@@ -319,56 +319,33 @@ function sendSSEEventToClient(clientId, eventData) {
 }
 
 export const getNotifications = async (req, res) => {
+  const id = req.params.userId;
+  if (!id) return res.status(400).end();
+
   res.setHeader("Content-Type", "text/event-stream");
-  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Cache-Control", "no-cache, no-transform");
   res.setHeader("Connection", "keep-alive");
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-  const clientResponse = res;
-  const id = req.params.userId;
-  if (id === undefined || id === null) {
-    console.log("No id was passed through request");
-    return res.end();
-  }
-  const existingClientIndex = connectedClients.findIndex(
-    (client) => client.id === id,
-  );
-  if (existingClientIndex !== -1) {
-    const existingClient = connectedClients[existingClientIndex];
-    console.log(
-      `User is attempting reconnection with user id: ${existingClient.id}`,
-    );
-    existingClient.response = clientResponse;
-    existingClient.job.stop();
-    const newJob = cron.schedule("*/15 * * * * *", () => {
-      processNotifications(id, clientResponse);
-    });
-    existingClient.job = newJob;
-    existingClient.job.start();
-  }
-  if (existingClientIndex === -1) {
-    console.log("New client attempting connection");
-    const newClient = { id: id, response: clientResponse };
-    const newJob = cron.schedule("*/15 * * * * *", () => {
-      processNotifications(id, clientResponse);
-    });
-    newClient.job = newJob;
-    newClient.job.start();
-    connectedClients.push(newClient);
-  }
-  req.on("close", () => {
-    console.log("Closing connection");
-    res.end();
-    if (existingClientIndex !== -1) {
-      const existingClient = connectedClients[existingClientIndex];
-      existingClient.response.end();
-      existingClient.job.stop();
-      console.log(`Stopping SSE response for client ${existingClient.id}`);
-    } else {
-      console.log("No existing client but req.on close event fired");
-    }
-  });
+  res.flushHeaders?.();
+  res.write("retry: 5000\n\n");
+
+  // Each request owns its response and cleanup. Never close a replacement
+  // connection when the previous request disconnects.
+  const client = { id, response: res };
+  connectedClients.push(client);
+  const heartbeat = setInterval(() => {
+    if (!res.destroyed && !res.writableEnded) res.write(": heartbeat\n\n");
+  }, 25000);
+  heartbeat.unref?.();
+
+  const cleanup = () => {
+    clearInterval(heartbeat);
+    const index = connectedClients.indexOf(client);
+    if (index !== -1) connectedClients.splice(index, 1);
+  };
+  res.on("close", cleanup);
+  res.on("error", cleanup);
+  void processNotifications(id);
 };
 
 export const getOldNotifications = async (req, res) => {
