@@ -1,3 +1,4 @@
+import { getEventOccurrencesForDay } from "../../utils/eventMapHelpers.js";
 import { motion } from "framer-motion";
 import { useContext, useEffect, useState } from "react";
 import { AiFillPlusCircle } from "react-icons/ai";
@@ -26,8 +27,7 @@ const ModalHeader = () => {
   const { string, setString, secondString, theDay } = useContext(DatesContext);
   const {
     user,
-    events,
-    setEvents,
+    eventMap,
     setSystemNotif,
     preferences,
     location,
@@ -45,25 +45,10 @@ const ModalHeader = () => {
   const [allDayEvents, setAllDayEvents] = useState([]);
 
   useEffect(() => {
-    const eventsForDay = events.filter((event) => {
-      const startDate = new Date(event.startDate);
-      const endDate = new Date(event.endDate);
-      startDate.setHours(0, 0, 0, 0);
-      endDate.setHours(0, 0, 0, 0);
-      for (
-        let currentDate = startDate;
-        currentDate <= endDate;
-        currentDate.setDate(currentDate.getDate() + 1)
-      ) {
-        if (currentDate.toLocaleDateString() === string) {
-          return true;
-        }
-      }
-      return false;
-    });
+    const eventsForDay = getEventOccurrencesForDay(eventMap, new Date(string));
     const eventsAllDay = eventsForDay.filter((e) => eventIsAllDay(e));
     setAllDayEvents(eventsAllDay);
-  }, [theDay, events, string]);
+  }, [theDay, eventMap, string]);
 
   const changeWidth = (e) => {
     setWindowWidth(window.innerWidth);
@@ -121,61 +106,23 @@ const ModalHeader = () => {
     const authToken = localStorage.getItem("authToken");
     deleteEvent(user.username, event.id, authToken)
       .then((res) => {
-        const filteredEvents = events.filter((e) => e.id !== res.data.eventId);
+        const deletedId = res.data?.eventId ?? event.id;
         setEvent(null);
-        setEvents(filteredEvents);
         setEventMap((prev) => {
-          const date = new Date(string);
-          const newMap = new Map(prev);
-          const mapDate = `${date.getFullYear()}-${date.getMonth()}`;
-
-          if (newMap.has(mapDate)) {
-            const entry = newMap.get(mapDate);
-            newMap.set(mapDate, {
-              ...entry,
-              events: filteredEvents, // new array, not mutated
-            });
+          const next = new Map();
+          for (const [key, bucket] of prev) {
+            const remaining = (bucket?.events || []).filter(
+              (item) => String(item.id) !== String(deletedId),
+            );
+            if (remaining.length) next.set(key, { ...bucket, events: remaining });
           }
-
-          return newMap;
+          return next;
         });
         if (allDayEvents.length > 0) {
           setShowAllDayEvents(true);
         }
       })
       .catch((err) => console.log(err));
-  };
-
-  const deleteAllEvents = () => {
-    // Rewrite ------------------------------------
-    // try {
-    //   const token = localStorage.getItem("authToken");
-    //   deleteRepeats(user.username, event.id, event.parentId, token)
-    //     .then((res) => {
-    //       const filteredEvents = events.filter((e) => {
-    //         if (e.id === event.id || e.id === event.parentId) {
-    //           return;
-    //         }
-    //         if (e.repeats.repeat && e.parentId === event.parentId) {
-    //           return;
-    //         }
-    //         if (e.parentId === event.id) {
-    //           return;
-    //         }
-    //         return e;
-    //       });
-    //       setEvent(null);
-    //       setEvents(filteredEvents);
-    //       if (allDayEvents.length > 0) {
-    //         setShowAllDayEvents(true);
-    //       }
-    //     })
-    //     .catch((err) => {
-    //       console.log(err);
-    //     });
-    // } catch (err) {
-    //   console.log(err);
-    // }
   };
 
   const switchDays = (e, info) => {
@@ -291,18 +238,11 @@ const ModalHeader = () => {
                 <BsFillPenFill className="cursor-pointer" />
                 <BsFillTrashFill
                   onClick={() => {
-                    const actions = event.repeats.repeat
+                    const actions = event.repeats?.repeat
                       ? [
                           {
                             text: "cancel",
                             func: () => setSystemNotif({ show: false }),
-                          },
-                          {
-                            text: "delete all",
-                            func: () => {
-                              setSystemNotif({ show: false });
-                              deleteAllEvents();
-                            },
                           },
                           {
                             text: "delete",
@@ -328,8 +268,8 @@ const ModalHeader = () => {
                     const newConfirmation = {
                       show: true,
                       title: `Delete ${event.summary}`,
-                      text: event.repeats.repeat
-                        ? "Delete all repeat events or just this one?"
+                      text: event.repeats?.repeat
+                        ? "Delete this event? This does not delete the entire recurring series."
                         : "Are you sure you want to delete this event?",
                       color: "bg-red-200",
                       hasCancel: true,
