@@ -47,27 +47,7 @@ export const UserProvider = ({ children }) => {
   const [upcoming, setUpcoming] = useState([]);
   const [refresh, setRefresh] = useState(false);
   const [lists, setLists] = useState([]);
-  const [reminders, setReminders] = useState([]);
   const [remindersMap, setRemindersMap] = useState(new Map());
-  // Transitional synchronization: legacy reminder CRUD still writes the array.
-  // Keep map-backed views current until those mutation paths are migrated.
-  useEffect(() => {
-    const next = new Map();
-    for (const reminder of reminders) {
-      const time = new Date(reminder.time);
-      if (!Number.isFinite(time.getTime())) continue;
-      const key = `${time.getFullYear()}-${time.getMonth()}`;
-      const bucket = next.get(key) || { reminders: [] };
-      bucket.reminders.push(reminder);
-      next.set(key, bucket);
-      if (reminder.repeats?.on) {
-        const repeat = next.get("repeat-reminders") || { reminders: [] };
-        repeat.reminders.push(reminder);
-        next.set("repeat-reminders", repeat);
-      }
-    }
-    setRemindersMap(next);
-  }, [reminders]);
   const remindersById = useMemo(() => indexRemindersById(remindersMap), [remindersMap]);
   const getReminderById = useCallback((id) => id == null ? undefined : remindersById.get(String(id)), [remindersById]);
   const [stickies, setStickies] = useState([]);
@@ -574,7 +554,6 @@ export const UserProvider = ({ children }) => {
     const sortedReminders = freshUser.reminders.sort(
       (a, b) => new Date(a.time) - new Date(b.time),
     );
-    setReminders(sortedReminders);
     buildRemindersMap(sortedReminders);
     const sortedLists = freshUser.lists.sort(
       (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt),
@@ -809,7 +788,6 @@ export const UserProvider = ({ children }) => {
     <UserContext.Provider
       value={{
         user,
-        reminders,
         googleToken,
         isOnline,
         lists,
@@ -858,7 +836,6 @@ export const UserProvider = ({ children }) => {
         setUser,
         setGoogleToken,
         setAuthToken,
-        setReminders,
         setEventMap,
         setEventMapDays,
       }}
