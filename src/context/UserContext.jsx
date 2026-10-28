@@ -32,8 +32,6 @@ const UserContext = createContext({});
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(false);
   const [authToken, setAuthToken] = useState(getAuthToken);
-  const [events, setEvents] = useState([]);
-  const [staticEvents, setStaticEvents] = useState([]);
   // const [googleEvents, setGoogleEvents] = useState([]);
   const [preferences, setPreferences] = useState(
     JSON.parse(localStorage.getItem("preferences")) || {},
@@ -369,7 +367,7 @@ export const UserProvider = ({ children }) => {
   const completeAutomaticGoogleLogin = async () => {
     const resetOnFailure = () => {
       setUser(false);
-      setEvents(localStorage.getItem("events") || []);
+      setEventMap(new Map());
     };
 
     try {
@@ -537,9 +535,7 @@ export const UserProvider = ({ children }) => {
     };
     setUser(basicUser);
     localStorage.setItem("user", JSON.stringify(basicUser));
-    setEvents([...freshUser.events, ...holidays]);
     buildEventsMap([...freshUser.events, ...holidays]);
-    setStaticEvents([...freshUser.events, ...holidays]);
     const sortedReminders = freshUser.reminders.sort(
       (a, b) => new Date(a.time) - new Date(b.time),
     );
@@ -781,7 +777,6 @@ export const UserProvider = ({ children }) => {
     <UserContext.Provider
       value={{
         user,
-        events,
         reminders,
         googleToken,
         isOnline,
@@ -796,7 +791,6 @@ export const UserProvider = ({ children }) => {
         connectionRequests,
         friendRequests,
         upcoming,
-        staticEvents,
         preferences,
         eventMap,
         eventsById,
@@ -828,7 +822,6 @@ export const UserProvider = ({ children }) => {
         setNotifications,
         setLists,
         setUser,
-        setEvents,
         setGoogleToken,
         setAuthToken,
         setReminders,
