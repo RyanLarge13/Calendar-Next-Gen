@@ -1,3 +1,4 @@
+import { updateReminderInMap } from "../../../utils/reminderMapHelpers.js";
 import { useContext } from "react";
 import {
   getAuthToken,
@@ -9,7 +10,7 @@ import { MdOutlineUpdate, MdSnooze } from "react-icons/md";
 import { API_SnoozeReminderAndNotification } from "../../../utils/api";
 
 const QuickPanel = ({ reminder }) => {
-  const { preferences, setReminders, setNotifications } =
+  const { preferences, setRemindersMap, setNotifications } =
     useContext(UserContext);
 
   const reminderNotPassedTime = isPassed(new Date(reminder.time), new Date());
@@ -34,27 +35,14 @@ const QuickPanel = ({ reminder }) => {
       howMuchTime: amount,
     };
 
-    let globalSnoozes;
-
-    setReminders((prev) =>
-      prev.map((r) => {
-        if (r.id === reminder.id) {
-          const newSnoozes = {
-            count: r.snoozes?.count || 0 + 1,
-            snoozes: [...(r.snoozes?.snoozes || []), newSnooze],
-          };
-
-          globalSnoozes = newSnoozes;
-
-          return {
-            ...r,
-            time: newTime.toString(),
-            snoozes: newSnoozes,
-          };
-        }
-        return r;
-      }),
-    );
+    const globalSnoozes = {
+      count: (reminder.snoozes?.count || 0) + 1,
+      snoozes: [...(reminder.snoozes?.snoozes || []), newSnooze],
+    };
+    setRemindersMap((prev) => updateReminderInMap(prev, reminder.id, {
+      time: newTime.toString(),
+      snoozes: globalSnoozes,
+    }));
     setNotifications((prev) =>
       prev.filter((n) => n.reminderRefId !== reminder.id),
     );
