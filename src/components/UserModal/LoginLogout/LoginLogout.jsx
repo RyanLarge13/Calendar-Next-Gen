@@ -23,7 +23,7 @@ const LoginLogout = () => {
     setNotifications,
     setAuthToken,
     setEventMap,
-    setReminders,
+    setRemindersMap,
     setLists,
     setSystemNotif,
     preferences,
@@ -78,14 +78,13 @@ const LoginLogout = () => {
   const logout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("authToken");
-    localStorage.removeItem("reminders");
     setSystemNotif({ show: false });
     setAuthToken(false);
     setGoogleToken(false);
     setUser(false);
     setEventMap(new Map());
     setNotifications([]);
-    setReminders([]);
+    setRemindersMap(new Map());
     setLists([]);
   };
 
