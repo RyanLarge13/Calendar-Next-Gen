@@ -48,8 +48,14 @@ export const UserProvider = ({ children }) => {
   const [refresh, setRefresh] = useState(false);
   const [lists, setLists] = useState([]);
   const [remindersMap, setRemindersMap] = useState(new Map());
-  const remindersById = useMemo(() => indexRemindersById(remindersMap), [remindersMap]);
-  const getReminderById = useCallback((id) => id == null ? undefined : remindersById.get(String(id)), [remindersById]);
+  const remindersById = useMemo(
+    () => indexRemindersById(remindersMap),
+    [remindersMap],
+  );
+  const getReminderById = useCallback(
+    (id) => (id == null ? undefined : remindersById.get(String(id))),
+    [remindersById],
+  );
   const [stickies, setStickies] = useState([]);
   const [userTasks, setUserTasks] = useState([]);
   const [friends, setFriends] = useState([]);
@@ -133,9 +139,6 @@ export const UserProvider = ({ children }) => {
 
   useEffect(() => {
     const handleSWMessage = async (event) => {
-      console.log(
-        `Message from service worker to client, type: ${event.data.type}`,
-      );
       if (event.data && event.data.type === "user-cache-update") {
         try {
           const freshData = await getUserDataFresh();
@@ -145,10 +148,6 @@ export const UserProvider = ({ children }) => {
           // The service worker will be first grabbing stale cache quickly. Make sure this is not the case before
           // calling updateUI(). User data MUST be server fresh because down the road notification subscriptions are made
           const isFresh = responseTypeForUserData === "network";
-
-          console.log("SW message. . .");
-          console.log(responseTypeForUserData);
-          console.log(isFresh);
 
           if (freshData.status !== 200) {
             throw new Error(
@@ -201,11 +200,6 @@ export const UserProvider = ({ children }) => {
 
   const M_GrabLocations = async () => {
     const dbLocations = (await localDB.getUserLocations()) || [];
-
-    console.log(
-      "User pulled locations from indexedDB and is setting them in state",
-    );
-    console.dbLocations;
     setUsersLocations(dbLocations);
   };
 
