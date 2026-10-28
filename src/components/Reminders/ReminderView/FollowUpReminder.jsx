@@ -1,3 +1,4 @@
+import { upsertReminderInMap } from "../../../utils/reminderMapHelpers.js";
 import { useContext, useState } from "react";
 import UserContext from "../../../context/UserContext";
 import { BsCalendarDay, BsCalendarMonth } from "react-icons/bs";
@@ -9,7 +10,7 @@ import { addReminder, createNotification } from "../../../utils/api";
 import { getAuthToken } from "../../../utils/helpers";
 
 const FollowUpReminder = ({ reminder }) => {
-  const { preferences, setReminders, setNotifications, user } =
+  const { preferences, setRemindersMap, setNotifications, user } =
     useContext(UserContext);
 
   const [title, setTitle] = useState(reminder.title);
@@ -63,11 +64,11 @@ const FollowUpReminder = ({ reminder }) => {
       deviceExceptions: reminder.ignoreDevices || [],
     };
 
-    setReminders((prev) => [...prev, newReminder]);
-
     try {
       const token = getAuthToken();
-      await addReminder(newReminder, token);
+      const response = await addReminder(newReminder, token);
+      const savedReminder = response?.data?.reminder;
+      if (savedReminder?.id != null) setRemindersMap((prev) => upsertReminderInMap(prev, savedReminder));
       await createNotification(newNotification, token);
     } catch (err) {
       console.log(
