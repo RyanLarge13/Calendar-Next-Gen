@@ -1,5 +1,12 @@
 import { indexEventsById } from "../utils/eventMapHelpers";
-import { createContext, useState, useEffect, useRef, useMemo, useCallback } from "react";
+import {
+  createContext,
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+} from "react";
 import { weekDays } from "../constants/dateAndTimeConstants";
 import { holidays } from "../constants/holidays";
 import {
@@ -57,7 +64,10 @@ export const UserProvider = ({ children }) => {
   const [eventMap, setEventMap] = useState(new Map());
   const [eventMapDays, setEventMapDays] = useState(new Map());
   const eventsById = useMemo(() => indexEventsById(eventMap), [eventMap]);
-  const getEventById = useCallback((id) => id == null ? undefined : eventsById.get(String(id)), [eventsById]);
+  const getEventById = useCallback(
+    (id) => (id == null ? undefined : eventsById.get(String(id))),
+    [eventsById],
+  );
   const [timers, setTimers] = useState(getTimers() || []);
   // const [timers, setTimers] =
   //   useState(
@@ -110,7 +120,10 @@ export const UserProvider = ({ children }) => {
   const subscribedFresh = useRef(false);
 
   // Update when necessary for indexedDB changes
-  const myLocalDBVersion = Math.max(5, Number(import.meta.env.VITE_INDEXED_DB_VERSION) || 0);
+  const myLocalDBVersion = Math.max(
+    5,
+    Number(import.meta.env.VITE_INDEXED_DB_VERSION) || 0,
+  );
 
   const updateStatus = () => {
     setIsOnline(navigator.onLine);
@@ -608,10 +621,6 @@ export const UserProvider = ({ children }) => {
       // The service worker will be first grabbing stale cache quickly. Make sure this is not the case before
       // calling updateUI(). User data MUST be server fresh because down the road notification subscriptions are made
       const isFresh = responseTypeForUserData === "network";
-
-      console.log("user/data call fresh or sw intercept?");
-      console.log(responseTypeForUserData);
-      console.log(isFresh);
 
       if (!userData?.data) {
         throw new Error(

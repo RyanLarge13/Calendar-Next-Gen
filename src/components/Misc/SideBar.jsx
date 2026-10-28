@@ -17,15 +17,6 @@ const SideBar = () => {
   const { setEvent } = useContext(InteractiveContext);
 
   const [temporaryNav, setTemporaryNav] = useState(0);
-  const markedDays = useMemo(() => {
-    const days = new Map();
-    const count = new Date(temporaryYear, temporaryMonth + 1, 0).getDate();
-    for (let day = 1; day <= count; day++) {
-      const first = getEventOccurrencesForDay(eventMap, new Date(temporaryYear, temporaryMonth, day))[0];
-      if (first) days.set(day, first);
-    }
-    return days;
-  }, [eventMap, temporaryYear, temporaryMonth]);
   const [temporaryString, setTemporaryString] = useState(
     new Date().toLocaleDateString(),
   );
@@ -38,6 +29,19 @@ const SideBar = () => {
   );
   const [temporaryPaddingDays, setTemporaryPaddingDays] = useState(0);
   const [temporaryDaysInMonth, setTemporaryDaysInMonth] = useState(0);
+
+  const markedDays = useMemo(() => {
+    const days = new Map();
+    const count = new Date(temporaryYear, temporaryMonth + 1, 0).getDate();
+    for (let day = 1; day <= count; day++) {
+      const first = getEventOccurrencesForDay(
+        eventMap,
+        new Date(temporaryYear, temporaryMonth, day),
+      )[0];
+      if (first) days.set(day, first);
+    }
+    return days;
+  }, [eventMap, temporaryYear, temporaryMonth]);
 
   useEffect(() => {
     const firstDayOfMonth = new Date(temporaryYear, temporaryMonth, 1);
@@ -106,7 +110,7 @@ const SideBar = () => {
           preferences.darkMode ? "bg-[#222] text-white" : "bg-white text-black"
         } rounded-b-md shadow-lg sticky top-0 pt-5 z-[1]`}
       >
-        <div className="flex justify-between items-center px-3 mb-3">
+        <div className="flex justify-between items-center mb-3 px-3">
           <BsFillArrowLeftCircleFill
             onClick={() => handleMonthYearChange("minus")}
             className="cursor-pointer"
@@ -122,8 +126,8 @@ const SideBar = () => {
             className="cursor-pointer"
           />
         </div>
-        <div className="pl-3 p-2">
-          <div className="grid grid-cols-7 place-items-center mb-3">
+        <div className="p-2 pl-3">
+          <div className="place-items-center grid grid-cols-7 mb-3">
             {weekDays.map((day, index) => (
               <p
                 key={day}
@@ -139,14 +143,15 @@ const SideBar = () => {
               </p>
             ))}
           </div>
-          <div className="grid grid-cols-7 gap-1">
+          <div className="gap-1 grid grid-cols-7">
             {[...Array(temporaryPaddingDays + temporaryDaysInMonth)].map(
               (_, index) => {
                 const dayNumber = index - temporaryPaddingDays + 1;
                 const dateStr = `${
                   temporaryMonth + 1
                 }/${dayNumber}/${temporaryYear}`;
-                const event = dayNumber > 0 ? markedDays.get(dayNumber) : undefined;
+                const event =
+                  dayNumber > 0 ? markedDays.get(dayNumber) : undefined;
 
                 return (
                   <div
@@ -195,20 +200,20 @@ const SideBar = () => {
                 className={`${event.color} absolute left-0 top-0 bottom-0 w-2 rounded-l-md`}
               ></div>
               {event.diff < 1 && event.diff >= 0 ? (
-                <p className="text-2xl font-semibold mb-2">Today</p>
+                <p className="mb-2 font-semibold text-2xl">Today</p>
               ) : event.diff >= 1 && event.diff < 2 ? (
-                <p className="text-2xl font-semibold mb-2">Tomorrow</p>
+                <p className="mb-2 font-semibold text-2xl">Tomorrow</p>
               ) : (
                 <p className="mb-2">
                   In{" "}
-                  <span className="text-2xl font-semibold">{event.diff}</span>{" "}
+                  <span className="font-semibold text-2xl">{event.diff}</span>{" "}
                   days
                 </p>
               )}
-              <p className="text-sm font-semibold truncate mt-3 mb-1">
+              <p className="mt-3 mb-1 font-semibold text-sm truncate">
                 {event.summary}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mb-5">
+              <p className="mb-5 text-gray-500 dark:text-gray-400 text-xs">
                 {event.start?.startTime
                   ? new Date(event.start.startTime).toLocaleTimeString(
                       "en-US",
@@ -225,7 +230,7 @@ const SideBar = () => {
                     })
                   : ""}
               </p>
-              <div className="text-xs leading-snug text-gray-700 whitespace-pre-wrap">
+              <div className="text-gray-700 text-xs leading-snug whitespace-pre-wrap">
                 <p>{event.description}</p>
               </div>
             </div>
