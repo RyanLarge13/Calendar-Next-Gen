@@ -234,52 +234,39 @@ const Event = () => {
   };
 
   const updateLocation = async (newLocationObject) => {
-    /*
-      TODO:
-        IMPLEMENT:
-          1. Update google maps with new location when updating location. Needs coordinates
-    */
-
-    if (!newLocationObject) {
-      // set notification
-      return;
-    }
-
-    if (inputChanges?.location?.string === newLocationObject.string) {
-      return;
-    }
+    if (!event?.id || !newLocationObject) return;
+    const eventId = event.id;
+    const samePlace =
+      location?.string === newLocationObject.string &&
+      JSON.stringify(location?.coordinates ?? null) ===
+        JSON.stringify(newLocationObject.coordinates ?? null);
+    if (samePlace) return;
 
     try {
       const token = localStorage.getItem("authToken");
-      await API_UpdateEventLocation(event.id, newLocationObject, token);
-
-      setInputChanges((prev) => ({
-        ...prev,
-        location: newLocationObject,
-      }));
-      setLocation(newLocationObject);
+      const { data } = await API_UpdateEventLocation(eventId, newLocationObject, token);
+      const savedLocation = data.location;
+      setEvent((current) =>
+        current?.id === eventId ? { ...current, location: savedLocation } : current,
+      );
+      setLocation(savedLocation);
+      setInputChanges((prev) => ({ ...prev, location: savedLocation }));
       setEventMap((prev) => {
-        const date = new Date(string);
-        const newMap = new Map(prev);
-        const mapDate = `${date.getFullYear()}-${date.getMonth()}`;
-
-        if (newMap.has(mapDate)) {
-          const entry = newMap.get(mapDate);
-          const entryEvents = entry?.events || [];
-
-          const newEvents = entryEvents.map((e) =>
-            e.id === event.id ? { ...e, location: newLocationObject } : e,
-          );
-          newMap.set(mapDate, {
-            ...entry,
-            events: newEvents, // new array, not mutated
+        const next = new Map(prev);
+        for (const [key, bucket] of next) {
+          const events = bucket?.events || [];
+          if (!events.some((item) => item.id === eventId)) continue;
+          next.set(key, {
+            ...bucket,
+            events: events.map((item) =>
+              item.id === eventId ? { ...item, location: savedLocation } : item,
+            ),
           });
         }
-
-        return newMap;
+        return next;
       });
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.error("Unable to save event location", error);
     }
   };
 
@@ -549,7 +536,7 @@ const Event = () => {
                       <button
                         className="hover:text-green-500 transition"
                         onClick={() =>
-                          (window.location.href = `https://www.google.com/maps/dir/?api=1&destination=${event.location.string}`)
+                          (window.location.href = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(location.string)}`)
                         }
                       >
                         <FaExternalLinkAlt />
