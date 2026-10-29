@@ -223,7 +223,8 @@ const MonthView = () => {
     }
   };
 
-  const onWheel = (event) => {
+  const onWheelRef = useRef(null);
+  onWheelRef.current = (event) => {
     // Leave trackpad horizontal swipes, pinch zoom, and nested scrolling alone.
     if (event.ctrlKey || Math.abs(event.deltaX) > Math.abs(event.deltaY))
       return;
@@ -254,6 +255,14 @@ const MonthView = () => {
     wheelCooldownRef.current = now + 420;
     navigateRef.current?.(direction);
   };
+
+  useEffect(() => {
+    const element = viewportRef.current;
+    if (!element) return;
+    const handleWheel = (event) => onWheelRef.current?.(event);
+    element.addEventListener("wheel", handleWheel, { passive: false });
+    return () => element.removeEventListener("wheel", handleWheel);
+  }, []);
 
   const handleFloatRepeat = (e, targetDate) => {
     const kind = e?.repeats?.kind;
@@ -407,7 +416,6 @@ const MonthView = () => {
   return (
     <motion.div
       ref={viewportRef}
-      onWheel={onWheel}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.22 }}

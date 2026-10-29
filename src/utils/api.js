@@ -164,18 +164,11 @@ export const API_UpdateEventDesc = (eventId, newDesc, token) => {
 };
 
 export const API_UpdateEventLocation = (eventId, location, token) => {
-  const newLocation = location.string;
-  const newCoords = location.coordinates;
-  const res = Axios.patch(
+  return Axios.patch(
     `${productionUrl}/update/event/location`,
-    {
-      newLocation,
-      newCoords,
-      eventId,
-    },
+    { eventId, location },
     { headers: { Authorization: `Bearer ${token}` } },
   );
-  return res;
 };
 
 // Reminders

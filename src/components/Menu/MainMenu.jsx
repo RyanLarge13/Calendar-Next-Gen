@@ -1,5 +1,6 @@
+import { getRemindersForDay } from "../../utils/reminderMapHelpers.js";
 import { motion } from "framer-motion";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import {
   MdOutlineAccessAlarm,
   MdOutlineCheckCircle,
@@ -28,7 +29,7 @@ const Dashboard = ({ timeOfDay }) => {
     upcoming,
     weatherData,
     location,
-    reminders,
+    remindersMap,
     userTasks,
     stickies,
     preferences,
@@ -36,7 +37,6 @@ const Dashboard = ({ timeOfDay }) => {
   const { setEvent } = useContext(InteractiveContext);
   const { theDay } = useContext(DatesContext);
 
-  const [todaysReminders, setTodaysReminders] = useState([]);
   const [weatherSlide, setWeatherSlide] = useState(0);
   const weatherTouchStart = useRef(null);
   const weatherCount = Math.min(7, weatherData?.daily?.time?.length ?? 0);
@@ -51,14 +51,10 @@ const Dashboard = ({ timeOfDay }) => {
     .slice(weekday, weekDays.length)
     .concat(weekDays.slice(0, weekday));
 
-  useEffect(() => {
-    const todaysReminders = reminders.filter(
-      (r) =>
-        new Date(r.time).toLocaleDateString() === theDay.toLocaleDateString(),
-    );
-
-    setTodaysReminders(todaysReminders);
-  }, [reminders]);
+  const todaysReminders = useMemo(
+    () => getRemindersForDay(remindersMap, theDay),
+    [remindersMap, theDay],
+  );
 
   return (
     <motion.div

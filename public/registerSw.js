@@ -7,8 +7,7 @@ if ("serviceWorker" in navigator && "PushManager" in window) {
       const existingRegistration =
         await navigator.serviceWorker.getRegistration();
       if (existingRegistration) {
-        console.log("Service worker already exists, canceling registration of a new worker")
-        return
+        return;
       }
       const registration = await navigator.serviceWorker.register("./sw.js");
       console.log("Service Worker registered:", registration);

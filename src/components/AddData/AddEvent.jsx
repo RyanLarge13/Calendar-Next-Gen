@@ -1,3 +1,4 @@
+import { upsertReminderInMap } from "../../utils/reminderMapHelpers.js";
 import { upsertEventInMap } from "../../utils/eventMapHelpers";
 import Compressor from "compressorjs";
 import { motion } from "framer-motion";
@@ -34,7 +35,7 @@ const AddEvent = () => {
   const {
     user,
     isOnline,
-    setReminders,
+    setRemindersMap,
     setSystemNotif,
     preferences,
     setEventMap,
@@ -178,7 +179,7 @@ const AddEvent = () => {
         startDate: date,
         endDate: getEndDate(),
         nextDate: null,
-        attachmentLength: attachments.length,
+        attachmentLength: 0,
         reminders: {
           reminder: reminderOn,
           eventReminders: newReminders,
@@ -211,21 +212,36 @@ const AddEvent = () => {
           });
 
           if (res.data.reminders) {
-            setReminders((prev) => [...prev, ...res.data.reminders]);
+            setRemindersMap((prev) =>
+              res.data.reminders.reduce(
+                (map, reminder) => upsertReminderInMap(map, reminder),
+                prev,
+              ),
+            );
           }
           setAddNewEvent(false);
           setType(null);
           closeModal();
           if (attachments.length > 0) {
-            setTimeout(() => {
-              createAttachments(
-                attachments,
-                newEventId,
-                localStorage.getItem("authToken"),
-              )
-                .then((res) => console.log(res))
-                .catch((err) => console.log(err));
-            }, 1000);
+            createAttachments(attachments, newEventId, token)
+              .then(({ data }) => {
+                setEventMap((prev) => {
+                  const next = new Map(prev);
+                  for (const [key, bucket] of next) {
+                    if (!(bucket?.events || []).some((e) => e.id === newEventId)) continue;
+                    next.set(key, {
+                      ...bucket,
+                      events: bucket.events.map((e) =>
+                        e.id === newEventId
+                          ? { ...e, attachmentLength: data.attachmentLength }
+                          : e,
+                      ),
+                    });
+                  }
+                  return next;
+                });
+              })
+              .catch((err) => console.error("Unable to save new event attachments", err));
           }
         })
         .catch((err) => {

@@ -26,7 +26,7 @@ import { useModalActions } from "../../context/ContextHooks/ModalContext.jsx";
 const Event = () => {
   const { event, setEvent, setAddNewEvent, setType, menu, setMenu } =
     useContext(InteractiveContext);
-  const { preferences, setEventMap, reminders } = useContext(UserContext);
+  const { preferences, setEventMap, getReminderById } = useContext(UserContext);
   const { string, setString } = useContext(DatesContext);
 
   const { openModal } = useModalActions();
@@ -34,6 +34,8 @@ const Event = () => {
   const [timeLeft, setTimeLeft] = useState(null);
   const [width, setWidth] = useState(0);
   const [timeInEvent, setTimeInEvent] = useState(0);
+  const activeEventIdRef = useRef(event?.id);
+  activeEventIdRef.current = event?.id;
   const [fetchedImages, setFetchedImages] = useState([]);
   const [imagesLoading, setImagesLoading] = useState(false);
   const [maximize, setMaximize] = useState(false);
@@ -84,21 +86,25 @@ const Event = () => {
     }
   }, [event]);
 
+  // Reload per event identity; ignore late responses from a previously open event.
   useEffect(() => {
-    if (event?.attachmentLength > 0) {
-      setImagesLoading(true);
-      const token = localStorage.getItem("authToken");
-      fetchAttachments(event.id, token)
+    let active = true;
+    setFetchedImages([]);
+    setImagesLoading(Boolean(event?.id));
+    if (event?.id) {
+      fetchAttachments(event.id, localStorage.getItem("authToken"))
         .then((res) => {
-          console.log("Attachment response from server for event");
-          console.log(res);
-          setFetchedImages(res.data.attachments);
-          setImagesLoading(false);
+          if (active) setFetchedImages(res.data.attachments || []);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          console.error("Unable to load event attachments", err);
+        })
+        .finally(() => {
+          if (active) setImagesLoading(false);
+        });
     }
-    return () => setFetchedImages([]);
-  }, []);
+    return () => { active = false; };
+  }, [event?.id]);
 
   useEffect(() => {
     if (!event) return;
@@ -228,52 +234,39 @@ const Event = () => {
   };
 
   const updateLocation = async (newLocationObject) => {
-    /*
-      TODO:
-        IMPLEMENT:
-          1. Update google maps with new location when updating location. Needs coordinates
-    */
-
-    if (!newLocationObject) {
-      // set notification
-      return;
-    }
-
-    if (inputChanges?.location?.string === newLocationObject.string) {
-      return;
-    }
+    if (!event?.id || !newLocationObject) return;
+    const eventId = event.id;
+    const samePlace =
+      location?.string === newLocationObject.string &&
+      JSON.stringify(location?.coordinates ?? null) ===
+        JSON.stringify(newLocationObject.coordinates ?? null);
+    if (samePlace) return;
 
     try {
       const token = localStorage.getItem("authToken");
-      await API_UpdateEventLocation(event.id, newLocationObject, token);
-
-      setInputChanges((prev) => ({
-        ...prev,
-        location: newLocationObject,
-      }));
-      setLocation(newLocationObject);
+      const { data } = await API_UpdateEventLocation(eventId, newLocationObject, token);
+      const savedLocation = data.location;
+      setEvent((current) =>
+        current?.id === eventId ? { ...current, location: savedLocation } : current,
+      );
+      setLocation(savedLocation);
+      setInputChanges((prev) => ({ ...prev, location: savedLocation }));
       setEventMap((prev) => {
-        const date = new Date(string);
-        const newMap = new Map(prev);
-        const mapDate = `${date.getFullYear()}-${date.getMonth()}`;
-
-        if (newMap.has(mapDate)) {
-          const entry = newMap.get(mapDate);
-          const entryEvents = entry?.events || [];
-
-          const newEvents = entryEvents.map((e) =>
-            e.id === event.id ? { ...e, location: newLocationObject } : e,
-          );
-          newMap.set(mapDate, {
-            ...entry,
-            events: newEvents, // new array, not mutated
+        const next = new Map(prev);
+        for (const [key, bucket] of next) {
+          const events = bucket?.events || [];
+          if (!events.some((item) => item.id === eventId)) continue;
+          next.set(key, {
+            ...bucket,
+            events: events.map((item) =>
+              item.id === eventId ? { ...item, location: savedLocation } : item,
+            ),
           });
         }
-
-        return newMap;
+        return next;
       });
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.error("Unable to save event location", error);
     }
   };
 
@@ -292,36 +285,51 @@ const Event = () => {
   };
 
   const uploadFiles = async (e) => {
-    const newFiles = [...e.target.files];
-    const uploadableAttachments = [];
-
-    for (const file of newFiles) {
-      try {
-        const compressedFile = await compressImage(file);
-        const compressedArrayBuffer = await compressedFile.arrayBuffer();
-        const compressedFileContent = new Uint8Array(compressedArrayBuffer);
-        const newFile = {
-          img: URL.createObjectURL(compressedFile),
-          mimetype: file.type,
-          filename: file.name,
-          content: compressedFileContent,
-        };
-        uploadableAttachments.push(newFile);
-      } catch (err) {
-        console.log(`Error compressing image: ${err}`);
-      }
-    }
-
-    setFetchedImages((prev) => [
-      ...prev,
-      ...uploadableAttachments.map((img) => img.img),
-    ]);
-
+    const files = [...(e.target.files || [])];
+    const eventId = event?.id;
+    e.target.value = "";
+    if (!eventId || !files.length) return;
+    setImagesLoading(true);
     try {
+      const uploadableAttachments = [];
+      for (const file of files) {
+        const compressedFile = await compressImage(file);
+        const bytes = new Uint8Array(await compressedFile.arrayBuffer());
+        uploadableAttachments.push({
+          mimetype: compressedFile.type || file.type,
+          filename: file.name,
+          content: bytes,
+        });
+      }
       const token = localStorage.getItem("authToken");
-      await createAttachments(uploadableAttachments, event.id, token);
-    } catch (err) {
-      console.log(`Error uploading new attachments. Error: ${err}`);
+      const response = await createAttachments(uploadableAttachments, eventId, token);
+      const saved = await fetchAttachments(eventId, token);
+      // Never apply a completed upload to a different event.
+      if (eventId !== activeEventIdRef.current) return;
+      setFetchedImages(saved.data.attachments || []);
+      const attachmentLength = response.data.attachmentLength;
+      setEvent((current) =>
+        current?.id === eventId ? { ...current, attachmentLength } : current,
+      );
+      setEventMap((previous) => {
+        const next = new Map(previous);
+        for (const [key, bucket] of next) {
+          const events = bucket?.events || [];
+          if (events.some((item) => item.id === eventId)) {
+            next.set(key, {
+              ...bucket,
+              events: events.map((item) =>
+                item.id === eventId ? { ...item, attachmentLength } : item,
+              ),
+            });
+          }
+        }
+        return next;
+      });
+    } catch (error) {
+      console.error("Unable to save event images", error);
+    } finally {
+      setImagesLoading(false);
     }
   };
 
@@ -528,7 +536,7 @@ const Event = () => {
                       <button
                         className="hover:text-green-500 transition"
                         onClick={() =>
-                          (window.location.href = `https://www.google.com/maps/dir/?api=1&destination=${event.location.string}`)
+                          (window.location.href = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(location.string)}`)
                         }
                       >
                         <FaExternalLinkAlt />
@@ -570,9 +578,7 @@ const Event = () => {
                 </div>
                 {event.reminders.reminder ? (
                   event.reminders?.eventReminders?.map((r) => {
-                    const eventReminder = reminders.find(
-                      (rem) => rem.id === r.id,
-                    );
+                    const eventReminder = getReminderById(r.id);
 
                     return eventReminder ? (
                       <Reminder

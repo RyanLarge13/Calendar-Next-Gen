@@ -1,7 +1,6 @@
 import prisma from "../utils/prismaClient.js";
 import { sendNotification } from "../utils/notificationService.js";
 import signToken from "../auth/signToken.js";
-import cron from "node-cron";
 const connectedClients = [];
 
 const checkForExistingSubscriptionOnUser = (existingNotifSubs, newEndpoint) => {
@@ -280,95 +279,78 @@ const pauseAllNotifications = async (req, res) => {
   }
 };
 
-const processNotifications = async (userId, res) => {
+const processingUsers = new Set();
+const processNotifications = async (userId) => {
+  if (processingUsers.has(userId)) return;
+  processingUsers.add(userId);
   try {
-    const notifications = await prisma.notification.findMany({
-      where: {
-        sentNotification: false,
-        userId: userId,
-      },
+    const pending = await prisma.notification.findMany({
+      where: { userId, sentNotification: false, time: { lte: new Date() } },
+      orderBy: { time: "asc" },
       take: 25,
     });
-    let delay = 3000;
-    const notificationIdsToUpdate = [];
-    for (const notification of notifications) {
-      if (new Date(notification.time) <= new Date()) {
-        setTimeout(() => {
-          sendSSEEventToClient(userId, notification);
-        }, delay);
-        delay += 3000;
-        notificationIdsToUpdate.push(notification.id);
+    for (const notification of pending) {
+      const frame = `id: ${notification.id}\ndata: ${JSON.stringify(notification)}\n\n`;
+      let delivered = false;
+      for (const client of connectedClients.filter((c) => c.id === userId)) {
+        if (client.response.destroyed || client.response.writableEnded) continue;
+        try {
+          client.response.write(frame);
+          delivered = true;
+        } catch (error) {
+          console.warn("SSE write failed:", error);
+        }
+      }
+      if (delivered) {
+        await prisma.notification.updateMany({
+          where: { id: notification.id, userId, sentNotification: false },
+          data: { sentNotification: true },
+        });
       }
     }
-    if (notificationIdsToUpdate.length > 0) {
-      await prisma.notification.updateMany({
-        where: { id: { in: notificationIdsToUpdate } },
-        data: { sentNotification: true },
-      });
-    }
   } catch (error) {
-    console.error("Error sending notifications:", error);
+    console.error("Error delivering notifications:", error);
+  } finally {
+    processingUsers.delete(userId);
   }
 };
 
-function sendSSEEventToClient(clientId, eventData) {
-  const client = connectedClients.find((c) => c.id === clientId);
-  if (client) {
-    client.response.write(`data: ${JSON.stringify(eventData)}\n\n`);
+// One shared poller for all active users instead of one cron job per tab.
+const notificationPoller = setInterval(() => {
+  for (const id of new Set(connectedClients.map((client) => client.id))) {
+    void processNotifications(id);
   }
-}
+}, 15000);
+notificationPoller.unref?.();
 
 export const getNotifications = async (req, res) => {
+  const id = req.params.userId;
+  if (!id) return res.status(400).end();
+
   res.setHeader("Content-Type", "text/event-stream");
-  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Cache-Control", "no-cache, no-transform");
   res.setHeader("Connection", "keep-alive");
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-  const clientResponse = res;
-  const id = req.params.userId;
-  if (id === undefined || id === null) {
-    console.log("No id was passed through request");
-    return res.end();
-  }
-  const existingClientIndex = connectedClients.findIndex(
-    (client) => client.id === id,
-  );
-  if (existingClientIndex !== -1) {
-    const existingClient = connectedClients[existingClientIndex];
-    console.log(
-      `User is attempting reconnection with user id: ${existingClient.id}`,
-    );
-    existingClient.response = clientResponse;
-    existingClient.job.stop();
-    const newJob = cron.schedule("*/15 * * * * *", () => {
-      processNotifications(id, clientResponse);
-    });
-    existingClient.job = newJob;
-    existingClient.job.start();
-  }
-  if (existingClientIndex === -1) {
-    console.log("New client attempting connection");
-    const newClient = { id: id, response: clientResponse };
-    const newJob = cron.schedule("*/15 * * * * *", () => {
-      processNotifications(id, clientResponse);
-    });
-    newClient.job = newJob;
-    newClient.job.start();
-    connectedClients.push(newClient);
-  }
-  req.on("close", () => {
-    console.log("Closing connection");
-    res.end();
-    if (existingClientIndex !== -1) {
-      const existingClient = connectedClients[existingClientIndex];
-      existingClient.response.end();
-      existingClient.job.stop();
-      console.log(`Stopping SSE response for client ${existingClient.id}`);
-    } else {
-      console.log("No existing client but req.on close event fired");
-    }
-  });
+  res.flushHeaders?.();
+  res.write("retry: 5000\n\n");
+
+  // Each request owns its response and cleanup. Never close a replacement
+  // connection when the previous request disconnects.
+  const client = { id, response: res };
+  connectedClients.push(client);
+  const heartbeat = setInterval(() => {
+    if (!res.destroyed && !res.writableEnded) res.write(": heartbeat\n\n");
+  }, 25000);
+  heartbeat.unref?.();
+
+  const cleanup = () => {
+    clearInterval(heartbeat);
+    const index = connectedClients.indexOf(client);
+    if (index !== -1) connectedClients.splice(index, 1);
+  };
+  res.on("close", cleanup);
+  res.on("error", cleanup);
+  void processNotifications(id);
 };
 
 export const getOldNotifications = async (req, res) => {

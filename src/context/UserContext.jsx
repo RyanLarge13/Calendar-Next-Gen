@@ -48,8 +48,14 @@ export const UserProvider = ({ children }) => {
   const [refresh, setRefresh] = useState(false);
   const [lists, setLists] = useState([]);
   const [remindersMap, setRemindersMap] = useState(new Map());
-  const remindersById = useMemo(() => indexRemindersById(remindersMap), [remindersMap]);
-  const getReminderById = useCallback((id) => id == null ? undefined : remindersById.get(String(id)), [remindersById]);
+  const remindersById = useMemo(
+    () => indexRemindersById(remindersMap),
+    [remindersMap],
+  );
+  const getReminderById = useCallback(
+    (id) => (id == null ? undefined : remindersById.get(String(id))),
+    [remindersById],
+  );
   const [stickies, setStickies] = useState([]);
   const [userTasks, setUserTasks] = useState([]);
   const [friends, setFriends] = useState([]);
@@ -120,6 +126,9 @@ export const UserProvider = ({ children }) => {
 
   // Refs
   const subscribedFresh = useRef(false);
+  const sseConnectionRef = useRef(null);
+  const sseUserIdRef = useRef(null);
+  const sseRequestGenerationRef = useRef(0);
 
   // Update when necessary for indexedDB changes
   const myLocalDBVersion = Math.max(
@@ -133,9 +142,6 @@ export const UserProvider = ({ children }) => {
 
   useEffect(() => {
     const handleSWMessage = async (event) => {
-      console.log(
-        `Message from service worker to client, type: ${event.data.type}`,
-      );
       if (event.data && event.data.type === "user-cache-update") {
         try {
           const freshData = await getUserDataFresh();
@@ -145,10 +151,6 @@ export const UserProvider = ({ children }) => {
           // The service worker will be first grabbing stale cache quickly. Make sure this is not the case before
           // calling updateUI(). User data MUST be server fresh because down the road notification subscriptions are made
           const isFresh = responseTypeForUserData === "network";
-
-          console.log("SW message. . .");
-          console.log(responseTypeForUserData);
-          console.log(isFresh);
 
           if (freshData.status !== 200) {
             throw new Error(
@@ -201,11 +203,6 @@ export const UserProvider = ({ children }) => {
 
   const M_GrabLocations = async () => {
     const dbLocations = (await localDB.getUserLocations()) || [];
-
-    console.log(
-      "User pulled locations from indexedDB and is setting them in state",
-    );
-    console.dbLocations;
     setUsersLocations(dbLocations);
   };
 
@@ -693,60 +690,72 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  const send = async (token, user) => {
-    if (!user.id || !user) {
-      return;
+  const closeSSEConnection = () => {
+    sseRequestGenerationRef.current += 1;
+    sseConnectionRef.current?.close();
+    sseConnectionRef.current = null;
+    sseUserIdRef.current = null;
+  };
+
+  const send = async (token, currentUser) => {
+    if (!currentUser?.id) return;
+    const userId = currentUser.id;
+    if (sseUserIdRef.current !== userId) closeSSEConnection();
+    if (!sseConnectionRef.current) {
+      const source = getNotifications(userId);
+      sseConnectionRef.current = source;
+      sseUserIdRef.current = userId;
+      source.addEventListener("open", () => {
+        console.info("SSE notification stream connected");
+      });
+      source.addEventListener("message", (event) => {
+        try {
+          const notification = JSON.parse(event.data);
+          setNotifications((prev) =>
+            prev.some((item) => item.id === notification.id)
+              ? prev : [notification, ...prev],
+          );
+          setReminderNotifications((prev) =>
+            prev.some((item) => item.id === notification.id)
+              ? prev : [...prev, notification],
+          );
+        } catch (error) {
+          console.error("Invalid SSE notification payload", error);
+        }
+      });
+      source.addEventListener("error", () => {
+        // Native EventSource automatically reconnects after transient errors.
+        if (source.readyState === EventSource.CLOSED) {
+          console.warn("SSE stream closed; awaiting next login/session initialization");
+        } else {
+          console.info("SSE stream interrupted; browser reconnecting");
+        }
+      });
     }
+    const generation = ++sseRequestGenerationRef.current;
     try {
-      const serverSentSource = getNotifications(user.id);
-      return getNotificationsAtStart(user.username, token)
-        .then((res) => {
-          console.log(
-            "Get notifications at start returned a success. Setting notifications",
-          );
-          const oldNotifs = res.data.notifs;
-          const sortedOldNotifs = oldNotifs.sort((a, b) => b.time - a.time);
-          setNotifications(sortedOldNotifs);
-          setupNotifListener(serverSentSource, user.id);
-        })
-        .catch((err) => {
-          console.log(
-            "Getting notifications at start failed inside send funciton",
-          );
-          console.log(err);
-        });
-    } catch (err) {
-      console.log("Error in send function catch block");
-      console.log(err);
+      const response = await getNotificationsAtStart(currentUser.username, token);
+      if (generation !== sseRequestGenerationRef.current) return;
+      const oldNotifs = response.data.notifs || [];
+      setNotifications((prev) => {
+        const merged = new Map();
+        for (const notification of [...oldNotifs, ...prev]) {
+          merged.set(notification.id, notification);
+        }
+        return [...merged.values()].sort(
+          (a, b) => new Date(b.time) - new Date(a.time),
+        );
+      });
+    } catch (error) {
+      console.error("Unable to load notification history", error);
     }
   };
 
-  const setupNotifListener = (serverSentSource, userId) => {
-    console.log("Set up and listening for notifications");
-    serverSentSource.addEventListener("open", () => {
-      console.log(`New SSE connection open ${serverSentSource}`);
-    });
-    serverSentSource.addEventListener("message", (event) => {
-      const notification = JSON.parse(event.data);
-      setNotifications((prev) => [notification, ...prev]);
+  useEffect(() => {
+    if (!authToken || !user?.id) closeSSEConnection();
+  }, [authToken, user?.id]);
 
-      setReminderNotifications((prev) => [...prev, notification]);
-    });
-    serverSentSource.addEventListener("error", (error) => {
-      console.error("SSE error:", error);
-      serverSentSource.close();
-      setTimeout(() => {
-        console.log("Attempting SSE reconnection...");
-        const newConnection = getNotifications(userId);
-        return setupNotifListener(newConnection, userId);
-      }, 15000);
-    });
-    window.addEventListener("beforeunload", () => {
-      if (serverSentSource !== null) {
-        serverSentSource.close();
-      }
-    });
-  };
+  useEffect(() => () => closeSSEConnection(), []);
 
   const markAsReadClient = (notifId) => {
     setNotifications((prevNotifs) => {
