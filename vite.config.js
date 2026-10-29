@@ -109,16 +109,10 @@ export default defineConfig({
         ],
         icons: [
           {
-            src: "/android/android-launchericon-192x192.png",
+            src: "/icons/desktop-icon-192x192.png",
             sizes: "192x192",
             type: "image/png",
-            purpose: "maskable",
-          },
-          {
-            src: "/android/android-launchericon-512x512.png",
-            sizes: "512x512",
-            type: "image/png",
-            purpose: "maskable",
+            purpose: "any",
           },
           {
             src: "/icons/desktop-icon-512x512.png",
