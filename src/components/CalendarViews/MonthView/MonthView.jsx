@@ -113,6 +113,14 @@ const MonthView = () => {
   const [viewportWidth, setViewportWidth] = useState(0);
   const x = useMotionValue(0);
   const animatingRef = useRef(false);
+  const mountedRef = useRef(true);
+  const externalAnimationRef = useRef(null);
+  const displayMonthRef = useRef(displayMonth);
+  displayMonthRef.current = displayMonth;
+  useEffect(() => () => {
+    mountedRef.current = false;
+    externalAnimationRef.current?.stop();
+  }, []);
   const wheelAccumulatorRef = useRef(0);
   const wheelLastTimeRef = useRef(0);
   const wheelCooldownRef = useRef(0);
@@ -156,10 +164,12 @@ const MonthView = () => {
       return;
     }
     animatingRef.current = true;
+    externalAnimationRef.current?.stop();
     const controls = animate(x, -widthRef.current * (1 + delta), {
-      duration: 0.38,
+      duration: 0.55,
       ease: [0.22, 1, 0.36, 1],
       onComplete: () => {
+        if (!mountedRef.current) return;
         pendingNavigationRef.current = next.getTime();
         setDisplayMonth(next);
         x.set(-widthRef.current);
@@ -177,20 +187,23 @@ const MonthView = () => {
         }
       },
     });
-    return () => controls.stop();
+    externalAnimationRef.current = controls;
+    // Do not cancel an in-flight transition when header state changes.
   }, [dt, x]);
 
   // Header and drag both complete the visual transition before committing nav.
   const navigateRef = useRef(null);
   navigateRef.current = async (delta) => {
+    // Ignore rapid repeated clicks/swipes until the current slide settles.
     if (animatingRef.current || !widthRef.current || !delta) return;
     animatingRef.current = true;
     const width = widthRef.current;
     await animate(x, -width * (1 + delta), {
-      duration: 0.38,
+      duration: 0.55,
       ease: [0.22, 1, 0.36, 1],
     });
-    const next = monthOffset(displayMonth, delta);
+    if (!mountedRef.current) return;
+    const next = monthOffset(displayMonthRef.current, delta);
     pendingNavigationRef.current = next.getTime();
     setDisplayMonth(next);
     x.set(-widthRef.current);
@@ -216,7 +229,7 @@ const MonthView = () => {
     else {
       animatingRef.current = true;
       await animate(x, -widthRef.current, {
-        duration: 0.38,
+        duration: 0.55,
         ease: [0.22, 1, 0.36, 1],
       });
       animatingRef.current = false;
@@ -430,9 +443,9 @@ const MonthView = () => {
         onDrag={(_, info) => {
           // Subtle resistance: offset the gesture by 3% without changing swipe detection.
           const center = -widthRef.current;
-          x.set(Math.max(-2 * widthRef.current, Math.min(0, center + info.offset.x * 0.97)));
+          x.set(Math.max(-2 * widthRef.current, Math.min(0, center + info.offset.x * 0.99)));
         }}
-        dragElastic={0.08}
+        dragElastic={0.2}
         dragConstraints={{ left: -2 * viewportWidth, right: 0 }}
         onDragEnd={finishSwipe}
       >
