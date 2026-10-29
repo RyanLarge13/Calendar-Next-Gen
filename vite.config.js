@@ -109,7 +109,7 @@ export default defineConfig({
         ],
         icons: [
           {
-            src: "/icons/desktop-icon-192x192.png",
+            src: "/icons/desktop-icon192x192.png",
             sizes: "192x192",
             type: "image/png",
             purpose: "any",
