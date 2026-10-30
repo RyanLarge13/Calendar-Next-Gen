@@ -103,7 +103,7 @@ const MonthPanel = React.memo(
 
 const MonthView = () => {
   const { eventMap } = useContext(UserContext);
-  const { dt, updatedDate, setNav, registerMonthNavigation, day, dateObj } =
+  const { dt, updatedDate, nav, setNav, registerMonthNavigation, day, dateObj } =
     useContext(DatesContext);
   const [displayMonth, setDisplayMonth] = useState(
     () => new Date(dt.getFullYear(), dt.getMonth(), 1),
@@ -299,13 +299,14 @@ const MonthView = () => {
     commitRef.current = false;
     pendingDeltaRef.current = 0;
     wheelSumRef.current = 0;
-    const destination = new Date(dt.getFullYear(), dt.getMonth(), 1);
+    // DatesContext derives dt in an effect; updatedDate can arrive one render earlier.
+    const destination = new Date(updatedDate.getFullYear(), updatedDate.getMonth() + nav, 1);
     displayedRef.current = destination;
     targetRef.current = destination;
     if (trackRef.current) trackRef.current.style.opacity = "1";
     setPosition(-widthRef.current);
     setDisplayMonth(destination);
-  }, [updatedDate, dt]);
+  }, [updatedDate]);
 
   const onPointerDown = (event) => {
     if (stateRef.current !== "idle" || !widthRef.current ||
