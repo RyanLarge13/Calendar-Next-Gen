@@ -1,6 +1,5 @@
 import React from "react";
 import MainPage from "./states/MainPage";
-import { GoogleOAuthProvider } from "@react-oauth/google";
 import { DatesProvider } from "./context/DatesContext";
 import { InteractiveProvider } from "./context/InteractiveContext";
 import { UserProvider } from "./context/UserContext";
@@ -9,8 +8,7 @@ import { ModalProvider } from "./context/ContextHooks/ModalContext";
 
 const App = () => {
   return (
-    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-      <UserProvider>
+    <UserProvider>
         <DatesProvider>
           <InteractiveProvider>
             <ModalProvider>
@@ -26,8 +24,7 @@ const App = () => {
             </ModalProvider>
           </InteractiveProvider>
         </DatesProvider>
-      </UserProvider>
-    </GoogleOAuthProvider>
+    </UserProvider>
   );
 };
 
