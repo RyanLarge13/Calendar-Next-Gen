@@ -111,11 +111,11 @@ const LoginLogout = () => {
               className="fixed inset-0 bg-black/45 z-10"
             ></motion.div>
             <motion.div
-              initial={{ y: 50, opacity: 0 }}
-              exit={{ y: 50, opacity: 0 }}
+              initial={{ y: 10, opacity: 0 }}
+              exit={{ y: 10, opacity: 0 }}
               animate={
                 showNotifs || option !== null
-                  ? { y: "85%", opacity: 1 }
+                  ? { y: "20%", opacity: 1 }
                   : { y: 0, opacity: 1 }
               }
               className={`p-3 fixed bottom-0 left-0 right-0 rounded-t-3xl shadow-2xl z-10 lg:right-[65%] max-h-[100dvh] overflow-y-auto ${

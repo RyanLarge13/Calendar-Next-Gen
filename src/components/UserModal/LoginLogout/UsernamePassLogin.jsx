@@ -115,8 +115,8 @@ const UsernamePassLogin = () => {
 
   return (
     <motion.form
-      initial={{ opacity: 0, y: 40 }}
-      exit={{ opacity: 0, y: 40, position: "absolute" }}
+      initial={{ opacity: 0, y: 10 }}
+      exit={{ opacity: 0, y: 10, position: "absolute" }}
       animate={{
         opacity: 1,
         y: 0,
