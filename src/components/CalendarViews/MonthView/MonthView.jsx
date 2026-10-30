@@ -241,14 +241,26 @@ const MonthView = () => {
     [registerMonthNavigation],
   );
 
-  // External date jumps (today/date picker) also use the same controller.
-  useEffect(() => {
+  // DatePicker/Today changes are absolute jumps, not month-by-month navigation.
+  // Internal slides already record their committed date before updating setNav,
+  // so their corresponding dt update is ignored here.
+  useLayoutEffect(() => {
     const next = new Date(dt.getFullYear(), dt.getMonth(), 1);
     if (next.getTime() === committedMonthRef.current.getTime()) return;
+    animationRef.current?.stop();
+    animationRef.current = null;
+    animatingRef.current = false;
+    dragActiveRef.current = false;
+    pendingCommitRef.current = false;
+    fastJumpRef.current = false;
+    wheelAccumulatorRef.current = 0;
     committedMonthRef.current = next;
     targetMonthRef.current = next;
-    runRef.current?.();
-  }, [dt]);
+    displayMonthRef.current = next;
+    x.set(-widthRef.current);
+    trackOpacity.set(1);
+    setDisplayMonth(next);
+  }, [dt, x, trackOpacity]);
 
   const finishSwipe = (_, info) => {
     dragActiveRef.current = false;
