@@ -395,9 +395,9 @@ export const addSubscriptionToUser = (sub, token) => {
 };
 
 export const updateLastSeenOnDevice = (newSubs, token) => {
-  const response = Axios.post(
+  const response = Axios.patch(
     `${productionUrl}/notif/lastseen`,
-    { sub: JSON.stringify(newSubs) },
+    { newSubs },
     {
       headers: {
         Authorization: `Bearer ${token}`,
