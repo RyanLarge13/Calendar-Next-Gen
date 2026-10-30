@@ -3,6 +3,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -114,26 +115,30 @@ const MonthView = () => {
   const x = useMotionValue(0);
   const animatingRef = useRef(false);
   const mountedRef = useRef(true);
-  const externalAnimationRef = useRef(null);
+  const animationRef = useRef(null);
   const displayMonthRef = useRef(displayMonth);
-  displayMonthRef.current = displayMonth;
-  useEffect(() => {
-    // React Strict Mode replays effect cleanup/setup in development.
-    mountedRef.current = true;
-    return () => {
-      mountedRef.current = false;
-      externalAnimationRef.current?.stop();
-      animatingRef.current = false;
-    };
-  }, []);
+  const targetMonthRef = useRef(displayMonth);
+  const committedMonthRef = useRef(new Date(dt.getFullYear(), dt.getMonth(), 1));
+  const pendingCommitRef = useRef(false);
+  const dragActiveRef = useRef(false);
   const wheelAccumulatorRef = useRef(0);
   const wheelLastTimeRef = useRef(0);
   const wheelCooldownRef = useRef(0);
-  const pendingNavigationRef = useRef(null);
-  const desiredMonthRef = useRef(new Date(dt.getFullYear(), dt.getMonth(), 1));
-  desiredMonthRef.current = new Date(dt.getFullYear(), dt.getMonth(), 1);
+  const navigationRef = useRef(null);
+  const runRef = useRef(null);
   const monthOffset = (date, offset) =>
     new Date(date.getFullYear(), date.getMonth() + offset, 1);
+  const monthDistance = (from, to) =>
+    (to.getFullYear() - from.getFullYear()) * 12 + to.getMonth() - from.getMonth();
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      animationRef.current?.stop();
+      animatingRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     const element = viewportRef.current;
@@ -141,7 +146,8 @@ const MonthView = () => {
     const update = () => {
       widthRef.current = element.clientWidth;
       setViewportWidth(element.clientWidth);
-      if (!animatingRef.current) x.set(-widthRef.current);
+      if (!animatingRef.current && !dragActiveRef.current)
+        x.set(-widthRef.current);
     };
     update();
     const observer = new ResizeObserver(update);
@@ -149,79 +155,67 @@ const MonthView = () => {
     return () => observer.disconnect();
   }, [x]);
 
-  // The header changes DatesContext before the slide begins. Animate the already
-  // rendered adjacent panel, then recycle it only after the slide completes.
-  useEffect(() => {
-    const next = new Date(dt.getFullYear(), dt.getMonth(), 1);
-    if (pendingNavigationRef.current === next.getTime()) {
-      pendingNavigationRef.current = null;
-      return;
-    }
-    if (next.getTime() === displayMonth.getTime()) return;
-    if (animatingRef.current) return;
-    const delta =
-      (next.getFullYear() - displayMonth.getFullYear()) * 12 +
-      next.getMonth() -
-      displayMonth.getMonth();
-    if (Math.abs(delta) !== 1 || !widthRef.current) {
-      setDisplayMonth(next);
-      x.set(-widthRef.current);
-      return;
-    }
+  // One owner of the track animation. Navigation requests only update the target.
+  runRef.current = () => {
+    if (!mountedRef.current || animatingRef.current || pendingCommitRef.current ||
+        dragActiveRef.current || !widthRef.current) return;
+    const distance = monthDistance(displayMonthRef.current, targetMonthRef.current);
+    if (!distance) return;
+    const direction = Math.sign(distance);
+    const width = widthRef.current;
     animatingRef.current = true;
-    externalAnimationRef.current?.stop();
-    const controls = animate(x, -widthRef.current * (1 + delta), {
+    const controls = animate(x, -width * (1 + direction), {
       duration: 0.55,
       ease: [0.22, 1, 0.36, 1],
       onComplete: () => {
         if (!mountedRef.current) return;
-        pendingNavigationRef.current = next.getTime();
+        const next = monthOffset(displayMonthRef.current, direction);
+        pendingCommitRef.current = true;
+        committedMonthRef.current = next;
+        displayMonthRef.current = next;
         setDisplayMonth(next);
-        x.set(-widthRef.current);
-        animatingRef.current = false;
-        const desired = desiredMonthRef.current;
-        if (desired.getTime() !== next.getTime()) {
-          // Catch rapid header clicks after the current transition settles.
-          const distance =
-            (desired.getFullYear() - next.getFullYear()) * 12 +
-            desired.getMonth() -
-            next.getMonth();
-          if (Math.abs(distance) > 1) {
-            setDisplayMonth(desired);
-          }
-        }
+        setNav((previous) => previous + direction);
       },
     });
-    externalAnimationRef.current = controls;
-    // Do not cancel an in-flight transition when header state changes.
-  }, [dt, x]);
+    animationRef.current = controls;
+  };
 
-  // Header and drag both complete the visual transition before committing nav.
-  const navigateRef = useRef(null);
-  navigateRef.current = async (delta) => {
-    // Ignore rapid repeated clicks/swipes until the current slide settles.
-    if (animatingRef.current || !widthRef.current || !delta) return;
-    animatingRef.current = true;
-    const width = widthRef.current;
-    await animate(x, -width * (1 + delta), {
-      duration: 0.55,
-      ease: [0.22, 1, 0.36, 1],
-    });
-    if (!mountedRef.current) return;
-    const next = monthOffset(displayMonthRef.current, delta);
-    pendingNavigationRef.current = next.getTime();
-    setDisplayMonth(next);
+  // Reset the strip only AFTER React has committed the recycled month panels.
+  // Layout effect avoids displaying the off-center track with newly keyed panels.
+  useLayoutEffect(() => {
+    if (!pendingCommitRef.current) return;
     x.set(-widthRef.current);
+    pendingCommitRef.current = false;
     animatingRef.current = false;
-    setNav((previous) => previous + delta);
+    animationRef.current = null;
+    // Continue toward the latest requested month, not every obsolete intermediate target.
+    const frame = requestAnimationFrame(() => runRef.current?.());
+    return () => cancelAnimationFrame(frame);
+  }, [displayMonth, x]);
+
+  navigationRef.current = (delta) => {
+    if (!delta || !Number.isFinite(delta)) return;
+    // Keep all user inputs, but coalesce them into one destination.
+    targetMonthRef.current = monthOffset(targetMonthRef.current, Math.trunc(delta));
+    runRef.current?.();
   };
 
   useEffect(
-    () => registerMonthNavigation((delta) => navigateRef.current?.(delta)),
+    () => registerMonthNavigation((delta) => navigationRef.current?.(delta)),
     [registerMonthNavigation],
   );
 
-  const finishSwipe = async (_, info) => {
+  // External date jumps (today/date picker) also use the same controller.
+  useEffect(() => {
+    const next = new Date(dt.getFullYear(), dt.getMonth(), 1);
+    if (next.getTime() === committedMonthRef.current.getTime()) return;
+    committedMonthRef.current = next;
+    targetMonthRef.current = next;
+    runRef.current?.();
+  }, [dt]);
+
+  const finishSwipe = (_, info) => {
+    dragActiveRef.current = false;
     if (animatingRef.current || !widthRef.current) return;
     const threshold = widthRef.current * 0.2;
     const delta =
@@ -230,48 +224,39 @@ const MonthView = () => {
         : info.offset.x > threshold || info.velocity.x > 550
           ? -1
           : 0;
-    if (delta) await navigateRef.current(delta);
+    if (delta) navigationRef.current?.(delta);
     else {
       animatingRef.current = true;
-      await animate(x, -widthRef.current, {
+      animationRef.current = animate(x, -widthRef.current, {
         duration: 0.55,
         ease: [0.22, 1, 0.36, 1],
+        onComplete: () => {
+          animatingRef.current = false;
+          runRef.current?.();
+        },
       });
-      animatingRef.current = false;
     }
   };
 
   const onWheelRef = useRef(null);
   onWheelRef.current = (event) => {
-    // Leave trackpad horizontal swipes, pinch zoom, and nested scrolling alone.
-    if (event.ctrlKey || Math.abs(event.deltaX) > Math.abs(event.deltaY))
-      return;
-    if (
-      event.target.closest(
-        "[data-month-popup], input, textarea, select, [contenteditable=true]",
-      )
-    )
-      return;
+    if (event.ctrlKey || Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
+    if (event.target.closest(
+      "[data-month-popup], input, textarea, select, [contenteditable=true]"
+    )) return;
     event.preventDefault();
     const now = performance.now();
     if (now - wheelLastTimeRef.current > 240) wheelAccumulatorRef.current = 0;
     wheelLastTimeRef.current = now;
-    if (animatingRef.current || now < wheelCooldownRef.current) return;
-    const multiplier =
-      event.deltaMode === 1
-        ? 16
-        : event.deltaMode === 2
-          ? window.innerHeight
-          : 1;
+    const multiplier = event.deltaMode === 1 ? 16 :
+      event.deltaMode === 2 ? window.innerHeight : 1;
     wheelAccumulatorRef.current += event.deltaY * multiplier;
-    const magnitude = Math.abs(wheelAccumulatorRef.current);
-    // Small wheel gestures require more input; strong scrolls cross sooner.
-    const threshold = 90;
-    if (magnitude < threshold) return;
-    const direction = wheelAccumulatorRef.current > 0 ? 1 : -1;
+    if (Math.abs(wheelAccumulatorRef.current) < 90 ||
+        now < wheelCooldownRef.current) return;
+    const direction = Math.sign(wheelAccumulatorRef.current);
     wheelAccumulatorRef.current = 0;
-    wheelCooldownRef.current = now + 420;
-    navigateRef.current?.(direction);
+    wheelCooldownRef.current = now + 250;
+    navigationRef.current?.(direction);
   };
 
   useEffect(() => {
@@ -443,11 +428,13 @@ const MonthView = () => {
         className="flex w-[300%] h-full touch-pan-y will-change-transform"
         style={{ x }}
         drag="x"
+        onDragStart={() => { dragActiveRef.current = !animatingRef.current; }}
         dragMomentum={false}
         dragTransition={{ power: 0, timeConstant: 260 }}
         onDrag={(_, info) => {
           // Subtle resistance: offset the gesture by 3% without changing swipe detection.
           const center = -widthRef.current;
+          if (!dragActiveRef.current || animatingRef.current) return;
           x.set(Math.max(-2 * widthRef.current, Math.min(0, center + info.offset.x * 0.99)));
         }}
         dragElastic={0.2}
