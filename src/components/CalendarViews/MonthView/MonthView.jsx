@@ -1,4 +1,3 @@
-import { motion, animate, useMotionValue } from "framer-motion";
 import React, {
   useCallback,
   useContext,
@@ -104,186 +103,273 @@ const MonthPanel = React.memo(
 
 const MonthView = () => {
   const { eventMap } = useContext(UserContext);
-  const { dt, setNav, registerMonthNavigation, day, dateObj } =
+  const { dt, updatedDate, setNav, registerMonthNavigation, day, dateObj } =
     useContext(DatesContext);
   const [displayMonth, setDisplayMonth] = useState(
     () => new Date(dt.getFullYear(), dt.getMonth(), 1),
   );
   const viewportRef = useRef(null);
+  const trackRef = useRef(null);
   const widthRef = useRef(0);
   const [viewportWidth, setViewportWidth] = useState(0);
-  const x = useMotionValue(0);
-  const trackOpacity = useMotionValue(1);
-  const fastJumpRef = useRef(false);
-  const animatingRef = useRef(false);
-  const mountedRef = useRef(true);
+  const mountedRef = useRef(false);
+  const stateRef = useRef("idle"); // idle | dragging | animating | committing
   const animationRef = useRef(null);
-  const displayMonthRef = useRef(displayMonth);
-  const targetMonthRef = useRef(displayMonth);
-  const committedMonthRef = useRef(new Date(dt.getFullYear(), dt.getMonth(), 1));
-  const pendingCommitRef = useRef(false);
-  const dragActiveRef = useRef(false);
-  const wheelAccumulatorRef = useRef(0);
-  const wheelLastTimeRef = useRef(0);
+  const animationTokenRef = useRef(0);
+  const pointerRef = useRef(null);
+  const displayedRef = useRef(displayMonth);
+  const targetRef = useRef(displayMonth);
+  const lastDatePickerRef = useRef(updatedDate);
+  const pendingDeltaRef = useRef(0);
+  const activeDirectionRef = useRef(0);
+  const lastInputTimeRef = useRef(0);
+  const lastIntervalRef = useRef(350);
+  const wheelSumRef = useRef(0);
+  const wheelTimeRef = useRef(0);
   const wheelCooldownRef = useRef(0);
-  const navigationRef = useRef(null);
+  const commitRef = useRef(false);
   const runRef = useRef(null);
+  const requestRef = useRef(null);
+  const transformRef = useRef(0);
+
   const monthOffset = (date, offset) =>
     new Date(date.getFullYear(), date.getMonth() + offset, 1);
   const monthDistance = (from, to) =>
     (to.getFullYear() - from.getFullYear()) * 12 + to.getMonth() - from.getMonth();
 
+  const setPosition = (position) => {
+    transformRef.current = position;
+    if (trackRef.current)
+      trackRef.current.style.transform = `translate3d(${position}px, 0, 0)`;
+  };
+
+  const stopAnimation = () => {
+    animationTokenRef.current += 1;
+    animationRef.current?.cancel();
+    animationRef.current = null;
+  };
+
+  // WAAPI is the sole animation owner. Dragging only writes the transform
+  // while no animation is active. A token invalidates canceled callbacks.
+  const animateTo = (destination, duration, onDone) => {
+    const element = trackRef.current;
+    if (!element) return;
+    stopAnimation();
+    const token = animationTokenRef.current;
+    const start = transformRef.current;
+    const animation = element.animate(
+      [
+        { transform: `translate3d(${start}px, 0, 0)` },
+        { transform: `translate3d(${destination}px, 0, 0)` },
+      ],
+      { duration, easing: "cubic-bezier(0.22, 1, 0.36, 1)", fill: "forwards" },
+    );
+    animationRef.current = animation;
+    animation.onfinish = () => {
+      if (!mountedRef.current || token !== animationTokenRef.current) return;
+      // Set the underlying transform before removing the animation effect.
+      setPosition(destination);
+      animation.cancel();
+      animationRef.current = null;
+      onDone();
+    };
+  };
+
+  const commitMonth = (month) => {
+    stateRef.current = "committing";
+    displayedRef.current = month;
+    commitRef.current = true;
+    setDisplayMonth(month);
+  };
+
+  runRef.current = () => {
+    if (!mountedRef.current || stateRef.current !== "idle" || !widthRef.current) return;
+    const distance = monthDistance(displayedRef.current, targetRef.current);
+    if (!distance) return;
+    const direction = Math.sign(distance);
+    activeDirectionRef.current = direction;
+    stateRef.current = "animating";
+    const width = widthRef.current;
+
+    // A burst is one destination, not a long series of intermediate slides.
+    if (Math.abs(distance) >= 3) {
+      stopAnimation();
+      const token = animationTokenRef.current;
+      const fade = trackRef.current.animate(
+        [{ opacity: 1 }, { opacity: 0 }],
+        { duration: 90, fill: "forwards" },
+      );
+      animationRef.current = fade;
+      fade.onfinish = () => {
+        if (!mountedRef.current || token !== animationTokenRef.current) return;
+        trackRef.current.style.opacity = "0";
+        fade.cancel();
+        animationRef.current = null;
+        commitMonth(targetRef.current);
+      };
+      return;
+    }
+
+    const duration = Math.max(110, Math.min(280, 115 + lastIntervalRef.current * 0.28));
+    animateTo(-width * (1 + direction), duration, () => {
+      commitMonth(monthOffset(displayedRef.current, direction));
+    });
+  };
+
+  requestRef.current = (delta, source = "header") => {
+    if (!Number.isFinite(delta) || !Math.trunc(delta)) return;
+    const steps = Math.trunc(delta);
+    const now = performance.now();
+    const interval = now - lastInputTimeRef.current;
+    if (lastInputTimeRef.current && interval < 900)
+      lastIntervalRef.current = interval;
+    else lastIntervalRef.current = 350;
+    lastInputTimeRef.current = now;
+    targetRef.current = monthOffset(targetRef.current, steps);
+    pendingDeltaRef.current = monthDistance(displayedRef.current, targetRef.current);
+    // Header/date state updates at request time, never on animation completion.
+    setNav((previous) => previous + steps);
+    if (stateRef.current === "idle") runRef.current?.();
+  };
+
   useEffect(() => {
     mountedRef.current = true;
     return () => {
       mountedRef.current = false;
-      animationRef.current?.stop();
-      animatingRef.current = false;
+      stopAnimation();
     };
   }, []);
 
   useEffect(() => {
     const element = viewportRef.current;
     if (!element) return;
-    const update = () => {
-      widthRef.current = element.clientWidth;
-      setViewportWidth(element.clientWidth);
-      if (!animatingRef.current && !dragActiveRef.current)
-        x.set(-widthRef.current);
+    const resize = () => {
+      const width = element.clientWidth;
+      widthRef.current = width;
+      setViewportWidth(width);
+      if (stateRef.current === "idle") setPosition(-width);
     };
-    update();
-    const observer = new ResizeObserver(update);
+    resize();
+    const observer = new ResizeObserver(resize);
     observer.observe(element);
     return () => observer.disconnect();
-  }, [x]);
+  }, []);
 
-  // One owner of the track animation. Navigation requests only update the target.
-  runRef.current = () => {
-    if (!mountedRef.current || animatingRef.current || pendingCommitRef.current ||
-        dragActiveRef.current || !widthRef.current) return;
-    const distance = monthDistance(displayMonthRef.current, targetMonthRef.current);
-    if (!distance) return;
-    const direction = Math.sign(distance);
-    const width = widthRef.current;
-    animatingRef.current = true;
-    // Skip obsolete intermediate months when the user is navigating quickly.
-    // Fade out before recycling panels so no visible day cells are replaced mid-slide.
-    if (Math.abs(distance) >= 3) {
-      fastJumpRef.current = true;
-      animationRef.current = animate(trackOpacity, 0, {
-        duration: 0.12,
-        ease: "easeOut",
-        onComplete: () => {
-          if (!mountedRef.current) return;
-          const destination = targetMonthRef.current;
-          const jump = monthDistance(displayMonthRef.current, destination);
-          pendingCommitRef.current = true;
-          committedMonthRef.current = destination;
-          displayMonthRef.current = destination;
-          setDisplayMonth(destination);
-          setNav((previous) => previous + jump);
-        },
-      });
-      return;
-    }
-    fastJumpRef.current = false;
-    const controls = animate(x, -width * (1 + direction), {
-      duration: 0.55,
-      ease: [0.22, 1, 0.36, 1],
-      onComplete: () => {
-        if (!mountedRef.current) return;
-        const next = monthOffset(displayMonthRef.current, direction);
-        pendingCommitRef.current = true;
-        committedMonthRef.current = next;
-        displayMonthRef.current = next;
-        setDisplayMonth(next);
-        setNav((previous) => previous + direction);
-      },
-    });
-    animationRef.current = controls;
-  };
-
-  // Reset the strip only AFTER React has committed the recycled month panels.
-  // Layout effect avoids displaying the off-center track with newly keyed panels.
+  // Recycle panels and reset the track in a layout effect, before paint.
   useLayoutEffect(() => {
-    if (!pendingCommitRef.current) return;
-    x.set(-widthRef.current);
-    pendingCommitRef.current = false;
-    if (fastJumpRef.current) {
-      fastJumpRef.current = false;
-      // The destination is now committed and centered; reveal it only afterward.
-      animationRef.current = animate(trackOpacity, 1, {
-        duration: 0.18,
-        ease: "easeOut",
-        onComplete: () => {
-          animatingRef.current = false;
-          animationRef.current = null;
-          runRef.current?.();
-        },
+    if (!commitRef.current) return;
+    commitRef.current = false;
+    setPosition(-widthRef.current);
+    pendingDeltaRef.current = monthDistance(displayedRef.current, targetRef.current);
+    if (trackRef.current?.style.opacity === "0") {
+      const element = trackRef.current;
+      element.style.opacity = "1";
+      const fade = element.animate([{ opacity: 0 }, { opacity: 1 }], {
+        duration: 120, easing: "ease-out",
       });
+      stateRef.current = "animating";
+      animationRef.current = fade;
+      const token = animationTokenRef.current;
+      fade.onfinish = () => {
+        if (!mountedRef.current || token !== animationTokenRef.current) return;
+        animationRef.current = null;
+        stateRef.current = "idle";
+        runRef.current?.();
+      };
       return;
     }
-    animatingRef.current = false;
-    animationRef.current = null;
+    stateRef.current = "idle";
     const frame = requestAnimationFrame(() => runRef.current?.());
     return () => cancelAnimationFrame(frame);
-  }, [displayMonth, x, trackOpacity]);
-
-  navigationRef.current = (delta) => {
-    if (!delta || !Number.isFinite(delta)) return;
-    // Keep all user inputs, but coalesce them into one destination.
-    targetMonthRef.current = monthOffset(targetMonthRef.current, Math.trunc(delta));
-    runRef.current?.();
-  };
+  }, [displayMonth]);
 
   useEffect(
-    () => registerMonthNavigation((delta) => navigationRef.current?.(delta)),
+    () => registerMonthNavigation((delta) => requestRef.current?.(delta, "header")),
     [registerMonthNavigation],
   );
 
-  // DatePicker/Today changes are absolute jumps, not month-by-month navigation.
-  // Internal slides already record their committed date before updating setNav,
-  // so their corresponding dt update is ignored here.
+  // DatePicker is an absolute jump: cancel animation, clear pending input,
+  // replace all three panels immediately, and recenter without a transition.
   useLayoutEffect(() => {
-    const next = new Date(dt.getFullYear(), dt.getMonth(), 1);
-    if (next.getTime() === committedMonthRef.current.getTime()) return;
-    animationRef.current?.stop();
-    animationRef.current = null;
-    animatingRef.current = false;
-    dragActiveRef.current = false;
-    pendingCommitRef.current = false;
-    fastJumpRef.current = false;
-    wheelAccumulatorRef.current = 0;
-    committedMonthRef.current = next;
-    targetMonthRef.current = next;
-    displayMonthRef.current = next;
-    x.set(-widthRef.current);
-    trackOpacity.set(1);
-    setDisplayMonth(next);
-  }, [dt, x, trackOpacity]);
+    if (lastDatePickerRef.current === updatedDate) return;
+    lastDatePickerRef.current = updatedDate;
+    stopAnimation();
+    pointerRef.current = null;
+    stateRef.current = "idle";
+    commitRef.current = false;
+    pendingDeltaRef.current = 0;
+    wheelSumRef.current = 0;
+    const destination = new Date(dt.getFullYear(), dt.getMonth(), 1);
+    displayedRef.current = destination;
+    targetRef.current = destination;
+    if (trackRef.current) trackRef.current.style.opacity = "1";
+    setPosition(-widthRef.current);
+    setDisplayMonth(destination);
+  }, [updatedDate, dt]);
 
-  const finishSwipe = (_, info) => {
-    dragActiveRef.current = false;
-    if (animatingRef.current || !widthRef.current) return;
-    const threshold = widthRef.current * 0.2;
-    const delta =
-      info.offset.x < -threshold || info.velocity.x < -550
-        ? 1
-        : info.offset.x > threshold || info.velocity.x > 550
-          ? -1
-          : 0;
-    if (delta) navigationRef.current?.(delta);
-    else {
-      animatingRef.current = true;
-      animationRef.current = animate(x, -widthRef.current, {
-        duration: 0.55,
-        ease: [0.22, 1, 0.36, 1],
-        onComplete: () => {
-          animatingRef.current = false;
-          runRef.current?.();
-        },
-      });
+  const onPointerDown = (event) => {
+    if (stateRef.current !== "idle" || !widthRef.current ||
+        (event.pointerType === "mouse" && event.button !== 0) ||
+        event.target.closest("button, input, textarea, select, a, [contenteditable=true], [data-month-popup]"))
+      return;
+    pointerRef.current = {
+      id: event.pointerId, x: event.clientX, y: event.clientY,
+      start: performance.now(), lastX: event.clientX, lastTime: performance.now(),
+      velocity: 0, horizontal: false,
+    };
+  };
+
+  const onPointerMove = (event) => {
+    const gesture = pointerRef.current;
+    if (!gesture || gesture.id !== event.pointerId) return;
+    const dx = event.clientX - gesture.x;
+    const dy = event.clientY - gesture.y;
+    if (!gesture.horizontal) {
+      if (Math.abs(dx) < 9 && Math.abs(dy) < 9) return;
+      if (Math.abs(dy) > Math.abs(dx)) { pointerRef.current = null; return; }
+      if (stateRef.current !== "idle") { pointerRef.current = null; return; }
+      gesture.horizontal = true;
+      stateRef.current = "dragging";
+      event.currentTarget.setPointerCapture(event.pointerId);
     }
+    const now = performance.now();
+    const elapsed = now - gesture.lastTime;
+    if (elapsed > 0) gesture.velocity = (event.clientX - gesture.lastX) / elapsed;
+    gesture.lastX = event.clientX;
+    gesture.lastTime = now;
+    const width = widthRef.current;
+    const offset = Math.max(-width, Math.min(width, dx));
+    setPosition(-width + offset);
+  };
+
+  const onPointerEnd = (event) => {
+    const gesture = pointerRef.current;
+    if (!gesture || gesture.id !== event.pointerId) return;
+    pointerRef.current = null;
+    if (!gesture.horizontal || stateRef.current !== "dragging") return;
+    const width = widthRef.current;
+    const offset = transformRef.current + width;
+    const velocity = gesture.velocity * 1000;
+    const direction = offset < -width * 0.2 || velocity < -550 ? 1 :
+      offset > width * 0.2 || velocity > 550 ? -1 : 0;
+    stateRef.current = "animating";
+    const destination = direction ? -width * (1 + direction) : -width;
+    const remaining = Math.abs(destination - transformRef.current);
+    const duration = Math.max(75, Math.min(260,
+      remaining / Math.max(500, Math.abs(velocity)) * 1000));
+    if (direction) {
+      // Record the swipe immediately; don't start a second animation.
+      targetRef.current = monthOffset(targetRef.current, direction);
+      pendingDeltaRef.current = monthDistance(displayedRef.current, targetRef.current);
+      setNav((previous) => previous + direction);
+    }
+    animateTo(destination, duration, () => {
+      if (direction) commitMonth(monthOffset(displayedRef.current, direction));
+      else {
+        stateRef.current = "idle";
+        runRef.current?.();
+      }
+    });
   };
 
   const onWheelRef = useRef(null);
@@ -294,25 +380,23 @@ const MonthView = () => {
     )) return;
     event.preventDefault();
     const now = performance.now();
-    if (now - wheelLastTimeRef.current > 240) wheelAccumulatorRef.current = 0;
-    wheelLastTimeRef.current = now;
+    if (now - wheelTimeRef.current > 240) wheelSumRef.current = 0;
+    wheelTimeRef.current = now;
     const multiplier = event.deltaMode === 1 ? 16 :
       event.deltaMode === 2 ? window.innerHeight : 1;
-    wheelAccumulatorRef.current += event.deltaY * multiplier;
-    if (Math.abs(wheelAccumulatorRef.current) < 90 ||
-        now < wheelCooldownRef.current) return;
-    const direction = Math.sign(wheelAccumulatorRef.current);
-    wheelAccumulatorRef.current = 0;
-    wheelCooldownRef.current = now + 250;
-    navigationRef.current?.(direction);
+    wheelSumRef.current += event.deltaY * multiplier;
+    if (Math.abs(wheelSumRef.current) < 90 || now < wheelCooldownRef.current) return;
+    const direction = Math.sign(wheelSumRef.current);
+    wheelSumRef.current = 0;
+    wheelCooldownRef.current = now + 180;
+    requestRef.current?.(direction, "wheel");
   };
-
   useEffect(() => {
     const element = viewportRef.current;
     if (!element) return;
-    const handleWheel = (event) => onWheelRef.current?.(event);
-    element.addEventListener("wheel", handleWheel, { passive: false });
-    return () => element.removeEventListener("wheel", handleWheel);
+    const handler = (event) => onWheelRef.current?.(event);
+    element.addEventListener("wheel", handler, { passive: false });
+    return () => element.removeEventListener("wheel", handler);
   }, []);
 
   const handleFloatRepeat = (e, targetDate) => {
@@ -465,33 +549,22 @@ const MonthView = () => {
   });
 
   return (
-    <motion.div
+    <div
       ref={viewportRef}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.22 }}
       className="w-full h-full min-h-0 overflow-hidden"
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerEnd}
+      onPointerCancel={onPointerEnd}
     >
-      <motion.div
+      <div
+        ref={trackRef}
         className="flex w-[300%] h-full touch-pan-y will-change-transform"
-        style={{ x, opacity: trackOpacity }}
-        drag="x"
-        onDragStart={() => { dragActiveRef.current = !animatingRef.current; }}
-        dragMomentum={false}
-        dragTransition={{ power: 0, timeConstant: 260 }}
-        onDrag={(_, info) => {
-          // Subtle resistance: offset the gesture by 3% without changing swipe detection.
-          const center = -widthRef.current;
-          if (!dragActiveRef.current || animatingRef.current) return;
-          x.set(Math.max(-2 * widthRef.current, Math.min(0, center + info.offset.x * 0.99)));
-        }}
-        dragElastic={0.2}
-        dragConstraints={{ left: -2 * viewportWidth, right: 0 }}
-        onDragEnd={finishSwipe}
+        style={{ transform: `translate3d(-${viewportWidth}px, 0, 0)` }}
       >
         {panels}
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 };
 
