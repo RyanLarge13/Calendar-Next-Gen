@@ -117,9 +117,14 @@ const MonthView = () => {
   const externalAnimationRef = useRef(null);
   const displayMonthRef = useRef(displayMonth);
   displayMonthRef.current = displayMonth;
-  useEffect(() => () => {
-    mountedRef.current = false;
-    externalAnimationRef.current?.stop();
+  useEffect(() => {
+    // React Strict Mode replays effect cleanup/setup in development.
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      externalAnimationRef.current?.stop();
+      animatingRef.current = false;
+    };
   }, []);
   const wheelAccumulatorRef = useRef(0);
   const wheelLastTimeRef = useRef(0);
