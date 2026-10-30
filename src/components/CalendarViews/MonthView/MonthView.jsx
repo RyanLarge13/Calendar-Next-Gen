@@ -113,6 +113,8 @@ const MonthView = () => {
   const widthRef = useRef(0);
   const [viewportWidth, setViewportWidth] = useState(0);
   const x = useMotionValue(0);
+  const trackOpacity = useMotionValue(1);
+  const fastJumpRef = useRef(false);
   const animatingRef = useRef(false);
   const mountedRef = useRef(true);
   const animationRef = useRef(null);
@@ -164,6 +166,27 @@ const MonthView = () => {
     const direction = Math.sign(distance);
     const width = widthRef.current;
     animatingRef.current = true;
+    // Skip obsolete intermediate months when the user is navigating quickly.
+    // Fade out before recycling panels so no visible day cells are replaced mid-slide.
+    if (Math.abs(distance) >= 3) {
+      fastJumpRef.current = true;
+      animationRef.current = animate(trackOpacity, 0, {
+        duration: 0.12,
+        ease: "easeOut",
+        onComplete: () => {
+          if (!mountedRef.current) return;
+          const destination = targetMonthRef.current;
+          const jump = monthDistance(displayMonthRef.current, destination);
+          pendingCommitRef.current = true;
+          committedMonthRef.current = destination;
+          displayMonthRef.current = destination;
+          setDisplayMonth(destination);
+          setNav((previous) => previous + jump);
+        },
+      });
+      return;
+    }
+    fastJumpRef.current = false;
     const controls = animate(x, -width * (1 + direction), {
       duration: 0.55,
       ease: [0.22, 1, 0.36, 1],
@@ -186,12 +209,25 @@ const MonthView = () => {
     if (!pendingCommitRef.current) return;
     x.set(-widthRef.current);
     pendingCommitRef.current = false;
+    if (fastJumpRef.current) {
+      fastJumpRef.current = false;
+      // The destination is now committed and centered; reveal it only afterward.
+      animationRef.current = animate(trackOpacity, 1, {
+        duration: 0.18,
+        ease: "easeOut",
+        onComplete: () => {
+          animatingRef.current = false;
+          animationRef.current = null;
+          runRef.current?.();
+        },
+      });
+      return;
+    }
     animatingRef.current = false;
     animationRef.current = null;
-    // Continue toward the latest requested month, not every obsolete intermediate target.
     const frame = requestAnimationFrame(() => runRef.current?.());
     return () => cancelAnimationFrame(frame);
-  }, [displayMonth, x]);
+  }, [displayMonth, x, trackOpacity]);
 
   navigationRef.current = (delta) => {
     if (!delta || !Number.isFinite(delta)) return;
@@ -426,7 +462,7 @@ const MonthView = () => {
     >
       <motion.div
         className="flex w-[300%] h-full touch-pan-y will-change-transform"
-        style={{ x }}
+        style={{ x, opacity: trackOpacity }}
         drag="x"
         onDragStart={() => { dragActiveRef.current = !animatingRef.current; }}
         dragMomentum={false}
