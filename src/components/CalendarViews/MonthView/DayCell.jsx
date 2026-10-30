@@ -103,7 +103,6 @@ const DayCell = ({
       setSelected(sortedSelected);
     }
     if (!longPressActive) {
-      console.log("addEvent Called");
       addEvent(`${month + 1}/${index - paddingDays + 1}/${year}`, index);
     }
   };

@@ -237,7 +237,6 @@ export const UserProvider = ({ children }) => {
       );
 
       if (!includes) {
-        console.log(usersLocations);
         setUsersLocations((prev) => [...prev, locationObj]);
       }
 
@@ -359,7 +358,7 @@ export const UserProvider = ({ children }) => {
         newMap.get(key).reminders.push(rmd);
       }
 
-      if (rmd.repeats.on) {
+      if (rmd.repeats?.on) {
         if (!newMap.has("repeat-reminders")) {
           newMap.set("repeat-reminders", { reminders: [rmd] });
         } else {
@@ -713,11 +712,13 @@ export const UserProvider = ({ children }) => {
           const notification = JSON.parse(event.data);
           setNotifications((prev) =>
             prev.some((item) => item.id === notification.id)
-              ? prev : [notification, ...prev],
+              ? prev
+              : [notification, ...prev],
           );
           setReminderNotifications((prev) =>
             prev.some((item) => item.id === notification.id)
-              ? prev : [...prev, notification],
+              ? prev
+              : [...prev, notification],
           );
         } catch (error) {
           console.error("Invalid SSE notification payload", error);
@@ -726,7 +727,9 @@ export const UserProvider = ({ children }) => {
       source.addEventListener("error", () => {
         // Native EventSource automatically reconnects after transient errors.
         if (source.readyState === EventSource.CLOSED) {
-          console.warn("SSE stream closed; awaiting next login/session initialization");
+          console.warn(
+            "SSE stream closed; awaiting next login/session initialization",
+          );
         } else {
           console.info("SSE stream interrupted; browser reconnecting");
         }
@@ -734,7 +737,10 @@ export const UserProvider = ({ children }) => {
     }
     const generation = ++sseRequestGenerationRef.current;
     try {
-      const response = await getNotificationsAtStart(currentUser.username, token);
+      const response = await getNotificationsAtStart(
+        currentUser.username,
+        token,
+      );
       if (generation !== sseRequestGenerationRef.current) return;
       const oldNotifs = response.data.notifs || [];
       setNotifications((prev) => {
