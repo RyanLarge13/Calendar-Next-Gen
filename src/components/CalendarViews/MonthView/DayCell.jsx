@@ -161,13 +161,9 @@ const DayCell = ({
   );
 
   return (
-    <motion.div
+    <div
       ref={cellRef}
       initial={false}
-      whileHover={{
-        boxShadow: `0px 0px 4px 2px #${preferences.darkMode ? "FFF" : "000"}`,
-        // backgroundColor: preferences.darkMode ? "#333333" : "#f2f2f2",
-      }}
       onMouseEnter={(e) => {
         if (
           !isPaddingDay &&
@@ -187,8 +183,10 @@ const DayCell = ({
       className={`relative min-w-0 min-h-0 w-full h-full overflow-hidden ${
         preferences.darkMode ? "shadow-slate-700" : "shadow-slate-200"
       } rounded-sm shadow-sm flex flex-col duration-300 items-center justify-start gap-y-1 cursor-pointer ${
-        isCurrentDate && "shadow-cyan-400 shadow-md outline outline-slate-400"
-      }`}
+        isCurrentDate
+          ? "shadow-cyan-400 shadow-md outline outline-slate-400"
+          : "outline-0"
+      } hover:outline hover:outline-1 hover:outline-slate-400`}
     >
       <div
         className={`text-center flex justify-center items-center text-sm mt-1 ${
@@ -212,7 +210,7 @@ const DayCell = ({
         {eventsToRender.map((event) => (
           <motion.div
             key={`${event.id}_${index}`}
-            initial={false}
+            initial="false"
             style={{
               color: tailwindBgToHex(event.color),
             }}
@@ -257,7 +255,7 @@ const DayCell = ({
           />,
           document.body,
         )}
-    </motion.div>
+    </div>
   );
 };
 

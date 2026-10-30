@@ -50,8 +50,8 @@ const SocialLogin = () => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 50 }}
-      exit={{ opacity: 0, y: 50, position: "absolute" }}
+      initial={{ opacity: 0, y: 10 }}
+      exit={{ opacity: 0, y: 10, position: "absolute" }}
       animate={{
         opacity: 1,
         y: 0,
@@ -67,7 +67,17 @@ const SocialLogin = () => {
       </button>
 
       <div>
-        <div className="text-center mb-8"><p className="text-xs uppercase tracking-[0.3em] calendar-accent font-bold">Welcome back</p><h1 className="text-3xl mt-3 font-semibold tracking-tight">Your day, beautifully organized.</h1><p className="text-sm mt-3 opacity-65">Sign in or create an account to keep everything in sync.</p></div>
+        <div className="text-center mb-8">
+          <p className="text-xs uppercase tracking-[0.3em] calendar-accent font-bold">
+            Welcome back
+          </p>
+          <h1 className="text-3xl mt-3 font-semibold tracking-tight">
+            Your day, beautifully organized.
+          </h1>
+          <p className="text-sm mt-3 opacity-65">
+            Sign in or create an account to keep everything in sync.
+          </p>
+        </div>
         <div className="grid grid-cols-2 gap-3 w-full">
           <button
             onClick={() => loginGoogle()}
@@ -84,7 +94,11 @@ const SocialLogin = () => {
           />
         </div>
       </div>
-      <div className="flex items-center gap-4 text-xs opacity-60"><div className="h-px flex-1 bg-[var(--calendar-border)]" /><span>OR CONTINUE WITH EMAIL</span><div className="h-px flex-1 bg-[var(--calendar-border)]" /></div>
+      <div className="flex items-center gap-4 text-xs opacity-60">
+        <div className="h-px flex-1 bg-[var(--calendar-border)]" />
+        <span>OR CONTINUE WITH EMAIL</span>
+        <div className="h-px flex-1 bg-[var(--calendar-border)]" />
+      </div>
       <UsernamePassLogin />
     </motion.div>
   );

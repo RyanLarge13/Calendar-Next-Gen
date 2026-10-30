@@ -61,30 +61,18 @@ const Menu = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="z-10 fixed inset-0"
-          onClick={(event) => { if (event.target === event.currentTarget) setMenu(false); }}
+          className={`z-10 absolute inset-0 ${preferences.darkMode ? "bg-black/50" : "bg-black/30"} flex justify-center items-center`}
+          onClick={(event) => {
+            if (event.target === event.currentTarget) setMenu(false);
+          }}
         >
-          {/* Backdrop */}
-          <div
-            className={`
-        absolute inset-0
-        ${preferences.darkMode ? "bg-black/50" : "bg-black/30"}
-        
-      `}
-            onClick={() => setMenu(false)}
-            aria-hidden="true"
-          />
           {/* Panel */}
           <motion.div
             initial={{ y: 12, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 12, opacity: 0 }}
             transition={{ type: "spring", stiffness: 260, damping: 26 }}
-            className={`
-          relative mx-auto h-full
-          px-0 sm:px-6
-          pt-0 sm:pt-12
-          `}
+            className="min-w-[50%]"
           >
             <div
               className={`
@@ -116,9 +104,9 @@ const Menu = () => {
                       {/* REMINDERS */}
                       {showCategory === "reminder" && (
                         <motion.div
-                          initial={{ x: "-6%", opacity: 0 }}
-                          exit={{ x: "-6%", opacity: 0 }}
-                          animate={{ x: 0, opacity: 1 }}
+                          initial={{ y: "-6%", opacity: 0 }}
+                          exit={{ y: "-6%", opacity: 0 }}
+                          animate={{ y: 0, opacity: 1 }}
                         >
                           {/* Controls bar */}
                           <div
@@ -222,9 +210,9 @@ const Menu = () => {
                       {/* LISTS */}
                       {showCategory === "todo-list" && (
                         <motion.div
-                          initial={{ x: "-6%", opacity: 0 }}
-                          exit={{ x: "-6%", opacity: 0 }}
-                          animate={{ x: 0, opacity: 1 }}
+                          initial={{ y: "-6%", opacity: 0 }}
+                          exit={{ y: "-6%", opacity: 0 }}
+                          animate={{ y: 0, opacity: 1 }}
                         >
                           <div
                             className={`
@@ -318,9 +306,9 @@ const Menu = () => {
                       {/* TASKS */}
                       {showCategory === "task" && (
                         <motion.div
-                          initial={{ x: "-6%", opacity: 0 }}
-                          exit={{ x: "-6%", opacity: 0 }}
-                          animate={{ x: 0, opacity: 1 }}
+                          initial={{ y: "-6%", opacity: 0 }}
+                          exit={{ y: "-6%", opacity: 0 }}
+                          animate={{ y: 0, opacity: 1 }}
                         >
                           <div
                             className={`
@@ -413,9 +401,9 @@ const Menu = () => {
                       {/* SIMPLE CATEGORIES (just wrap in spacing) */}
                       {showCategory === "kanban" && (
                         <motion.div
-                          initial={{ x: "-6%", opacity: 0 }}
-                          exit={{ x: "-6%", opacity: 0 }}
-                          animate={{ x: 0, opacity: 1 }}
+                          initial={{ y: "-6%", opacity: 0 }}
+                          exit={{ y: "-6%", opacity: 0 }}
+                          animate={{ y: 0, opacity: 1 }}
                         >
                           <Kanbans />
                         </motion.div>
@@ -423,9 +411,9 @@ const Menu = () => {
 
                       {showCategory === "stickynote" && (
                         <motion.div
-                          initial={{ x: "-6%", opacity: 0 }}
-                          exit={{ x: "-6%", opacity: 0 }}
-                          animate={{ x: 0, opacity: 1 }}
+                          initial={{ y: "-6%", opacity: 0 }}
+                          exit={{ y: "-6%", opacity: 0 }}
+                          animate={{ y: 0, opacity: 1 }}
                           className="relative"
                         >
                           <StaticStickies />
@@ -435,9 +423,9 @@ const Menu = () => {
                       {/* EVENTS (we'll style this card list next, but wrapper improved now) */}
                       {showCategory === "event" ? (
                         <motion.div
-                          initial={{ x: "-6%", opacity: 0 }}
-                          exit={{ x: "-6%", opacity: 0 }}
-                          animate={{ x: 0, opacity: 1 }}
+                          initial={{ y: "-6%", opacity: 0 }}
+                          exit={{ y: "-6%", opacity: 0 }}
+                          animate={{ y: 0, opacity: 1 }}
                           className="px-3 sm:px-6"
                         >
                           <Events />
