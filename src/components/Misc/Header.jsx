@@ -61,6 +61,8 @@ const Header = () => {
           } fixed top-0 left-0 right-0 z-[10] flex justify-between px-5 py-4 shadow-lg rounded-b-lg`}
         >
           <button
+            type="button"
+            aria-label="Open navigation menu"
             onClick={() => {
               setShowLogin(false);
               setMenu(true);
