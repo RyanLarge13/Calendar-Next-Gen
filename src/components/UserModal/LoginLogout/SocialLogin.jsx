@@ -1,5 +1,5 @@
 import FacebookLogin from "@greatsumini/react-facebook-login";
-import { useGoogleLogin } from "@react-oauth/google";
+import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
 import { motion } from "framer-motion";
 import { useContext } from "react";
 import InteractiveContext from "../../../context/InteractiveContext.jsx";
@@ -7,7 +7,7 @@ import UserContext from "../../../context/UserContext.jsx";
 import { loginWithFb } from "../../../utils/api.js";
 import UsernamePassLogin from "./UsernamePassLogin.jsx";
 
-const SocialLogin = () => {
+const SocialLoginContent = () => {
   const { setUser, setGoogleToken, setAuthToken } = useContext(UserContext);
   const { setShowLogin } = useContext(InteractiveContext);
 
@@ -103,5 +103,11 @@ const SocialLogin = () => {
     </motion.div>
   );
 };
+
+const SocialLogin = () => (
+  <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+    <SocialLoginContent />
+  </GoogleOAuthProvider>
+);
 
 export default SocialLogin;
