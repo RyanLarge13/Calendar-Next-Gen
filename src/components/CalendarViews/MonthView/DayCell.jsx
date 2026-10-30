@@ -59,24 +59,6 @@ const DayCell = ({
     setString(date);
   };
 
-  const getCellStyle = (index) => {
-    const isSameMonthAndYear =
-      targetDate.getMonth() === dateObj.getMonth() &&
-      targetDate.getFullYear() === dateObj.getFullYear();
-    if (isSameMonthAndYear && rowDays.includes(index)) {
-      return {
-        backgroundColor: preferences.darkMode
-          ? "#1b1b1b"
-          : "rgba(0, 0, 0, 0.1)",
-      };
-    }
-    if (selected.includes(index)) {
-      return { backgroundColor: "#1b1b1b" };
-    } else {
-      return { backgroundColor: preferences.darkMode ? "#222" : "#fff" };
-    }
-  };
-
   const handleDayLongPress = (index) => {
     setLongPressActive(true);
     setLongPressTimeout(
@@ -103,7 +85,6 @@ const DayCell = ({
       setSelected(sortedSelected);
     }
     if (!longPressActive) {
-      console.log("addEvent Called");
       addEvent(`${month + 1}/${index - paddingDays + 1}/${year}`, index);
     }
   };
@@ -184,8 +165,8 @@ const DayCell = ({
       ref={cellRef}
       initial={false}
       whileHover={{
-        outline: preferences.darkMode ? "1px solid white" : "1px solid black",
-        backgroundColor: preferences.darkMode ? "#333333" : "#f2f2f2",
+        boxShadow: `0px 0px 4px 2px #${preferences.darkMode ? "FFF" : "000"}`,
+        // backgroundColor: preferences.darkMode ? "#333333" : "#f2f2f2",
       }}
       onMouseEnter={(e) => {
         if (
@@ -203,7 +184,6 @@ const DayCell = ({
         if (!isPaddingDay) handleDayClick(index);
       }}
       key={index}
-      style={getCellStyle(index)}
       className={`relative min-w-0 min-h-0 w-full h-full overflow-hidden ${
         preferences.darkMode ? "shadow-slate-700" : "shadow-slate-200"
       } rounded-sm shadow-sm flex flex-col duration-300 items-center justify-start gap-y-1 cursor-pointer ${

@@ -332,7 +332,7 @@ const DayView = ({ containerRef }) => {
                       ? preferences.darkMode
                         ? "rgba(34,211,238,0.18)"
                         : "rgba(34,211,238,0.16)"
-                      : "transparent"
+                      : "rgba(34,211,238,0)"
                   }`,
                 }}
                 className={`
