@@ -1,4 +1,5 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
+import { updateReminderInMap } from "../../../utils/reminderMapHelpers.js";
 import UserContext from "../../../context/UserContext";
 import NotificationSubscription from "../../Notifications/NotificationSubscription";
 import { getAuthToken, isPassed } from "../../../utils/helpers";
@@ -6,48 +7,35 @@ import { MdCheck, MdInfo } from "react-icons/md";
 import { API_UpdateReminderAndNotificationIgnore } from "../../../utils/api";
 
 const ReminderDeviceSubscriptions = ({ reminder }) => {
-  const { preferences, notifSubs, setReminders } = useContext(UserContext);
+  const { preferences, notifSubs, setRemindersMap } = useContext(UserContext);
+  const [savingEndpoint, setSavingEndpoint] = useState(null);
+  const [toggleError, setToggleError] = useState("");
 
   const reminderNotPassedTime = isPassed(new Date(reminder.time), new Date());
 
   const ignoredDevices = reminder.ignoreDevices || [];
 
   const toggleNotification = async (isIgnored, endpoint) => {
-    setReminders((prev) =>
-      prev.map((r) => {
-        if (r.id === reminder.id) {
-          return {
-            ...r,
-            ignoredDevices: isIgnored
-              ? reminder.ignoredDevices.filter((e) => e !== endpoint)
-              : [...reminder.ignoredDevices, endpoint],
-          };
-        }
-
-        return r;
-      }),
-    );
-
+    if (savingEndpoint) return;
+    setToggleError("");
+    setSavingEndpoint(endpoint);
+    const newIgnoredDevices = isIgnored
+      ? ignoredDevices.filter((device) => device !== endpoint)
+      : [...ignoredDevices, endpoint];
     try {
-      const token = getAuthToken();
-      const newIgnoredDevices = reminder.ignoreDevices.filter(
-        (e) => e !== endpoint,
-      );
-
-      if (!isIgnored) {
-        newIgnoredDevices.push(endpoint);
-      }
-
       await API_UpdateReminderAndNotificationIgnore(
         newIgnoredDevices,
         reminder.id,
-        token,
+        getAuthToken(),
+      );
+      setRemindersMap((prev) =>
+        updateReminderInMap(prev, reminder.id, { ignoreDevices: newIgnoredDevices }),
       );
     } catch (err) {
-      console.log(
-        "Error attempting to remove this device of being notified from this reminder",
-      );
-      console.log(err);
+      console.error("Unable to update reminder device notifications", err);
+      setToggleError("Could not update this device. Please try again.");
+    } finally {
+      setSavingEndpoint(null);
     }
   };
 
@@ -80,6 +68,7 @@ const ReminderDeviceSubscriptions = ({ reminder }) => {
             ? "Your Devices And How This Reminder Will Interact"
             : "Your Devices And How This Reminder Was Delivered"}
         </h3>
+        {toggleError && <p role="alert" className="text-sm text-red-500">{toggleError}</p>}
         <div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {notifSubs.map((subStr, index) => {
@@ -124,6 +113,8 @@ const ReminderDeviceSubscriptions = ({ reminder }) => {
                     {/* Toggle Button */}
                     {canToggleNotification && (
                       <button
+                        type="button"
+                        disabled={Boolean(savingEndpoint)}
                         onClick={() =>
                           toggleNotification(isIgnored, sub.endpoint)
                         }
