@@ -38,6 +38,8 @@ const Event = () => {
   activeEventIdRef.current = event?.id;
   const [fetchedImages, setFetchedImages] = useState([]);
   const [imagesLoading, setImagesLoading] = useState(false);
+  const [uploadCount, setUploadCount] = useState(0);
+  const [uploadError, setUploadError] = useState("");
   const [maximize, setMaximize] = useState(false);
   const [title, setTitle] = useState(event?.summary || "");
   const [description, setDescription] = useState(event?.description || "");
@@ -90,6 +92,7 @@ const Event = () => {
   useEffect(() => {
     let active = true;
     setFetchedImages([]);
+    setUploadError("");
     setImagesLoading(Boolean(event?.id));
     if (event?.id) {
       fetchAttachments(event.id, localStorage.getItem("authToken"))
@@ -289,7 +292,9 @@ const Event = () => {
     const eventId = event?.id;
     e.target.value = "";
     if (!eventId || !files.length) return;
-    setImagesLoading(true);
+    if (uploadCount) return;
+    setUploadError("");
+    setUploadCount(files.length);
     try {
       const uploadableAttachments = [];
       for (const file of files) {
@@ -328,8 +333,11 @@ const Event = () => {
       });
     } catch (error) {
       console.error("Unable to save event images", error);
+      if (eventId === activeEventIdRef.current) {
+        setUploadError("Could not save attachments. Please try again.");
+      }
     } finally {
-      setImagesLoading(false);
+      setUploadCount(0);
     }
   };
 
@@ -620,7 +628,7 @@ const Event = () => {
                     + Add
                     <input
                       type="file"
-                      accept=".jpeg .png .svg .pdf .docx"
+                      accept="image/*"
                       onChange={uploadFiles}
                       multiple
                       placeholder="png svg jpeg pdf word"
@@ -628,10 +636,16 @@ const Event = () => {
                     />
                   </label>
                 </div>
-                {imagesLoading ? (
-                  <p className="text-sm text-gray-500">
-                    Loading {event.attachmentLength} images...
+                {uploadCount > 0 && (
+                  <p role="status" className="text-sm text-gray-500">
+                    Uploading {uploadCount} {uploadCount === 1 ? "image" : "images"}...
                   </p>
+                )}
+                {uploadError && (
+                  <p role="alert" className="text-sm text-red-500">{uploadError}</p>
+                )}
+                {imagesLoading && fetchedImages.length === 0 ? (
+                  <p className="text-sm text-gray-500">Loading saved attachments...</p>
                 ) : fetchedImages.length > 0 ? (
                   <Masonry
                     breakpointCols={breakpointColumnsObj}
