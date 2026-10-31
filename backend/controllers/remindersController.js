@@ -404,38 +404,33 @@ export const togglePauseReminder = async (req, res) => {
 };
 
 export const updateReminderAndNotificationIgnore = async (req, res) => {
-  const user = req.user;
+  const userId = req.user?.id;
   const { reminderId, newDevices } = req.body;
 
-  if (!user) {
-    res
-      .status(401)
-      .json({ message: "You are not authorized to update this reminder" });
-    return;
-  }
-
-  if (!reminderId || !newDevices) {
-    res.status(404).json({
-      message: "Please provide a reminder to update with a new time",
-    });
-    return;
+  if (!userId) return res.status(401).json({ message: "Unauthorized" });
+  if (!reminderId || !Array.isArray(newDevices) ||
+      !newDevices.every((endpoint) => typeof endpoint === "string")) {
+    return res.status(400).json({ message: "A reminder ID and device list are required" });
   }
 
   try {
-    await prisma.reminders.update({
-      where: { id: reminderId },
-      data: { ignoreDevices: newDevices },
+    const updated = await prisma.$transaction(async (tx) => {
+      const result = await tx.reminder.updateMany({
+        where: { id: reminderId, userId },
+        data: { ignoreDevices: newDevices },
+      });
+      if (result.count === 0) return false;
+      await tx.notification.updateMany({
+        where: { reminderRefId: reminderId, userId },
+        data: { deviceExceptions: newDevices },
+      });
+      return true;
     });
-
-    await prisma.notification.updateMany({
-      where: { reminderRefId: reminderId },
-      data: { deviceExceptions: newDevices },
-    });
-
+    if (!updated) return res.status(404).json({ message: "Reminder not found" });
     return res.status(200).json({ message: "Reminder updated" });
-  } catch (err) {
-    console.log("Error attempting to update ignore devices for reminder");
-    console.log(err);
+  } catch (error) {
+    console.error("Unable to update reminder device notifications", error);
+    return res.status(500).json({ message: "Unable to update reminder device notifications" });
   }
 };
 
